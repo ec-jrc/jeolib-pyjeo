@@ -2,7 +2,7 @@ import jiplib as _jl
 
 
 def morphoErode(im, imSE, ox, oy, oz, trFlag=0):
-    """outputs the dilation of im using the SE defined by imse
+    """Output the dilation of im using the SE defined by imse.
 
     Its origin is set at coordinates (x,y,z). The reflection of the SE
     is considered if trflag equals 1 (no reflection by default). Points of

@@ -8,7 +8,7 @@ class _Geometry():
 
     def imageFrameSubstract(self, leftSize, rightSize, topSize, belowSize,
                             upSize, downSize):
-        """peels off a frame of im
+        """Peel off a frame of im.
 
         Modifies the instance on which the method was called.
 
@@ -23,7 +23,7 @@ class _Geometry():
             [leftSize, rightSize, topSize, belowSize, upSize, downSize]))
 
     def crop(self, ulx, uly, lrx, lry, **kwargs):
-        """Subset raster dataset
+        """Subset raster dataset.
 
         Subset raster dataset according in spatial (subset region) or
         spectral/temporal domain (subset bands).
@@ -57,7 +57,7 @@ class _Geometry():
         self._jim_object._set(self._jim_object.crop(kwargs))
 
     def cropOgr(self, extent, **kwargs):
-        """Subset raster dataset
+        """Subset raster dataset.
 
         Subset raster dataset according in spatial.
 
@@ -84,7 +84,7 @@ class _Geometry():
         self._jim_object._set(self._jim_object.crop(kwargs))
 
     def cropBand(self, band):
-        """Subset raster dataset
+        """Subset raster dataset.
 
         Subset raster dataset according in spectral/temporal domain.
 
@@ -110,7 +110,7 @@ class _Geometry():
         self._jim_object._set(self._jim_object.crop({'band': band}))
 
     def cropBandRange(self, startband, endband):
-        """Subset raster dataset
+        """Subset raster dataset.
 
         Subset raster dataset according in spectral/temporal domain.
 
@@ -138,7 +138,7 @@ class _Geometry():
                                                      'endband': endband}))
 
     def extractOgr(self, jim_ref, **kwargs):
-        """Extract pixel values from raster image using a vector dataset sample
+        """Extract pixel values from raster image using vector dataset sample.
 
         :param jim_ref: reference Jim instance
         :param kwargs: See below
@@ -179,7 +179,7 @@ class _Geometry():
         return self._jim_object.extractOgr(jim_ref, kwargs)
 
     def extractSample(self, **kwargs):
-        """Extract a random or grid sample from raster image
+        """Extract a random or grid sample from raster image.
 
         :param kwargs: See below
         :return: A VectorOgr with fields for each of the calculated raster
@@ -218,7 +218,7 @@ class _Geometry():
         return self._jim_object.extractSample(kwargs)
 
     def extractImg(self, **kwargs):
-        """Extract pixel values from an input based on a raster sample dataset
+        """Extract pixel values from an input based on a raster sample dataset.
 
         :param kwargs: See below
         :return: A VectorOgr with fields for each of the calculated raster

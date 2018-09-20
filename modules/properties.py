@@ -11,8 +11,8 @@ class _Properties():
 
     def dumpImage(self, x, y, z, nx, ny):
         """
-        dumps on screen a dx*dy window with the image values around
-        coordinates (x,y) and within the plane z
+        Dump on screen a dx*dy window with the image values around
+        coordinates (x,y) and within the plane z.
 
         :param x: x coordinate
         :param y: y coordinate
@@ -23,28 +23,28 @@ class _Properties():
         _jl.dumpxyz(self._jim_object, x, y, z, nx, ny)
 
     def nrOfCol(self):
-        """Get number of columns in this raster dataset
+        """Get number of columns in this raster dataset.
 
         :return:The number of columns in this raster dataset
         """
         return self._jim_object.nrOfCol()
 
     def nrOfRow(self):
-        """Get number of rows in this raster dataset
+        """Get number of rows in this raster dataset.
 
         :return:The number of rows in this raster dataset
         """
         return self._jim_object.nrOfRow()
 
     def nrOfPlane(self):
-        """Get number of planes in this raster dataset
+        """Get number of planes in this raster dataset.
 
         :return:The number of planes in this raster dataset
         """
         return self._jim_object.nrOfPlane()
 
     def nrOfBand(self):
-        """Get number of bands in this raster dataset
+        """Get number of bands in this raster dataset.
 
         :return:The number of bands in this raster dataset
         """

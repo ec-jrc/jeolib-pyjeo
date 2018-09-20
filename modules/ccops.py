@@ -21,7 +21,7 @@ class _CCOps():
         self._jim_object = jim_object
 
     def labelImagePixels(self):
-        """labels each non-zero pixel of im with a unique label
+        """Label each non-zero pixel of im with a unique label.
 
         Labels unless label overflows occurs.
 
@@ -30,7 +30,7 @@ class _CCOps():
         self._jim_object._set(self._jim_object.labelPix())
 
     def distance2dEuclideanSquared(self):
-        """computes the squared Euclidean distance transform of im
+        """Compute the squared Euclidean distance transform of im.
 
         im must be a 2-D binary image. Original algorihtm proposed by Saito
         and Toriwaki (1994) and then optimised independently by (Hirata,

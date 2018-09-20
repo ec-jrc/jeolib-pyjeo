@@ -5,7 +5,7 @@ from modules import properties, io, pixops, ngbops, geometry, \
 
 class Jim(_jipJim):
     def __init__(self, image):
-        """initialize the Jim object and modules for methods
+        """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
         the Jim object
@@ -26,7 +26,7 @@ class Jim(_jipJim):
         self.all = all._All(self)
 
     def __dir__(self):
-        """change behaviour of the method whisperer to ignore jiplib methods
+        """Change behaviour of the method whisperer to ignore jiplib methods.
 
         :return: a whispered package or method
         """
@@ -35,7 +35,7 @@ class Jim(_jipJim):
                pyjeo_Jim_methods
 
     def _set(self, modified_object):
-        """apply changes done in the modified_object to the parent Jim instance
+        """Apply changes done in modified_object to the parent Jim instance.
 
         :param modified_object: modified Jim instance
         """
@@ -48,7 +48,7 @@ class Jim(_jipJim):
                 ' it the right way?'.format(stack()[1][3]))
 
     def get_methods(self):
-        """print an overview of available methods in format module.method"""
+        """Print an overview of available methods in format module.method."""
         def tree_structure(module):
             module_methods = dir(module)
             for default_method in ['__init__', '__module__', '__doc__']:

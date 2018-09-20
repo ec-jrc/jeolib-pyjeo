@@ -7,7 +7,7 @@ class _Classify():
         self._jim_object = jim_object
 
     def classify(self, method, model, **kwargs):
-        """Supervised classification of a raster dataset
+        """Supervised classification of a raster dataset.
 
         The classifier must have been trained via the train() method.
         The classifier can be selected with the key 'method'.
@@ -33,7 +33,7 @@ class _Classify():
         self._jim_object._set(self._jim_object.classify(kwargs))
 
     def sml(self, **kwargs):
-        """Supervised classification of a raster dataset
+        """Supervised classification of a raster dataset.
 
         Using symbolic machine learning algorithm SML. For training, one or
         more reference raster datasets with categorical values is expected as

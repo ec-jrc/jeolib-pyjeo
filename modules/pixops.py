@@ -10,7 +10,7 @@ class _PixOps():
         self._jim_object = jim_object
 
     def pointOpBitWise(self, sec_jim_object, operation_code):
-        """bitwise operation between two images
+        """Bitwise operation between two images.
 
         Modifies the instance on which the method was called.
 

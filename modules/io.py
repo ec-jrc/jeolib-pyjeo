@@ -3,7 +3,7 @@ import jiplib as _jl
 
 def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
              nBufXSize=None, nBufYSize=None):
-    """reads a GDAL compatible image stored in the filename
+    """Read a GDAL compatible image stored in the filename.
 
     :param fn: a string for the name of an image file (possibly its path)
     :param band: an integer for the band number, 0 for first band
@@ -28,7 +28,7 @@ def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
 
 
 def createPyJim(filename, **kwargs):
-    """Creates an empty Jim object
+    """Create an empty Jim object.
 
     Created object is an instance of the basis image class of the pyJEO library
 
@@ -39,7 +39,7 @@ def createPyJim(filename, **kwargs):
 
 
 def createPyVector(filename):
-    """Creates an empty VectorOgr object
+    """Create an empty VectorOgr object.
 
     Created object is an instance of the basis vector class of the pyJEO
     library
