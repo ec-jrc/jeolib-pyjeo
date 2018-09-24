@@ -47,9 +47,9 @@ class Jim(_jipJim):
                 'A problem happened in function {}. Are you sure that you used'
                 ' it the right way?'.format(stack()[1][3]))
 
-    def get_methods(self):
+    def getMethods(self):
         """Print an overview of available methods in format module.method."""
-        def tree_structure(module):
+        def treeStructure(module):
             module_methods = dir(module)
             for default_method in ['__init__', '__module__', '__doc__']:
                 module_methods.remove(default_method)
@@ -64,6 +64,6 @@ class Jim(_jipJim):
         for module in [properties._Properties, io._IO, pixops._PixOps,
                        ngbops._NgbOps, geometry._Geometry, ccops._CCOps,
                        clssfy._Classify, demops._DEMOps]:
-            methods.extend(tree_structure(module))
+            methods.extend(treeStructure(module))
 
-        print(', '.join(methods))
+        print('\n'.join(methods))
