@@ -28,7 +28,7 @@ class Jim(_jipJim):
     def __dir__(self):
         """Change behaviour of the method whisperer to ignore jiplib methods.
 
-        :return: a whispered package or method
+        :return: a whispered module or method
         """
         pyjeo_Jim_methods = list(set(dir(Jim)) - set(dir(_jipJim)))
         return [i for i in self.__dict__.keys() if i != 'this'] + \

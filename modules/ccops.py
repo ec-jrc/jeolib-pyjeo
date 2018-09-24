@@ -1,4 +1,5 @@
 import jiplib as _jl
+import pyjeo as pj
 
 
 def labelPix(jim_object):
@@ -9,7 +10,7 @@ def labelPix(jim_object):
     :param jim_object: a Jim object
     :return: labeled Jim object
     """
-    return _jl.labelpix(jim_object)
+    return pj.Jim(_jl.labelpix(jim_object))
 
 
 class _CCOps():

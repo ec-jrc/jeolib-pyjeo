@@ -1,4 +1,5 @@
 import jiplib as _jl
+import pyjeo as pj
 
 
 def morphoErode(im, imSE, ox, oy, oz, trFlag=0):
@@ -16,7 +17,7 @@ def morphoErode(im, imSE, ox, oy, oz, trFlag=0):
     :param trFlag: optional parameter (0 or 1)
     :return:
     """
-    return _jl.erode(im, imSE, ox, oy, oz, trFlag)
+    return pj.Jim(_jl.erode(im, imSE, ox, oy, oz, trFlag))
 
 
 class _NgbOps():
