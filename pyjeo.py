@@ -58,7 +58,8 @@ class Jim(_jipJim):
                 module_methods[i] = module.__name__.lower()[1:] + '.' + \
                                     module_methods[i]
 
-            return module_methods
+            return ['\nmodule {}:'.format(module.__name__.lower()[1:])] + \
+                   module_methods
 
         methods = list()
         for module in [properties._Properties, io._IO, pixops._PixOps,
