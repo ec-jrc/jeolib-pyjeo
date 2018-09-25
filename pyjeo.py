@@ -1,5 +1,5 @@
 from jiplib import Jim as _jipJim
-from modules import properties, io, pixops, ngbops, geometry, \
+from modules import properties, pjio, pixops, ngbops, geometry, \
     ccops, clssfy, demops, all
 
 
@@ -16,7 +16,7 @@ class Jim(_jipJim):
         self.dx = 5
         self.dy = 10
         self.properties = properties._Properties(self)
-        self.io = io._IO(self)
+        self.pjio = pjio._IO(self)
         self.pixops = pixops._PixOps(self)
         self.ngbops = ngbops._NgbOps(self)
         self.geometry = geometry._Geometry(self)
@@ -61,7 +61,7 @@ class Jim(_jipJim):
             return module_methods
 
         methods = list()
-        for module in [properties._Properties, io._IO, pixops._PixOps,
+        for module in [properties._Properties, pjio._IO, pixops._PixOps,
                        ngbops._NgbOps, geometry._Geometry, ccops._CCOps,
                        clssfy._Classify, demops._DEMOps]:
             methods.extend(treeStructure(module))
