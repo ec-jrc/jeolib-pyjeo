@@ -11,10 +11,7 @@ class Jim(_jipJim):
         the Jim object
         """
         super(Jim, self).__init__(image)
-        print('you created the Jim Object')
 
-        self.dx = 5
-        self.dy = 10
         self.properties = properties._Properties(self)
         self.io = io._IO(self)
         self.pixops = pixops._PixOps(self)
