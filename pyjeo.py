@@ -11,10 +11,7 @@ class Jim(_jipJim):
         the Jim object
         """
         super(Jim, self).__init__(image)
-        print('you created the Jim Object')
 
-        self.dx = 5
-        self.dy = 10
         self.properties = properties._Properties(self)
         self.pjio = pjio._IO(self)
         self.pixops = pixops._PixOps(self)
@@ -58,7 +55,8 @@ class Jim(_jipJim):
                 module_methods[i] = module.__name__.lower()[1:] + '.' + \
                                     module_methods[i]
 
-            return module_methods
+            return ['\nmodule {}:'.format(module.__name__.lower()[1:])] + \
+                   module_methods
 
         methods = list()
         for module in [properties._Properties, pjio._IO, pixops._PixOps,
