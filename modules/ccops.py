@@ -10,7 +10,7 @@ def labelPix(jim_object):
     :param jim_object: a Jim object
     :return: labeled Jim object
     """
-    return _pj.Jim(_jl.labelpix(jim_object))
+    return _pj.Jim(_jl.Jim.labelPix(jim_object))
 
 
 class _CCOps():
