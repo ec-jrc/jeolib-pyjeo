@@ -1,5 +1,5 @@
 import jiplib as _jl
-import pyjeo as pj
+import pyjeo as _pj
 
 
 def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
@@ -24,7 +24,7 @@ def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
         nBufXSize = nXSize
     if nBufYSize is None:
         nBufYSize = nYSize
-    return pj.Jim(_jl.GDALRead(fn, band, nXOff, nYOff, nXSize, nYSize,
+    return _pj.Jim(_jl.GDALRead(fn, band, nXOff, nYOff, nXSize, nYSize,
                                nBufXSize, nBufYSize))
 
 
@@ -36,7 +36,7 @@ def createPyJim(filename, **kwargs):
     :param filename: Path to a raster file
     :return: a Jim object
     """
-    return pj.Jim(_jl.createJim(filename, **kwargs))
+    return _pj.Jim(_jl.createJim(filename, **kwargs))
 
 
 def createPyVector(filename):
