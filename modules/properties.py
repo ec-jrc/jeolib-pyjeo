@@ -1,5 +1,6 @@
 import jiplib as _jl
 
+
 class _Properties():
     def __init__(self, jim_object):
         """Initialize the module.

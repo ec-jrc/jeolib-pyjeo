@@ -1,5 +1,5 @@
 from jiplib import Jim as _jipJim
-from modules import properties, pjio, pixops, ngbops, geometry, \
+from modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, clssfy, demops, all
 
 
@@ -13,7 +13,7 @@ class Jim(_jipJim):
         super(Jim, self).__init__(image)
 
         self.properties = properties._Properties(self)
-        self.pjio = pjio._IO(self)
+        self.io = io._IO(self)
         self.pixops = pixops._PixOps(self)
         self.ngbops = ngbops._NgbOps(self)
         self.geometry = geometry._Geometry(self)

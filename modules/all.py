@@ -1,5 +1,5 @@
 from properties import *
-from io import *
+from pjio import *
 from pixops import *
 from ngbops import *
 from geometry import *
@@ -8,7 +8,7 @@ from clssfy import *
 from demops import *
 
 from properties import _Properties
-from io import _IO
+from pjio import _IO
 from pixops import _PixOps
 from ngbops import _NgbOps
 from geometry import _Geometry
