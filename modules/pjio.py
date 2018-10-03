@@ -28,11 +28,8 @@ def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
                                nBufXSize, nBufYSize))
 
 
-def createPyJim(filename, **kwargs):
+def createJim(filename, readData=True, **kwargs):
     """
-    Creates an empty Jim object as an instance of the basis image class of the Joint image processing library.
-    Returns:
-    This instance of Jim object (self)
 
     Supported keys as arguments:
 
@@ -137,19 +134,20 @@ def createPyJim(filename, **kwargs):
         #do stuff with jim ...
         jim.close()
     """
-    return _pj.Jim(_jl.createJim(filename, **kwargs))
+    return _pj.Jim(_jl.createJim(filename, readData, **kwargs))
 
 
-def createPyVector(filename):
+def createVector(filename, readData=True, **kwargs):
     """Create an empty VectorOgr object.
 
     Created object is an instance of the basis vector class of the pyJEO
     library
 
-    :param filename: Path to a vector file
+    :param filename: Path to a vector file or another VectorOgr object
+    :param readData: boolean parameter whether read data or create just shuck
     :return: a VectorOgr object
     """
-    return _jl.createVector(filename)
+    return _jl.createVector(filename, readData, **kwargs)
 
 
 class _IO():
