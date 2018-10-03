@@ -2,40 +2,47 @@ import jiplib as _jl
 import pyjeo as _pj
 
 
-def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
-             nBufXSize=None, nBufYSize=None):
-    """Read a GDAL compatible image stored in the filename.
+# def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
+#              nBufXSize=None, nBufYSize=None):
+#     """Read a GDAL compatible image stored in the filename.
 
-    :param fn: a string for the name of an image file (possibly its path)
-    :param band: an integer for the band number, 0 for first band
-    :param nXOff: integer for the pixel offset to the top left corner
-    :param nYOff: integer for the line offset to the top left corner
-    :param nXSize: integer for the width of the region
-    :param nYSize: integer for the height of the region
-    :param nBufXSize: integer for the number of columns of output image
-    :param nBufYSize: integer for the number of lines of output image
+#     :param fn: a string for the name of an image file (possibly its path)
+#     :param band: an integer for the band number, 0 for first band
+#     :param nXOff: integer for the pixel offset to the top left corner
+#     :param nYOff: integer for the line offset to the top left corner
+#     :param nXSize: integer for the width of the region
+#     :param nYSize: integer for the height of the region
+#     :param nBufXSize: integer for the number of columns of output image
+#     :param nBufYSize: integer for the number of lines of output image
+#     :return: a Jim object
+#     """
+#     if nXSize is None:
+#         nXSize = nXOff
+#     if nYSize is None:
+#         nYSize = nYOff
+#     if nBufXSize is None:
+#         nBufXSize = nXSize
+#     if nBufYSize is None:
+#         nBufYSize = nYSize
+#     return _pj.Jim(_jl.GDALRead(fn, band, nXOff, nYOff, nXSize, nYSize,
+#                                nBufXSize, nBufYSize))
+
+
+def createJim(**kwargs):
+    """
+    Create a new Jim object, either :ref:`from file <create_Jim_from_file>` or :ref:`create new <create_Jim_new>`
+
+    :param: see supported keys in table below
     :return: a Jim object
-    """
-    if nXSize is None:
-        nXSize = nXOff
-    if nYSize is None:
-        nYSize = nYOff
-    if nBufXSize is None:
-        nBufXSize = nXSize
-    if nBufYSize is None:
-        nBufYSize = nYSize
-    return _pj.Jim(_jl.GDALRead(fn, band, nXOff, nYOff, nXSize, nYSize,
-                               nBufXSize, nBufYSize))
 
+    .. _create_Jim_from_file:
 
-def createJim(filename, readData=True, **kwargs):
-    """
+    :Create Jim object from file:
 
     Supported keys as arguments:
 
     ======== ===================================================
-    filename input filename to read from (GDAL supported format)
-    nodata   Nodata value to put in image
+    filename filename to read from disk
     band     Bands to open, index starts from 0
     ulx      Upper left x value bounding box
     uly      Upper left y value bounding box
@@ -43,38 +50,16 @@ def createJim(filename, readData=True, **kwargs):
     lry      Lower right y value bounding box
     dx       Resolution in x
     dy       Resolution in y
-    resample Resample algorithm used for reading pixel data in case of interpolation (default: GRIORA_NearestNeighbour). Check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a for available options.
+    resample Resample algorithm used for reading pixel data in case of interpolation
     extent   get boundary from extent from polygons in vector dataset
+    nodata   Nodata value to put in image
     noread   Set this flag to True to not read data when opening
     ======== ===================================================
 
-    .. note::
-    You can specify a different spatial reference system to define the region of interest to read set with keys ulx, uly, lrx, and lry with the extra key 't_srs'. Notice this will not re-project the resulting image. You can use the function :py:func:Jim:`warp` for this.
+    .. note:: You can specify a different spatial reference system to define the region of interest to read set with keys ulx, uly, lrx, and lry with the extra key 't_srs'. Notice this will not re-project the resulting image. You can use the function :py:func:Jim:`warp` for this.
     ..
 
-    resample: (default: GRIORA_NearestNeighbour) Resample algorithm used for reading pixel data in case of interpolation GRIORA_NearestNeighbour | GRIORA_Bilinear | GRIORA_Cubic | GRIORA_CubicSpline | GRIORA_Lanczos | GRIORA_Average | GRIORA_Average | GRIORA_Gauss (check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a)
-
-    Supported keys when creating new Jim image object not read from file:
-
-    ===== =================
-    ncol  Number of columns
-    nrow  Number of rows
-    nband (default: 1) Number of bands
-    otype (default: Byte) Data type ({Byte/Int16/UInt16/UInt32/Int32/Int64/UInt64/Float32/Float64/CInt16/CInt32/CFloat32/CFloat64})
-    a_srs Assign the spatial reference for the output file, e.g., psg:3035 to use European projection and force to European grid
-    ===== =================
-
-    Supported keys used to initialize random pixel values in new Jim image object:
-
-    ======= ============================================
-    seed    (default: 0) seed value for random generator
-    mean    (default: 0) Mean value for random generator
-    stdev   (default: 0) Standard deviation for Gaussian random generator
-    uniform (default: 0) Start and end values for random value with uniform distribution
-    ======= ============================================
-
-    Returns:
-    This instance of Jim object (self)
+    .. note:: resample values: please check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a
 
     Example:
 
@@ -104,6 +89,29 @@ def createJim(filename, readData=True, **kwargs):
         #do stuff with jim ...
         jim.close()
 
+    .. _create_Jim_new:
+
+    :Create a new Jim image object by defining image attributes (not read from file):
+
+    Supported keys as arguments:
+
+    ===== =================
+    ncol  Number of columns
+    nrow  Number of rows
+    nband (default: 1) Number of bands
+    otype (default: Byte) Data type ({Byte/Int16/UInt16/UInt32/Int32/Int64/UInt64/Float32/Float64/CInt16/CInt32/CFloat32/CFloat64})
+    a_srs Assign the spatial reference for the output file, e.g., psg:3035 to use European projection and force to European grid
+    ===== =================
+
+    Supported keys used to initialize random pixel values in new Jim image object:
+
+    ======= ============================================
+    seed    (default: 0) seed value for random generator
+    mean    (default: 0) Mean value for random generator
+    stdev   (default: 0) Standard deviation for Gaussian random generator
+    uniform (default: 0) Start and end values for random value with uniform distribution
+    ======= ============================================
+
     Create a new georeferenced Jim image object by defining the projection epsg code, bounding box, and pixel size::
 
         projection='epsg:32612'
@@ -111,10 +119,7 @@ def createJim(filename, readData=True, **kwargs):
         ULY=4000020.0
         LRX=709800.0
         LRY=3890220.0
-        dict={'ulx':ULX,'uly':ULY,'lrx':LRX,'lry':LRY,'a_srs':projection}
-        dict.update({'otype':'GDT_UInt16'})
-        dict.update({'dy':100,'dx':100})
-        jim=jl.Jim.createImg(dict)
+        jim=jl.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',dx=100,dy=100)
         #do stuff with jim ...
         jim.close()
 
@@ -125,29 +130,23 @@ def createJim(filename, readData=True, **kwargs):
         ULY=4000020.0
         LRX=709800.0
         LRY=3890220.0
-        dict={'ulx':ULX,'uly':ULY,'lrx':LRX,'lry':LRY,'a_srs':projection}
-        dict.update({'otype':'GDT_UInt16'})
-        nrow=1098
-        ncol=1098
-        dict.update({'nrow':nrow,'ncol':ncol})
-        jim=jl.Jim.createImg(dict)
+        jim=jl.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',ncol=1098,nrow=1098)
         #do stuff with jim ...
         jim.close()
     """
-    return _pj.Jim(_jl.createJim(filename, readData, **kwargs))
+    return _pj.Jim(_jl.createJim(filename, noread, **kwargs))
 
-
-def createVector(filename, readData=True, **kwargs):
+def createVector(filename, ln=None, **kwargs):
     """Create an empty VectorOgr object.
 
     Created object is an instance of the basis vector class of the pyJEO
     library
 
     :param filename: Path to a vector file or another VectorOgr object
-    :param readData: boolean parameter whether read data or create just shuck
+    :param ln: optional name of the layer to read
     :return: a VectorOgr object
     """
-    return _jl.createVector(filename, readData, **kwargs)
+    return _jl.createVector(filename, ln, **kwargs)
 
 
 class _IO():
