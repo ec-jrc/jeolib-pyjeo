@@ -28,7 +28,7 @@ def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
                                nBufXSize, nBufYSize))
 
 
-def createPyJim(filename, readData=True, **kwargs):
+def createJim(filename, readData=True, **kwargs):
     """Create an empty Jim object.
 
     Created object is an instance of the basis image class of the pyJEO library
@@ -40,7 +40,7 @@ def createPyJim(filename, readData=True, **kwargs):
     return _pj.Jim(_jl.createJim(filename, readData, **kwargs))
 
 
-def createPyVector(filename, readData=True, **kwargs):
+def createVector(filename, readData=True, **kwargs):
     """Create an empty VectorOgr object.
 
     Created object is an instance of the basis vector class of the pyJEO
