@@ -28,10 +28,12 @@ import pyjeo as _pj
 #                                nBufXSize, nBufYSize))
 
 
-def createJim(**kwargs):
+def createJim(filename, **kwargs):
     """
     Create a new Jim object, either :ref:`from file <create_Jim_from_file>` or :ref:`create new <create_Jim_new>`
 
+
+    :param filename: Path to a raster dataset or another Jim object
     :param: see supported keys in table below
     :return: a Jim object
 
@@ -42,7 +44,6 @@ def createJim(**kwargs):
     Supported keys as arguments:
 
     ======== ===================================================
-    filename filename to read from disk
     band     Bands to open, index starts from 0
     ulx      Upper left x value bounding box
     uly      Upper left y value bounding box
@@ -66,13 +67,6 @@ def createJim(**kwargs):
     Create Jim image object by opening an existing file (file content will automatically be read in memory)::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-        jim=jl.createJim('filename'=ifn)
-        #do stuff with jim ...
-        jim.close()
-
-    The key 'filename' is optional::
-
-        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
         jim=jl.createJim(ifn)
         #do stuff with jim ...
         jim.close()
@@ -80,12 +74,12 @@ def createJim(**kwargs):
     Create Jim image object by opening an existing file for specific region of interest and spatial resolution using cubic convolution resampling::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-        jim0=jl.createJim(filename=ifn,'noread'=True)
+        jim0=jl.createJim(ifn,'noread'=True)
         ULX=jim0.getUlx()
         ULY=jim0.getUly()
         LRX=jim0.getUlx()+100*jim0.getDeltaX()
         LRY=jim0.getUly()-100*jim0.getDeltaY()
-        jim=jl.Jim.createImg(filename=ifn,ulx:ULX,'uly':ULY,'lrx':LRX,'lry':LRY,'dx':5,'dy':5,'resample':'GRIORA_Cubic'})
+        jim=jl.Jim.createImg(ifn,ulx:ULX,'uly':ULY,'lrx':LRX,'lry':LRY,'dx':5,'dy':5,'resample':'GRIORA_Cubic'})
         #do stuff with jim ...
         jim.close()
 
@@ -134,19 +128,19 @@ def createJim(**kwargs):
         #do stuff with jim ...
         jim.close()
     """
-    return _pj.Jim(_jl.createJim(filename, noread, **kwargs))
+    return _pj.Jim(_jl.createJim(filename, **kwargs))
 
-def createVector(filename, ln=None, **kwargs):
+def createVector(filename, **kwargs):
     """Create an empty VectorOgr object.
 
     Created object is an instance of the basis vector class of the pyJEO
     library
 
-    :param filename: Path to a vector file or another VectorOgr object
-    :param ln: optional name of the layer to read
+    :param filename: Path to a vector dataset or another VectorOgr object
+    :param: see supported keys in table below
     :return: a VectorOgr object
     """
-    return _jl.createVector(filename, ln, **kwargs)
+    return _jl.createVector(filename, **kwargs)
 
 
 class _IO():
