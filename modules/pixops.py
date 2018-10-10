@@ -17,6 +17,5 @@ class _PixOps():
         :param sec_jim_object: a Jim object
         :param operation_code: 10 or AND op, 11 or OR op, and 12 or XOR op
         """
-        self._jim_object._set(_jl.bitwise_op(self._jim_object,
-                                             sec_jim_object,
-                                             operation_code))
+        self._jim_object._set(self._jim_object.pointOpBitwise(
+            self._jim_object, sec_jim_object, operation_code))
