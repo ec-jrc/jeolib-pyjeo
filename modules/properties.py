@@ -9,7 +9,7 @@ class _Properties():
         """
         self._jim_object = jim_object
 
-    def dumpImage(self, x, y, z, nx, ny):
+    def dumpImg3D(self, x, y, z, nx, ny):
         """
         Dump on screen a dx*dy window with the image values around
         coordinates (x,y) and within the plane z.

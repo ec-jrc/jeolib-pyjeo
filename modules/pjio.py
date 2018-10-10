@@ -154,3 +154,6 @@ class _IO():
     def write(self, filename, **kwargs):
         kwargs.update({'filename': filename})
         self._jim_object.write(kwargs)
+
+    def dumpImg(self, **kwargs):
+        self._jim_object.dumpImg(kwargs)
