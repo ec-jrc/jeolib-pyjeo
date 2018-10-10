@@ -6,8 +6,8 @@ class _Geometry():
         """
         self._jim_object = jim_object
 
-    def imageFrameSubstract(self, leftSize, rightSize, topSize, belowSize,
-                            upSize, downSize):
+    def crop3D(self, leftSize, rightSize, topSize, belowSize, upSize,
+               downSize):
         """Peel off a frame of im.
 
         Modifies the instance on which the method was called.
