@@ -31,6 +31,13 @@ class Jim(_jipJim):
         return [i for i in self.__dict__.keys() if i != 'this'] + \
                pyjeo_Jim_methods
 
+    def __eq__(self, other):
+        """Change behaviour of == to check values, not memory alloc pointer.
+
+        :return: True if equal values, False otherwise
+        """
+        return self.isEqual(other)
+
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
 
