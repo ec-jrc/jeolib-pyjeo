@@ -36,7 +36,10 @@ class Jim(_jipJim):
 
         :return: True if equal values, False otherwise
         """
-        return self.isEqual(other)
+        if isinstance(other, Jim):
+            return self.isEqual(other)
+        else:
+            return False
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
