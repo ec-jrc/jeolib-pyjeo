@@ -19,3 +19,12 @@ class _PixOps():
         """
         self._jim_object._set(self._jim_object.pointOpBitwise(
             self._jim_object, sec_jim_object, operation_code))
+
+    def pointOpBlank(self, value):
+        """Set all pixels of image to value.
+
+        Modifies the instance on which the method was called.
+
+        :param value: new value for pixels of Jim object
+        """
+        self._jim_object.d_pointOpBlank(value)
