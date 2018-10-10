@@ -150,3 +150,7 @@ class _IO():
         :param jim_object: parent Jim object to have access to its attributes
         """
         self._jim_object = jim_object
+
+    def write(self, filename, **kwargs):
+        kwargs.update({'filename': filename})
+        self._jim_object.write(kwargs)
