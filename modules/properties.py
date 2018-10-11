@@ -49,3 +49,18 @@ class _Properties():
         :return:The number of bands in this raster dataset
         """
         return self._jim_object.nrOfBand()
+
+    def printNoDataVals(self):
+        self._jim_object.printNoDataValues()
+
+    def pushNoDataVal(self, value):
+        self._jim_object.pushNoDataValue(value)
+
+    def setNoDataVals(self, value):
+        if isinstance(value, list):
+            self._jim_object.setNoData(value)
+        else:
+            self._jim_object.setNoDataValue(value)
+
+    def clearNoData(self):
+        self._jim_object.clearNoData()
