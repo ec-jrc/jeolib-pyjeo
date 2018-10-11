@@ -67,3 +67,6 @@ class _Properties():
 
     def getDataType(self):
         return self._jim_object.getDataType()
+
+    def covers(self, *args):
+        return self._jim_object.covers(*args)
