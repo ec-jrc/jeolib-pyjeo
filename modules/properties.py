@@ -64,3 +64,6 @@ class _Properties():
 
     def clearNoData(self):
         self._jim_object.clearNoData()
+
+    def getDataType(self):
+        return self._jim_object.getDataType()
