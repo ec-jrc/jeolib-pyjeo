@@ -69,7 +69,7 @@ class Jim(_jipJim):
                    module_methods
 
         methods = list()
-        for module in [properties._Properties, pjio._IO, pixops._PixOps,
+        for module in [properties._Properties, io._IO, pixops._PixOps,
                        ngbops._NgbOps, geometry._Geometry, ccops._CCOps,
                        clssfy._Classify, demops._DEMOps]:
             methods.extend(treeStructure(module))
