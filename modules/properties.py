@@ -70,3 +70,12 @@ class _Properties():
 
     def covers(self, *args):
         return self._jim_object.covers(*args)
+
+    def getGeoTransform(self):
+        return self._jim_object.getGeoTransform()
+
+    def setGeoTransform(self, *args):
+        self._jim_object.setGeoTransform(*args)
+
+    def copyGeoTransform(self, sec_jim_object):
+        self._jim_object.copyGeoTransform(sec_jim_object)
