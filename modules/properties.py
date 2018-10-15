@@ -85,3 +85,27 @@ class _Properties():
 
     def setProjection(self, *args):
         self._jim_object.setProjection(*args)
+
+    def getCenterPos(self):
+        return self._jim_object.getCenterPos()
+
+    def getUlx(self):
+        return self._jim_object.getUlx()
+
+    def getUly(self):
+        return self._jim_object.getUly()
+
+    def getLrx(self):
+        return self._jim_object.getLrx()
+
+    def getLry(self):
+        return self._jim_object.getLry()
+
+    def getDeltaX(self):
+        return self._jim_object.getDeltaX()
+
+    def getDeltaY(self):
+        return self._jim_object.getDeltaY()
+
+    def getRefPix(self, *args):
+        return self._jim_object.getRefPix(*args)
