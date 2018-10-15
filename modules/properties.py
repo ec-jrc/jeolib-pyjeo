@@ -79,3 +79,9 @@ class _Properties():
 
     def copyGeoTransform(self, sec_jim_object):
         self._jim_object.copyGeoTransform(sec_jim_object)
+
+    def getProjection(self):
+        return self._jim_object.getProjection()
+
+    def setProjection(self, *args):
+        self._jim_object.setProjection(*args)
