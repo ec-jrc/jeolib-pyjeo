@@ -19,6 +19,9 @@ Accessing properties
 .. automodule:: properties
    :members:
                 
+.. autoclass:: _Properties
+   :members:
+
 Input/Output
 ############
 
@@ -42,6 +45,10 @@ Geometry operations
 
 .. automodule:: geometry
    :members:
+
+.. autoclass:: _Geometry
+   :members:
+
 
 CC operations
 #############
