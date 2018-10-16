@@ -49,3 +49,63 @@ class _Properties():
         :return:The number of bands in this raster dataset
         """
         return self._jim_object.nrOfBand()
+
+    def printNoDataVals(self):
+        self._jim_object.printNoDataValues()
+
+    def pushNoDataVal(self, value):
+        self._jim_object.pushNoDataValue(value)
+
+    def setNoDataVals(self, value):
+        if isinstance(value, list):
+            self._jim_object.setNoData(value)
+        else:
+            self._jim_object.setNoDataValue(value)
+
+    def clearNoData(self):
+        self._jim_object.clearNoData()
+
+    def getDataType(self):
+        return self._jim_object.getDataType()
+
+    def covers(self, *args):
+        return self._jim_object.covers(*args)
+
+    def getGeoTransform(self):
+        return self._jim_object.getGeoTransform()
+
+    def setGeoTransform(self, *args):
+        self._jim_object.setGeoTransform(*args)
+
+    def copyGeoTransform(self, sec_jim_object):
+        self._jim_object.copyGeoTransform(sec_jim_object)
+
+    def getProjection(self):
+        return self._jim_object.getProjection()
+
+    def setProjection(self, *args):
+        self._jim_object.setProjection(*args)
+
+    def getCenterPos(self):
+        return self._jim_object.getCenterPos()
+
+    def getUlx(self):
+        return self._jim_object.getUlx()
+
+    def getUly(self):
+        return self._jim_object.getUly()
+
+    def getLrx(self):
+        return self._jim_object.getLrx()
+
+    def getLry(self):
+        return self._jim_object.getLry()
+
+    def getDeltaX(self):
+        return self._jim_object.getDeltaX()
+
+    def getDeltaY(self):
+        return self._jim_object.getDeltaY()
+
+    def getRefPix(self, *args):
+        return self._jim_object.getRefPix(*args)
