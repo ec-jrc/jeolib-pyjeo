@@ -46,13 +46,7 @@ class Jim(_jipJim):
 
         :param modified_object: modified Jim instance
         """
-        try:
-            self.__dict__.update(modified_object.__dict__)
-        except AttributeError:
-            from inspect import stack
-            raise ValueError(
-                'A problem happened in function {}. Are you sure that you used'
-                ' it the right way?'.format(stack()[1][3]))
+        self.__dict__.update(modified_object.__dict__)
 
     def getMethods(self):
         """Print an overview of available methods in format module.method."""
