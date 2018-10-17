@@ -1,6 +1,5 @@
 import jiplib as _jl
 
-
 class _Properties():
     def __init__(self, jim_object):
         """Initialize the module.
@@ -115,6 +114,7 @@ class _Properties():
         Get the geotransform data for this dataset as a list of floats.
 
         :returns: List of floats with geotransform data:
+
         * [0] top left x
         * [1] w-e pixel resolution
         * [2] rotation, 0 if image is "north up"
