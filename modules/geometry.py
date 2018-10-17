@@ -211,6 +211,14 @@ class _Geometry():
         |                  | and negative value for absolute threshold)                                      |
         +------------------+---------------------------------------------------------------------------------+
 
+        Example:
+
+        Extract a random sample of 100 points, calculating the mean value based on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector dataset in memory::
+
+            reference=jl.io.createVector('/path/to/reference.sqlite')
+            jim0=jl.io.createJim('/path/to/raster.sqlite')
+            v=jim0.extractOgr(reference,rule=['mean'],output='/path/to/output.sqlite',oformat='SQLite')
+            v.write()
         """
         return self._jim_object.extractOgr(jim_ref, kwargs)
 
