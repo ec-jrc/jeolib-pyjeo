@@ -113,8 +113,7 @@ class _Geometry():
         :param startband: Start band sequence number (index is 0 based)
         :param endband: End band sequence number (index is 0 based)
         """
-        self._jim_object._set(self._jim_object.cropBand({'startband': startband,
-                                                     'endband': endband}))
+        self._jim_object.cropBand({'startband': startband,'endband': endband})
 
     def extractOgr(self, jim_ref, **kwargs):
         """Extract pixel values from raster image based on a vector dataset sample.
