@@ -101,7 +101,7 @@ class _Geometry():
 
         :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object._set(self._jim_object.cropBand({'band': band}))
+        self._jim_object.cropBand({'band': band})
 
     def cropBandRange(self, startband, endband):
         """Subset raster dataset.
