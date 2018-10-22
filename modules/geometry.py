@@ -22,7 +22,7 @@ class _Geometry():
         self._jim_object._set(self._jim_object.d_imageFrameSubstract(
             [leftSize, rightSize, topSize, belowSize, upSize, downSize]))
 
-    def crop(self, ulx, uly, lrx, lry, **kwargs):
+    def crop(self, ulx=0, uly=0, lrx=0, lry=0, **kwargs):
         """Subset raster dataset.
 
         Subset raster dataset according in spatial (subset region) or
