@@ -349,7 +349,7 @@ class _Geometry():
                     classTo[i]=classDict['rest']
 
 
-            jim_ref=jl.createJim('/path/to/raster.tif','dx':jim.getDeltaX(),'dy':jim.getDeltaY(),'ulx':jim.getUlx(),'uly':jim.getUly(),'lrx':jim.getLrx(),'lry':jim.getLry()})
+            jim_ref=jl.createJim('/path/to/raster.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry()})
             jim_ref=jim_ref.reclass(class=classFrom,reclass=classTo)
 
 
@@ -391,4 +391,4 @@ class _Geometry():
             jim.warp('epsg:3035')
 
         """
-        return self._jim_object.extractImg(jim_ref, kwargs)
+        return self._jim_object.warp(kwargs)
