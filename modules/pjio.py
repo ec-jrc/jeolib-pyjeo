@@ -28,7 +28,7 @@ import pyjeo as _pj
 #                                nBufXSize, nBufYSize))
 
 
-def createJim(filename, **kwargs):
+def createJim(**kwargs):
     """
     Create a new Jim object, either :ref:`from file <create_Jim_from_file>` or :ref:`create new <create_Jim_new>`
 
@@ -128,7 +128,7 @@ def createJim(filename, **kwargs):
         #do stuff with jim ...
         jim.close()
     """
-    return _pj.Jim(_jl.createJim(filename, **kwargs))
+    return _pj.Jim(_jl.createJim(**kwargs))
 
 def createVector(filename, **kwargs):
     """Create an empty VectorOgr object.
