@@ -1,3 +1,35 @@
+import pyjeo as _pj
+
+
+def crop3D(jim_object, x1, y1, z1, x2, y2, z2, iband=0):
+    """Extract a subimage from Jim object by cutting it from given coords.
+
+    :param jim_object: a Jim object
+    :param x1: x coordinate of 1st pixel
+    :param y1: y coordinate of 1st pixel
+    :param z1: z coordinate of 1st pixel
+    :param x2: x coordinate of 2nd pixel
+    :param y2: y coordinate of 2nd pixel
+    :param z2: z coordinate of 2nd pixel
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: Extracted subimage as Jim instance
+    """
+    return _pj.Jim(jim_object.imageCut(x1, y1, z1, x2, y2, z2, iband))
+
+
+def plotLine(jim_object, x1, y1, x2, y2, val):
+    """Draw a line from [x1, y1] to [x2, y2] by setting pixels of Jim to val
+
+    :param jim_object: a Jim object
+    :param x1: an integer for x-coordinate of 1st point
+    :param y1: an integer for y-coordinate of 1st point
+    :param x2: an integer for x-coordinate of 2nd point
+    :param y2: an integer for y-coordinate of 2nd point
+    :return:
+    """
+    return _pj.Jim(jim_object.plotLine(x1, y1, x2, y2, val))
+
+
 class _Geometry():
     def __init__(self, jim_object):
         """Initialize the module.
@@ -464,3 +496,91 @@ class _Geometry():
         """
         kwargs.update({'t_srs': t_srs})
         self._jim_object._set(self._jim_object.warp(kwargs))
+
+    def imageInsert(self, sec_jim_object, x, y, z, iband=0):
+        """Merge Jim instance with values of sec_jim_object in given coords.
+
+        Modifies the instance on which the method was called.
+
+        :param jim_object: a Jim object
+        :param x: x coordinate of 1st pixel
+        :param y: y coordinate of 1st pixel
+        :param z: z coordinate of 1st pixel
+        :param iband: List of band indices to crop (index is 0 based)
+        """
+        # TODO: Doesn't work
+        self._jim_object.d_imageInsert(sec_jim_object, x, y, z, iband)
+
+    def imageInsertCompose(self, imlbl, im2, x, y, z, val, iband=0):
+        """Merge Jim instance with values of im2 if val of imlbl == val.
+
+        Modifies the instance on which the method was called.
+
+        :param imRaster_imlbl: a Jim object
+        :param imRaster_im2: a Jim object
+        :param x: x coordinate of 1st pixel
+        :param y: y coordinate of 1st pixel
+        :param z: z coordinate of 1st pixel
+        :param val: integer for label value
+        :param iband: List of band indices to crop (index is 0 based)
+        """
+        self._jim_object.d_imageInsertCompose(imlbl, im2, x, y, z, val, iband)
+
+    def imageFrameSet(self, l, r, t, b, u, d, val, iband=0):
+        """Set the values of the image frame to value val.
+
+        Modifies the instance on which the method was called.
+
+        :param l: width of left frame
+        :param r: width of right frame
+        :param t: width of top frame
+        :param b: width of bottom frame
+        :param u: width of upper frame
+        :param d: width of lower frame
+        :param val: value of frame
+        :param iband: List of band indices to crop (index is 0 based)
+        """
+        self._jim_object.d_imageFrameSet([l, r, t, b, u, d], val, iband)
+
+    def imageFrameAdd(self, l, r, t, b, u, d, val, iband=0):
+        """Set the values of the image frame to value val.
+
+        Modifies the instance on which the method was called.
+
+        :param l: width of left frame
+        :param r: width of right frame
+        :param t: width of top frame
+        :param b: width of bottom frame
+        :param u: width of upper frame
+        :param d: width of lower frame
+        :param val: value of frame
+        :param iband: List of band indices to crop (index is 0 based)
+        """
+        self._jim_object.d_imageFrameAdd([l, r, t, b, u, d], val, iband)
+
+    def magnify(self, n):
+        """Magnify the image.
+
+        Modifies the instance on which the method was called.
+
+        :param n: a positive integer for magnifying size by pixel replication
+        """
+        self._jim_object._set(self._jim_object.imageMagnify(n))
+
+    def plotLine(self, x1, y1, x2, y2, val):
+        """Draw a line from [x1, y1] to [x2, y2] by setting pixels to value val
+
+        Modifies the instance on which the method was called.
+
+        :param x1: an integer for x-coordinate of 1st point
+        :param y1: an integer for y-coordinate of 1st point
+        :param x2: an integer for x-coordinate of 2nd point
+        :param y2: an integer for y-coordinate of 2nd point
+        """
+        self._jim_object.d_plotLine(x1, y1, x2, y2, val)
+
+    # TODO: getboundingbox, Histograms?, how to work with
+    # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to
+    # grid (jim1.gridding(jim1, jim3, jim4, 1)), how and where nni,
+    # where addframeboxelem, where subframeboxelem,
+>>>>>>> 94c7b09cdc7f901c1ba408900b22b3ce73da5779
