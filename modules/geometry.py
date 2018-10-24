@@ -89,8 +89,7 @@ class _Geometry():
         .. note::
            Possible values for the key 'eo' are: ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG. For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        kwargs.update({'extent': extent})
-        self._jim_object._set(self._jim_object.cropOgr(kwargs))
+        self._jim_object._set(self._jim_object.cropOgr(extent,kwargs))
 
     def cropBand(self, band):
         """Subset raster dataset.
@@ -100,8 +99,16 @@ class _Geometry():
         Modifies the instance on which the method was called.
 
         :param band: List of band indices to crop (index is 0 based)
+
+        Example:
+
+        Crop the first three bands from raster dataset jim0::
+
+            jim0=jl.io.createJim('/path/to/raster0.tif')
+            jim0.cropBand(band=[0,1,2])
+
         """
-        self._jim_object.cropBand({'band': band})
+        self._jim_object.d_cropBand({'band': band})
 
     def cropBandRange(self, startband, endband):
         """Subset raster dataset.
@@ -112,8 +119,59 @@ class _Geometry():
 
         :param startband: Start band sequence number (index is 0 based)
         :param endband: End band sequence number (index is 0 based)
+
+        Example:
+
+        Crop the first three bands from raster dataset jim0::
+
+            jim0=jl.io.createJim('/path/to/raster0.tif')
+            jim0.cropBandRange(startband=0,startBand=2)
+
         """
-        self._jim_object.cropBand({'startband': startband,'endband': endband})
+        self._jim_object.d_cropBand({'startband': startband,'endband': endband})
+
+    def stackBand(self, band):
+        """Stack bands from another raster dataset to current raster dataset.
+
+        Modifies the instance on which the method was called.
+
+        :param band: List of band indices to stack (index is 0 based)
+
+        Example:
+
+        Append all the bands of raster dataset jim1 to the current image jim0::
+
+            jim0=jl.io.createJim('/path/to/raster0.tif')
+            jim1=jl.io.createJim('/path/to/raster1.tif')
+            jim0.stackBand(jim1)
+
+        Append the first three bands of raster dataset jim1 to the current image jim0::
+
+            jim0=jl.io.createJim('/path/to/raster0.tif')
+            jim1=jl.io.createJim('/path/to/raster1.tif')
+            jim0.stackBand(jim1,band=[0,1,2])
+        """
+        self._jim_object.d_stackBand({'band': band})
+
+    def stackBandRange(self, startband, endband):
+        """Subset raster dataset.
+
+        Stack range of bands from another raster dataset to current raster dataset.
+
+        Modifies the instance on which the method was called.
+
+        :param startband: Start band sequence number (index is 0 based)
+        :param endband: End band sequence number (index is 0 based)
+
+        Example:
+
+        Append the first three bands of raster dataset jim1 to the current image jim0::
+
+            jim0=jl.io.createJim('/path/to/raster0.tif')
+            jim1=jl.io.createJim('/path/to/raster1.tif')
+            jim0.stackBandRange(jim1,startband=0,endband=2])
+        """
+        self._jim_object.d_stackBand({'startband': startband,'endband': endband})
 
     def extractOgr(self, jim_ref, **kwargs):
         """Extract pixel values from raster image based on a vector dataset sample.
@@ -207,8 +265,8 @@ class _Geometry():
         +------------------+---------------------------------------------------------------------------------+
         | msknodata        | List of mask values not to extract                                              |
         +------------------+---------------------------------------------------------------------------------+
-        | threshold        | Maximum number of features to extract (use positive values for percentage value |
-        |                  | and negative value for absolute threshold)                                      |
+        | threshold        | Maximum number of features to extract. Use percentage value as string           |
+        |                  | (e.g., '10%') or integer value for absolute threshold                           |
         +------------------+---------------------------------------------------------------------------------+
 
         Example:
@@ -216,10 +274,15 @@ class _Geometry():
         Extract a random sample of 100 points, calculating the mean value based on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector dataset in memory::
 
             reference=jl.io.createVector('/path/to/reference.sqlite')
-            jim0=jl.io.createJim('/path/to/raster.sqlite')
+            jim0=jl.io.createJim('/path/to/raster.tif')
             v=jim0.extractOgr(reference,rule=['mean'],output='/path/to/output.sqlite',oformat='SQLite')
             v.write()
         """
+        if 'threshold' in kwargs:
+            if '%' in kwargs['threshold']:
+                kwargs['threshold']=float(kwargs['threshold'].strip('%'))
+            else:
+                kwargs['threshold']=-kwargs['threshold']
         return self._jim_object.extractOgr(jim_ref, kwargs)
 
     def extractSample(self, **kwargs):
@@ -280,83 +343,91 @@ class _Geometry():
             v.write()
 
         """
+        if 'threshold' in kwargs:
+            if '%' in kwargs['threshold']:
+                kwargs['threshold']=float(kwargs['threshold'].strip('%'))
+            else:
+                kwargs['threshold']=-kwargs['threshold']
         return self._jim_object.extractSample(kwargs)
 
-    def extractImg(self, **kwargs):
+    def extractImg(self, reference, **kwargs):
         """Extract pixel values from an input based on a raster sample dataset.
 
+        :reference: thematic raster dataset with integer values, typically a land cover map
         :param kwargs: See table below
         :return: A VectorOgr with fields for each of the calculated raster
             value (zonal) statistics
 
-        :keyword arguments:
-            :rule: Rule how to calculate zonal statistics per feature
-                (point, allpoints, centroid, mean, stdev, median, min, max,
-                sum, mode, proportion, count, percentile)
-            :class: List of classes to extract from the raster sample dataset.
-                Leave empty to extract all valid data pixels from thee sample
-            :cname:	Name of the class label in the output vector dataset
-                (default is 'label')
-            :fid: Create extra field named 'fid' with this field identifier
-                (sequence of features)
-            :band: List of bands to extract (0 indexed). Default is to use
-                extract all bands
-            :bandname: List of band name corresponding to list of bands to
-                extract
-            :startband: Start band sequence number (0 indexed)
-            :endband: End band sequence number (0 indexed)
-            :down: Down sampling factor to extract a subset of the sample based
-                on a grid
-            :output: Name of the output vector dataset in which the zonal
-                statistics are saved
-            :ln: Layer name of output vector dataset
-            :oformat: Output vector dataset format
-            :co: Creation option for output vector dataset
-            :srcnodata: List of nodata values not to extract
-            :bndnodata: List of band in input image to check if pixel is
-                valid (used for srcnodata)
-            :mask: Use the the specified file as a validity mask
-            :mskband: Use the the specified band of the mask file defined
-            :msknodata: List of mask values not to extract
-            :threshold: Maximum number of features to extract (use positive
-                values for percentage value and negative value for absolute
-                threshold)
+        +------------------+---------------------------------------------------------------------------------+
+        | key              | value                                                                           |
+        +==================+=================================================================================+
+        | rule             | Rule how to calculate zonal statistics per feature                              |
+        |                  | (see list of :ref:`supported rules <extract_rules>`)                            |
+        +------------------+---------------------------------------------------------------------------------+
+        | class            | List of classes to extract from the raster sample dataset.                      |
+        |                  | Leave empty to extract all valid data pixels from thee sample                   |
+        +------------------+---------------------------------------------------------------------------------+
+        | cname            | Name of the class label in the output vector dataset (default is 'label')       |
+        +------------------+---------------------------------------------------------------------------------+
+        | fid              | Create extra field named 'fid' with this field identifier (sequence of features)|
+        +------------------+---------------------------------------------------------------------------------+
+        | band             | List of bands to extract (0 indexed). Default is to use extract all bands       |
+        +------------------+---------------------------------------------------------------------------------+
+        | bandname         | List of band name corresponding to list of bands to extract                     |
+        +------------------+---------------------------------------------------------------------------------+
+        | startband        | Start band sequence number (0 indexed)                                          |
+        +------------------+---------------------------------------------------------------------------------+
+        | endband          | End band sequence number (0 indexed)                                            |
+        +------------------+---------------------------------------------------------------------------------+
+        | down             | Down sampling factor to extract a subset of the sample based on a grid          |
+        +------------------+---------------------------------------------------------------------------------+
+        | output           | Name of the output vector dataset in which the zonal statistics are saved       |
+        +------------------+---------------------------------------------------------------------------------+
+        | ln               | Layer name of output vector dataset                                             |
+        +------------------+---------------------------------------------------------------------------------+
+        | oformat          | Output vector dataset format                                                    |
+        +------------------+---------------------------------------------------------------------------------+
+        | co               | Creation option for output vector dataset                                       |
+        +------------------+---------------------------------------------------------------------------------+
 
+        .. note::
+            To ignore some pixels from the extraction process, see list of :ref:`nodata <extract_nodata>` key values:
+
+        .. _extract_nodata:
+
+        :Supported key values to mask pixels that must be ignored in the extraction process:
+
+        +------------------+---------------------------------------------------------------------------------+
+        | key              | value                                                                           |
+        +==================+=================================================================================+
+        | srcnodata        | List of nodata values not to extract                                            |
+        +------------------+---------------------------------------------------------------------------------+
+        | bndnodata        | List of band in input image to check if pixel is valid (used for srcnodata)     |
+        +------------------+---------------------------------------------------------------------------------+
+        | threshold        | Maximum number of features to extract. Use percentage value as string           |
+        |                  | (e.g., '10%') or integer value for absolute threshold.                          |
+        |                  | You can provide a list of threshold values, one for each class.                 |
+        +------------------+---------------------------------------------------------------------------------+
         Example:
 
         Open a raster sample dataset based on land cover map (e.g., Corine) and use it to extract a stratified sample of 100 points from an input raster dataset with four spectral bands ('B02', 'B03', 'B04', 'B08'). Only sample classes 2 (urban), 12 (agriculture), 25 (forest), 41 (water) and an aggregated (rest) class 50::
 
             jim_ref=jl.createJim('/path/to/landcovermap.tif')
 
-            classDict={}
-            classDict['urban']=2
-            classDict['agriculture']=12
-            classDict['forest']=25
-            classDict['water']=41
-            classDict['rest']=50
-            classFrom=range(0,50)
-            classTo=[50]*50
-            for i in range(0,50):
-                if i>=1 and i<10:
-                    classTo[i]=classDict['urban']
-                elif i>=11 and i<22:
-                    classTo[i]=classDict['agriculture']
-                elif i>=23 and i<25:
-                    classTo[i]=classDict['forest']
-                elif i>=40 and i<45:
-                    classTo[i]=classDict['water']
-                else:
-                    classTo[i]=classDict['rest']
+            classes=[2,12,25,41,50]
+            thresholds=['20%','25%','25%','10%','5%']
 
-
-            jim_ref=jl.createJim('/path/to/raster.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry()})
-            jim_ref=jim_ref.reclass(class=classFrom,reclass=classTo)
-
+            jim_ref=jl.createJim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
 
             outputfn='/path/to/output.sqlite'
-            sample=jim.extractImg(jim_ref,srcnodata=[0],output=outputfn,class=sorted(classDict.values()),sampleSize=-100,threshold=sampleSize,bandname=['B02','B03','B04','B08'],band=[0,1,2,3])
+            sample=jim.extractImg(jim_ref,srcnodata=[0],output=outputfn,class=classes,threshold=thresholds,bandname=['B02','B03','B04','B08'],band=[0,1,2,3])
         """
-        return self._jim_object.extractImg(jim_ref, kwargs)
+        if 'threshold' in kwargs:
+            if '%' in kwargs['threshold']:
+                kwargs['threshold']=float(kwargs['threshold'].strip('%'))
+            else:
+                kwargs['threshold']=-kwargs['threshold']
+        return self._jim_object.extractImg(reference, kwargs)
 
     def warp(self, t_srs, **kwargs):
         """
@@ -385,10 +456,11 @@ class _Geometry():
             jim=jl.createJim('/path/to/file.tif')
             jim.warp('epsg:3035')
 
-        Read a raster dataset from disk by selecting a bounding box in some target spatial reference system. Then warp the read raster dataset to the target spatial reference system::
+        Read a raster dataset from disk that is in lat lon (epsg:4326), select a bounding box in a different spatial reference system (epsg:3035). Notice the raster dataset read is still in the original projection (epsg:4326). Then warp the raster dataset to the target spatial reference system (epsg:3035)::
 
             jim=jl.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
-            jim.warp('epsg:3035')
+            jim.warp('epsg:3035',s_srs='epsg:4326')
 
         """
-        return self._jim_object.warp(kwargs)
+        kwargs.update({'t_srs': t_srs})
+        self._jim_object._set(self._jim_object.warp(kwargs))
