@@ -17,6 +17,149 @@ def crop3D(jim_object, x1, y1, z1, x2, y2, z2, iband=0):
     return _pj.Jim(jim_object.imageCut(x1, y1, z1, x2, y2, z2, iband))
 
 
+def crop(jim_object, ulx=0, uly=0, lrx=0, lry=0, **kwargs):
+    """Subset raster dataset.
+
+    Subset raster dataset according in spatial (subset region) or
+    spectral/temporal domain (subset bands).
+
+    :param ulx: Upper left x value of bounding box to crop
+    :param uly: Upper left y value of bounding box to crop
+    :param lrx: Lower right x value of bounding box to crop
+    :param lry: Lower right y value of bounding box to crop
+    :param kwargs: See table below
+
+    +------------------+---------------------------------------------------------------------------------+
+    | key              | value                                                                           |
+    +==================+=================================================================================+
+    | dx               | Output resolution in x (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | dy               | Output resolution in y (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                                   |
+    +------------------+---------------------------------------------------------------------------------+
+    | align            | Align output bounding box to input image                                        |
+    +------------------+---------------------------------------------------------------------------------+
+    """
+    kwargs.update({'ulx': ulx})
+    kwargs.update({'uly': uly})
+    kwargs.update({'lrx': lrx})
+    kwargs.update({'lry': lry})
+    return _pj.Jim(jim_object.crop(kwargs))
+
+
+def cropOgr(jim_object, extent, **kwargs):
+    """Subset raster dataset.
+
+    Subset raster dataset in spatial domain defined by a vector dataset.
+
+    :param extent: Get boundary from extent from polygons in vector file
+    :param kwargs: See table below
+
+    +------------------+---------------------------------------------------------------------------------+
+    | key              | value                                                                           |
+    +==================+=================================================================================+
+    | ln               | Layer name of extent to crop                                                    |
+    +------------------+---------------------------------------------------------------------------------+
+    | eo               | Special extent options controlling rasterization                                |
+    +------------------+---------------------------------------------------------------------------------+
+    | crop_to_cutline  | True will crop the extent of the target dataset to the extent of the cutline    |
+    |                  | The outside area will be set to no data (the value defined by the key 'nodata') |
+    +------------------+---------------------------------------------------------------------------------+
+    | crop_in_cutline  | True: inverse operation to crop_to_cutline                                      |
+    |                  | The inside area will be set to no data (the value defined by the key 'nodata')  |
+    +------------------+---------------------------------------------------------------------------------+
+    | dx               | Output resolution in x (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | dy               | Output resolution in y (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                                   |
+    +------------------+---------------------------------------------------------------------------------+
+    | align            | Align output bounding box to input image                                        |
+    +------------------+---------------------------------------------------------------------------------+
+
+    .. note::
+       Possible values for the key 'eo' are: ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG. For instance you can use 'eo':'ATTRIBUTE=fieldname'
+    """
+    kwargs.update({'extent': extent})
+    return jim_object.cropOgr(kwargs)
+
+
+def imageInsert(jim_object, sec_jim_object, x, y, z, iband=0):
+    """Merge Jim instance with values of sec_jim_object in given coords.
+
+    :param jim_object: a Jim object
+    :param jim_object: a Jim object
+    :param x: x coordinate of 1st pixel
+    :param y: y coordinate of 1st pixel
+    :param z: z coordinate of 1st pixel
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageInsert(sec_jim_object, x, y, z, iband))
+
+
+def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, iband=0):
+    """Merge Jim instance with values of im2 if val of imlbl == val.
+
+    :param jim_object: a Jim object
+    :param imRaster_imlbl: a Jim object
+    :param imRaster_im2: a Jim object
+    :param x: x coordinate of 1st pixel
+    :param y: y coordinate of 1st pixel
+    :param z: z coordinate of 1st pixel
+    :param val: integer for label value
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageInsertCompose(imlbl, im2, x, y, z, val,
+                                                 iband))
+
+
+def imageFrameSet(jim_object, l, r, t, b, u, d, val, iband=0):
+    """Set the values of the image frame to value val.
+
+    :param jim_object: a Jim object
+    :param l: width of left frame
+    :param r: width of right frame
+    :param t: width of top frame
+    :param b: width of bottom frame
+    :param u: width of upper frame
+    :param d: width of lower frame
+    :param val: value of frame
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageFrameSet([l, r, t, b, u, d], val, iband))
+
+
+def imageFrameAdd(jim_object, l, r, t, b, u, d, val, iband=0):
+    """Set the values of the image frame to value val.
+
+    :param jim_object: a Jim object
+    :param l: width of left frame
+    :param r: width of right frame
+    :param t: width of top frame
+    :param b: width of bottom frame
+    :param u: width of upper frame
+    :param d: width of lower frame
+    :param val: value of frame
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageFrameAdd([l, r, t, b, u, d], val, iband))
+
+
+def magnify(jim_object, n):
+    """Magnify the image.
+
+    :param jim_object: a Jim object
+    :param n: a positive integer for magnifying size by pixel replication
+    :return: a Jim object containing the magnified image
+    """
+    return _pj.Jim(jim_object.imageMagnify(n))
+
+
 def plotLine(jim_object, x1, y1, x2, y2, val):
     """Draw a line from [x1, y1] to [x2, y2] by setting pixels of Jim to val
 
@@ -25,7 +168,7 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     :param y1: an integer for y-coordinate of 1st point
     :param x2: an integer for x-coordinate of 2nd point
     :param y2: an integer for y-coordinate of 2nd point
-    :return:
+    :return: a Jim object
     """
     return _pj.Jim(jim_object.plotLine(x1, y1, x2, y2, val))
 
@@ -508,7 +651,6 @@ class _Geometry():
         :param z: z coordinate of 1st pixel
         :param iband: List of band indices to crop (index is 0 based)
         """
-        # TODO: Doesn't work
         self._jim_object.d_imageInsert(sec_jim_object, x, y, z, iband)
 
     def imageInsertCompose(self, imlbl, im2, x, y, z, val, iband=0):
@@ -579,8 +721,6 @@ class _Geometry():
         """
         self._jim_object.d_plotLine(x1, y1, x2, y2, val)
 
-    # TODO: getboundingbox, Histograms?, how to work with
+    # TODO: how to work with
     # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to
-    # grid (jim1.gridding(jim1, jim3, jim4, 1)), how and where nni,
-    # where addframeboxelem, where subframeboxelem,
->>>>>>> 94c7b09cdc7f901c1ba408900b22b3ce73da5779
+    # grid (jim1.gridding(jim1, jim3, jim4, 1)), where nni

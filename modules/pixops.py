@@ -1,4 +1,26 @@
 import jiplib as _jl
+import pyjeo as _pj
+
+
+def pointOpBitWise(jim_object, sec_jim_object, operation_code):
+    """Bitwise operation between two images.
+
+    :param jim_object: a Jim object
+    :param sec_jim_object: a Jim object
+    :param operation_code: 10 or AND op, 11 or OR op, and 12 or XOR op
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.pointOpBitwise(sec_jim_object, operation_code))
+
+
+def pointOpBlank(jim_object, value):
+    """Set all pixels of image to value.
+
+    :param jim_object: a Jim object
+    :param value: new value for pixels of Jim object
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.pointOpBlank(value))
 
 
 class _PixOps():
@@ -17,8 +39,8 @@ class _PixOps():
         :param sec_jim_object: a Jim object
         :param operation_code: 10 or AND op, 11 or OR op, and 12 or XOR op
         """
-        self._jim_object._set(self._jim_object.pointOpBitwise(
-            self._jim_object, sec_jim_object, operation_code))
+        self._jim_object._set(self._jim_object.pointOpBitwise(sec_jim_object,
+                                                              operation_code))
 
     def pointOpBlank(self, value):
         """Set all pixels of image to value.
