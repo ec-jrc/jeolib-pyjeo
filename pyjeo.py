@@ -69,3 +69,53 @@ class Jim(_jipJim):
             methods.extend(treeStructure(module))
 
         print('\n'.join(methods))
+
+    def __setitem__(self, item, value):
+        if isinstance(item, str):
+            if item.find('<'):
+                threshold=(float)(item.split('<')[1])
+                kwargs={}
+                kwargs.update({'min':threshold})
+                kwargs.update({'max':self._jim_object.getMax()})
+                kwargs.update({'nodata':value})
+                self._jim_object._set(self._jim_object.setThreshold(kwargs))
+            elif item.find('>'):
+                threshold=(float)(item.split('>')[1])
+                kwargs={}
+                kwargs.update({'min':self._jim_object.getMin()})
+                kwargs.update({'max':threshold})
+                kwargs.update({'nodata':value})
+                self._jim_object._set(self._jim_object.setThreshold(kwargs))
+            elif item.find('<>'):
+                threshold=(float)(item.split('<>')[1])
+                kwargs={}
+                kwargs.update({'min':threshold})
+                kwargs.update({'max':threshold})
+                kwargs.update({'nodata':value})
+                self._jim_object._set(self._jim_object.setThreshold(kwargs))
+            elif item.find('!='):
+                threshold=(float)(item.split('!=')[1])
+                kwargs={}
+                kwargs.update({'min':threshold})
+                kwargs.update({'max':threshold})
+                kwargs.update({'nodata':value})
+                self._jim_object._set(self._jim_object.setThreshold(kwargs))
+            elif item.find('=='):
+                raise typerror('operator == not supported')
+            else:
+                raise typerror('operator {} not supported'.format(item))
+        else:
+            projection=self._jim_object.getProjection()
+            gt=self._jim_object.getGeoTransform()
+            jimnp=self._jim_object.jim2np()
+            jimnp[item]=value
+            pjim=_pj.Jim(_jl.np2jim(jimnp))
+            pjim.setProjection(projection)
+            pjim.setGeoTransform(gt)
+            self._jim_object._set(pjim)
+        # elif isinstance(item, slice):
+        #     raise typerror('slicing not supported')
+        #     if item.step not in (1, None):
+        #         raise ValueError('only step=1 supported')
+        # else:
+        #     raise TypeError('only strings are supported')

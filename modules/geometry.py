@@ -583,4 +583,3 @@ class _Geometry():
     # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to
     # grid (jim1.gridding(jim1, jim3, jim4, 1)), how and where nni,
     # where addframeboxelem, where subframeboxelem,
->>>>>>> 94c7b09cdc7f901c1ba408900b22b3ce73da5779

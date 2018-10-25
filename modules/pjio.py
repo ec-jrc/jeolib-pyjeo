@@ -79,7 +79,7 @@ def createJim(**kwargs):
         ULY=jim0.getUly()
         LRX=jim0.getUlx()+100*jim0.getDeltaX()
         LRY=jim0.getUly()-100*jim0.getDeltaY()
-        jim=jl.Jim.createImg(ifn,ulx:ULX,'uly':ULY,'lrx':LRX,'lry':LRY,'dx':5,'dy':5,'resample':'GRIORA_Cubic'})
+        jim=jl.Jim.createImg(ifn,ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,dx=5,dy=5,resample='GRIORA_Cubic')
         #do stuff with jim ...
         jim.close()
 

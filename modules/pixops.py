@@ -95,9 +95,6 @@ class _PixOps():
 
         Mask all values not within [0,250] and set to 255 (no data)::
 
-        jim_threshold=jim.setThreshold({'min':0,'max':250,'nodata':255})
+        jim_threshold=jim.setThreshold(min=0,max=250,nodata=255)
         """
-        # pointOpThres(IMAGE *im, G_TYPE gt1, G_TYPE gt2, G_TYPE gbg, G_TYPE gfg)
-        gt1=
-        self_jim_object.pointOpThres(gt1,gt2,gbg,gfg)
         self._jim_object._set(self._jim_object.setThreshold(kwargs))
