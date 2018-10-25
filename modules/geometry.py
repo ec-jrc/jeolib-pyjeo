@@ -85,6 +85,133 @@ def cropOgr(jim_object, extent, **kwargs):
     return jim_object.cropOgr(kwargs)
 
 
+def cropBand(jim_object, band):
+    """Subset raster dataset.
+
+    Subset raster dataset in spectral/temporal domain.
+
+    :param jim_object: a Jim object
+    :param band: List of band indices to crop (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Crop the first three bands from raster dataset jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim0.cropBand(band=[0,1,2])
+
+    """
+    return _pj.Jim(jim_object.cropBand({'band': band}))
+
+
+def cropBandRange(jim_object, startband, endband):
+    """Subset raster dataset.
+
+    Subset raster dataset in range of spectral/temporal domain.
+
+    :param jim_object: a Jim object
+    :param startband: Start band sequence number (index is 0 based)
+    :param endband: End band sequence number (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Crop the first three bands from raster dataset jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim0.cropBandRange(startband=0,startBand=2)
+
+    """
+    return _pj.Jim(jim_object.cropBand({'startband': startband,
+                                        'endband': endband}))
+
+
+def stackBand(jim_object, band):
+    """Stack bands from another raster dataset to current raster dataset.
+
+    :param jim_object: a Jim object
+    :param band: List of band indices to stack (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Append all the bands of raster dataset jim1 to the current image jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0.stackBand(jim1)
+
+    Append the first three bands of raster dataset jim1 to the current image jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0.stackBand(jim1,band=[0,1,2])
+    """
+    return _pj.Jim(jim_object.stackBand({'band': band}))
+
+
+def stackBandRange(jim_object, startband, endband):
+    """Subset raster dataset.
+
+    Stack range of bands from another raster dataset to current raster dataset.
+
+    :param jim_object: a Jim object
+    :param startband: Start band sequence number (index is 0 based)
+    :param endband: End band sequence number (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Append the first three bands of raster dataset jim1 to the current image jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0.stackBandRange(jim1,startband=0,endband=2])
+    """
+    return _pj.Jim(jim_object.stackBand({'startband': startband,
+                                         'endband': endband}))
+
+
+def warp(jim_object, t_srs, **kwargs):
+    """
+    Warp a raster dataset to a target spatial reference system
+
+    :param jim_object: a Jim object
+    :param t_srs: Target spatial reference system
+    :param kwargs: See table below
+    :return: Cropped subimage as Jim instance
+
+    +------------------+---------------------------------------------------------------------------------+
+    | key              | value                                                                           |
+    +==================+=================================================================================+
+    | s_srs            | Source spatial reference system (default is to read from input)                 |
+    +------------------+---------------------------------------------------------------------------------+
+    | resample         | Resample algorithm used for reading pixel data in case of interpolation         |
+    |                  | (default: GRIORA_NearestNeighbour).                                             |
+    |                  | Check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a         |
+    |                  | or available options.                                                           |
+    +------------------+---------------------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                                   |
+    +------------------+---------------------------------------------------------------------------------+
+
+    Example:
+
+    Read a raster dataset from disk and warp to the target spatial reference system::
+
+        jim=jl.createJim('/path/to/file.tif')
+        jim.warp('epsg:3035')
+
+    Read a raster dataset from disk that is in lat lon (epsg:4326), select a bounding box in a different spatial reference system (epsg:3035). Notice the raster dataset read is still in the original projection (epsg:4326). Then warp the raster dataset to the target spatial reference system (epsg:3035)::
+
+        jim=jl.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
+        jim.warp('epsg:3035',s_srs='epsg:4326')
+
+    """
+    kwargs.update({'t_srs': t_srs})
+    return _pj.Jim(jim_object._set(self._jim_object.warp(kwargs)))
+
+
 def imageInsert(jim_object, sec_jim_object, x, y, z, iband=0):
     """Merge Jim instance with values of sec_jim_object in given coords.
 
@@ -303,7 +430,8 @@ class _Geometry():
             jim0.cropBandRange(startband=0,startBand=2)
 
         """
-        self._jim_object.d_cropBand({'startband': startband,'endband': endband})
+        self._jim_object.d_cropBand({'startband': startband,
+                                     'endband': endband})
 
     def stackBand(self, band):
         """Stack bands from another raster dataset to current raster dataset.
