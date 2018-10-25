@@ -17,6 +17,276 @@ def crop3D(jim_object, x1, y1, z1, x2, y2, z2, iband=0):
     return _pj.Jim(jim_object.imageCut(x1, y1, z1, x2, y2, z2, iband))
 
 
+def crop(jim_object, ulx=0, uly=0, lrx=0, lry=0, **kwargs):
+    """Subset raster dataset.
+
+    Subset raster dataset according in spatial (subset region) or
+    spectral/temporal domain (subset bands).
+
+    :param ulx: Upper left x value of bounding box to crop
+    :param uly: Upper left y value of bounding box to crop
+    :param lrx: Lower right x value of bounding box to crop
+    :param lry: Lower right y value of bounding box to crop
+    :param kwargs: See table below
+
+    +------------------+---------------------------------------------------------------------------------+
+    | key              | value                                                                           |
+    +==================+=================================================================================+
+    | dx               | Output resolution in x (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | dy               | Output resolution in y (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                                   |
+    +------------------+---------------------------------------------------------------------------------+
+    | align            | Align output bounding box to input image                                        |
+    +------------------+---------------------------------------------------------------------------------+
+    """
+    kwargs.update({'ulx': ulx})
+    kwargs.update({'uly': uly})
+    kwargs.update({'lrx': lrx})
+    kwargs.update({'lry': lry})
+    return _pj.Jim(jim_object.crop(kwargs))
+
+
+def cropOgr(jim_object, extent, **kwargs):
+    """Subset raster dataset.
+
+    Subset raster dataset in spatial domain defined by a vector dataset.
+
+    :param extent: Get boundary from extent from polygons in vector file
+    :param kwargs: See table below
+
+    +------------------+---------------------------------------------------------------------------------+
+    | key              | value                                                                           |
+    +==================+=================================================================================+
+    | ln               | Layer name of extent to crop                                                    |
+    +------------------+---------------------------------------------------------------------------------+
+    | eo               | Special extent options controlling rasterization                                |
+    +------------------+---------------------------------------------------------------------------------+
+    | crop_to_cutline  | True will crop the extent of the target dataset to the extent of the cutline    |
+    |                  | The outside area will be set to no data (the value defined by the key 'nodata') |
+    +------------------+---------------------------------------------------------------------------------+
+    | crop_in_cutline  | True: inverse operation to crop_to_cutline                                      |
+    |                  | The inside area will be set to no data (the value defined by the key 'nodata')  |
+    +------------------+---------------------------------------------------------------------------------+
+    | dx               | Output resolution in x (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | dy               | Output resolution in y (default: keep original resolution)                      |
+    +------------------+---------------------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                                   |
+    +------------------+---------------------------------------------------------------------------------+
+    | align            | Align output bounding box to input image                                        |
+    +------------------+---------------------------------------------------------------------------------+
+
+    .. note::
+       Possible values for the key 'eo' are: ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG. For instance you can use 'eo':'ATTRIBUTE=fieldname'
+    """
+    kwargs.update({'extent': extent})
+    return jim_object.cropOgr(kwargs)
+
+
+def cropBand(jim_object, band):
+    """Subset raster dataset.
+
+    Subset raster dataset in spectral/temporal domain.
+
+    :param jim_object: a Jim object
+    :param band: List of band indices to crop (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Crop the first three bands from raster dataset jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim0.cropBand(band=[0,1,2])
+
+    """
+    return _pj.Jim(jim_object.cropBand({'band': band}))
+
+
+def cropBandRange(jim_object, startband, endband):
+    """Subset raster dataset.
+
+    Subset raster dataset in range of spectral/temporal domain.
+
+    :param jim_object: a Jim object
+    :param startband: Start band sequence number (index is 0 based)
+    :param endband: End band sequence number (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Crop the first three bands from raster dataset jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim0.cropBandRange(startband=0,startBand=2)
+
+    """
+    return _pj.Jim(jim_object.cropBand({'startband': startband,
+                                        'endband': endband}))
+
+
+def stackBand(jim_object, band):
+    """Stack bands from another raster dataset to current raster dataset.
+
+    :param jim_object: a Jim object
+    :param band: List of band indices to stack (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Append all the bands of raster dataset jim1 to the current image jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0.stackBand(jim1)
+
+    Append the first three bands of raster dataset jim1 to the current image jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0.stackBand(jim1,band=[0,1,2])
+    """
+    return _pj.Jim(jim_object.stackBand({'band': band}))
+
+
+def stackBandRange(jim_object, startband, endband):
+    """Subset raster dataset.
+
+    Stack range of bands from another raster dataset to current raster dataset.
+
+    :param jim_object: a Jim object
+    :param startband: Start band sequence number (index is 0 based)
+    :param endband: End band sequence number (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Append the first three bands of raster dataset jim1 to the current image jim0::
+
+        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0.stackBandRange(jim1,startband=0,endband=2])
+    """
+    return _pj.Jim(jim_object.stackBand({'startband': startband,
+                                         'endband': endband}))
+
+
+def warp(jim_object, t_srs, **kwargs):
+    """
+    Warp a raster dataset to a target spatial reference system
+
+    :param jim_object: a Jim object
+    :param t_srs: Target spatial reference system
+    :param kwargs: See table below
+    :return: Cropped subimage as Jim instance
+
+    +------------------+---------------------------------------------------------------------------------+
+    | key              | value                                                                           |
+    +==================+=================================================================================+
+    | s_srs            | Source spatial reference system (default is to read from input)                 |
+    +------------------+---------------------------------------------------------------------------------+
+    | resample         | Resample algorithm used for reading pixel data in case of interpolation         |
+    |                  | (default: GRIORA_NearestNeighbour).                                             |
+    |                  | Check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a         |
+    |                  | or available options.                                                           |
+    +------------------+---------------------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                                   |
+    +------------------+---------------------------------------------------------------------------------+
+
+    Example:
+
+    Read a raster dataset from disk and warp to the target spatial reference system::
+
+        jim=jl.createJim('/path/to/file.tif')
+        jim.warp('epsg:3035')
+
+    Read a raster dataset from disk that is in lat lon (epsg:4326), select a bounding box in a different spatial reference system (epsg:3035). Notice the raster dataset read is still in the original projection (epsg:4326). Then warp the raster dataset to the target spatial reference system (epsg:3035)::
+
+        jim=jl.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
+        jim.warp('epsg:3035',s_srs='epsg:4326')
+
+    """
+    kwargs.update({'t_srs': t_srs})
+    return _pj.Jim(jim_object._set(self._jim_object.warp(kwargs)))
+
+
+def imageInsert(jim_object, sec_jim_object, x, y, z, iband=0):
+    """Merge Jim instance with values of sec_jim_object in given coords.
+
+    :param jim_object: a Jim object
+    :param jim_object: a Jim object
+    :param x: x coordinate of 1st pixel
+    :param y: y coordinate of 1st pixel
+    :param z: z coordinate of 1st pixel
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageInsert(sec_jim_object, x, y, z, iband))
+
+
+def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, iband=0):
+    """Merge Jim instance with values of im2 if val of imlbl == val.
+
+    :param jim_object: a Jim object
+    :param imRaster_imlbl: a Jim object
+    :param imRaster_im2: a Jim object
+    :param x: x coordinate of 1st pixel
+    :param y: y coordinate of 1st pixel
+    :param z: z coordinate of 1st pixel
+    :param val: integer for label value
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageInsertCompose(imlbl, im2, x, y, z, val,
+                                                 iband))
+
+
+def imageFrameSet(jim_object, l, r, t, b, u, d, val, iband=0):
+    """Set the values of the image frame to value val.
+
+    :param jim_object: a Jim object
+    :param l: width of left frame
+    :param r: width of right frame
+    :param t: width of top frame
+    :param b: width of bottom frame
+    :param u: width of upper frame
+    :param d: width of lower frame
+    :param val: value of frame
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageFrameSet([l, r, t, b, u, d], val, iband))
+
+
+def imageFrameAdd(jim_object, l, r, t, b, u, d, val, iband=0):
+    """Set the values of the image frame to value val.
+
+    :param jim_object: a Jim object
+    :param l: width of left frame
+    :param r: width of right frame
+    :param t: width of top frame
+    :param b: width of bottom frame
+    :param u: width of upper frame
+    :param d: width of lower frame
+    :param val: value of frame
+    :param iband: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.imageFrameAdd([l, r, t, b, u, d], val, iband))
+
+
+def magnify(jim_object, n):
+    """Magnify the image.
+
+    :param jim_object: a Jim object
+    :param n: a positive integer for magnifying size by pixel replication
+    :return: a Jim object containing the magnified image
+    """
+    return _pj.Jim(jim_object.imageMagnify(n))
+
+
 def plotLine(jim_object, x1, y1, x2, y2, val):
     """Draw a line from [x1, y1] to [x2, y2] by setting pixels of Jim to val
 
@@ -25,7 +295,7 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     :param y1: an integer for y-coordinate of 1st point
     :param x2: an integer for x-coordinate of 2nd point
     :param y2: an integer for y-coordinate of 2nd point
-    :return:
+    :return: a Jim object
     """
     return _pj.Jim(jim_object.plotLine(x1, y1, x2, y2, val))
 
@@ -160,7 +430,8 @@ class _Geometry():
             jim0.cropBandRange(startband=0,startBand=2)
 
         """
-        self._jim_object.d_cropBand({'startband': startband,'endband': endband})
+        self._jim_object.d_cropBand({'startband': startband,
+                                     'endband': endband})
 
     def stackBand(self, band):
         """Stack bands from another raster dataset to current raster dataset.
@@ -508,7 +779,6 @@ class _Geometry():
         :param z: z coordinate of 1st pixel
         :param iband: List of band indices to crop (index is 0 based)
         """
-        # TODO: Doesn't work
         self._jim_object.d_imageInsert(sec_jim_object, x, y, z, iband)
 
     def imageInsertCompose(self, imlbl, im2, x, y, z, val, iband=0):
@@ -579,7 +849,7 @@ class _Geometry():
         """
         self._jim_object.d_plotLine(x1, y1, x2, y2, val)
 
-    # TODO: getboundingbox, Histograms?, how to work with
+    # TODO: how to work with
     # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to
     # grid (jim1.gridding(jim1, jim3, jim4, 1)), how and where nni,
     # where addframeboxelem, where subframeboxelem,
