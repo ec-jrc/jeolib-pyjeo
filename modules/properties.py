@@ -70,6 +70,12 @@ class _Properties():
         else:
             self._jim_object.setNoDataValue(value)
 
+    def getNoDataVals(self, value):
+        """
+        Get the list of no data values
+        """
+        return self._jim_object.getNoDataValues()
+
     def clearNoData(self):
         """
         Clear the list of no data values for this raster dataset

@@ -73,6 +73,17 @@ class _PixOps():
         """
         self._jim_object = jim_object
 
+    def equal(self, aJim):
+            projection=self.properties.getProjection()
+            gt=self.properties.getGeoTransform()
+            selfnp=_jl.jim2np(self)
+            anp=_jl.jim2np(aJim)
+            selfnp=np.uint8(1)*(selfnp==anp)
+            jim=Jim(_jl.np2jim(selfnp))
+            jim.properties.setProjection(projection)
+            jim.properties.setGeoTransform(gt)
+            return jim
+
     def pointOpBitWise(self, sec_jim_object, operation_code):
         """Bitwise operation between two images.
 
@@ -83,6 +94,26 @@ class _PixOps():
         """
         self._jim_object._set(self._jim_object.pointOpBitwise(sec_jim_object,
                                                               operation_code))
+
+    def pointOpArithCst(self, value, operation_code):
+        """Bitwise operation between two images.
+
+        Modifies the instance on which the method was called.
+
+        :param sec_jim_object: a Jim object
+        :param operation_code: todo
+        """
+        self._jim_object.d_pointOpArithCst(value,operation_code)
+
+    def pointOpArith(self, sec_jim_object, operation_code):
+        """Bitwise operation between two images.
+
+        Modifies the instance on which the method was called.
+
+        :param sec_jim_object: a Jim object
+        :param operation_code: todo
+        """
+        self._jim_object.d_pointOpArith(sec_jim_object,operation_code)
 
     def pointOpBlank(self, value):
         """Set all pixels of image to value.
