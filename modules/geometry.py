@@ -1,23 +1,8 @@
 import pyjeo as _pj
 
 
-def crop3D(jim_object, x1, y1, z1, x2, y2, z2, iband=0):
-    """Extract a subimage from Jim object by cutting it from given coords.
-
-    :param jim_object: a Jim object
-    :param x1: x coordinate of 1st pixel
-    :param y1: y coordinate of 1st pixel
-    :param z1: z coordinate of 1st pixel
-    :param x2: x coordinate of 2nd pixel
-    :param y2: y coordinate of 2nd pixel
-    :param z2: z coordinate of 2nd pixel
-    :param iband: List of band indices to crop (index is 0 based)
-    :return: Extracted subimage as Jim instance
-    """
-    return _pj.Jim(jim_object.imageCut(x1, y1, z1, x2, y2, z2, iband))
-
-
-def crop(jim_object, ulx=0, uly=0, lrx=0, lry=0, **kwargs):
+def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
+         lrz=None, iband=0, **kwargs):
     """Subset raster dataset.
 
     Subset raster dataset according in spatial (subset region) or
@@ -41,11 +26,25 @@ def crop(jim_object, ulx=0, uly=0, lrx=0, lry=0, **kwargs):
     | align            | Align output bounding box to input image                                        |
     +------------------+---------------------------------------------------------------------------------+
     """
-    kwargs.update({'ulx': ulx})
-    kwargs.update({'uly': uly})
-    kwargs.update({'lrx': lrx})
-    kwargs.update({'lry': lry})
-    return _pj.Jim(jim_object.crop(kwargs))
+    if ulz is not None or lrz is not None:
+        assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
+                                 'and special cropping parameters'
+        return _pj.Jim(jim_object.imageCut(ulx, uly, ulz, lrx, lry, lrz,
+                                           iband))
+    else:
+        if ulx is None:
+            ulx = 0
+        if uly is None:
+            uly = 0
+        if lrx is None:
+            lrx = 0
+        if lry is None:
+            lry = 0
+        kwargs.update({'ulx': ulx})
+        kwargs.update({'uly': uly})
+        kwargs.update({'lrx': lrx})
+        kwargs.update({'lry': lry})
+        return _pj.Jim(jim_object.crop(kwargs))
 
 
 def cropOgr(jim_object, extent, **kwargs):
@@ -324,7 +323,8 @@ class _Geometry():
         self._jim_object._set(self._jim_object.d_imageFrameSubstract(
             [leftSize, rightSize, topSize, belowSize, upSize, downSize]))
 
-    def crop(self, ulx=0, uly=0, lrx=0, lry=0, **kwargs):
+    def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None, lrz=None,
+         iband=0, **kwargs):
         """Subset raster dataset.
 
         Subset raster dataset according in spatial (subset region) or
@@ -350,11 +350,25 @@ class _Geometry():
         | align            | Align output bounding box to input image                                        |
         +------------------+---------------------------------------------------------------------------------+
         """
-        kwargs.update({'ulx': ulx})
-        kwargs.update({'uly': uly})
-        kwargs.update({'lrx': lrx})
-        kwargs.update({'lry': lry})
-        self._jim_object._set(self._jim_object.crop(kwargs))
+        if ulz is not None or lrz is not None:
+            assert len(kwargs) == 0, 'It is not supported to use both z ' \
+                                     'coords and special cropping parameters'
+            self._jim_object._set(self._jim_object.d_imageFrameSubstract(
+                [ulx, lrx, uly, lry, ulz, lrz], iband))
+        else:
+            if ulx is None:
+                ulx = 0
+            if uly is None:
+                uly = 0
+            if lrx is None:
+                lrx = 0
+            if lry is None:
+                lry = 0
+            kwargs.update({'ulx': ulx})
+            kwargs.update({'uly': uly})
+            kwargs.update({'lrx': lrx})
+            kwargs.update({'lry': lry})
+            self._jim_object._set(self._jim_object.crop(kwargs))
 
     def cropOgr(self, extent, **kwargs):
         """Subset raster dataset.
