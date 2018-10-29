@@ -23,6 +23,27 @@ def pointOpBlank(jim_object, value):
     return _pj.Jim(jim_object.pointOpBlank(value))
 
 
+def pointOpArithCst(jim_object, value, operation_code):
+    """Bitwise operation between two images.
+
+    :param jim_object: a Jim object
+    :param operation_code: todo
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.pointOpArithCst(value, operation_code))
+
+
+def pointOpArith(jim_object, sec_jim_object, operation_code):
+    """Bitwise operation between two images.
+
+    :param jim_object: a Jim object
+    :param sec_jim_object: a Jim object
+    :param operation_code: todo
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object.pointOpArith(sec_jim_object, operation_code))
+
+
 def convert(jim_object, **kwargs):
     """Convert Jim image with respect to data type.
 
