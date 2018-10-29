@@ -70,7 +70,7 @@ class _Properties():
         else:
             self._jim_object.setNoDataValue(value)
 
-    def getNoDataVals(self, value):
+    def getNoDataVals(self):
         """
         Get the list of no data values
         """
