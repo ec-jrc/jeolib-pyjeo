@@ -94,16 +94,12 @@ class _PixOps():
         """
         self._jim_object = jim_object
 
-    def equal(self, aJim):
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
-            anp=_jl.jim2np(aJim)
-            selfnp=np.uint8(1)*(selfnp==anp)
-            jim=Jim(_jl.np2jim(selfnp))
-            jim.properties.setProjection(projection)
-            jim.properties.setGeoTransform(gt)
-            return jim
+    def isEqual(self, other):
+        if isinstance(other, _pj.Jim):
+            return self._jim_object.isEqual(other)
+        else:
+            return False
+
 
     def pointOpBitWise(self, sec_jim_object, operation_code):
         """Bitwise operation between two images.

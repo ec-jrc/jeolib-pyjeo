@@ -313,15 +313,20 @@ class Jim(_jipJim):
         return self
 
     ### binary operators ###
-    def __eq__(self, other):
+    def __eq__(self, aJim):
         """Change behaviour of == to check values, not memory alloc pointer.
 
         :return: True if equal values, False otherwise
         """
-        if isinstance(other, Jim):
-            return self.isEqual(other)
-        else:
-            return False
+        projection = self.properties.getProjection()
+        gt = self.properties.getGeoTransform()
+        selfnp = _jl.jim2np(self)
+        anp = _jl.jim2np(aJim)
+        selfnp = np.uint8(1) * (selfnp == anp)
+        jim = Jim(_jl.np2jim(selfnp))
+        jim.properties.setProjection(projection)
+        jim.properties.setGeoTransform(gt)
+        return jim
 
     def __neq__(self, other):
         """Change behaviour of != to check values, not memory alloc pointer.
