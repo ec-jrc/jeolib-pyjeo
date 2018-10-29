@@ -64,34 +64,231 @@ class Jim(_jipJim):
 
     ### unary operators ###
 
+    def __set__(self, value):
+        if value is None:
+            self=Jim()
+        elif type(value) in (int):
+            if self.getDataType() == _jl.GDT_Byte:
+                self.d_pointOpBlank(value)
+        elif isinstance(value, Jim):
+            self=Jim(value)
+
+
+    def __getitem__(self, item):
+        if isinstance(item, tuple):
+            if self.nrOfPlane()>1:
+                if self.nrOfBand()>1:
+                    if len(item) == 4:#do slice x,y,z,band
+                        if isinstance(item[3], slice):
+                            if item[3].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            retJim=self.cropBand({'startband':item[3].start,'endband':item[3].stop-1})
+                        elif type(item[3]) in (int,tuple):
+                            retJim=self.cropBand({'band':item[3]})
+                        else:
+                            raise ValueError('Error: band index must be slice, list or integer')
+                        if isinstance(item[0], slice) and isinstance(item[1], slice) and isinstance(item[2], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None) or item[2].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            for band in range(0,retJim.nrOfBand()):
+                                retJim.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, item[2].start, item[2].stop],band)
+                            return retJim
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 4 dimensions when slicing multiband 3-dim Jim object (x:y:z:band)')
+                else:
+                    if len(item) == 3:#do slice x,y,z
+                        if isinstance(item[0], slice) and isinstance(item[1], slice) and isinstance(item[2], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None) or item[2].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            for band in range(0,retJim.nrOfBand()):
+                                retJim.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, item[2].start, item[2].stop],band)
+                            return retJim
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 3 dimensions when slicing 3-dim Jim object (x:y:z)')
+            else:
+                if self.nrOfBand()>1:
+                    if len(item) == 3:#do slice x,y,band
+                        if isinstance(item[2], slice):
+                            if item[2].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            retJim=self.cropBand({'startband':item[2].start,'endband':item[2].stop-1})
+                        elif type(item[2]) in (int,tuple):
+                            retJim=self.cropBand({'band':item[2]})
+                        else:
+                            raise ValueError('Error: band index must be slice, list or integer')
+                        if isinstance(item[0], slice) and isinstance(item[1], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            for band in range(0,retJim.nrOfBand()):
+                                retJim.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, 0, 0],band)
+                            return retJim
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 3 dimensions when slicing multiband 2-dim Jim object (x:y:band)')
+                else:
+                    if len(item) == 2:#do slice x,y
+                        if isinstance(item[0], slice) and isinstance(item[1], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            retJim.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, 0, 0])
+                            return retJim
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 2 dimensions when slicing 2-dim Jim object (x:y)')
+
     def __setitem__(self, item, value):
-        if isinstance(item, slice):
-            raise typerror('slicing not supported')
-            # if item.step not in (1, None):
-            #     raise ValueError('only step=1 supported')
-        if isinstance(value, Jim):
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
-            valuenp=_jl.jim2np(value)
-            itemnp=_jl.jim2np(item)
-            itemnp=itemnp>0
-            selfnp[itemnp]=valuenp[itemnp]
-            jim=Jim(_jl.np2jim(selfnp))
-            jim.properties.setProjection(projection)
-            jim.properties.setGeoTransform(gt)
-            return jim
-        else:
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
-            itemnp=_jl.jim2np(item)
-            itemnp=itemnp>0
-            selfnp[itemnp]=value
-            jim=Jim(_jl.np2jim(selfnp))
-            jim.properties.setProjection(projection)
-            jim.properties.setGeoTransform(gt)
-            return jim
+        if isinstance(item, tuple):
+            if self.nrOfPlane()>1:
+                if self.nrOfBand()>1:
+                    if len(item) == 4:#do slice x,y,z,band
+                        if isinstance(item[3], slice):
+                            if item[3].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            self.d_cropBand({'startband':item[3].start,'endband':item[3].stop-1})
+                        elif type(item[3]) in (int,tuple):
+                            self.d_cropBand({'band':item[3]})
+                        else:
+                            raise ValueError('Error: band index must be slice, list or integer')
+                        if isinstance(item[0], slice) and isinstance(item[1], slice) and isinstance(item[2], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None) or item[2].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            for band in range(0,self.nrOfBand()):
+                                self.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, item[2].start, item[2].stop],band)
+                            if isinstance(value,Jim):
+                                if self.nrOfBand() != value.nrOfBand():
+                                    raise ValueError('Error: number of bands do not match')
+                                if self.nrOfCol() != value.nrOfCol():
+                                    raise ValueError('Error: number of cols do not match')
+                                if self.nrOfRow() != value.nrOfRow():
+                                    raise ValueError('Error: number of rows do not match')
+                                for band in range(0,self.nrOfBand()):
+                                    value.copyData(self.getDataPointer(band))
+                            elif type(value) in (int,float):
+                                for band in range(0,self.nrOfBand()):
+                                    self.setData(value,band)
+                            return self
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 4 dimensions when slicing multiband 3-dim Jim object (x:y:z:band)')
+                else:
+                    if len(item) == 3:#do slice x,y,z
+                        if isinstance(item[0], slice) and isinstance(item[1], slice) and isinstance(item[2], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None) or item[2].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            for band in range(0,self.nrOfBand()):
+                                self.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, item[2].start, item[2].stop],band)
+                            if isinstance(value,Jim):
+                                if self.nrOfBand() != value.nrOfBand():
+                                    raise ValueError('Error: number of bands do not match')
+                                if self.nrOfCol() != value.nrOfCol():
+                                    raise ValueError('Error: number of cols do not match')
+                                if self.nrOfRow() != value.nrOfRow():
+                                    raise ValueError('Error: number of rows do not match')
+                                for band in range(0,self.nrOfBand()):
+                                    value.copyData(self.getDataPointer(band))
+                            elif type(value) in (int,float):
+                                for band in range(0,self.nrOfBand()):
+                                    self.setData(value,band)
+                            return self
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 3 dimensions when slicing 3-dim Jim object (x:y:z)')
+            else:
+                if self.nrOfBand()>1:
+                    if len(item) == 3:#do slice x,y,band
+                        if isinstance(item[2], slice):
+                            if item[2].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            self.d_cropBand({'startband':item[2].start,'endband':item[2].stop-1})
+                        elif type(item[2]) in (int,tuple):
+                            self.cropBand({'band':item[2]})
+                        else:
+                            raise ValueError('Error: band index must be slice, list or integer')
+                        if isinstance(item[0], slice) and isinstance(item[1], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            for band in range(0,self.nrOfBand()):
+                                self.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, 0, 0],band)
+                            if isinstance(value,Jim):
+                                if self.nrOfBand() != value.nrOfBand():
+                                    raise ValueError('Error: number of bands do not match')
+                                if self.nrOfCol() != value.nrOfCol():
+                                    raise ValueError('Error: number of cols do not match')
+                                if self.nrOfRow() != value.nrOfRow():
+                                    raise ValueError('Error: number of rows do not match')
+                                for band in range(0,self.nrOfBand()):
+                                    value.copyData(self.getDataPointer(band))
+                            elif type(value) in (int,float):
+                                for band in range(0,self.nrOfBand()):
+                                    self.setData(value,band)
+                            return self
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 3 dimensions when slicing multiband 2-dim Jim object (x:y:band)')
+                else:
+                    if len(item) == 2:#do slice x,y
+                        if isinstance(item[0], slice) and isinstance(item[1], slice):
+                            if item[0].step not in (1, None) or item[1].step not in (1, None):
+                                raise ValueError('Error: only step=1 supported')
+                            self.geometry.crop([item[0].start, item[0].stop, item[1].start, item[1].stop, 0, 0])
+                            if isinstance(value,Jim):
+                                if self.nrOfBand() != value.nrOfBand():
+                                    raise ValueError('Error: number of bands do not match')
+                                if self.nrOfCol() != value.nrOfCol():
+                                    raise ValueError('Error: number of cols do not match')
+                                if self.nrOfRow() != value.nrOfRow():
+                                    raise ValueError('Error: number of rows do not match')
+                                for band in range(0,self.nrOfBand()):
+                                    value.copyData(self.getDataPointer(band))
+                            elif type(value) in (int,float):
+                                for band in range(0,self.nrOfBand()):
+                                    self.setData(value,band)
+                            return self
+                        else:
+                            raise TypeError('items must be slice')
+                    else:
+                        raise TypeError('Error: use 2 dimensions when slicing 2-dim Jim object (x:y)')
+
+    # def __setitem__(self, item, value):
+    #     if value is None:
+    #         raise AttributeError("can't set item of Jim")
+    #     if isinstance(item, slice):
+    #         #todo: implement slicing to replace cropband and MIA window imageFrameSet/Add/imageInsert/imageFrameSet/imageFrameAdd 
+    #         raise typerror('slicing not supported')
+    #         # if item.step not in (1, None):
+    #         #     raise ValueError('only step=1 supported')
+    #     if isinstance(value, Jim):
+    #         projection=self.properties.getProjection()
+    #         gt=self.properties.getGeoTransform()
+    #         selfnp=_jl.jim2np(self)
+    #         valuenp=_jl.jim2np(value)
+    #         itemnp=_jl.jim2np(item)
+    #         itemnp=itemnp>0
+    #         selfnp[itemnp]=valuenp[itemnp]
+    #         jim=Jim(_jl.np2jim(selfnp))
+    #         jim.properties.setProjection(projection)
+    #         jim.properties.setGeoTransform(gt)
+    #         return jim
+    #     else:
+    #         projection=self.properties.getProjection()
+    #         gt=self.properties.getGeoTransform()
+    #         selfnp=_jl.jim2np(self)
+    #         itemnp=_jl.jim2np(item)
+    #         itemnp=itemnp>0
+    #         selfnp[itemnp]=value
+    #         jim=Jim(_jl.np2jim(selfnp))
+    #         jim.properties.setProjection(projection)
+    #         jim.properties.setGeoTransform(gt)
+    #         return jim
 
     def __nonzero__(self):
         """Check if Jim contains data
@@ -304,3 +501,54 @@ class Jim(_jipJim):
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
         return self
+
+    def __or__(self, right):
+        if isinstance(right, Jim):
+            return Jim(self.pointOpBitWise(right,_jl.OR_op))
+        else:
+            raise TypeError('unsupported operand type for | : {}'.format(type(right)))
+    def __ror__(self, left):
+        if isinstance(left, Jim):
+            return Jim(self.pointOpBitWise(left,_jl.OR_op))
+        else:
+            raise TypeError('unsupported operand type for | : {}'.format(type(right)))
+    # def __ior__(self, right):
+    #     if isinstance(right, Jim):
+    #         self.d_pointOpBitWise(right,_jl.OR_op)
+    #     else:
+    #         raise TypeError('unsupported operand type for | : {}'.format(type(right)))
+    #     return self
+
+    def __xor__(self, right):
+        if isinstance(right, Jim):
+            return Jim(self.pointOpBitWise(right,_jl.XOR_op))
+        else:
+            raise TypeError('unsupported operand type for ^ : {}'.format(type(right)))
+    def __rxor__(self, left):
+        if isinstance(left, Jim):
+            return Jim(self.pointOpBitWise(left,_jl.XOR_op))
+        else:
+            raise TypeError('unsupported operand type for ^ : {}'.format(type(right)))
+    # def __ixor__(self, right):
+    #     if isinstance(right, Jim):
+    #         self.d_pointOpBitWise(right,_jl.XOR_op)
+    #     else:
+    #         raise TypeError('unsupported operand type for ^ : {}'.format(type(right)))
+    #     return self
+
+    def __and__(self, right):
+        if isinstance(right, Jim):
+            return Jim(self.pointOpBitWise(right,_jl.AND_op))
+        else:
+            raise TypeError('unsupported operand type for & : {}'.format(type(right)))
+    def __rand__(self, left):
+        if isinstance(left, Jim):
+            return Jim(self.pointOpBitWise(left,_jl.AND_op))
+        else:
+            raise TypeError('unsupported operand type for & : {}'.format(type(right)))
+    # def __iand__(self, right):
+    #     if isinstance(right, Jim):
+    #         self.d_pointOpBitWise(right,_jl.AND_op)
+    #     else:
+    #         raise TypeError('unsupported operand type for & : {}'.format(type(right)))
+    #     return self
