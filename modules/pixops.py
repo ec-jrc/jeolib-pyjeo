@@ -94,6 +94,13 @@ class _PixOps():
         """
         self._jim_object = jim_object
 
+    def isEqual(self, other):
+        if isinstance(other, _pj.Jim):
+            return self._jim_object.isEqual(other)
+        else:
+            return False
+
+
     def pointOpBitWise(self, sec_jim_object, operation_code):
         """Bitwise operation between two images.
 
