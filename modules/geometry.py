@@ -29,6 +29,9 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
     if ulz is not None or lrz is not None:
         assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
                                  'and special cropping parameters'
+        lrx -= 1
+        lry -= 1
+        lrz -= 1
         return _pj.Jim(jim_object.imageCut(ulx, uly, ulz, lrx, lry, lrz,
                                            iband))
     else:
@@ -307,22 +310,6 @@ class _Geometry():
         """
         self._jim_object = jim_object
 
-    def crop3D(self, leftSize, rightSize, topSize, belowSize, upSize,
-               downSize):
-        """Peel off a frame of im.
-
-        Modifies the instance on which the method was called.
-
-        :param leftSize: width of left frame
-        :param rightSize: width if right frame
-        :param topSize: width of top frame
-        :param belowSize: width if bottom frame
-        :param upSize: width of upper frame
-        :param downSize: width if lower frame
-        """
-        self._jim_object._set(self._jim_object.d_imageFrameSubstract(
-            [leftSize, rightSize, topSize, belowSize, upSize, downSize]))
-
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None, lrz=None,
          iband=0, **kwargs):
         """Subset raster dataset.
@@ -353,8 +340,10 @@ class _Geometry():
         if ulz is not None or lrz is not None:
             assert len(kwargs) == 0, 'It is not supported to use both z ' \
                                      'coords and special cropping parameters'
-            self._jim_object._set(self._jim_object.d_imageFrameSubstract(
-                [ulx, lrx, uly, lry, ulz, lrz], iband))
+            self._jim_object.d_imageFrameSubstract([
+                ulx, self._jim_object.properties.nrOfCol() - lrx,
+                uly, self._jim_object.properties.nrOfRow() - lry,
+                ulz, self._jim_object.properties.nrOfBand() - lrz], iband)
         else:
             if ulx is None:
                 ulx = 0
