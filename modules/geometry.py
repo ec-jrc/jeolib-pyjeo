@@ -2,47 +2,92 @@ import pyjeo as _pj
 
 
 def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
-         lrz=None, iband=0, **kwargs):
+         lrz=None, dx=None, dy=None, geo=True, **kwargs):
     """Subset raster dataset.
 
-    Subset raster dataset according in spatial (subset region) or
-    spectral/temporal domain (subset bands).
+    Subset raster dataset according in spatial (subset region) domain
 
     :param ulx: Upper left x value of bounding box to crop
     :param uly: Upper left y value of bounding box to crop
+    :param ulz: Upper left z value of bounding box to crop
     :param lrx: Lower right x value of bounding box to crop
     :param lry: Lower right y value of bounding box to crop
+    :param lrz: Lower right y value of bounding box to crop
+    :param dx: spatial resolution in x to crop (stride if geo is False)
+    :param dy: spatial resolution in y to crop (stride if geo is False)
+    :param geo: use geospatial coordinates if True, image coordinates if False
     :param kwargs: See table below
 
-    +------------------+---------------------------------------------------------------------------------+
-    | key              | value                                                                           |
-    +==================+=================================================================================+
-    | dx               | Output resolution in x (default: keep original resolution)                      |
-    +------------------+---------------------------------------------------------------------------------+
-    | dy               | Output resolution in y (default: keep original resolution)                      |
-    +------------------+---------------------------------------------------------------------------------+
-    | nodata           | Nodata value to put in image if out of bounds                                   |
-    +------------------+---------------------------------------------------------------------------------+
-    | align            | Align output bounding box to input image                                        |
-    +------------------+---------------------------------------------------------------------------------+
     """
     if ulz is not None or lrz is not None:
         assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
                                  'and special cropping parameters'
-        lrx -= 1
-        lry -= 1
-        lrz -= 1
-        return _pj.Jim(jim_object.imageCut(ulx, uly, ulz, lrx, lry, lrz,
-                                           iband))
+        gt=jim_object.properties.getGeoTransform()
+        if geo:
+            upperLeftImage=jim_object.properties.geo2image(ulx,uly)
+            uli=upperLeftImage[0]
+            ulj=upperLeftImage[1]
+            lowerRightImage=jim_object.properties.geo2image(lrx,lry)
+            lri=lowerRightImage[0]
+            lrj=lowerRightImage[1]
+        else:
+            uli=ulx
+            ulj=uly
+            lri=lrx
+            lrj=lry
+            upperLeft=jim_object.image2geo(ulx,uly)
+            lowerRight=jim_object.image2geo(lrx,lry)
+            ulx=upperLeft[0]
+            uly=upperLeft[1]
+            lrx=lowerRight[0]+jim_object.properties.getDeltaX()/2.0
+            lry=lowerRight[1]-jim_object.properties.getDeltaY()/2.0
+        for iband in range(0,jim_object.properties.nrOfBand()):
+            jim=_pj.Jim(jim_object.imageFrameSubstract([
+                uli, jim_object.properties.nrOfCol() - lri,
+                ulj, jim_object.properties.nrOfRow() - lrj,
+                ulz, jim_object.properties.nrOfPlane() - lrz], band))
+        gt[0]=ulx
+        gt[3]=uly
+        jim.properties.setGeoTransform(gt)
+        return jim
+    elif len(kwargs) == 0:
+        if geo:
+            if ulx is None:
+                ulx = jim_object.properties.getUlx()
+            if uly is None:
+                uly = jim_object.properties.getUly()
+            if lrx is None:
+                lrx = jim_object.properties.getLrx()
+            if lry is None:
+                lry = jim_object.properties.getLry()
+            if dx is None:
+                dx = jim_object.properties.getDeltaX()
+            if dy is None:
+                dy = jim_object.properties.getDeltaY()
+        else:
+            if ulx is None:
+                ulx=0
+            if uly is None:
+                uly=0
+            if lrx is None:
+                lrx=jim_object.properties.nrOfCol()-1
+            if lry is None:
+                lry=0
+            if dx is None:
+                dx = 1
+        return _pj.Jim(jim_object.crop(ulx,uly,lrx,lry,dx,dy,geo))
     else:
-        if ulx is None:
-            ulx = 0
-        if uly is None:
-            uly = 0
-        if lrx is None:
-            lrx = 0
-        if lry is None:
-            lry = 0
+        if not geo:
+            uli=ulx
+            ulj=uly
+            lri=lrx
+            lrj=lry
+            upperLeft=jim_object.image2geo(ulx,uly)
+            lowerRight=jim_object.image2geo(lrx,lry)
+            ulx=upperLeft[0]
+            uly=upperLeft[1]
+            lrx=lowerRight[0]+jim_object.properties.getDeltaX()/2.0
+            lry=lowerRight[1]-jim_object.properties.getDeltaY()/2.0
         kwargs.update({'ulx': ulx})
         kwargs.update({'uly': uly})
         kwargs.update({'lrx': lrx})
@@ -214,7 +259,7 @@ def warp(jim_object, t_srs, **kwargs):
     return _pj.Jim(jim_object._set(self._jim_object.warp(kwargs)))
 
 
-def imageInsert(jim_object, sec_jim_object, x, y, z, iband=0):
+def imageInsert(jim_object, sec_jim_object, x, y, z, band=0):
     """Merge Jim instance with values of sec_jim_object in given coords.
 
     :param jim_object: a Jim object
@@ -222,13 +267,13 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, iband=0):
     :param x: x coordinate of 1st pixel
     :param y: y coordinate of 1st pixel
     :param z: z coordinate of 1st pixel
-    :param iband: List of band indices to crop (index is 0 based)
+    :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.imageInsert(sec_jim_object, x, y, z, iband))
+    return _pj.Jim(jim_object.imageInsert(sec_jim_object, x, y, z, band))
 
 
-def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, iband=0):
+def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
     """Merge Jim instance with values of im2 if val of imlbl == val.
 
     :param jim_object: a Jim object
@@ -238,14 +283,14 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, iband=0):
     :param y: y coordinate of 1st pixel
     :param z: z coordinate of 1st pixel
     :param val: integer for label value
-    :param iband: List of band indices to crop (index is 0 based)
+    :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
     return _pj.Jim(jim_object.imageInsertCompose(imlbl, im2, x, y, z, val,
-                                                 iband))
+                                                 band))
 
 
-def imageFrameSet(jim_object, l, r, t, b, u, d, val, iband=0):
+def imageFrameSet(jim_object, l, r, t, b, u, d, val, band=0):
     """Set the values of the image frame to value val.
 
     :param jim_object: a Jim object
@@ -256,13 +301,13 @@ def imageFrameSet(jim_object, l, r, t, b, u, d, val, iband=0):
     :param u: width of upper frame
     :param d: width of lower frame
     :param val: value of frame
-    :param iband: List of band indices to crop (index is 0 based)
+    :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.imageFrameSet([l, r, t, b, u, d], val, iband))
+    return _pj.Jim(jim_object.imageFrameSet([l, r, t, b, u, d], val, band))
 
 
-def imageFrameAdd(jim_object, l, r, t, b, u, d, val, iband=0):
+def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
     """Set the values of the image frame to value val.
 
     :param jim_object: a Jim object
@@ -273,10 +318,10 @@ def imageFrameAdd(jim_object, l, r, t, b, u, d, val, iband=0):
     :param u: width of upper frame
     :param d: width of lower frame
     :param val: value of frame
-    :param iband: List of band indices to crop (index is 0 based)
+    :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.imageFrameAdd([l, r, t, b, u, d], val, iband))
+    return _pj.Jim(jim_object.imageFrameAdd([l, r, t, b, u, d], val, band))
 
 
 def magnify(jim_object, n):
@@ -310,54 +355,99 @@ class _Geometry():
         """
         self._jim_object = jim_object
 
-    def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None, lrz=None,
-         iband=0, **kwargs):
+    def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
+            lrz=None, dx=None, dy=None, geo=True, **kwargs):
         """Subset raster dataset.
 
-        Subset raster dataset according in spatial (subset region) or
-        spectral/temporal domain (subset bands).
-
-        Modifies the instance on which the method was called.
+        Subset raster dataset according in spatial (subset region) domain
 
         :param ulx: Upper left x value of bounding box to crop
         :param uly: Upper left y value of bounding box to crop
+        :param ulz: Upper left z value of bounding box to crop
         :param lrx: Lower right x value of bounding box to crop
         :param lry: Lower right y value of bounding box to crop
+        :param lrz: Lower right y value of bounding box to crop
+        :param dx: spatial resolution in x to crop (stride if geo is False)
+        :param dy: spatial resolution in y to crop (stride if geo is False)
+        :param geo: use geospatial coordinates if True, image coordinates if False
         :param kwargs: See table below
 
-        +------------------+---------------------------------------------------------------------------------+
-        | key              | value                                                                           |
-        +==================+=================================================================================+
-        | dx               | Output resolution in x (default: keep original resolution)                      |
-        +------------------+---------------------------------------------------------------------------------+
-        | dy               | Output resolution in y (default: keep original resolution)                      |
-        +------------------+---------------------------------------------------------------------------------+
-        | nodata           | Nodata value to put in image if out of bounds                                   |
-        +------------------+---------------------------------------------------------------------------------+
-        | align            | Align output bounding box to input image                                        |
-        +------------------+---------------------------------------------------------------------------------+
         """
         if ulz is not None or lrz is not None:
-            assert len(kwargs) == 0, 'It is not supported to use both z ' \
-                                     'coords and special cropping parameters'
-            self._jim_object.d_imageFrameSubstract([
-                ulx, self._jim_object.properties.nrOfCol() - lrx,
-                uly, self._jim_object.properties.nrOfRow() - lry,
-                ulz, self._jim_object.properties.nrOfBand() - lrz], iband)
+            assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
+                                    'and special cropping parameters'
+            gt=self._jim_object.properties.getGeoTransform()
+            if geo:
+                upperLeftImage=self._jim_object.properties.geo2image(ulx,uly)
+                uli=upperLeftImage[0]
+                ulj=upperLeftImage[1]
+                lowerRightImage=self._jim_object.properties.geo2image(lrx,lry)
+                lri=lowerRightImage[0]
+                lrj=lowerRightImage[1]
+            else:
+                uli=ulx
+                ulj=uly
+                lri=lrx
+                lrj=lry
+                upperLeft=self._jim_object.geometry.image2geo(ulx,uly)
+                lowerRight=self._jim_object.geometry.image2geo(lrx,lry)
+                ulx=upperLeft[0]
+                uly=upperLeft[1]
+                lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
+                lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
+            for iband in range(0,self._jim_object.properties.nrOfBand()):
+                jim=_pj.Jim(self._jim_object.imageFrameSubstract([
+                    uli, self._jim_object.properties.nrOfCol() - lri,
+                    ulj, self._jim_object.properties.nrOfRow() - lrj,
+                    ulz, self._jim_object.properties.nrOfPlane() - lrz], iband))
+            gt[0]=ulx
+            gt[3]=uly
+            jim.properties.setGeoTransform(gt)
+            return jim
+        elif len(kwargs) == 0:
+            if geo:
+                if ulx is None:
+                    ulx = self._jim_object.properties.getUlx()
+                if uly is None:
+                    uly = self._jim_object.properties.getUly()
+                if lrx is None:
+                    lrx = self._jim_object.properties.getLrx()
+                if lry is None:
+                    lry = self._jim_object.properties.getLry()
+                if dx is None:
+                    dx = self._jim_object.properties.getDeltaX()
+                if dy is None:
+                    dy = self._jim_object.properties.getDeltaY()
+            else:
+                if ulx is None:
+                    ulx=0
+                if uly is None:
+                    uly=0
+                if lrx is None:
+                    lrx=self._jim_object.properties.nrOfCol()-1
+                if lry is None:
+                    lry=0
+                if dx is None:
+                    dx = 1
+            self._jim_object._set(self._jim_object.crop(ulx,uly,lrx,lry,dx,dy,geo))
         else:
-            if ulx is None:
-                ulx = 0
-            if uly is None:
-                uly = 0
-            if lrx is None:
-                lrx = 0
-            if lry is None:
-                lry = 0
+            if not geo:
+                uli=ulx
+                ulj=uly
+                lri=lrx
+                lrj=lry
+                upperLeft=self._jim_object.geometry.image2geo(ulx,uly)
+                lowerRight=self._jim_object.geometry.image2geo(lrx,lry)
+                ulx=upperLeft[0]
+                uly=upperLeft[1]
+                lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
+                lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
             kwargs.update({'ulx': ulx})
             kwargs.update({'uly': uly})
             kwargs.update({'lrx': lrx})
             kwargs.update({'lry': lry})
             self._jim_object._set(self._jim_object.crop(kwargs))
+            # return _pj.Jim(self._jim_object.crop(kwargs))
 
     def cropOgr(self, extent, **kwargs):
         """Subset raster dataset.
@@ -771,7 +861,7 @@ class _Geometry():
         kwargs.update({'t_srs': t_srs})
         self._jim_object._set(self._jim_object.warp(kwargs))
 
-    def imageInsert(self, sec_jim_object, x, y, z, iband=0):
+    def imageInsert(self, sec_jim_object, x, y, z, band=0):
         """Merge Jim instance with values of sec_jim_object in given coords.
 
         Modifies the instance on which the method was called.
@@ -780,11 +870,11 @@ class _Geometry():
         :param x: x coordinate of 1st pixel
         :param y: y coordinate of 1st pixel
         :param z: z coordinate of 1st pixel
-        :param iband: List of band indices to crop (index is 0 based)
+        :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageInsert(sec_jim_object, x, y, z, iband)
+        self._jim_object.d_imageInsert(sec_jim_object, x, y, z, band)
 
-    def imageInsertCompose(self, imlbl, im2, x, y, z, val, iband=0):
+    def imageInsertCompose(self, imlbl, im2, x, y, z, val, band=0):
         """Merge Jim instance with values of im2 if val of imlbl == val.
 
         Modifies the instance on which the method was called.
@@ -795,11 +885,11 @@ class _Geometry():
         :param y: y coordinate of 1st pixel
         :param z: z coordinate of 1st pixel
         :param val: integer for label value
-        :param iband: List of band indices to crop (index is 0 based)
+        :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageInsertCompose(imlbl, im2, x, y, z, val, iband)
+        self._jim_object.d_imageInsertCompose(imlbl, im2, x, y, z, val, band)
 
-    def imageFrameSet(self, l, r, t, b, u, d, val, iband=0):
+    def imageFrameSet(self, l, r, t, b, u, d, val, band=0):
         """Set the values of the image frame to value val.
 
         Modifies the instance on which the method was called.
@@ -811,11 +901,11 @@ class _Geometry():
         :param u: width of upper frame
         :param d: width of lower frame
         :param val: value of frame
-        :param iband: List of band indices to crop (index is 0 based)
+        :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageFrameSet([l, r, t, b, u, d], val, iband)
+        self._jim_object.d_imageFrameSet([l, r, t, b, u, d], val, band)
 
-    def imageFrameAdd(self, l, r, t, b, u, d, val, iband=0):
+    def imageFrameAdd(self, l, r, t, b, u, d, val, band=0):
         """Set the values of the image frame to value val.
 
         Modifies the instance on which the method was called.
@@ -827,9 +917,9 @@ class _Geometry():
         :param u: width of upper frame
         :param d: width of lower frame
         :param val: value of frame
-        :param iband: List of band indices to crop (index is 0 based)
+        :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageFrameAdd([l, r, t, b, u, d], val, iband)
+        self._jim_object.d_imageFrameAdd([l, r, t, b, u, d], val, band)
 
     def magnify(self, n):
         """Magnify the image.
@@ -851,6 +941,12 @@ class _Geometry():
         :param y2: an integer for y-coordinate of 2nd point
         """
         self._jim_object.d_plotLine(x1, y1, x2, y2, val)
+
+    def image2geo(self, i, j):
+        return self._jim_object.image2geo(i, j)
+
+    def geo2image(self, x, y):
+        return self._jim_object.image2geo(x, y)
 
     # TODO: how to work with
     # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to

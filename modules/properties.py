@@ -175,6 +175,14 @@ class _Properties():
         """
         return self._jim_object.getCenterPos()
 
+    def getBoundingBox(self):
+        """
+        Get the bounding box (georeferenced) coordinates of this dataset
+
+        :return: A list with upper left x, upper left y, lower right x, and lower right y
+        """
+        return self._jim_object.getBoundingBox()
+
     def getUlx(self):
         """
         Get the upper left corner x (georeferenced) coordinate of this dataset
@@ -230,3 +238,16 @@ class _Properties():
         :return: The reference pixel as the centre of gravity pixel (weighted average of all values not taking into account no data values) for a specific band (start counting from 0).
         """
         return self._jim_object.getRefPix(*args)
+
+    def image2geo(self, i, j):
+        """
+        todo
+        """
+        return self._jim_object.image2geo(i,j)
+
+    def geo2image(self, x, y):
+        """
+        todo
+        """
+        coord=self._jim_object.geo2image(x,y)
+        return [int(coord[0]), int(coord[1])]

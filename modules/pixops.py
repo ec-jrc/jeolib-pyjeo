@@ -1,49 +1,6 @@
 import jiplib as _jl
 import pyjeo as _pj
 
-
-def pointOpBitWise(jim_object, sec_jim_object, operation_code):
-    """Bitwise operation between two images.
-
-    :param jim_object: a Jim object
-    :param sec_jim_object: a Jim object
-    :param operation_code: 10 or AND op, 11 or OR op, and 12 or XOR op
-    :return: a Jim object
-    """
-    return _pj.Jim(jim_object.pointOpBitwise(sec_jim_object, operation_code))
-
-
-def pointOpBlank(jim_object, value):
-    """Set all pixels of image to value.
-
-    :param jim_object: a Jim object
-    :param value: new value for pixels of Jim object
-    :return: a Jim object
-    """
-    return _pj.Jim(jim_object.pointOpBlank(value))
-
-
-def pointOpArithCst(jim_object, value, operation_code):
-    """Bitwise operation between two images.
-
-    :param jim_object: a Jim object
-    :param operation_code: todo
-    :return: a Jim object
-    """
-    return _pj.Jim(jim_object.pointOpArithCst(value, operation_code))
-
-
-def pointOpArith(jim_object, sec_jim_object, operation_code):
-    """Bitwise operation between two images.
-
-    :param jim_object: a Jim object
-    :param sec_jim_object: a Jim object
-    :param operation_code: todo
-    :return: a Jim object
-    """
-    return _pj.Jim(jim_object.pointOpArith(sec_jim_object, operation_code))
-
-
 def convert(jim_object, **kwargs):
     """Convert Jim image with respect to data type.
 
@@ -100,46 +57,38 @@ class _PixOps():
         else:
             return False
 
+    def setData(self, value, ulx, uly, lrx, lry, bands=0, dx=None, dy=None, geo=True):
+        """Set range of pixels to value.
 
-    def pointOpBitWise(self, sec_jim_object, operation_code):
-        """Bitwise operation between two images.
-
-        Modifies the instance on which the method was called.
-
-        :param sec_jim_object: a Jim object
-        :param operation_code: 10 or AND op, 11 or OR op, and 12 or XOR op
-        """
-        self._jim_object._set(self._jim_object.pointOpBitwise(sec_jim_object,
-                                                              operation_code))
-
-    def pointOpArithCst(self, value, operation_code):
-        """Bitwise operation between two images.
-
-        Modifies the instance on which the method was called.
-
-        :param sec_jim_object: a Jim object
-        :param operation_code: todo
-        """
-        self._jim_object.d_pointOpArithCst(value,operation_code)
-
-    def pointOpArith(self, sec_jim_object, operation_code):
-        """Bitwise operation between two images.
-
-        Modifies the instance on which the method was called.
-
-        :param sec_jim_object: a Jim object
-        :param operation_code: todo
-        """
-        self._jim_object.d_pointOpArith(sec_jim_object,operation_code)
-
-    def pointOpBlank(self, value):
-        """Set all pixels of image to value.
-
-        Modifies the instance on which the method was called.
-
+        :param jim_object: a Jim object
         :param value: new value for pixels of Jim object
+        :param ulx: upper left corner x coordinate (in projected coordinates if geo is True, else in image coordinates)
+        :param uly: upper left corner y coordinate (in projected coordinates if geo is True, else in image coordinates)
+        :param lrx: lower right corner x coordinate (in projected coordinates if geo is True, else in image coordinates)
+        :param lry: lower right corner y coordinate (in projected coordinates if geo is True, else in image coordinates)
+        :param bands: List of band indices to crop (index is 0 based)
+        :param dx: spatial resolution in x to crop (stride if geo is False)
+        :param dy: spatial resolution in y to crop (stride if geo is False)
+        :param geo: use geospatial coordinates if True, image coordinates if False
+        :return: a Jim object
         """
-        self._jim_object.d_pointOpBlank(value)
+        if not dx:
+            dx=0
+        if not dy:
+            dy=0
+        for band in bands:
+            self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx, dy, geo)
+
+    # def setData(self, value, bands=0):
+    #     """Set all pixels to value.
+
+    #     :param jim_object: a Jim object
+    #     :param value: new value for pixels of Jim object
+    #     :param band: List of band indices to crop (index is 0 based)
+    #     :return: a Jim object
+    #     """
+    #     for band in bands:
+    #         self._jim_object.setData(value,band)
 
     def convert(self, **kwargs):
         """Convert Jim image with respect to data type.

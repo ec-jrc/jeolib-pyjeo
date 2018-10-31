@@ -13,7 +13,7 @@ def labelImagePixels(jim_object):
     return _pj.Jim(_jl.Jim.labelPix(jim_object))
 
 
-def distance2dEuclideanSquared(jim_object, iband=0):
+def distance2dEuclideanSquared(jim_object, band=0):
     """Compute the squared Euclidean distance transform of im.
 
     im must be a 2-D binary image. Original algorihtm proposed by Saito
@@ -25,10 +25,10 @@ def distance2dEuclideanSquared(jim_object, iband=0):
     pixels along a given line or column.
 
     :param jim_object: a Jim object
-    :param iband: List of band indices to crop (index is 0 based)
+    :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.distance2dEuclideanSquared(iband))
+    return _pj.Jim(jim_object.distance2dEuclideanSquared(band))
 
 
 class _CCOps():
@@ -48,7 +48,7 @@ class _CCOps():
         """
         self._jim_object.d_labelPix()
 
-    def distance2dEuclideanSquared(self, iband=0):
+    def distance2dEuclideanSquared(self, band=0):
         """Compute the squared Euclidean distance transform of im.
 
         im must be a 2-D binary image. Original algorihtm proposed by Saito
@@ -62,4 +62,4 @@ class _CCOps():
         Modifies the instance on which the method was called.
         """
         self._jim_object._set(self._jim_object.distance2dEuclideanSquared(
-            iband))
+            band))
