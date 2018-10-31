@@ -33,9 +33,12 @@ class Jim(_jipJim):
         return [i for i in self.__dict__.keys() if i != 'this'] + \
                pyjeo_Jim_methods
 
-    def getMethods(self):
+    def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
-        def treeStructure(module):
+        def treeStructure(module, queried_module):
+            if queried_module and queried_module not in str(module):
+                return ''
+
             module_methods = dir(module)
             for default_method in ['__init__', '__module__', '__doc__']:
                 module_methods.remove(default_method)
@@ -51,7 +54,7 @@ class Jim(_jipJim):
         for module in [properties._Properties, io._IO, pixops._PixOps,
                        ngbops._NgbOps, geometry._Geometry, ccops._CCOps,
                        clssfy._Classify, demops._DEMOps]:
-            methods.extend(treeStructure(module))
+            methods.extend(treeStructure(module, queried_module))
 
         print('\n'.join(methods))
 
