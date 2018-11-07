@@ -2,7 +2,7 @@ import pyjeo as _pj
 
 
 def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
-         lrz=None, dx=None, dy=None, geo=True, **kwargs):
+         lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
     """Subset raster dataset.
 
     Subset raster dataset according in spatial (subset region) domain
@@ -13,24 +13,16 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
     :param lrx: Lower right x value of bounding box to crop
     :param lry: Lower right y value of bounding box to crop
     :param lrz: Lower right y value of bounding box to crop
-    :param dx: spatial resolution in x to crop (stride if geo is False)
-    :param dy: spatial resolution in y to crop (stride if geo is False)
-    :param geo: use geospatial coordinates if True, image coordinates if False
-    :param kwargs: See table below
+    :param dx: spatial resolution in x to crop (stride if nogeo is True)
+    :param dy: spatial resolution in y to crop (stride if nogeo is True)
+    :param nogeo: use image coordinates if True, default is spatial reference system coordinates
 
     """
     if ulz is not None or lrz is not None:
         assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
                                  'and special cropping parameters'
         gt=jim_object.properties.getGeoTransform()
-        if geo:
-            upperLeftImage=jim_object.properties.geo2image(ulx,uly)
-            uli=upperLeftImage[0]
-            ulj=upperLeftImage[1]
-            lowerRightImage=jim_object.properties.geo2image(lrx,lry)
-            lri=lowerRightImage[0]
-            lrj=lowerRightImage[1]
-        else:
+        if nogeo:
             uli=ulx
             ulj=uly
             lri=lrx
@@ -41,6 +33,13 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
             uly=upperLeft[1]
             lrx=lowerRight[0]+jim_object.properties.getDeltaX()/2.0
             lry=lowerRight[1]-jim_object.properties.getDeltaY()/2.0
+        else:
+            upperLeftImage=jim_object.properties.geo2image(ulx,uly)
+            uli=upperLeftImage[0]
+            ulj=upperLeftImage[1]
+            lowerRightImage=jim_object.properties.geo2image(lrx,lry)
+            lri=lowerRightImage[0]
+            lrj=lowerRightImage[1]
         for iband in range(0,jim_object.properties.nrOfBand()):
             jim=_pj.Jim(jim_object.imageFrameSubstract([
                 uli, jim_object.properties.nrOfCol() - lri,
@@ -51,7 +50,18 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         jim.properties.setGeoTransform(gt)
         return jim
     elif len(kwargs) == 0:
-        if geo:
+        if nogeo:
+            if ulx is None:
+                ulx=0
+            if uly is None:
+                uly=0
+            if lrx is None:
+                lrx=jim_object.properties.nrOfCol()-1
+            if lry is None:
+                lry=0
+            if dx is None:
+                dx = 1
+        else:
             if ulx is None:
                 ulx = jim_object.properties.getUlx()
             if uly is None:
@@ -64,20 +74,19 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
                 dx = jim_object.properties.getDeltaX()
             if dy is None:
                 dy = jim_object.properties.getDeltaY()
-        else:
-            if ulx is None:
-                ulx=0
-            if uly is None:
-                uly=0
-            if lrx is None:
-                lrx=jim_object.properties.nrOfCol()-1
-            if lry is None:
-                lry=0
-            if dx is None:
-                dx = 1
-        return _pj.Jim(jim_object.crop(ulx,uly,lrx,lry,dx,dy,geo))
+
+        kwargs.update({'ulx': ulx})
+        kwargs.update({'uly': uly})
+        kwargs.update({'lrx': lrx})
+        kwargs.update({'lry': lry})
+        kwargs.update({'dx': dx})
+        kwargs.update({'dy': dy})
+        kwargs.update({'nogeo': nogeo})
+        return _pj.Jim(jim_object.crop(kwargs))
+        # return _pj.Jim(jim_object.crop(ulx,uly,lrx,lry,dx,dy,nogeo))
+
     else:
-        if not geo:
+        if nogeo:
             uli=ulx
             ulj=uly
             lri=lrx
@@ -356,7 +365,7 @@ class _Geometry():
         self._jim_object = jim_object
 
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
-            lrz=None, dx=None, dy=None, geo=True, **kwargs):
+            lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
         """Subset raster dataset.
 
         Subset raster dataset according in spatial (subset region) domain
@@ -369,22 +378,14 @@ class _Geometry():
         :param lrz: Lower right y value of bounding box to crop
         :param dx: spatial resolution in x to crop (stride if geo is False)
         :param dy: spatial resolution in y to crop (stride if geo is False)
-        :param geo: use geospatial coordinates if True, image coordinates if False
-        :param kwargs: See table below
+        :param nogeo: use image coordinates if True, default is spatial reference system coordinates
 
         """
         if ulz is not None or lrz is not None:
             assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
                                     'and special cropping parameters'
             gt=self._jim_object.properties.getGeoTransform()
-            if geo:
-                upperLeftImage=self._jim_object.properties.geo2image(ulx,uly)
-                uli=upperLeftImage[0]
-                ulj=upperLeftImage[1]
-                lowerRightImage=self._jim_object.properties.geo2image(lrx,lry)
-                lri=lowerRightImage[0]
-                lrj=lowerRightImage[1]
-            else:
+            if nogeo:
                 uli=ulx
                 ulj=uly
                 lri=lrx
@@ -395,6 +396,13 @@ class _Geometry():
                 uly=upperLeft[1]
                 lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
                 lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
+            else:
+                upperLeftImage=self._jim_object.properties.geo2image(ulx,uly)
+                uli=upperLeftImage[0]
+                ulj=upperLeftImage[1]
+                lowerRightImage=self._jim_object.properties.geo2image(lrx,lry)
+                lri=lowerRightImage[0]
+                lrj=lowerRightImage[1]
             for iband in range(0,self._jim_object.properties.nrOfBand()):
                 jim=_pj.Jim(self._jim_object.imageFrameSubstract([
                     uli, self._jim_object.properties.nrOfCol() - lri,
@@ -405,7 +413,18 @@ class _Geometry():
             jim.properties.setGeoTransform(gt)
             return jim
         elif len(kwargs) == 0:
-            if geo:
+            if nogeo:
+                if ulx is None:
+                    ulx=0
+                if uly is None:
+                    uly=0
+                if lrx is None:
+                    lrx=self._jim_object.properties.nrOfCol()-1
+                if lry is None:
+                    lry=0
+                if dx is None:
+                    dx = 1
+            else:
                 if ulx is None:
                     ulx = self._jim_object.properties.getUlx()
                 if uly is None:
@@ -418,20 +437,17 @@ class _Geometry():
                     dx = self._jim_object.properties.getDeltaX()
                 if dy is None:
                     dy = self._jim_object.properties.getDeltaY()
-            else:
-                if ulx is None:
-                    ulx=0
-                if uly is None:
-                    uly=0
-                if lrx is None:
-                    lrx=self._jim_object.properties.nrOfCol()-1
-                if lry is None:
-                    lry=0
-                if dx is None:
-                    dx = 1
-            self._jim_object._set(self._jim_object.crop(ulx,uly,lrx,lry,dx,dy,geo))
+            kwargs.update({'ulx': ulx})
+            kwargs.update({'uly': uly})
+            kwargs.update({'lrx': lrx})
+            kwargs.update({'lry': lry})
+            kwargs.update({'dx': dx})
+            kwargs.update({'dy': dy})
+            kwargs.update({'nogeo': nogeo})
+            self._jim_object._set(self._jim_object.crop(kwargs))
+            # self._jim_object._set(self._jim_object.crop(ulx,uly,lrx,lry,dx,dy,geo))
         else:
-            if not geo:
+            if nogeo:
                 uli=ulx
                 ulj=uly
                 lri=lrx

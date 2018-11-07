@@ -152,8 +152,45 @@ class _IO():
         self._jim_object = jim_object
 
     def write(self, filename, **kwargs):
+        """ Write the raster dataset to file in a GDAL supported format
+
+        : param filename: output filename to write to
+
+        Supported keys as arguments:
+
+        ======== ===================================================
+        oformat  (default: GTiff) Output image (GDAL supported) format
+        co       Creation option for output file. Multiple options can be specified as a list
+        nodata   Nodata value to put in image
+        ======== ===================================================
+
+        .. note::
+        Supported GDAL output formats are restricted to those that support creation (see http://www.gdal.org/formats_list.html#footnote1)
+
+        Example:
+
+        Create Jim image object by opening an existing file in jp2 format. Then write to a compressed and tiled file in the default GeoTIFF format::
+
+        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        jim=pj.io.createJim({'filename':ifn})
+        jim.io.write('/tmp/test.tif','co':['COMPRESS=LZW','TILED=YES']})
+        """
+
         kwargs.update({'filename': filename})
         self._jim_object.write(kwargs)
 
     def dumpImg(self, **kwargs):
+        """ Dump the raster dataset to output (standard output or ASCII file).
+
+        Supported keys as arguments:
+
+        =========  =============================================================
+        output     Output ascii file (Default is empty: dump to standard output)
+        oformat    Output format: matrix or list (x,y,z) form. Default is matrix format
+        geo        (bool) Set to True to dump x and y in spatial reference system of raster dataset (for list form only). Default is to dump column and row index (starting from 0)
+        band       Band index to dump
+        srcnodata  Do not dump these no data values (for list form only)
+        force      (bool) Set to True to force full dump even for large images
+        =========  =============================================================
+        """
         self._jim_object.dumpImg(kwargs)

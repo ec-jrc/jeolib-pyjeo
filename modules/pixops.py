@@ -40,7 +40,9 @@ def convert(jim_object, **kwargs):
     jim1.setThreshold(min=0,max=255,nodata=0)
     jim1.convert({'otype':'Byte'})
     """
-    _pj.Jim(jim_object.convert(kwargs))
+    # return _pj.Jim(jim_object.convert(kwargs))
+    retJim=_pj.io.createJim(jim_object)
+    return _pj.Jim(retJim.convert(kwargs))
 
 
 class _PixOps():
