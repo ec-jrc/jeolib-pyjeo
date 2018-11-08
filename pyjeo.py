@@ -7,13 +7,13 @@ from modules import pjio as io, properties, pixops, ngbops, geometry, \
 
 
 class Jim(_jipJim):
-    def __init__(self, image):
+    def __init__(self, image, *args):
         """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
         the Jim object
         """
-        super(Jim, self).__init__(image)
+        super(Jim, self).__init__(image, *args)
 
         self.properties = properties._Properties(self)
         self.io = io._IO(self)
@@ -274,7 +274,7 @@ class Jim(_jipJim):
     #     if value is None:
     #         raise AttributeError("can't set item of Jim")
     #     if isinstance(item, slice):
-    #         #todo: implement slicing to replace cropband and MIA window imageFrameSet/Add/imageInsert/imageFrameSet/imageFrameAdd 
+    #         #todo: implement slicing to replace cropband and MIA window imageFrameSet/Add/imageInsert/imageFrameSet/imageFrameAdd
     #         raise typerror('slicing not supported')
     #         # if item.step not in (1, None):
     #         #     raise ValueError('only step=1 supported')
