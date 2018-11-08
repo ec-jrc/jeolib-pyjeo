@@ -161,17 +161,17 @@ class Jim(_jipJim):
             raise TypeError('Error: use slice or Jim to select items in Jim')
 
     def __setitem__(self, item, value):
-        if isinstance(item, Jim) or isinstance(value, Jim):
+        if isinstance(item, Jim):# or isinstance(value, Jim):
             if value is None:
                 #todo set empty Jim?
                 raise AttributeError("can't set item of Jim")
             projection=self.properties.getProjection()
             gt=self.properties.getGeoTransform()
             selfnp=_jl.jim2np(self)
-            valuenp=_jl.jim2np(value)
             itemnp=_jl.jim2np(item)
             itemnp=itemnp>0
             if isinstance(value, Jim):
+                valuenp=_jl.jim2np(value)
                 selfnp[itemnp]=valuenp[itemnp]
             else:
                 selfnp[itemnp]=value
@@ -259,6 +259,16 @@ class Jim(_jipJim):
                             raise TypeError('Error: __setitem__ not implemented for value type {}'.format(type(value)))
                     else:
                         raise TypeError('Error: use 2 dimensions when slicing 2-dim Jim object (x:y)')
+        elif isinstance(item, VectorOgr):
+            if self.nrOfPlane()>1:
+                raise ValueError('Error: __setitem__ not implemented for 3d Jim objects')
+            #todo: decide on default behaviour of ALL_TOUCHED=TRUE
+            if type(value) in (float,int):
+                self._set(self.setMask(item,{'eo':['ALL_TOUCHED=TRUE']'nodata':value}))
+            elif isinstance(value, Jim):
+                templateJim=Jim(value)
+                template.setMask(item,{'eo':['ALL_TOUCHED=TRUE']'nodata':0})
+                self[template>0]=template
 
     # def __setitem__(self, item, value):
     #     if value is None:
