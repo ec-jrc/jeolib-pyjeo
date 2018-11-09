@@ -69,6 +69,37 @@ class Jim(_jipJim):
     ### unary operators ###
 
     def __getitem__(self, item):
+        """Get subset of the raster dataset.
+
+        :param items can be of type:
+
+        tuple: get all pixels defined by tuple (e.g., [0:10,0:10] for first 10 rows and columns in a single band image)
+        Jim object: get all pixels where the specified raster dataset object is > 0
+        VectorOgr: get spatial subset of all pixels covered by the specified vector dataset object
+        returns: subset of the raster dataset
+
+        Example:
+
+        Get first 10 columns in first 10 rows to 255::
+
+        jim0[0:10,0:10]
+
+        Get a mask of all values not within [0,250]::
+
+        jim0[(jim0<0) | (jim0>250)]
+
+        Select the pixels where jim0<jim1::
+
+        jim0[(jim0<jim1)]
+
+        Crop a raster dataset according to the extent of a vector dataset, set all pixels not covered to 0 (or value defined as no data)::
+
+        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        cfn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/QI_DATA/MSK_CLOUDS_B00.gml'
+        jim=pj.io.createJim(ifn)
+        v=pj.io.createVector(cfn)
+        jimcloud=jim[v]
+        """
         stridex=1
         stridey=1
         strideb=1
@@ -159,7 +190,7 @@ class Jim(_jipJim):
             return retJim
         elif isinstance(item, _jl.VectorOgr):
             if self.nrOfPlane()>1:
-                raise ValueError('Error: __setitem__ not implemented for 3d Jim objects')
+                raise ValueError('Error: __getitem__ not implemented for 3d Jim objects')
             nodata=self.properties.getNoDataVals()
             if nodata:
                 nodata=nodata[0]
@@ -168,6 +199,39 @@ class Jim(_jipJim):
             return geometry.cropOgr(self,item,crop_to_cutline=True,nodata=nodata,align=True)
 
     def __setitem__(self, item, value):
+        """Set items of the raster dataset.
+
+        :param items can be of type:
+
+        tuple: set all pixels defined by tuple (e.g., [0:10,0:10] for first 10 rows and columns in a single band image)
+        Jim object: set all pixels where the specified raster dataset object is > 0
+        VectorOgr: set all pixels covered by the specified vector dataset object
+
+        Modifies the instance on which the method was called.
+
+        Example:
+
+        Set first 10 columns in first 10 rows to 255::
+
+        jim0[0:10,0:10]=255
+
+        Mask all values not within [0,250] and set to 255 (no data)::
+
+        jim0[(jim0<0) | (jim0>250)]=255
+
+        Select the maximum of two Jim images::
+
+        jim0[(jim0<jim1)]=jim1
+
+        Set a gml cloud mask to a Jim image (setting all cloudy pixels to 255)::
+
+        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        cfn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/QI_DATA/MSK_CLOUDS_B00.gml'
+        jim=pj.io.createJim(ifn)
+        v=pj.io.createVector(cfn)
+        jim[v]=255
+        """
+        #todo: checkif rasterize vector first and then set raster mask would be better
         if isinstance(item, Jim):# or isinstance(value, Jim):
             if value is None:
                 #todo set empty Jim?
@@ -332,7 +396,23 @@ class Jim(_jipJim):
 
         :return: Absolute value of Jim raster dataset
         """
-        return self.pointOpAbs()
+        return Jim(self.pointOpAbs())
+
+    def __neg__(self):
+        """Calculate the negation of Jim raster dataset
+
+        :return: Negation of Jim raster dataset (-dataset)
+        """
+        if self.properties.getDataType() == _jl.GDT_Byte:
+            print("Warning: converting data type to Int16")
+            self.pixops.convert(otype='Int16')
+        if self.properties.getDataType() == _jl.GDT_UInt16:
+            print("Warning: converting data type to Int32")
+            self.pixops.convert(otype='Int32')
+        if self.properties.getDataType() == _jl.GDT_UInt32:
+            print("Warning: converting data type to Int32, potential overflows may occur!")
+            self.pixops.convert(otype='Int32')
+        return -1*self
 
     ### binary operators ###
     def __eq__(self, aJim):
@@ -426,7 +506,7 @@ class Jim(_jipJim):
         elif type(left) in (int,float):
             return Jim(self.pointOpArithCst(left,_jl.ADD_op))
         else:
-            raise TypeError('unsupported operand type for + : {}'.format(type(right)))
+            raise TypeError('unsupported operand type for + : {}'.format(type(left)))
     def __iadd__(self, right):
         if isinstance(right, Jim):
             self.d_pointOpArith(right,_jl.ADD_op)
@@ -449,7 +529,7 @@ class Jim(_jipJim):
         elif type(left) in (int,float):
             return -1*Jim(self.pointOpArithCst(left,_jl.SUB_op))
         else:
-            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+            raise TypeError('unsupported operand type for - : {}'.format(type(left)))
     def __isub__(self, right):
         if isinstance(right, Jim):
             self.d_pointOpArith(right,_jl.SUB_op)
@@ -486,7 +566,7 @@ class Jim(_jipJim):
             else:
                 return Jim(self.pointOpArithCst(left,_jl.MULT_op))
         else:
-            raise TypeError('unsupported operand type for * : {}'.format(type(right)))
+            raise TypeError('unsupported operand type for * : {}'.format(type(left)))
     def __imul__(self, right):
         if isinstance(right, Jim):
             self.d_pointOpArith(right,_jl.MULT_op)
@@ -613,51 +693,51 @@ class Jim(_jipJim):
 
     def __or__(self, right):
         if isinstance(right, Jim):
-            return Jim(self.pointOpBitWise(right,_jl.OR_op))
+            return Jim(self.pointOpBitwise(right,_jl.OR_op))
         else:
             raise TypeError('unsupported operand type for | : {}'.format(type(right)))
     def __ror__(self, left):
         if isinstance(left, Jim):
-            return Jim(self.pointOpBitWise(left,_jl.OR_op))
+            return Jim(self.pointOpBitwise(left,_jl.OR_op))
         else:
-            raise TypeError('unsupported operand type for | : {}'.format(type(right)))
+            raise TypeError('unsupported operand type for | : {}'.format(type(left)))
     # def __ior__(self, right):
     #     if isinstance(right, Jim):
-    #         self.d_pointOpBitWise(right,_jl.OR_op)
+    #         self.d_pointOpBitwise(right,_jl.OR_op)
     #     else:
     #         raise TypeError('unsupported operand type for | : {}'.format(type(right)))
     #     return self
 
     def __xor__(self, right):
         if isinstance(right, Jim):
-            return Jim(self.pointOpBitWise(right,_jl.XOR_op))
+            return Jim(self.pointOpBitwise(right,_jl.XOR_op))
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(type(right)))
     def __rxor__(self, left):
         if isinstance(left, Jim):
-            return Jim(self.pointOpBitWise(left,_jl.XOR_op))
+            return Jim(self.pointOpBitwise(left,_jl.XOR_op))
         else:
-            raise TypeError('unsupported operand type for ^ : {}'.format(type(right)))
+            raise TypeError('unsupported operand type for ^ : {}'.format(type(left)))
     # def __ixor__(self, right):
     #     if isinstance(right, Jim):
-    #         self.d_pointOpBitWise(right,_jl.XOR_op)
+    #         self.d_pointOpBitwise(right,_jl.XOR_op)
     #     else:
     #         raise TypeError('unsupported operand type for ^ : {}'.format(type(right)))
     #     return self
 
     def __and__(self, right):
         if isinstance(right, Jim):
-            return Jim(self.pointOpBitWise(right,_jl.AND_op))
+            return Jim(self.pointOpBitwise(right,_jl.AND_op))
         else:
             raise TypeError('unsupported operand type for & : {}'.format(type(right)))
     def __rand__(self, left):
         if isinstance(left, Jim):
-            return Jim(self.pointOpBitWise(left,_jl.AND_op))
+            return Jim(self.pointOpBitwise(left,_jl.AND_op))
         else:
-            raise TypeError('unsupported operand type for & : {}'.format(type(right)))
+            raise TypeError('unsupported operand type for & : {}'.format(type(left)))
     # def __iand__(self, right):
     #     if isinstance(right, Jim):
-    #         self.d_pointOpBitWise(right,_jl.AND_op)
+    #         self.d_pointOpBitwise(right,_jl.AND_op)
     #     else:
     #         raise TypeError('unsupported operand type for & : {}'.format(type(right)))
     #     return self
