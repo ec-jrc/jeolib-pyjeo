@@ -1,6 +1,25 @@
 import pyjeo as _pj
 
 
+def image2geo(jim_object, i, j):
+    """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+
+    :param i: image column number (starting from 0)
+    :param j: image row number (starting from 0)
+    :return: georeferenced coordinates according to the object spatial reference system
+    """
+    return jim_object.im_object.image2geo(i,j)
+
+def geo2image(jim_object, x, y):
+    """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+
+    :param x: georeferenced coordinate in x according to the object spatial reference system
+    :param y: georeferenced coordinate in y according to the object spatial reference system
+    :return: image coordinates (row and column, starting from 0)
+    """
+    coord=jim_object.geo2image(x,y)
+    return [int(coord[0]), int(coord[1])]
+
 def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
          lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
     """Subset raster dataset.
@@ -21,33 +40,8 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
     if ulz is not None or lrz is not None:
         assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
                                  'and special cropping parameters'
-        gt=jim_object.properties.getGeoTransform()
-        if nogeo:
-            uli=ulx
-            ulj=uly
-            lri=lrx
-            lrj=lry
-            upperLeft=jim_object.image2geo(ulx,uly)
-            lowerRight=jim_object.image2geo(lrx,lry)
-            ulx=upperLeft[0]
-            uly=upperLeft[1]
-            lrx=lowerRight[0]+jim_object.properties.getDeltaX()/2.0
-            lry=lowerRight[1]-jim_object.properties.getDeltaY()/2.0
-        else:
-            upperLeftImage=jim_object.properties.geo2image(ulx,uly)
-            uli=upperLeftImage[0]
-            ulj=upperLeftImage[1]
-            lowerRightImage=jim_object.properties.geo2image(lrx,lry)
-            lri=lowerRightImage[0]
-            lrj=lowerRightImage[1]
-        for iband in range(0,jim_object.properties.nrOfBand()):
-            jim=_pj.Jim(jim_object.imageFrameSubstract([
-                uli, jim_object.properties.nrOfCol() - lri,
-                ulj, jim_object.properties.nrOfRow() - lrj,
-                ulz, jim_object.properties.nrOfPlane() - lrz], band))
-        gt[0]=ulx
-        gt[3]=uly
-        jim.properties.setGeoTransform(gt)
+        jim=_pj.Jim(jim_object)
+        jim.geometry.crop(ulx,uly,ulz,lrx,lry,lrz,dx,dy,nogeo,**kwargs)
         return jim
     elif len(kwargs) == 0:
         if nogeo:
@@ -83,7 +77,6 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         kwargs.update({'dy': dy})
         kwargs.update({'nogeo': nogeo})
         return _pj.Jim(jim_object.crop(kwargs))
-        # return _pj.Jim(jim_object.crop(ulx,uly,lrx,lry,dx,dy,nogeo))
 
     else:
         if nogeo:
@@ -137,8 +130,7 @@ def cropOgr(jim_object, extent, **kwargs):
     .. note::
        Possible values for the key 'eo' are: ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG. For instance you can use 'eo':'ATTRIBUTE=fieldname'
     """
-    kwargs.update({'extent': extent})
-    return jim_object.cropOgr(kwargs)
+    return _pj.Jim(jim_object.cropOgr(extent, kwargs))
 
 
 def cropBand(jim_object, band):
@@ -394,8 +386,8 @@ class _Geometry():
                 lowerRight=self._jim_object.geometry.image2geo(lrx,lry)
                 ulx=upperLeft[0]
                 uly=upperLeft[1]
-                lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
-                lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
+                # lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
+                # lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
             else:
                 upperLeftImage=self._jim_object.properties.geo2image(ulx,uly)
                 uli=upperLeftImage[0]
@@ -404,14 +396,13 @@ class _Geometry():
                 lri=lowerRightImage[0]
                 lrj=lowerRightImage[1]
             for iband in range(0,self._jim_object.properties.nrOfBand()):
-                jim=_pj.Jim(self._jim_object.imageFrameSubstract([
+                (self._jim_object.d_imageFrameSubstract([
                     uli, self._jim_object.properties.nrOfCol() - lri,
                     ulj, self._jim_object.properties.nrOfRow() - lrj,
                     ulz, self._jim_object.properties.nrOfPlane() - lrz], iband))
             gt[0]=ulx
             gt[3]=uly
-            jim.properties.setGeoTransform(gt)
-            return jim
+            self._jim_object.properties.setGeoTransform(gt)
         elif len(kwargs) == 0:
             if nogeo:
                 if ulx is None:
@@ -765,7 +756,7 @@ class _Geometry():
     def extractImg(self, reference, **kwargs):
         """Extract pixel values from an input based on a raster sample dataset.
 
-        :reference: thematic raster dataset with integer values, typically a land cover map
+        :param reference: thematic raster dataset with integer values, typically a land cover map
         :param kwargs: See table below
         :return: A VectorOgr with fields for each of the calculated raster
             value (zonal) statistics
@@ -959,10 +950,23 @@ class _Geometry():
         self._jim_object.d_plotLine(x1, y1, x2, y2, val)
 
     def image2geo(self, i, j):
-        return self._jim_object.image2geo(i, j)
+        """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+
+        :param i: image column number (starting from 0)
+        :param j: image row number (starting from 0)
+        :return: georeferenced coordinates according to the object spatial reference system
+        """
+        return self._jim_object.image2geo(i,j)
 
     def geo2image(self, x, y):
-        return self._jim_object.image2geo(x, y)
+        """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+
+        :param x: georeferenced coordinate in x according to the object spatial reference system
+        :param y: georeferenced coordinate in y according to the object spatial reference system
+        :return: image coordinates (row and column, starting from 0)
+        """
+        coord=self._jim_object.geo2image(x,y)
+        return [int(coord[0]), int(coord[1])]
 
     # TODO: how to work with
     # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to

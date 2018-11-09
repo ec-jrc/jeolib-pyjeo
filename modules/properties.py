@@ -67,8 +67,10 @@ class _Properties():
         """
         if isinstance(value, list):
             self._jim_object.setNoData(value)
-        else:
+        elif type(value) in (float,int):
             self._jim_object.setNoDataValue(value)
+        else:
+            raise TypeError('Error: setNoDataVals not implemented for value type {}'.format(type(value)))
 
     def getNoDataVals(self):
         """
@@ -239,15 +241,3 @@ class _Properties():
         """
         return self._jim_object.getRefPix(*args)
 
-    def image2geo(self, i, j):
-        """
-        todo
-        """
-        return self._jim_object.image2geo(i,j)
-
-    def geo2image(self, x, y):
-        """
-        todo
-        """
-        coord=self._jim_object.geo2image(x,y)
-        return [int(coord[0]), int(coord[1])]
