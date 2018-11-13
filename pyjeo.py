@@ -423,7 +423,10 @@ class Jim(_jipJim):
         projection = self.properties.getProjection()
         gt = self.properties.getGeoTransform()
         selfnp = _jl.jim2np(self)
-        anp = _jl.jim2np(aJim)
+        if isinstance(right, Jim):
+            anp = _jl.jim2np(right)
+        else:
+            anp = right
         selfnp = np.uint8(1) * (selfnp == anp)
         jim = Jim(_jl.np2jim(selfnp))
         jim.properties.setProjection(projection)
@@ -578,7 +581,7 @@ class Jim(_jipJim):
 
     def trueDiv(self, right):
         #test
-        print("true division")
+        # print("true division")
         right_float=Jim(None)
         self_float=Jim(None)
         if self.properties.getDataType() != _jl.GDT_Float32 and self.properties.getDataType() != _jl.GDT_Float64:
