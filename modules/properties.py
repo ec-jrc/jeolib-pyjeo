@@ -1,5 +1,6 @@
 import jiplib as _jl
 
+
 class _Properties():
     def __init__(self, jim_object):
         """Initialize the module.
@@ -67,10 +68,11 @@ class _Properties():
         """
         if isinstance(value, list):
             self._jim_object.setNoData(value)
-        elif type(value) in (float,int):
+        elif type(value) in (float, int):
             self._jim_object.setNoDataValue(value)
         else:
-            raise TypeError('Error: setNoDataVals not implemented for value type {}'.format(type(value)))
+            raise TypeError('Error: setNoDataVals not implemented for value '
+                            'type {}'.format(type(value)))
 
     def getNoDataVals(self):
         """
@@ -240,4 +242,3 @@ class _Properties():
         :return: The reference pixel as the centre of gravity pixel (weighted average of all values not taking into account no data values) for a specific band (start counting from 0).
         """
         return self._jim_object.getRefPix(*args)
-

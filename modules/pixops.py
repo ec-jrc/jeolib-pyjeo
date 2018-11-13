@@ -1,6 +1,7 @@
 import jiplib as _jl
 import pyjeo as _pj
 
+
 def convert(jim_object, **kwargs):
     """Convert Jim image with respect to data type.
 
@@ -45,6 +46,40 @@ def convert(jim_object, **kwargs):
     return _pj.Jim(retJim.convert(kwargs))
 
 
+def NDVI(redJim, nirJim):
+    """Compute NDVI from two Jim objects.
+
+    :param redJim: Jim object with values of red
+    :param nirJim: Jim object with values of NIR
+    :return: a Jim object with values of NDVI
+    """
+    numerator = _pj.Jim(nirJim.convertToFloat32()) - \
+                _pj.Jim(redJim.convertToFloat32())
+    denominator = _pj.Jim(nirJim.convertToFloat32()) + \
+                  _pj.Jim(redJim.convertToFloat32())
+
+    denominator[denominator == 0] = 1
+    ndvi = numerator / denominator
+    ndvi[denominator == 0] = 1
+
+    return _pj.Jim(ndvi)
+    # TODO: Check NODATA values
+
+
+def supremum(jim, *args):
+    """Create Jim composed of biggest values from provided Jim objects.
+
+    :param jim: Jim object (to be sure that at least one is provided)
+    :param args: Jim objects
+    :return: Jim composed of biggest values from provided Jim objects
+    """
+    supremum = _pj.Jim(jim)
+    for newJim in args:
+        supremum = supremum.pointOpArith(newJim, 5)
+
+    return _pj.Jim(supremum)
+
+
 class _PixOps():
     def __init__(self, jim_object):
         """Initialize the module.
@@ -59,7 +94,8 @@ class _PixOps():
         else:
             return False
 
-    def setData(self, value, ulx, uly, lrx, lry, bands=0, dx=None, dy=None, geo=True):
+    def setData(self, value, ulx, uly, lrx, lry, bands=0, dx=None, dy=None,
+                geo=True):
         """Set range of pixels to value.
 
         :param jim_object: a Jim object
@@ -79,7 +115,8 @@ class _PixOps():
         if not dy:
             dy=0
         for band in bands:
-            self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx, dy, geo)
+            self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx, dy,
+                                     geo)
 
     # def setData(self, value, bands=0):
     #     """Set all pixels to value.
@@ -169,3 +206,36 @@ class _PixOps():
         jim_threshold=jim.setThreshold(min=0,max=250,nodata=255)
         """
         self._jim_object._set(self._jim_object.setThreshold(kwargs))
+
+    def NDVI(self, redBand, nirBand):
+        """Compute NDVI on the Jim object.
+
+        Modifies the instance on which the method was called.
+
+        :param redBand: index of band with values of red
+        :param nirBand: index of band with values of NIR
+        """
+        red = _pj.geometry.cropBand(self._jim_object, redBand)
+        nir = _pj.geometry.cropBand(self._jim_object, nirBand)
+
+        numerator = _pj.Jim(nir.convertToFloat32()) - \
+                    _pj.Jim(red.convertToFloat32())
+        denominator = _pj.Jim(nir.convertToFloat32()) + \
+                      _pj.Jim(red.convertToFloat32())
+
+        denominator[denominator == 0] = 1
+        ndvi = numerator / denominator
+        ndvi[denominator == 0] = 1
+
+        self._jim_object._set(ndvi)
+        # TODO: Check NODATA values
+
+    def supremum(self, *args):
+        """Change values of Jim for the biggest ones from provided Jim objects.
+
+        Modifies the instance on which the method was called.
+
+        :param args: Jim objects
+        """
+        for jim in args:
+            self._jim_object.d_pointOpArith(jim, 5)

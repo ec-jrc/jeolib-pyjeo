@@ -2,23 +2,34 @@ import pyjeo as _pj
 
 
 def image2geo(jim_object, i, j):
-    """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+    """ Convert image coordinates to georeferenced.
+
+    Convert image coordinates (column and row) to georeferenced
+    coordinates (x and y)
 
     :param i: image column number (starting from 0)
     :param j: image row number (starting from 0)
-    :return: georeferenced coordinates according to the object spatial reference system
+    :return: georeferenced coordinates according to the object spatial
+        reference system
     """
-    return jim_object.im_object.image2geo(i,j)
+    return jim_object.im_object.image2geo(i, j)
+
 
 def geo2image(jim_object, x, y):
-    """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+    """ Convert georeferenced coordinates to image.
 
-    :param x: georeferenced coordinate in x according to the object spatial reference system
-    :param y: georeferenced coordinate in y according to the object spatial reference system
+    Convert georeferenced coordinates (column and row) to image
+    coordinates (x and y).
+
+    :param x: georeferenced coordinate in x according to the object spatial
+        reference system
+    :param y: georeferenced coordinate in y according to the object spatial
+        reference system
     :return: image coordinates (row and column, starting from 0)
     """
-    coord=jim_object.geo2image(x,y)
-    return [int(coord[0]), int(coord[1])]
+    coords = jim_object.geo2image(x, y)
+    return [int(coords[0]), int(coords[1])]
+
 
 def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
          lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
@@ -34,14 +45,15 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
     :param lrz: Lower right y value of bounding box to crop
     :param dx: spatial resolution in x to crop (stride if nogeo is True)
     :param dy: spatial resolution in y to crop (stride if nogeo is True)
-    :param nogeo: use image coordinates if True, default is spatial reference system coordinates
-
+    :param nogeo: use image coordinates if True, default is spatial reference
+        system coordinates
     """
     if ulz is not None or lrz is not None:
         assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
                                  'and special cropping parameters'
-        jim=_pj.Jim(jim_object)
-        jim.geometry.crop(ulx,uly,ulz,lrx,lry,lrz,dx,dy,nogeo,**kwargs)
+        jim = _pj.Jim(jim_object)
+        jim.geometry.crop(ulx, uly, ulz, lrx, lry, lrz, dx, dy, nogeo,
+                          **kwargs)
         return jim
     elif len(kwargs) == 0:
         if nogeo:
