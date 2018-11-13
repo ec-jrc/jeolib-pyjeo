@@ -153,7 +153,16 @@ class _PixOps():
         | nodata           | Set pixel value to this no data if pixel value < min or > max                   |
         +------------------+---------------------------------------------------------------------------------+
 
+        .. note::
+        A simplified interface to set a threshold is provided via the index operator [] (see :ref:`example <__setitem__example>` below).
+
+        .. ___setitem__example:
+
         Example:
+
+        Mask all values not within [0,250] and set to 255::
+
+        jim0[(jim0<0) | (jim0>250)]=255
 
         Mask all values not within [0,250] and set to 255 (no data)::
 
