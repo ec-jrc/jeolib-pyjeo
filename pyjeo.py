@@ -582,8 +582,8 @@ class Jim(_jipJim):
             raise TypeError('unsupported operand type for * : {}'.format(type(right)))
         return self
 
-    def trueDiv(self, right):
-        #test
+    def _trueDiv(self, right):
+        # test
         # print("true division")
         right_float=Jim(None)
         self_float=Jim(None)
@@ -615,9 +615,9 @@ class Jim(_jipJim):
     #         return Jim(self.pointOpArithCst(left,_jl.DIV_op))
     #     else:
     #         raise TypeError('unsupported operand type for / : {}'.format(type(right)))
-    def itrueDiv(self, right):
-        #test
-        print("true division")
+    def _itrueDiv(self, right):
+        # test
+        # print("true division")
         if self.properties.getDataType() != _jl.GDT_Float32 and self.properties.getDataType() != _jl.GDT_Float64:
             self.pixops.convert(otype='GDT_Float32')
         if isinstance(right, Jim):
@@ -631,17 +631,17 @@ class Jim(_jipJim):
     def __div__(self, right):
         #test
         print("division")
-        truediv=False
+        _trueDiv=False
         if self.properties.getDataType() == _jl.GDT_Float32 or self.properties.getDataType() == _jl.GDT_Float64:
-            truediv=True
+            _trueDiv=True
         else:
             if isinstance(right, Jim):
                 if right.properties.getDataType() == _jl.GDT_Float32 or right.properties.getDataType() == _jl.GDT_Float64:
-                    truediv=True
+                    _trueDiv=True
             elif isinstance(right,float):
-                    truediv=True
-        if truediv:
-            return(self.trueDiv(right))
+                    _trueDiv=True
+        if _trueDiv:
+            return(self._trueDiv(right))
         else:
             if isinstance(right, Jim):
                 return Jim(self.pointOpArith(right,_jl.DIV_op))
