@@ -65,6 +65,20 @@ def NDVI(redJim, nirJim):
     # TODO: Check NODATA values
 
 
+def supremum(jim, *args):
+    """Create Jim composed of biggest values from provided Jim objects.
+
+    :param jim: Jim object (to be sure that at least one is provided)
+    :param args: Jim objects
+    :return: Jim composed of biggest values from provided Jim objects
+    """
+    supremum = _pj.Jim(jim)
+    for newJim in args:
+        supremum = supremum.pointOpArith(newJim, 5)
+
+    return _pj.Jim(supremum)
+
+
 class _PixOps():
     def __init__(self, jim_object):
         """Initialize the module.
@@ -203,3 +217,13 @@ class _PixOps():
 
         self._jim_object._set(ndvi)
         # TODO: Check NODATA values
+
+    def supremum(self, *args):
+        """Change values of Jim for the biggest ones from provided Jim objects.
+
+        Modifies the instance on which the method was called.
+
+        :param args: Jim objects
+        """
+        for jim in args:
+            self._jim_object.d_pointOpArith(jim, 5)
