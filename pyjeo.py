@@ -415,7 +415,7 @@ class Jim(_jipJim):
         return -1*self
 
     ### binary operators ###
-    def __eq__(self, aJim):
+    def __eq__(self, right):
         """Change behaviour of == to check values, not memory alloc pointer.
 
         :return: Jim object with pixels 1 if equal values, 0 otherwise
