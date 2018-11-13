@@ -1,3 +1,5 @@
+"""Test suite for module pyjeo.pixops."""
+
 import pyjeo as pj
 import unittest
 
@@ -5,9 +7,12 @@ import unittest
 testFile = 'tests/data/modis_ndvi_2010.tif'
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 
+
 class BadMaxNDVI(unittest.TestCase):
+    """Test functions and methods needed to compute max NDVI."""
 
     def test_NDVI(self):
+        """Test computing NDVI in different ways."""
         jim = pj.Jim(testFile)
 
         jim_red = pj.geometry.cropBand(jim, 0)
@@ -23,8 +28,8 @@ class BadMaxNDVI(unittest.TestCase):
 
         assert not jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
 
-
     def test_supremum(self):
+        """Test picking up supremum from different computed NDVIs."""
         for tile in tiles:
             jim4 = pj.Jim(tile)
             jim8 = pj.Jim(tile[:-8] + 'nir' + tile[-5] + '.tif')
@@ -41,7 +46,9 @@ class BadMaxNDVI(unittest.TestCase):
                 max_ndvi = pj.pixops.NDVI(jim4, jim8)
                 max_ndvi2 = pj.Jim(max_ndvi)
 
+
 def load_tests(loader=None, tests=None, pattern=None):
+    """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
     suite_list = [loader.loadTestsFromTestCase(BadMaxNDVI)]

@@ -1,6 +1,7 @@
 import jiplib as _jl
 import pyjeo as _pj
 
+
 def convert(jim_object, **kwargs):
     """Convert Jim image with respect to data type.
 
@@ -57,9 +58,9 @@ def NDVI(redJim, nirJim):
     denominator = _pj.Jim(nirJim.convertToFloat32()) + \
                   _pj.Jim(redJim.convertToFloat32())
 
-    denominator[denominator==0] = 1
+    denominator[denominator == 0] = 1
     ndvi = numerator / denominator
-    ndvi[denominator==0] = 1
+    ndvi[denominator == 0] = 1
 
     return _pj.Jim(ndvi)
     # TODO: Check NODATA values
@@ -93,7 +94,8 @@ class _PixOps():
         else:
             return False
 
-    def setData(self, value, ulx, uly, lrx, lry, bands=0, dx=None, dy=None, geo=True):
+    def setData(self, value, ulx, uly, lrx, lry, bands=0, dx=None, dy=None,
+                geo=True):
         """Set range of pixels to value.
 
         :param jim_object: a Jim object
@@ -113,7 +115,8 @@ class _PixOps():
         if not dy:
             dy=0
         for band in bands:
-            self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx, dy, geo)
+            self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx, dy,
+                                     geo)
 
     # def setData(self, value, bands=0):
     #     """Set all pixels to value.
@@ -211,9 +214,9 @@ class _PixOps():
         denominator = _pj.Jim(nir.convertToFloat32()) + \
                       _pj.Jim(red.convertToFloat32())
 
-        denominator[denominator==0] = 1
+        denominator[denominator == 0] = 1
         ndvi = numerator / denominator
-        ndvi[denominator==0] = 1
+        ndvi[denominator == 0] = 1
 
         self._jim_object._set(ndvi)
         # TODO: Check NODATA values

@@ -72,11 +72,13 @@ class Jim(_jipJim):
         """Get subset of the raster dataset.
 
         :param items can be of type:
-
-        tuple: get all pixels defined by tuple (e.g., [0:10,0:10] for first 10 rows and columns in a single band image)
-        Jim object: get all pixels where the specified raster dataset object is > 0
-        VectorOgr: get spatial subset of all pixels covered by the specified vector dataset object
-        returns: subset of the raster dataset
+            tuple: get all pixels defined by tuple (e.g., [0:10,0:10] for first
+                10 rows and columns in a single band image)
+            Jim object: get all pixels where the specified raster dataset object
+                is > 0
+            VectorOgr: get spatial subset of all pixels covered by the specified
+                vector dataset object
+        :returns: subset of the raster dataset
 
         Example:
 
@@ -92,7 +94,8 @@ class Jim(_jipJim):
 
         jim0[(jim0<jim1)]
 
-        Crop a raster dataset according to the extent of a vector dataset, set all pixels not covered to 0 (or value defined as no data)::
+        Crop a raster dataset according to the extent of a vector dataset,
+        set all pixels not covered to 0 (or value defined as no data)::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
         cfn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/QI_DATA/MSK_CLOUDS_B00.gml'
