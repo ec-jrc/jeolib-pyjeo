@@ -333,7 +333,9 @@ class Jim(_jipJim):
 
         :return: Absolute value of Jim raster dataset
         """
-        return Jim(self.pointOpAbs())
+        jim=io.createJim(self)
+        jim.d_pointOpAbs()
+        return Jim(jim)
 
     def __neg__(self):
         """Calculate the negation of Jim raster dataset
@@ -353,85 +355,124 @@ class Jim(_jipJim):
 
     ### binary operators ###
     def __eq__(self, right):
-        """Change behaviour of == to check values, not memory alloc pointer.
+        """Pixel wise check for equality
 
         :return: Jim object with pixels 1 if equal values, 0 otherwise
         """
         projection = self.properties.getProjection()
         gt = self.properties.getGeoTransform()
-        selfnp = _jl.jim2np(self)
-        if isinstance(right, Jim):
-            anp = _jl.jim2np(right)
-        else:
-            anp = right
-        selfnp = np.uint8(1) * (selfnp == anp)
-        jim = Jim(_jl.np2jim(selfnp))
+        jim=None
+        for iband in range(0,self.properties.nrOfBand()):
+            selfnp = _jl.jim2np(self,iband)
+            if isinstance(right, Jim):
+                anp = _jl.jim2np(right,iband)
+            else:
+                anp = right
+            selfnp = np.uint8(1) * (selfnp == anp)
+            if jim:
+                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
+            else:
+                jim=Jim(_jl.np2jim(selfnp))
+
         jim.properties.setProjection(projection)
         jim.properties.setGeoTransform(gt)
         return jim
 
-    def __neq__(self, other):
-        """Change behaviour of != to check values, not memory alloc pointer.
+    def __ne__(self, right):
+        """Pixel wise check for non-equality
 
         :return: False if equal values, True otherwise
         """
-        if isinstance(other, Jim):
-            return not self.isEqual(other)
-        else:
-            return False
+        projection = self.properties.getProjection()
+        gt = self.properties.getGeoTransform()
+        jim=None
+        for iband in range(0,self.properties.nrOfBand()):
+            selfnp = _jl.jim2np(self,iband)
+            if isinstance(right, Jim):
+                anp = _jl.jim2np(right,iband)
+            else:
+                anp = right
+            selfnp = np.uint8(1) * (selfnp != anp)
+            if jim:
+                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
+            else:
+                jim=Jim(_jl.np2jim(selfnp))
+
+        jim.properties.setProjection(projection)
+        jim.properties.setGeoTransform(gt)
+        return jim
 
     def __lt__(self, right):
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
+        projection=self.properties.getProjection()
+        gt=self.properties.getGeoTransform()
+        jim=None
+        for iband in range(0,self.properties.nrOfBand()):
+            selfnp = _jl.jim2np(self,iband)
             if isinstance(right, Jim):
-                anp=_jl.jim2np(right)
+                anp = _jl.jim2np(right,iband)
             else:
-                anp=right
-            selfnp=np.uint8(1)*(selfnp<anp)
-            jim=Jim(_jl.np2jim(selfnp))
-            jim.properties.setProjection(projection)
-            jim.properties.setGeoTransform(gt)
-            return jim
+                anp = right
+            selfnp = np.uint8(1) * (selfnp < anp)
+            if jim:
+                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
+            else:
+                jim=Jim(_jl.np2jim(selfnp))
+        jim.properties.setProjection(projection)
+        jim.properties.setGeoTransform(gt)
+        return jim
     def __le__(self, right):
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
+        projection=self.properties.getProjection()
+        gt=self.properties.getGeoTransform()
+        jim=None
+        for iband in range(0,self.properties.nrOfBand()):
+            selfnp = _jl.jim2np(self,iband)
             if isinstance(right, Jim):
-                anp=_jl.jim2np(right)
+                anp = _jl.jim2np(right,iband)
             else:
-                anp=right
-            selfnp=np.uint8(1)*(selfnp<=anp)
-            jim=Jim(_jl.np2jim(selfnp))
-            jim.properties.setProjection(projection)
-            jim.properties.setGeoTransform(gt)
-            return jim
+                anp = right
+            selfnp = np.uint8(1) * (selfnp <= anp)
+            if jim:
+                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
+            else:
+                jim=Jim(_jl.np2jim(selfnp))
+        jim.properties.setProjection(projection)
+        jim.properties.setGeoTransform(gt)
+        return jim
     def __gt__(self, right):
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
+        projection=self.properties.getProjection()
+        gt=self.properties.getGeoTransform()
+        jim=None
+        for iband in range(0,self.properties.nrOfBand()):
+            selfnp = _jl.jim2np(self,iband)
             if isinstance(right, Jim):
-                anp=_jl.jim2np(right)
+                anp = _jl.jim2np(right,iband)
             else:
-                anp=right
-            selfnp=np.uint8(1)*(selfnp>anp)
-            jim=Jim(_jl.np2jim(selfnp))
-            jim.properties.setProjection(projection)
-            jim.properties.setGeoTransform(gt)
-            return jim
+                anp = right
+            selfnp = np.uint8(1) * (selfnp > anp)
+            if jim:
+                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
+            else:
+                jim=Jim(_jl.np2jim(selfnp))
+        jim.properties.setProjection(projection)
+        jim.properties.setGeoTransform(gt)
+        return jim
     def __ge__(self, right):
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
+        projection=self.properties.getProjection()
+        gt=self.properties.getGeoTransform()
+        for iband in range(0,self.properties.nrOfBand()):
+            selfnp = _jl.jim2np(self,iband)
             if isinstance(right, Jim):
-                anp=_jl.jim2np(right)
+                anp = _jl.jim2np(right,iband)
             else:
-                anp=right
-            selfnp=np.uint8(1)*(selfnp>=anp)
-            jim=Jim(_jl.np2jim(selfnp))
-            jim.properties.setProjection(projection)
-            jim.properties.setGeoTransform(gt)
-            return jim
+                anp = right
+            selfnp = np.uint8(1) * (selfnp >= anp)
+            if jim:
+                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
+            else:
+                jim=Jim(_jl.np2jim(selfnp))
+        jim.properties.setProjection(projection)
+        jim.properties.setGeoTransform(gt)
+        return jim
 
     def __add__(self, right):
         if isinstance(right, Jim):
@@ -439,7 +480,7 @@ class Jim(_jipJim):
         elif type(right) in (int,float):
             return Jim(self.pointOpArithCst(right,_jl.ADD_op))
         else:
-            raise TypeError('unsupported operand type for + : {}'.format(type(right)))
+            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
     def __radd__(self, left):
         if isinstance(left, Jim):
             return Jim(self.pointOpArith(left,_jl.ADD_op))
@@ -563,8 +604,8 @@ class Jim(_jipJim):
         return self
 
     def __div__(self, right):
-        #test
-        print("division")
+        # #test
+        # print("division")
         _trueDiv=False
         if self.properties.getDataType() == _jl.GDT_Float32 or self.properties.getDataType() == _jl.GDT_Float64:
             _trueDiv=True
@@ -579,7 +620,7 @@ class Jim(_jipJim):
         else:
             if isinstance(right, Jim):
                 return Jim(self.pointOpArith(right,_jl.DIV_op))
-            elif type(right) in (int):
+            elif isinstance(right, int):
                 return Jim(self.pointOpArithCst(right,_jl.DIV_op))
             else:
                 raise TypeError('unsupported operand type for / : {}'.format(type(right)))
@@ -596,37 +637,45 @@ class Jim(_jipJim):
         return self
 
     def __mod__(self, right):
-        if type(right) in (int):
+        if isinstance(right, int):
             return Jim(self.pointOpModulo(right))
         else:
             raise TypeError('unsupported operand type for % : {}'.format(type(right)))
     def __imod__(self, right):
-        if type(right) in (int):
+        if isinstance(right, int):
             self.d_pointOpModulo(right)
         else:
             raise TypeError('unsupported operand type for % : {}'.format(type(right)))
         return self
 
     def __lshift__(self, right):
-        if type(right) in (int):
-            return Jim(self.pointOpBitShift(-right))
+        if isinstance(right, int):
+            jim=io.createJim(self)
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.d_pointOpBitShift(-right,iband)
+            return Jim(jim)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
     def __ilshift__(self, right):
-        if type(right) in (int):
-            self.d_pointOpBitShift(-right)
+        if isinstance(right, int):
+            for iband in range(0,self.properties.nrOfBand()):
+                self.d_pointOpBitShift(-right,iband)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
         return self
 
     def __rshift__(self, right):
-        if type(right) in (int):
-            return Jim(self.pointOpBitShift(right))
+        if isinstance(right, int):
+            jim=io.createJim(self)
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.d_pointOpBitShift(right,iband)
+            return Jim(jim)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
-    def __rlshift__(self, right):
-        if type(right) in (int):
-            self.d_pointOpBitShift(right)
+    def __irshift__(self, right):
+        if isinstance(right, int):
+            for iband in range(0,self.properties.nrOfBand()):
+                self.d_pointOpBitShift(right,iband)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
         return self

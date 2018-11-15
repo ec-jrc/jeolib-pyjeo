@@ -187,50 +187,55 @@ def cropBandRange(jim_object, startband, endband):
                                         'endband': endband}))
 
 
-def stackBand(jim_object, band):
+def stackBand(jim_object, jim_other, band=None):
     """Stack bands from another raster dataset to current raster dataset.
 
-    :param jim_object: a Jim object
+    :param jim_object: a Jim object to stack bands
+    :param jim_other: a Jim object from which to copy bands
     :param band: List of band indices to stack (index is 0 based)
     :return: Cropped subimage as Jim instance
 
     Example:
 
-    Append all the bands of raster dataset jim1 to the current image jim0::
+    Append all the bands of raster dataset jim1 to image jim0::
 
         jim0=jl.io.createJim('/path/to/raster0.tif')
         jim1=jl.io.createJim('/path/to/raster1.tif')
-        jim0.stackBand(jim1)
+        pj.geometry.stackBand(jim0,jim1)
 
-    Append the first three bands of raster dataset jim1 to the current image jim0::
+    Append the first three bands of raster dataset jim1 to the image jim0::
 
         jim0=jl.io.createJim('/path/to/raster0.tif')
         jim1=jl.io.createJim('/path/to/raster1.tif')
-        jim0.stackBand(jim1,band=[0,1,2])
+        pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
     """
-    return _pj.Jim(jim_object.stackBand({'band': band}))
+    if band:
+        return _pj.Jim(jim_object.stackBand(jim_other,{'band': band}))
+    else:
+        return _pj.Jim(jim_object.stackBand(jim_other))
 
 
-def stackBandRange(jim_object, startband, endband):
+def stackBandRange(jim_object, jim_other, startband, endband):
     """Subset raster dataset.
 
     Stack range of bands from another raster dataset to current raster dataset.
 
-    :param jim_object: a Jim object
+    :param jim_object: a Jim object to stack bands
+    :param jim_other: a Jim object from which to copy bands
     :param startband: Start band sequence number (index is 0 based)
     :param endband: End band sequence number (index is 0 based)
     :return: Cropped subimage as Jim instance
 
     Example:
 
-    Append the first three bands of raster dataset jim1 to the current image jim0::
+    Append the first three bands of raster dataset jim1 to image jim0::
 
         jim0=jl.io.createJim('/path/to/raster0.tif')
         jim1=jl.io.createJim('/path/to/raster1.tif')
-        jim0.stackBandRange(jim1,startband=0,endband=2])
+        pj.geometry.stackBand(jim0,jim1,startband=0,endband=0)
     """
-    return _pj.Jim(jim_object.stackBand({'startband': startband,
-                                         'endband': endband}))
+    return _pj.Jim(jim_object.stackBand(jim_other, {'startband': startband,
+                                                    'endband': endband}))
 
 
 def warp(jim_object, t_srs, **kwargs):
@@ -545,11 +550,12 @@ class _Geometry():
         self._jim_object.d_cropBand({'startband': startband,
                                      'endband': endband})
 
-    def stackBand(self, band):
+    def stackBand(self, jim_other, band=None):
         """Stack bands from another raster dataset to current raster dataset.
 
         Modifies the instance on which the method was called.
 
+        :param jim_other: a Jim object from which to copy bands
         :param band: List of band indices to stack (index is 0 based)
 
         Example:
@@ -566,15 +572,19 @@ class _Geometry():
             jim1=jl.io.createJim('/path/to/raster1.tif')
             jim0.stackBand(jim1,band=[0,1,2])
         """
-        self._jim_object.d_stackBand({'band': band})
+        if band:
+            self._jim_object.d_stackBand(jim_other,{'band': band})
+        else:
+            self._jim_object.d_stackBand(jim_other)
 
-    def stackBandRange(self, startband, endband):
+    def stackBandRange(self, jim_other, startband, endband):
         """Subset raster dataset.
 
         Stack range of bands from another raster dataset to current raster dataset.
 
         Modifies the instance on which the method was called.
 
+        :param jim_other: a Jim object from which to copy bands
         :param startband: Start band sequence number (index is 0 based)
         :param endband: End band sequence number (index is 0 based)
 
@@ -584,9 +594,9 @@ class _Geometry():
 
             jim0=jl.io.createJim('/path/to/raster0.tif')
             jim1=jl.io.createJim('/path/to/raster1.tif')
-            jim0.stackBandRange(jim1,startband=0,endband=2])
+            jim0.stackBandRange(jim1,startband=0,endband=2)
         """
-        self._jim_object.d_stackBand({'startband': startband,'endband': endband})
+        self._jim_object.d_stackBand(jim_other,{'startband': startband,'endband': endband})
 
     def extractOgr(self, jim_ref, **kwargs):
         """Extract pixel values from raster image based on a vector dataset sample.
