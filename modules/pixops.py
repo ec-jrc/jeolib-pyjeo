@@ -42,27 +42,56 @@ def convert(jim_object, **kwargs):
     jim1.convert({'otype':'Byte'})
     """
     # return _pj.Jim(jim_object.convert(kwargs))
-    retJim=_pj.io.createJim(jim_object)
+    retJim = _pj.io.createJim(jim_object)
     return _pj.Jim(retJim.convert(kwargs))
 
 
-def NDVI(redJim, nirJim):
+def NDVI(jim_object, redBand, nirBand):
+    """Compute NDVI on the Jim object.
+
+    :param redBand: index of band with values of red
+    :param nirBand: index of band with values of NIR
+    :return: a Jim object with values of NDVI
+    """
+    red = _pj.geometry.cropBand(jim_object, redBand)
+    nir = _pj.geometry.cropBand(jim_object, nirBand)
+
+    if nir.properties.getDataType() != 6:
+        nir = _pj.Jim(nir.convertToFloat32())
+    if red.properties.getDataType() != 6:
+        red = _pj.Jim(red.convertToFloat32())
+
+    numerator = nir - red
+    denominator = nir + red
+
+    denominator[denominator == 0] = 1
+    ndvi = numerator / denominator
+    ndvi[denominator == 0] = 1
+
+    return ndvi
+    # TODO: Check NODATA values
+
+
+def NDVISeparateBands(redJim, nirJim):
     """Compute NDVI from two Jim objects.
 
     :param redJim: Jim object with values of red
     :param nirJim: Jim object with values of NIR
     :return: a Jim object with values of NDVI
     """
-    numerator = _pj.Jim(nirJim.convertToFloat32()) - \
-                _pj.Jim(redJim.convertToFloat32())
-    denominator = _pj.Jim(nirJim.convertToFloat32()) + \
-                  _pj.Jim(redJim.convertToFloat32())
+    if nirJim.properties.getDataType() != 6:
+        nirJim = _pj.Jim(nirJim.convertToFloat32())
+    if redJim.properties.getDataType() != 6:
+        redJim = _pj.Jim(redJim.convertToFloat32())
+
+    numerator = nirJim - redJim
+    denominator = nirJim + redJim
 
     denominator[denominator == 0] = 1
     ndvi = numerator / denominator
     ndvi[denominator == 0] = 1
 
-    return _pj.Jim(ndvi)
+    return ndvi
     # TODO: Check NODATA values
 
 
@@ -81,12 +110,12 @@ def supremum(jim, *args):
 
 
 class _PixOps():
-    def __init__(self, jim_object):
-        """Initialize the module.
+    def __init__(self):
+        """Initialize the module."""
+        pass
 
-        :param jim_object: parent Jim object to have access to its attributes
-        """
-        self._jim_object = jim_object
+    def _set_caller(self, caller):
+        self._jim_object = caller
 
     def isEqual(self, other):
         if isinstance(other, _pj.Jim):
@@ -218,10 +247,35 @@ class _PixOps():
         red = _pj.geometry.cropBand(self._jim_object, redBand)
         nir = _pj.geometry.cropBand(self._jim_object, nirBand)
 
-        numerator = _pj.Jim(nir.convertToFloat32()) - \
-                    _pj.Jim(red.convertToFloat32())
-        denominator = _pj.Jim(nir.convertToFloat32()) + \
-                      _pj.Jim(red.convertToFloat32())
+        if nir.properties.getDataType() != 6:
+            nir = _pj.Jim(nir.convertToFloat32())
+        if red.properties.getDataType() != 6:
+            red = _pj.Jim(red.convertToFloat32())
+
+        numerator = nir - red
+        denominator = nir + red
+
+        denominator[denominator == 0] = 1
+        ndvi = numerator / denominator
+        ndvi[denominator == 0] = 1
+
+        self._jim_object._set(ndvi)
+        # TODO: Check NODATA values
+
+    def NDVISeparateBands(self, nirJim):
+        """Compute NDVI from two Jims (call on red band, use NIR as param).
+
+        Modifies the instance on which the method was called.
+
+        :param nirJim: Jim object with values of NIR
+        """
+        if nirJim.properties.getDataType() != 6:
+            nirJim = _pj.Jim(nirJim.convertToFloat32())
+        if self._jim_object.properties.getDataType() != 6:
+            redJim = _pj.Jim(self._jim_object.convertToFloat32())
+
+        numerator = nirJim - redJim
+        denominator = nirJim + redJim
 
         denominator[denominator == 0] = 1
         ndvi = numerator / denominator

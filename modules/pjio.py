@@ -130,6 +130,7 @@ def createJim(filename=None, **kwargs):
     """
     return _pj.Jim(_jl.createJim(filename, **kwargs))
 
+
 def createVector(filename, **kwargs):
     """Create an empty VectorOgr object.
 
@@ -143,13 +144,20 @@ def createVector(filename, **kwargs):
     return _jl.createVector(filename, **kwargs)
 
 
-class _IO():
-    def __init__(self, jim_object):
-        """Initialize the module.
+# def delJimObject(jim_object):
+#     if isinstance(jim_object, _pj.Jim):
+#         del jim_object.properties, jim_object.io, jim_object.pixops, \
+#             jim_object.ngbops, jim_object.geometry, jim_object.ccops, \
+#             jim_object.clssfy, jim_object.demops, jim_object.all
 
-        :param jim_object: parent Jim object to have access to its attributes
-        """
-        self._jim_object = jim_object
+
+class _IO():
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller
 
     def write(self, filename, **kwargs):
         """ Write the raster dataset to file in a GDAL supported format

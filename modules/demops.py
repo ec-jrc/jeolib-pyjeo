@@ -15,12 +15,12 @@ def demFlowDirectionD8(jim_object):
 
 
 class _DEMOps():
-    def __init__(self, jim_object):
-        """Initialize the module.
+    def __init__(self):
+        """Initialize the module."""
+        pass
 
-        :param jim_object: parent Jim object to have access to its attributes
-        """
-        self._jim_object = jim_object
+    def _set_caller(self, caller):
+        self._jim_object = caller
 
     def demFlowDirectionD8(self):
         """Compute the D8 steepest slope direction of each pixel.

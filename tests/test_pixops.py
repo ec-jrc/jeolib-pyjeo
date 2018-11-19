@@ -18,13 +18,21 @@ class BadMaxNDVI(unittest.TestCase):
         jim_red = pj.geometry.cropBand(jim, 0)
         jim_nir = pj.geometry.cropBand(jim, 1)
 
-        ndvi = pj.pixops.NDVI(jim_red, jim_nir)
+        ndvi = pj.pixops.NDVI(jim, 0, 1)
         jim.pixops.NDVI(0, 1)
 
         assert jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
 
-        jim_red += 1
-        ndvi = pj.pixops.NDVI(jim_red, jim_nir)
+        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+        jim_red.pixops.NDVISeparateBands(jim_nir)
+
+        assert jim_red.pixops.isEqual(ndvi), 'Error in computing ' \
+                                             'NDVISeparateBands'
+
+        assert jim_red.pixops.isEqual(jim), 'Error in computing NDVI or ' \
+                                            'NDVISeparateBands'
+
+        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
 
         assert not jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
 
@@ -35,15 +43,17 @@ class BadMaxNDVI(unittest.TestCase):
             jim8 = pj.Jim(tile[:-8] + 'nir' + tile[-5] + '.tif')
 
             if 'max_ndvi' in locals():
-                b = pj.pixops.NDVI(jim4, jim8)
+                b = pj.pixops.NDVISeparateBands(jim4, jim8)
 
                 max_ndvi[b > max_ndvi] = b
                 max_ndvi_func = pj.pixops.supremum(max_ndvi, b)
-                assert max_ndvi.pixops.isEqual(max_ndvi_func)
+                assert max_ndvi.pixops.isEqual(max_ndvi_func), \
+                    'Error in computing supremum'
                 max_ndvi2.pixops.supremum(b)
-                assert max_ndvi.pixops.isEqual(max_ndvi2)
+                assert max_ndvi.pixops.isEqual(max_ndvi2), \
+                    'Error in computing supremum'
             else:
-                max_ndvi = pj.pixops.NDVI(jim4, jim8)
+                max_ndvi = pj.pixops.NDVISeparateBands(jim4, jim8)
                 max_ndvi2 = pj.Jim(max_ndvi)
 
 
