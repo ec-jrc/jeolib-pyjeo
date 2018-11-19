@@ -32,12 +32,12 @@ def distance2dEuclideanSquared(jim_object, band=0):
 
 
 class _CCOps():
-    def __init__(self, jim_object):
-        """Initialize the module.
+    def __init__(self):
+        """Initialize the module."""
+        pass
 
-        :param jim_object: parent Jim object to have access to its attributes
-        """
-        self._jim_object = jim_object
+    def set_caller(self, caller):
+        self._jim_object = caller
 
     def labelImagePixels(self):
         """Label each non-zero pixel of im with a unique label.

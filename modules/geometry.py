@@ -361,12 +361,12 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
 
 
 class _Geometry():
-    def __init__(self, jim_object):
-        """Initialize the module.
+    def __init__(self):
+        """Initialize the module."""
+        pass
 
-        :param jim_object: parent Jim object to have access to its attributes
-        """
-        self._jim_object = jim_object
+    def set_caller(self, caller):
+        self._jim_object = caller
 
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
             lrz=None, dx=None, dy=None, nogeo=False, **kwargs):

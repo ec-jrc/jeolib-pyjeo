@@ -1,12 +1,17 @@
 from __future__ import division
-from jiplib import Jim as _jipJim
 import numpy as np
+import gc
+
 import jiplib as _jl
+
 from modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, clssfy, demops, all
 
 
-class Jim(_jipJim):
+del _jl.Jim.__del__
+
+
+class Jim(_jl.Jim):
     def __init__(self, image, *args):
         """Initialize the Jim object and modules for methods.
 
@@ -15,22 +20,112 @@ class Jim(_jipJim):
         """
         super(Jim, self).__init__(image, *args)
 
-        self.properties = properties._Properties(self)
-        self.io = io._IO(self)
-        self.pixops = pixops._PixOps(self)
-        self.ngbops = ngbops._NgbOps(self)
-        self.geometry = geometry._Geometry(self)
-        self.ccops = ccops._CCOps(self)
-        self.clssfy = clssfy._Classify(self)
-        self.demops = demops._DEMOps(self)
-        self.all = all._All(self)
+        self._all = all._All()
+        self._ccops = ccops._CCOps()
+        self._clssfy = clssfy._Classify()
+        self._demops = demops._DEMOps()
+        self._geometry = geometry._Geometry()
+        self._io = io._IO()
+        self._ngbops = ngbops._NgbOps()
+        self._pixops = pixops._PixOps()
+        self._properties = properties._Properties()
+
+    @property
+    def all(self):
+        self._all.set_caller(self)
+        gc.collect()
+        return self._all
+
+    @all.setter
+    def all(self, new_props):
+        self._all = new_props
+
+    @property
+    def ccops(self):
+        self._ccops.set_caller(self)
+        gc.collect()
+        return self._ccops
+
+    @ccops.setter
+    def ccops(self, new_props):
+        self._ccops = new_props
+
+    @property
+    def clssfy(self):
+        self._clssfy.set_caller(self)
+        gc.collect()
+        return self._clssfy
+
+    @clssfy.setter
+    def clssfy(self, new_props):
+        self._clssfy = new_props
+
+    @property
+    def demops(self):
+        self._demops.set_caller(self)
+        gc.collect()
+        return self._demops
+
+    @demops.setter
+    def demops(self, new_props):
+        self._demops = new_props
+
+    @property
+    def geometry(self):
+        self._geometry.set_caller(self)
+        gc.collect()
+        return self._geometry
+
+    @geometry.setter
+    def geometry(self, new_props):
+        self._geometry = new_props
+
+    @property
+    def io(self):
+        self._io.set_caller(self)
+        gc.collect()
+        return self._io
+
+    @io.setter
+    def io(self, new_props):
+        self._io = new_props
+
+    @property
+    def ngbops(self):
+        self._ngbops.set_caller(self)
+        gc.collect()
+        return self._ngbops
+
+    @io.setter
+    def io(self, new_props):
+        self._io = new_props
+
+    @property
+    def pixops(self):
+        self._pixops.set_caller(self)
+        gc.collect()
+        return self._pixops
+
+    @pixops.setter
+    def pixops(self, new_props):
+        self._pixops = new_props
+
+    @property
+    def properties(self):
+        self._properties.set_caller(self)
+        gc.collect()
+        return self._properties
+
+    @properties.setter
+    def properties(self, new_props):
+        self._properties = new_props
 
     def __dir__(self):
         """Change behaviour of the method whisperer to ignore jiplib methods.
 
         :return: a whispered module or method
         """
-        pyjeo_Jim_methods = list(set(dir(Jim)) - set(dir(_jipJim)))
+        pyjeo_Jim_methods = list(set(dir(Jim)) - set(dir(_jl.Jim)))
         return [i for i in self.__dict__.keys() if i != 'this'] + \
                pyjeo_Jim_methods
 
