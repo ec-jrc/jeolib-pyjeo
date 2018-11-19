@@ -114,7 +114,7 @@ class _PixOps():
         """Initialize the module."""
         pass
 
-    def set_caller(self, caller):
+    def _set_caller(self, caller):
         self._jim_object = caller
 
     def isEqual(self, other):

@@ -32,7 +32,7 @@ class Jim(_jl.Jim):
 
     @property
     def all(self):
-        self._all.set_caller(self)
+        self._all._set_caller(self)
         gc.collect()
         return self._all
 
@@ -42,7 +42,7 @@ class Jim(_jl.Jim):
 
     @property
     def ccops(self):
-        self._ccops.set_caller(self)
+        self._ccops._set_caller(self)
         gc.collect()
         return self._ccops
 
@@ -52,7 +52,7 @@ class Jim(_jl.Jim):
 
     @property
     def clssfy(self):
-        self._clssfy.set_caller(self)
+        self._clssfy._set_caller(self)
         gc.collect()
         return self._clssfy
 
@@ -62,7 +62,7 @@ class Jim(_jl.Jim):
 
     @property
     def demops(self):
-        self._demops.set_caller(self)
+        self._demops._set_caller(self)
         gc.collect()
         return self._demops
 
@@ -72,7 +72,7 @@ class Jim(_jl.Jim):
 
     @property
     def geometry(self):
-        self._geometry.set_caller(self)
+        self._geometry._set_caller(self)
         gc.collect()
         return self._geometry
 
@@ -82,7 +82,7 @@ class Jim(_jl.Jim):
 
     @property
     def io(self):
-        self._io.set_caller(self)
+        self._io._set_caller(self)
         gc.collect()
         return self._io
 
@@ -92,7 +92,7 @@ class Jim(_jl.Jim):
 
     @property
     def ngbops(self):
-        self._ngbops.set_caller(self)
+        self._ngbops._set_caller(self)
         gc.collect()
         return self._ngbops
 
@@ -102,7 +102,7 @@ class Jim(_jl.Jim):
 
     @property
     def pixops(self):
-        self._pixops.set_caller(self)
+        self._pixops._set_caller(self)
         gc.collect()
         return self._pixops
 
@@ -112,7 +112,7 @@ class Jim(_jl.Jim):
 
     @property
     def properties(self):
-        self._properties.set_caller(self)
+        self._properties._set_caller(self)
         gc.collect()
         return self._properties
 

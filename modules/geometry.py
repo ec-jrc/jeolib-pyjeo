@@ -365,7 +365,7 @@ class _Geometry():
         """Initialize the module."""
         pass
 
-    def set_caller(self, caller):
+    def _set_caller(self, caller):
         self._jim_object = caller
 
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,

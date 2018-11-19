@@ -6,7 +6,7 @@ class _Properties():
         """Initialize the module."""
         pass
 
-    def set_caller(self, caller):
+    def _set_caller(self, caller):
         self._jim_object = caller
 
     def dumpImg3D(self, x, y, z, nx, ny):

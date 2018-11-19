@@ -6,7 +6,7 @@ class _NgbOps():
         """Initialize the module."""
         pass
 
-    def set_caller(self, caller):
+    def _set_caller(self, caller):
         self._jim_object = caller
 
     def morphoErode(self, sec_jim_object, ox, oy, oz, trFlag=0):
