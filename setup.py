@@ -1,3 +1,5 @@
+"""Install the pyJEO package."""
+
 import sys
 
 try:
@@ -16,5 +18,3 @@ setup(
     url='https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO',
     packages=find_packages(exclude=['doc', 'tests']),
     include_package_data=True)
-
-

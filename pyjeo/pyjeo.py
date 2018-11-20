@@ -172,7 +172,7 @@ class Jim(_jl.Jim):
         """
         self.__dict__.update(modified_object.__dict__)
 
-    ### unary operators ###
+    # *** unary operators *** #
 
     def __getitem__(self, item):
         stridex=1
@@ -180,40 +180,40 @@ class Jim(_jl.Jim):
         strideb=1
         if isinstance(item, tuple):
             if isinstance(item[0],slice):
-                minCol=item[0].start
-                maxCol=item[0].stop-1
+                minCol = item[0].start
+                maxCol = item[0].stop-1
                 if item[0].step:
-                    stridex=item[0].step
+                    stridex = item[0].step
             elif isinstance(item[0],int):
-                minCol=item[0]
-                maxCol=item[0]+1
+                minCol = item[0]
+                maxCol = item[0]+1
             else:
                 raise ValueError('column item must be slice or integer value')
             if isinstance(item[1],slice):
-                minRow=item[1].start
-                maxRow=item[1].stop-1
+                minRow = item[1].start
+                maxRow = item[1].stop-1
                 if item[1].step:
-                    stridey=item[1].step
+                    stridey = item[1].step
             elif isinstance(item[1],int):
-                minRow=item[1]
-                maxRow=item[1]+1
+                minRow = item[1]
+                maxRow = item[1]+1
             else:
                 raise ValueError('row item must be slice or integer value')
             bands=[]
-            if self.nrOfPlane()>1:
-                if self.properties.nrOfBand()>1:
+            if self.nrOfPlane() > 1:
+                if self.properties.nrOfBand() > 1:
                     if len(item) == 4:#do slice x,y,z,band
                         if isinstance(item[3], slice):
                             if item[2].step:
-                                strideb=item[2].step
+                                strideb = item[2].step
                             bands=range(item[3].start,item[3].stop,strideb)
                         if isinstance(item[3], tuple):
-                            bands=item[3]
+                            bands = item[3]
                         elif isinstance(item[3], int):
                             bands.append(item[3])
                         else:
                             raise ValueError('Error: band index must be slice, list or integer')
-                        retJim=geometry.cropBand(self,band=bands)
+                        retJim = geometry.cropBand(self,band=bands)
                         retJim.geometry.crop(ulx=minCol, lrx=maxCol, uly=minRow, lry=maxRow, ulz=item[2].start, lrz=item[2].stop, dx=stridex, dy=stridey, nogeo=True)
                         # retJim.geometry.crop(ulx=ulx, lrx=lrx, uly=uly, lry=lry, ulz=item[2].start, lrz=item[2].stop,band=band)
                         return retJim
@@ -221,8 +221,15 @@ class Jim(_jl.Jim):
                         raise TypeError('Error: use 4 dimensions when slicing multiband 3-dim Jim object (x:y:z:band)')
                 else:
                     if len(item) == 3:#do slice x,y,z
-                        retJim=geometry.crop(self,ulx=minCol, uly=minRow, ulz=item[2].start, lrx=maxCol, lry=maxRow, lrz=item[2].stop, dx=stridex, dy=stridey, nogeo=True)
-                        # retJim=geometry.crop(self,ulx=ulx, lrx=lrx, uly=uly, lry=lry, ulz=item[2].start, lrz=item[2].stop)
+                        retJim = geometry.crop(self,ulx=minCol, uly=minRow,
+                                               ulz=item[2].start, lrx=maxCol,
+                                               lry=maxRow, lrz=item[2].stop,
+                                               dx=stridex, dy=stridey,
+                                               nogeo=True)
+                        # retJim=geometry.crop(self, ulx=ulx, lrx=lrx,
+                        #                      uly=uly, lry=lry,
+                        #                      ulz=item[2].start,
+                        #                      lrz=item[2].stop)
                         return retJim
                     else:
                         raise TypeError('Error: use 3 dimensions when slicing 3-dim Jim object (x:y:z)')
@@ -231,15 +238,15 @@ class Jim(_jl.Jim):
                     if len(item) == 3:#do slice x,y,band
                         if isinstance(item[2], slice):
                             if item[2].step:
-                                strideb=item[2].step
-                            bands=range(item[2].start,item[2].stop,strideb)
+                                strideb = item[2].step
+                            bands=range(item[2].start, item[2].stop,strideb)
                         if isinstance(item[2], tuple):
-                            bands=item[2]
+                            bands = item[2]
                         elif isinstance(item[2], int):
                             bands.append(item[2])
                         else:
                             raise ValueError('Error: band index must be slice, list or integer')
-                        retJim=geometry.cropBand(self,band=bands)
+                        retJim = geometry.cropBand(self,band=bands)
                         retJim.geometry.crop(ulx=minCol, uly=minRow, ulz=None, lrx=maxCol, lry=maxRow, lrz=None, dx=stridex, dy=stridey, nogeo=True)
                         # retJim.geometry.crop(ulx=ulx, lrx=lrx, uly=uly, lry=lry,band=band)
                         return retJim
@@ -247,30 +254,34 @@ class Jim(_jl.Jim):
                         raise TypeError('Error: use 3 dimensions when slicing multiband 2-dim Jim object (x:y:band)')
                 else:
                     if len(item) == 2:#do slice x,y
-                        retJim=geometry.crop(self,ulx=minCol, uly=minRow, ulz=None, lrx=maxCol, lry=maxRow, lrz=None, dx=stridex, dy=stridey, nogeo=True)
+                        retJim = geometry.crop(self,ulx=minCol, uly=minRow,
+                                               ulz=None, lrx=maxCol,
+                                               lry=maxRow, lrz=None,
+                                               dx=stridex, dy=stridey,
+                                               nogeo=True)
                         # retJim=geometry.crop(self,ulx=ulx, lrx=lrx, uly=uly, lry=lry,band=0)
                         return retJim
                     else:
                         raise TypeError('Error: use 2 dimensions when slicing 2-dim Jim object (x:y)')
         elif isinstance(item, Jim):
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
-            itemnp=_jl.jim2np(item)
+            projection = self.properties.getProjection()
+            gt = self.properties.getGeoTransform()
+            selfnp = _jl.jim2np(self)
+            itemnp = _jl.jim2np(item)
             # itemnp=itemnp==0
-            selfnp[itemnp==0]=0
-            retJim=Jim(_jl.np2jim(selfnp))
+            selfnp[itemnp==0] = 0
+            retJim = Jim(_jl.np2jim(selfnp))
             retJim.properties.setProjection(projection)
             retJim.properties.setGeoTransform(gt)
             return retJim
         elif isinstance(item, _jl.VectorOgr):
-            if self.nrOfPlane()>1:
+            if self.nrOfPlane() > 1:
                 raise ValueError('Error: __getitem__ not implemented for 3d Jim objects')
-            nodata=self.properties.getNoDataVals()
+            nodata = self.properties.getNoDataVals()
             if nodata:
-                nodata=nodata[0]
+                nodata = nodata[0]
             else:
-                nodata=0
+                nodata = 0
             return geometry.cropOgr(self,item,crop_to_cutline=True,nodata=nodata,align=True)
 
     def __setitem__(self, item, value):
@@ -279,59 +290,60 @@ class Jim(_jl.Jim):
             if value is None:
                 #todo set empty Jim?
                 raise AttributeError("can't set item of Jim")
-            projection=self.properties.getProjection()
-            gt=self.properties.getGeoTransform()
-            selfnp=_jl.jim2np(self)
-            itemnp=_jl.jim2np(item)
-            itemnp=itemnp>0
+            projection = self.properties.getProjection()
+            gt = self.properties.getGeoTransform()
+            selfnp = _jl.jim2np(self)
+            itemnp = _jl.jim2np(item)
+            itemnp = itemnp>0
             if isinstance(value, Jim):
-                valuenp=_jl.jim2np(value)
-                selfnp[itemnp]=valuenp[itemnp]
+                valuenp = _jl.jim2np(value)
+                selfnp[itemnp] = valuenp[itemnp]
             else:
-                selfnp[itemnp]=value
+                selfnp[itemnp] = value
             self._set(_jl.np2jim(selfnp))
             self.properties.setProjection(projection)
             self.properties.setGeoTransform(gt)
         elif isinstance(item, tuple):
-            if self.nrOfPlane()>1:
+            if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d Jim objects')
             else:
-                if self.properties.nrOfBand()>1:
-                    if len(item) == 3:#do slice x,y,band
-                        stridex=1
-                        stridey=1
-                        strideb=1
-                        if isinstance(item[0],slice):
-                            minCol=item[0].start
-                            maxCol=item[0].stop-1
+                if self.properties.nrOfBand() > 1:
+                    if len(item) == 3:  # do slice x,y,band
+                        stridex = 1
+                        stridey = 1
+                        strideb = 1
+                        if isinstance(item[0], slice):
+                            minCol = item[0].start
+                            maxCol = item[0].stop-1
                             if item[0].step:
-                                stridex=item[0].step
-                        elif isinstance(item[0],int):
-                            minCol=item[0]
-                            maxCol=item[0]
+                                stridex = item[0].step
+                        elif isinstance(item[0], int):
+                            minCol = item[0]
+                            maxCol = item[0]
                         else:
                             raise ValueError('column item must be slice or integer value')
-                        if isinstance(item[1],slice):
-                            minRow=item[1].start
-                            maxRow=item[1].stop-1
+                        if isinstance(item[1], slice):
+                            minRow = item[1].start
+                            maxRow = item[1].stop-1
                             if item[1].step:
-                                stridey=item[1].step
-                        elif isinstance(item[1],int):
-                            minRow=item[1]
-                            maxRow=item[1]
+                                stridey = item[1].step
+                        elif isinstance(item[1], int):
+                            minRow = item[1]
+                            maxRow = item[1]
                         else:
                             raise ValueError('row item must be slice or integer value')
-                        if isinstance(value,float):
+                        if isinstance(value, float):
                             if self.properties.getDataType() != _jl.GDT_Float32 and self.properties.getDataType() != _jl.GDT_Float64:
                                 self.pixops.convert(otype='GDT_Float32')
                         if type(value) in (float,int):
-                            bands=[0]
+                            bands = [0]
                             if isinstance(item[2],slice):
                                 if item[2].step:
-                                    strideb=item[2].step
-                                bands=range(item[2].start,item[2].stop,strideb)
+                                    strideb = item[2].step
+                                bands=range(item[2].start, item[2].stop,
+                                            strideb)
                             else:
-                                bands=[item[2]]
+                                bands = [item[2]]
                             print("setData to {}".format(value))
                             self.pixops.setData(value,ulx=minCol,uly=minRow,lrx=maxCol,lry=maxRow,bands=bands,dx=stridex,dy=stridey,nogeo=True)
                         else:
@@ -339,54 +351,60 @@ class Jim(_jl.Jim):
                     else:
                         raise TypeError('Error: use 3 dimensions when slicing multiband 2-dim Jim object (x:y:band)')
                 else:
-                    stridex=1
-                    stridey=1
-                    if len(item) == 2:#do slice x,y
-                        if isinstance(item[0],slice):
-                            minCol=item[0].start
-                            maxCol=item[0].stop-1
+                    stridex = 1
+                    stridey = 1
+                    if len(item) == 2:  # do slice x,y
+                        if isinstance(item[0], slice):
+                            minCol = item[0].start
+                            maxCol = item[0].stop-1
                             if item[0].step:
-                                stridex=item[0].step
-                        elif isinstance(item[0],int):
-                            minCol=item[0]
-                            maxCol=item[0]
+                                stridex = item[0].step
+                        elif isinstance(item[0], int):
+                            minCol = item[0]
+                            maxCol = item[0]
                         else:
                             raise ValueError('column item must be slice or integer value')
-                        if isinstance(item[1],slice):
-                            minRow=item[1].start
-                            maxRow=item[1].stop-1
+                        if isinstance(item[1], slice):
+                            minRow = item[1].start
+                            maxRow = item[1].stop-1
                             if item[1].step:
-                                stridey=item[1].step
-                        elif isinstance(item[1],int):
-                            minRow=item[1]
-                            maxRow=item[1]
+                                stridey = item[1].step
+                        elif isinstance(item[1], int):
+                            minRow = item[1]
+                            maxRow = item[1]
                         else:
                             raise ValueError('row item must be slice or integer value')
-                        if isinstance(value,float):
+                        if isinstance(value, float):
                             if self.properties.getDataType() != _jl.GDT_Float32 and self.properties.getDataType() != _jl.GDT_Float64:
                                 self.pixops.convert(otype='GDT_Float32')
-                        if type(value) in (float,int):
-                            bands=[0]
+                        if type(value) in (float, int):
+                            bands = [0]
                             print("setData to {}".format(value))
-                            self.pixops.setData(value,ulx=minCol,uly=minRow,lrx=maxCol,lry=maxRow,bands=bands,dx=stridex,dy=stridey,nogeo=True)
+                            self.pixops.setData(value, ulx=minCol, uly=minRow,
+                                                lrx=maxCol, lry=maxRow,
+                                                bands=bands, dx=stridex,
+                                                dy=stridey, nogeo=True)
                         else:
                             raise TypeError('Error: __setitem__ not implemented for value type {}'.format(type(value)))
                     else:
                         raise TypeError('Error: use 2 dimensions when slicing 2-dim Jim object (x:y)')
         elif isinstance(item, _jl.VectorOgr):
-            if self.nrOfPlane()>1:
+            if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d Jim objects')
             #todo: decide on default behaviour of ALL_TOUCHED=TRUE
-            if type(value) in (float,int):
-                nodataValues=self.properties.getNoDataVals()
-                self._set(self.setMask(item,{'eo':['ALL_TOUCHED=TRUE'],'nodata':value}))
+            if type(value) in (float, int):
+                nodataValues = self.properties.getNoDataVals()
+                self._set(self.setMask(item, {'eo': ['ALL_TOUCHED=TRUE'],
+                                              'nodata': value}))
                 self.properties.clearNoData()
                 self.properties.setNoDataVals(nodataValues)
             elif isinstance(value, Jim):
-                templateJim=Jim(self,False)
+                templateJim = Jim(self,False)
                 templateJim.setData(0)
-                templateJim=Jim(templateJim.setMask(item,{'eo':['ALL_TOUCHED=TRUE'],'nodata':1}))
-                self[templateJim>0]=value
+                templateJim = Jim(templateJim.setMask(
+                    item,
+                    {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
+                self[templateJim>0] = value
 
     # def __setitem__(self, item, value):
     #     if value is None:
@@ -439,7 +457,7 @@ class Jim(_jl.Jim):
 
         :return: Absolute value of Jim raster dataset
         """
-        jim=io.createJim(self)
+        jim = io.createJim(self)
         jim.d_pointOpAbs()
         return Jim(jim)
 
@@ -457,9 +475,9 @@ class Jim(_jl.Jim):
         if self.properties.getDataType() == _jl.GDT_UInt32:
             print("Warning: converting data type to Int32, potential overflows may occur!")
             self.pixops.convert(otype='Int32')
-        return -1*self
+        return -1 * self
 
-    ### binary operators ###
+    # *** binary operators *** #
     def __eq__(self, right):
         """Pixel wise check for equality
 
@@ -467,7 +485,7 @@ class Jim(_jl.Jim):
         """
         projection = self.properties.getProjection()
         gt = self.properties.getGeoTransform()
-        jim=None
+        jim = None
         for iband in range(0,self.properties.nrOfBand()):
             selfnp = _jl.jim2np(self,iband)
             if isinstance(right, Jim):
@@ -478,7 +496,7 @@ class Jim(_jl.Jim):
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
-                jim=Jim(_jl.np2jim(selfnp))
+                jim = Jim(_jl.np2jim(selfnp))
 
         jim.properties.setProjection(projection)
         jim.properties.setGeoTransform(gt)
@@ -491,7 +509,7 @@ class Jim(_jl.Jim):
         """
         projection = self.properties.getProjection()
         gt = self.properties.getGeoTransform()
-        jim=None
+        jim = None
         for iband in range(0,self.properties.nrOfBand()):
             selfnp = _jl.jim2np(self,iband)
             if isinstance(right, Jim):
@@ -502,16 +520,16 @@ class Jim(_jl.Jim):
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
-                jim=Jim(_jl.np2jim(selfnp))
+                jim = Jim(_jl.np2jim(selfnp))
 
         jim.properties.setProjection(projection)
         jim.properties.setGeoTransform(gt)
         return jim
 
     def __lt__(self, right):
-        projection=self.properties.getProjection()
-        gt=self.properties.getGeoTransform()
-        jim=None
+        projection = self.properties.getProjection()
+        gt = self.properties.getGeoTransform()
+        jim = None
         for iband in range(0,self.properties.nrOfBand()):
             selfnp = _jl.jim2np(self,iband)
             if isinstance(right, Jim):
@@ -522,10 +540,11 @@ class Jim(_jl.Jim):
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
-                jim=Jim(_jl.np2jim(selfnp))
+                jim = Jim(_jl.np2jim(selfnp))
         jim.properties.setProjection(projection)
         jim.properties.setGeoTransform(gt)
         return jim
+
     def __le__(self, right):
         projection=self.properties.getProjection()
         gt=self.properties.getGeoTransform()
@@ -540,65 +559,68 @@ class Jim(_jl.Jim):
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
-                jim=Jim(_jl.np2jim(selfnp))
+                jim = Jim(_jl.np2jim(selfnp))
         jim.properties.setProjection(projection)
         jim.properties.setGeoTransform(gt)
         return jim
     def __gt__(self, right):
-        projection=self.properties.getProjection()
-        gt=self.properties.getGeoTransform()
-        jim=None
-        for iband in range(0,self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self,iband)
+        projection = self.properties.getProjection()
+        gt = self.properties.getGeoTransform()
+        jim = None
+        for iband in range(0, self.properties.nrOfBand()):
+            selfnp = _jl.jim2np(self, iband)
             if isinstance(right, Jim):
-                anp = _jl.jim2np(right,iband)
+                anp = _jl.jim2np(right, iband)
             else:
                 anp = right
             selfnp = np.uint8(1) * (selfnp > anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
-                jim=Jim(_jl.np2jim(selfnp))
+                jim = Jim(_jl.np2jim(selfnp))
         jim.properties.setProjection(projection)
         jim.properties.setGeoTransform(gt)
         return jim
+
     def __ge__(self, right):
-        projection=self.properties.getProjection()
-        gt=self.properties.getGeoTransform()
+        projection = self.properties.getProjection()
+        gt = self.properties.getGeoTransform()
         for iband in range(0,self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self,iband)
+            selfnp = _jl.jim2np(self, iband)
             if isinstance(right, Jim):
-                anp = _jl.jim2np(right,iband)
+                anp = _jl.jim2np(right, iband)
             else:
                 anp = right
             selfnp = np.uint8(1) * (selfnp >= anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
-                jim=Jim(_jl.np2jim(selfnp))
+                jim = Jim(_jl.np2jim(selfnp))
         jim.properties.setProjection(projection)
         jim.properties.setGeoTransform(gt)
         return jim
 
     def __add__(self, right):
         if isinstance(right, Jim):
-            return Jim(self.pointOpArith(right,_jl.ADD_op))
-        elif type(right) in (int,float):
-            return Jim(self.pointOpArithCst(right,_jl.ADD_op))
+            return Jim(self.pointOpArith(right, _jl.ADD_op))
+        elif type(right) in (int, float):
+            return Jim(self.pointOpArithCst(right, _jl.ADD_op))
         else:
             raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+
     def __radd__(self, left):
         if isinstance(left, Jim):
-            return Jim(self.pointOpArith(left,_jl.ADD_op))
-        elif type(left) in (int,float):
-            return Jim(self.pointOpArithCst(left,_jl.ADD_op))
+            return Jim(self.pointOpArith(left, _jl.ADD_op))
+        elif type(left) in (int, float):
+            return Jim(self.pointOpArithCst(left, _jl.ADD_op))
         else:
             raise TypeError('unsupported operand type for + : {}'.format(type(left)))
+
     def __iadd__(self, right):
         if isinstance(right, Jim):
-            self.d_pointOpArith(right,_jl.ADD_op)
-        elif type(right) in (int,float):
-            self.d_pointOpArithCst(right,_jl.ADD_op)
+            self.d_pointOpArith(right, _jl.ADD_op)
+        elif type(right) in (int, float):
+            self.d_pointOpArithCst(right, _jl.ADD_op)
         else:
             raise TypeError('unsupported operand type for + : {}'.format(type(right)))
         return self
@@ -610,13 +632,15 @@ class Jim(_jl.Jim):
             return Jim(self.pointOpArithCst(right,_jl.SUB_op))
         else:
             raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+
     def __rsub__(self, left):
         if isinstance(left, Jim):
-            return -1*Jim(self.pointOpArith(left,_jl.SUB_op))
-        elif type(left) in (int,float):
-            return -1*Jim(self.pointOpArithCst(left,_jl.SUB_op))
+            return -1 * Jim(self.pointOpArith(left, _jl.SUB_op))
+        elif type(left) in (int, float):
+            return -1 * Jim(self.pointOpArithCst(left, _jl.SUB_op))
         else:
             raise TypeError('unsupported operand type for - : {}'.format(type(left)))
+
     def __isub__(self, right):
         if isinstance(right, Jim):
             self.d_pointOpArith(right,_jl.SUB_op)
@@ -640,6 +664,7 @@ class Jim(_jl.Jim):
                 return Jim(self.pointOpArithCst(right,_jl.MULT_op))
         else:
             raise TypeError('unsupported operand type for * : {}'.format(type(right)))
+
     def __rmul__(self, left):
         if isinstance(left, Jim):
             return Jim(self.pointOpArith(left,_jl.MULT_op))
@@ -654,6 +679,7 @@ class Jim(_jl.Jim):
                 return Jim(self.pointOpArithCst(left,_jl.MULT_op))
         else:
             raise TypeError('unsupported operand type for * : {}'.format(type(left)))
+
     def __imul__(self, right):
         if isinstance(right, Jim):
             self.d_pointOpArith(right,_jl.MULT_op)
@@ -666,29 +692,30 @@ class Jim(_jl.Jim):
     def _trueDiv(self, right):
         # test
         # print("true division")
-        right_float=Jim(None)
-        self_float=Jim(None)
+        right_float = Jim(None)
+        self_float = Jim(None)
         if self.properties.getDataType() != _jl.GDT_Float32 and self.properties.getDataType() != _jl.GDT_Float64:
-            self_float=pixops.convert(self,otype='GDT_Float32')
+            self_float = pixops.convert(self,otype='GDT_Float32')
         if isinstance(right, Jim):
             if right.properties.getDataType() != _jl.GDT_Float32 and right.properties.getDataType() != _jl.GDT_Float64:
-                right_float=pixops.convert(right,otype='GDT_Float32')
+                right_float = pixops.convert(right,otype='GDT_Float32')
                 if self_float:
-                    return Jim(self_float.pointOpArith(right_float,_jl.DIV_op))
+                    return Jim(self_float.pointOpArith(right_float, _jl.DIV_op))
                 else:
-                    return Jim(self.pointOpArith(right_float,_jl.DIV_op))
+                    return Jim(self.pointOpArith(right_float, _jl.DIV_op))
             else:
                 if self_float:
-                    return Jim(self_float.pointOpArith(right,_jl.DIV_op))
+                    return Jim(self_float.pointOpArith(right, _jl.DIV_op))
                 else:
-                    return Jim(self.pointOpArith(right,_jl.DIV_op))
+                    return Jim(self.pointOpArith(right, _jl.DIV_op))
         elif type(right) in (int,float):
             if self_float:
-                return Jim(self_float.pointOpArithCst(right,_jl.DIV_op))
+                return Jim(self_float.pointOpArithCst(right, _jl.DIV_op))
             else:
-                return Jim(self.pointOpArithCst(right,_jl.DIV_op))
+                return Jim(self.pointOpArithCst(right, _jl.DIV_op))
         else:
             raise TypeError('unsupported operand type for / : {}'.format(type(right)))
+
     # def __rtruediv__(self, left):
     #     if isinstance(left, Jim):
     #         return Jim(self.pointOpArith(left,_jl.DIV_op))
@@ -696,15 +723,16 @@ class Jim(_jl.Jim):
     #         return Jim(self.pointOpArithCst(left,_jl.DIV_op))
     #     else:
     #         raise TypeError('unsupported operand type for / : {}'.format(type(right)))
+
     def _itrueDiv(self, right):
         # test
         # print("true division")
         if self.properties.getDataType() != _jl.GDT_Float32 and self.properties.getDataType() != _jl.GDT_Float64:
             self.pixops.convert(otype='GDT_Float32')
         if isinstance(right, Jim):
-            self.d_pointOpArith(right,_jl.DIV_op)
-        elif type(right) in (int,float):
-            self.d_pointOpArithCst(right,_jl.DIV_op)
+            self.d_pointOpArith(right, _jl.DIV_op)
+        elif type(right) in (int, float):
+            self.d_pointOpArithCst(right, _jl.DIV_op)
         else:
             raise TypeError('unsupported operand type for / : {}'.format(type(right)))
         return self
@@ -712,22 +740,22 @@ class Jim(_jl.Jim):
     def __div__(self, right):
         # #test
         # print("division")
-        _trueDiv=False
+        _trueDiv = False
         if self.properties.getDataType() == _jl.GDT_Float32 or self.properties.getDataType() == _jl.GDT_Float64:
-            _trueDiv=True
+            _trueDiv = True
         else:
             if isinstance(right, Jim):
                 if right.properties.getDataType() == _jl.GDT_Float32 or right.properties.getDataType() == _jl.GDT_Float64:
-                    _trueDiv=True
+                    _trueDiv = True
             elif isinstance(right,float):
                     _trueDiv=True
         if _trueDiv:
             return(self._trueDiv(right))
         else:
             if isinstance(right, Jim):
-                return Jim(self.pointOpArith(right,_jl.DIV_op))
+                return Jim(self.pointOpArith(right, _jl.DIV_op))
             elif isinstance(right, int):
-                return Jim(self.pointOpArithCst(right,_jl.DIV_op))
+                return Jim(self.pointOpArithCst(right, _jl.DIV_op))
             else:
                 raise TypeError('unsupported operand type for / : {}'.format(type(right)))
 
@@ -735,9 +763,9 @@ class Jim(_jl.Jim):
         if self.properties.getDataType() != _jl.GDT_Float32 and self.properties.getDataType() != _jl.GDT_Float64:
             self.pixops.convert(otype='GDT_Float32')
         if isinstance(right, Jim):
-            self.d_pointOpArith(right,_jl.DIV_op)
-        elif type(right) in (int,float):
-            self.d_pointOpArithCst(right,_jl.DIV_op)
+            self.d_pointOpArith(right, _jl.DIV_op)
+        elif type(right) in (int, float):
+            self.d_pointOpArithCst(right, _jl.DIV_op)
         else:
             raise TypeError('unsupported operand type for / : {}'.format(type(right)))
         return self
@@ -747,6 +775,7 @@ class Jim(_jl.Jim):
             return Jim(self.pointOpModulo(right))
         else:
             raise TypeError('unsupported operand type for % : {}'.format(type(right)))
+
     def __imod__(self, right):
         if isinstance(right, int):
             self.d_pointOpModulo(right)
@@ -758,14 +787,15 @@ class Jim(_jl.Jim):
         if isinstance(right, int):
             jim=io.createJim(self)
             for iband in range(0,self.properties.nrOfBand()):
-                jim.d_pointOpBitShift(-right,iband)
+                jim.d_pointOpBitShift(-right, iband)
             return Jim(jim)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
+
     def __ilshift__(self, right):
         if isinstance(right, int):
             for iband in range(0,self.properties.nrOfBand()):
-                self.d_pointOpBitShift(-right,iband)
+                self.d_pointOpBitShift(-right, iband)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
         return self
@@ -778,24 +808,27 @@ class Jim(_jl.Jim):
             return Jim(jim)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
+
     def __irshift__(self, right):
         if isinstance(right, int):
             for iband in range(0,self.properties.nrOfBand()):
-                self.d_pointOpBitShift(right,iband)
+                self.d_pointOpBitShift(right, iband)
         else:
             raise TypeError('unsupported operand type for << : {}'.format(type(right)))
         return self
 
     def __or__(self, right):
         if isinstance(right, Jim):
-            return Jim(self.pointOpBitwise(right,_jl.OR_op))
+            return Jim(self.pointOpBitwise(right, _jl.OR_op))
         else:
             raise TypeError('unsupported operand type for | : {}'.format(type(right)))
+
     def __ror__(self, left):
         if isinstance(left, Jim):
-            return Jim(self.pointOpBitwise(left,_jl.OR_op))
+            return Jim(self.pointOpBitwise(left, _jl.OR_op))
         else:
             raise TypeError('unsupported operand type for | : {}'.format(type(left)))
+
     # def __ior__(self, right):
     #     if isinstance(right, Jim):
     #         self.d_pointOpBitwise(right,_jl.OR_op)
@@ -805,14 +838,16 @@ class Jim(_jl.Jim):
 
     def __xor__(self, right):
         if isinstance(right, Jim):
-            return Jim(self.pointOpBitwise(right,_jl.XOR_op))
+            return Jim(self.pointOpBitwise(right, _jl.XOR_op))
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(type(right)))
+
     def __rxor__(self, left):
         if isinstance(left, Jim):
-            return Jim(self.pointOpBitwise(left,_jl.XOR_op))
+            return Jim(self.pointOpBitwise(left, _jl.XOR_op))
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(type(left)))
+
     # def __ixor__(self, right):
     #     if isinstance(right, Jim):
     #         self.d_pointOpBitwise(right,_jl.XOR_op)
@@ -822,14 +857,16 @@ class Jim(_jl.Jim):
 
     def __and__(self, right):
         if isinstance(right, Jim):
-            return Jim(self.pointOpBitwise(right,_jl.AND_op))
+            return Jim(self.pointOpBitwise(right, _jl.AND_op))
         else:
             raise TypeError('unsupported operand type for & : {}'.format(type(right)))
+
     def __rand__(self, left):
         if isinstance(left, Jim):
-            return Jim(self.pointOpBitwise(left,_jl.AND_op))
+            return Jim(self.pointOpBitwise(left, _jl.AND_op))
         else:
             raise TypeError('unsupported operand type for & : {}'.format(type(left)))
+
     # def __iand__(self, right):
     #     if isinstance(right, Jim):
     #         self.d_pointOpBitwise(right,_jl.AND_op)
