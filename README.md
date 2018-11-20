@@ -25,5 +25,5 @@ sudo python setup.py install
 
 From the directory of the repository, run:
 ```
-python -m unittest tests
+python -m unittest -v tests
 ```
