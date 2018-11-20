@@ -5,6 +5,10 @@ JRC Ispra.
 
 # License
 
+pyJEO is released under an
+[EUPL](https://joinup.ec.europa.eu/collection/eupl) license (see
+[LICENSE.txt](LICENSE.txt))
+
 # Dependencies
 
  * jiplib

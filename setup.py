@@ -16,5 +16,6 @@ setup(
     version='0.5.0',
     author_email='ondrej.pesek@ec.europa.eu',
     url='https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO',
+    license='EUPL',
     packages=find_packages(exclude=['doc', 'tests']),
     include_package_data=True)
