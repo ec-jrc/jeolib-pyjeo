@@ -5,7 +5,7 @@ import gc
 import jiplib as _jl
 
 from modules import pjio as io, properties, pixops, ngbops, geometry, \
-    ccops, clssfy, demops, all
+    ccops, clssfy, demops, stats, all
 
 
 del _jl.Jim.__del__
@@ -29,6 +29,7 @@ class Jim(_jl.Jim):
         self._ngbops = ngbops._NgbOps()
         self._pixops = pixops._PixOps()
         self._properties = properties._Properties()
+        self._stats = stats._Stats()
 
     @property
     def all(self):
@@ -119,6 +120,16 @@ class Jim(_jl.Jim):
     @properties.setter
     def properties(self, new_props):
         self._properties = new_props
+
+    @property
+    def stats(self):
+        self._stats._set_caller(self)
+        gc.collect()
+        return self._stats
+
+    @stats.setter
+    def stats(self, new_props):
+        self._stats = new_props
 
     def __dir__(self):
         """Change behaviour of the method whisperer to ignore jiplib methods.
