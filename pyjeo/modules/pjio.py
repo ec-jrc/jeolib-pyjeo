@@ -57,7 +57,7 @@ def createJim(filename=None, **kwargs):
     noread   Set this flag to True to not read data when opening
     ======== ===================================================
 
-    .. note:: You can specify a different spatial reference system to define the region of interest to read set with keys ulx, uly, lrx, and lry with the extra key 't_srs'. Notice this will not re-project the resulting image. You can use the function :py:func:Jim:`warp` for this.
+    .. note:: You can specify a different spatial reference system to define the region of interest to read set with keys ulx, uly, lrx, and lry with the extra key 't_srs'. Notice this will not re-project the resulting image. You can use the function :py:func:`geometry:warp` for this.
     ..
 
     .. note:: resample values: please check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a
@@ -173,15 +173,16 @@ class _IO():
         ======== ===================================================
 
         .. note::
-        Supported GDAL output formats are restricted to those that support creation (see http://www.gdal.org/formats_list.html#footnote1)
+
+           Supported GDAL output formats are restricted to those that support creation (see http://www.gdal.org/formats_list.html#footnote1)
 
         Example:
 
         Create Jim image object by opening an existing file in jp2 format. Then write to a compressed and tiled file in the default GeoTIFF format::
 
-        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-        jim=pj.io.createJim({'filename':ifn})
-        jim.io.write('/tmp/test.tif','co':['COMPRESS=LZW','TILED=YES']})
+           ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+           jim=pj.io.createJim({'filename':ifn})
+           jim.io.write('/tmp/test.tif','co':['COMPRESS=LZW','TILED=YES']})
         """
 
         kwargs.update({'filename': filename})

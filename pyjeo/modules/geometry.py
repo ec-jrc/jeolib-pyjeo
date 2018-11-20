@@ -780,8 +780,7 @@ class _Geometry():
 
         :param reference: thematic raster dataset with integer values, typically a land cover map
         :param kwargs: See table below
-        :return: A VectorOgr with fields for each of the calculated raster
-            value (zonal) statistics
+        :return: A VectorOgr with fields for each of the calculated raster value (zonal) statistics
 
         +------------------+---------------------------------------------------------------------------------+
         | key              | value                                                                           |
@@ -833,6 +832,7 @@ class _Geometry():
         |                  | (e.g., '10%') or integer value for absolute threshold.                          |
         |                  | You can provide a list of threshold values, one for each class.                 |
         +------------------+---------------------------------------------------------------------------------+
+
         Example:
 
         Open a raster sample dataset based on land cover map (e.g., Corine) and use it to extract a stratified sample of 100 points from an input raster dataset with four spectral bands ('B02', 'B03', 'B04', 'B08'). Only sample classes 2 (urban), 12 (agriculture), 25 (forest), 41 (water) and an aggregated (rest) class 50::

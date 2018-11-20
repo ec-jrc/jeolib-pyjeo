@@ -14,6 +14,7 @@ setup(
     version='0.5.0',
     author_email='ondrej.pesek@ec.europa.eu',
     url='https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO',
+    description='https://cidportal.jrc.ec.europa.eu/services/processing/jiplibhelp/',
     packages=find_packages(exclude=['doc', 'tests']),
     include_package_data=True)
 

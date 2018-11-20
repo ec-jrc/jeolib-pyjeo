@@ -13,10 +13,6 @@ Global functions
 .. autoclass:: Jim
    :members:
 
-   .. method:: boil(time=10)
-
-      Boil the noodle *time* minutes.
-
    .. method:: Jim[ item ]
 
       Get subset of the raster dataset.
@@ -102,10 +98,16 @@ Input/Output
 .. automodule:: pjio
    :members:
 
+.. autoclass:: _IO
+   :members:
+
 Pixel operations
 ################
 
 .. automodule:: pixops
+   :members:
+
+.. autoclass:: _PixOps
    :members:
 
 Neighborhood operations
@@ -113,6 +115,15 @@ Neighborhood operations
 
 .. automodule:: ngbops
    :members:
+
+.. autoclass:: _NgbOps
+   :members:
+     
+.. _mia_morpho2d:
+
+**Advanced morphological filtering**
+:py:func:`ngbops.morphoErode`
+
 
 Geometry operations
 ###################
@@ -130,14 +141,23 @@ CC operations
 .. automodule:: ccops
    :members:
 
+.. autoclass:: _CCOps
+   :members:
+
 Classification
 ##############
 
 .. automodule:: clssfy
    :members:
 
+.. autoclass:: _Classify
+   :members:
+
 Digital elevation
 #################
 
 .. automodule:: demops
+   :members:
+
+.. autoclass:: _DEMOps
    :members:
