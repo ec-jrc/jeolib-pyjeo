@@ -4,7 +4,7 @@ import gc
 
 try:
     import jiplib as _jl
-except:
+except ImportError:
     from jeodpp import jiplib as _jl
 
 from modules import pjio as io, properties, pixops, ngbops, geometry, \
