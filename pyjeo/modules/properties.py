@@ -1,4 +1,7 @@
-import pyjeo as _pj
+try:
+    import pyjeo as _pj
+except:
+    from jeodpp import pyjeo as _pj
 
 class _Properties():
     def __init__(self):

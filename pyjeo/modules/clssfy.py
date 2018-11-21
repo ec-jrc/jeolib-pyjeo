@@ -1,4 +1,7 @@
-import pyjeo as _pj
+try:
+    import pyjeo as _pj
+except:
+    from jeodpp import pyjeo as _pj
 
 
 def classify(jim_object, method, model, **kwargs):

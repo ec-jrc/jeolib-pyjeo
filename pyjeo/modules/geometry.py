@@ -1,4 +1,7 @@
-import pyjeo as _pj
+try:
+    import pyjeo as _pj
+except:
+    from jeodpp import pyjeo as _pj
 
 
 def image2geo(jim_object, i, j):

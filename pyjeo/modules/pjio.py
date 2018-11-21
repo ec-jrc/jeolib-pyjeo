@@ -2,7 +2,10 @@ try:
     import jiplib as _jl
 except:
     from jeodpp import jiplib as _jl
-import pyjeo as _pj
+try:
+    import pyjeo as _pj
+except:
+    from jeodpp import pyjeo as _pj
 
 
 # def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
