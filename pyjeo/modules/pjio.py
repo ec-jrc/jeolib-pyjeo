@@ -1,4 +1,7 @@
-import jiplib as _jl
+try:
+    import jiplib as _jl
+except:
+    from jeodpp import jiplib as _jl
 import pyjeo as _pj
 
 

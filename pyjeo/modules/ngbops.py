@@ -1,4 +1,3 @@
-import jiplib as _jl
 
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     """Filter Jim object in spectral/temporal domain performed on multi-band raster dataset.
