@@ -20,12 +20,20 @@ class BadStats(unittest.TestCase):
         assert histo1d.stats.getStats()['min'] >= 0, \
             'Error in computing 1D histogram'
 
+        assert histo1d.pixops.isEqual(pj.stats.getHisto1d(jim1)), \
+            'Function and method getHisto1d() return different results'
+
         jim2 = pj.Jim(tiles[0][:-8] + 'nir' + tiles[0][-5] + '.tif')
 
         histo2d = jim1.stats.getHisto2d(jim2)
 
         assert histo2d.stats.getStats()['min'] >= 0, \
             'Error in computing 2D histogram'
+
+        assert histo2d.pixops.isEqual(pj.stats.getHisto2d(jim1, jim2)), \
+            'Function and method getHisto2d() return different results'
+
+        # TODO: Cover histo3d()
 
     def test_stretch(self):
         """Test stretching a Jim object."""
