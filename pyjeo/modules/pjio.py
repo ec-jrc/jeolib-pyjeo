@@ -1,3 +1,5 @@
+"""Module for input-output operations."""
+
 try:
     import jiplib as _jl
 except ImportError:
@@ -161,6 +163,7 @@ def createVector(filename, **kwargs):
 
 
 class _IO():
+
     def __init__(self):
         """Initialize the module."""
         pass

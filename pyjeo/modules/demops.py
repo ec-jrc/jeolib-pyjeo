@@ -1,3 +1,5 @@
+"""Module for operations connected to digital elevation models."""
+
 try:
     import pyjeo as _pj
 except ImportError:
@@ -21,6 +23,7 @@ def demFlowDirectionD8(jim_object):
 
 
 class _DEMOps():
+
     def __init__(self):
         """Initialize the module."""
         pass

@@ -1,3 +1,5 @@
+"""Module for connected-component operations."""
+
 try:
     import pyjeo as _pj
 except ImportError:
@@ -37,6 +39,7 @@ def distance2dEuclideanSquared(jim_object, band=0):
 
 
 class _CCOps():
+
     def __init__(self):
         """Initialize the module."""
         pass

@@ -1,3 +1,5 @@
+"""Module for operations working with the geometry of the Jim objects."""
+
 try:
     import pyjeo as _pj
 except ImportError:
@@ -64,13 +66,13 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
     elif len(kwargs) == 0:
         if nogeo:
             if ulx is None:
-                ulx=0
+                ulx = 0
             if uly is None:
-                uly=0
+                uly = 0
             if lrx is None:
-                lrx=jim_object.properties.nrOfCol()-1
+                lrx = jim_object.properties.nrOfCol()-1
             if lry is None:
-                lry=0
+                lry = 0
             if dx is None:
                 dx = 1
         else:
@@ -98,16 +100,16 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
 
     else:
         if nogeo:
-            uli=ulx
-            ulj=uly
-            lri=lrx
-            lrj=lry
-            upperLeft=jim_object.image2geo(ulx,uly)
-            lowerRight=jim_object.image2geo(lrx,lry)
-            ulx=upperLeft[0]
-            uly=upperLeft[1]
-            lrx=lowerRight[0]+jim_object.properties.getDeltaX()/2.0
-            lry=lowerRight[1]-jim_object.properties.getDeltaY()/2.0
+            uli = ulx
+            ulj = uly
+            lri = lrx
+            lrj = lry
+            upperLeft = jim_object.image2geo(ulx, uly)
+            lowerRight = jim_object.image2geo(lrx, lry)
+            ulx = upperLeft[0]
+            uly = upperLeft[1]
+            lrx = lowerRight[0]+jim_object.properties.getDeltaX()/2.0
+            lry = lowerRight[1]-jim_object.properties.getDeltaY()/2.0
         kwargs.update({'ulx': ulx})
         kwargs.update({'uly': uly})
         kwargs.update({'lrx': lrx})
@@ -216,7 +218,7 @@ def stackBand(jim_object, jim_other, band=None):
         pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
     """
     if band:
-        return _pj.Jim(jim_object.stackBand(jim_other,{'band': band}))
+        return _pj.Jim(jim_object.stackBand(jim_other, {'band': band}))
     else:
         return _pj.Jim(jim_object.stackBand(jim_other))
 
@@ -372,6 +374,7 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
 
 
 class _Geometry():
+
     def __init__(self):
         """Initialize the module."""
         pass
@@ -380,7 +383,7 @@ class _Geometry():
         self._jim_object = caller
 
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
-            lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
+             lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
         """Subset raster dataset.
 
         Subset raster dataset according in spatial (subset region) domain
@@ -397,45 +400,49 @@ class _Geometry():
 
         """
         if ulz is not None or lrz is not None:
-            assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
-                                    'and special cropping parameters'
-            gt=self._jim_object.properties.getGeoTransform()
+            assert len(kwargs) == 0, \
+                'It is not supported to use both z coords and special ' \
+                'cropping parameters'
+            gt = self._jim_object.properties.getGeoTransform()
             if nogeo:
-                uli=ulx
-                ulj=uly
-                lri=lrx
-                lrj=lry
-                upperLeft=self._jim_object.geometry.image2geo(ulx,uly)
-                lowerRight=self._jim_object.geometry.image2geo(lrx,lry)
-                ulx=upperLeft[0]
-                uly=upperLeft[1]
+                uli = ulx
+                ulj = uly
+                lri = lrx
+                lrj = lry
+                upperLeft = self._jim_object.geometry.image2geo(ulx, uly)
+                lowerRight = self._jim_object.geometry.image2geo(lrx, lry)
+                ulx = upperLeft[0]
+                uly = upperLeft[1]
                 # lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
                 # lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
             else:
-                upperLeftImage=self._jim_object.properties.geo2image(ulx,uly)
-                uli=upperLeftImage[0]
-                ulj=upperLeftImage[1]
-                lowerRightImage=self._jim_object.properties.geo2image(lrx,lry)
-                lri=lowerRightImage[0]
-                lrj=lowerRightImage[1]
-            for iband in range(0,self._jim_object.properties.nrOfBand()):
+                upperLeftImage = self._jim_object.properties.geo2image(ulx,
+                                                                       uly)
+                uli = upperLeftImage[0]
+                ulj = upperLeftImage[1]
+                lowerRightImage = self._jim_object.properties.geo2image(lrx,
+                                                                        lry)
+                lri = lowerRightImage[0]
+                lrj = lowerRightImage[1]
+            for iband in range(0, self._jim_object.properties.nrOfBand()):
                 (self._jim_object.d_imageFrameSubstract([
                     uli, self._jim_object.properties.nrOfCol() - lri,
                     ulj, self._jim_object.properties.nrOfRow() - lrj,
-                    ulz, self._jim_object.properties.nrOfPlane() - lrz], iband))
-            gt[0]=ulx
-            gt[3]=uly
+                    ulz, self._jim_object.properties.nrOfPlane() - lrz],
+                    iband))
+            gt[0] = ulx
+            gt[3] = uly
             self._jim_object.properties.setGeoTransform(gt)
         elif len(kwargs) == 0:
             if nogeo:
                 if ulx is None:
-                    ulx=0
+                    ulx = 0
                 if uly is None:
-                    uly=0
+                    uly = 0
                 if lrx is None:
-                    lrx=self._jim_object.properties.nrOfCol()-1
+                    lrx = self._jim_object.properties.nrOfCol()-1
                 if lry is None:
-                    lry=0
+                    lry = 0
                 if dx is None:
                     dx = 1
             else:
@@ -462,16 +469,16 @@ class _Geometry():
             # self._jim_object._set(self._jim_object.crop(ulx,uly,lrx,lry,dx,dy,geo))
         else:
             if nogeo:
-                uli=ulx
-                ulj=uly
-                lri=lrx
-                lrj=lry
-                upperLeft=self._jim_object.geometry.image2geo(ulx,uly)
-                lowerRight=self._jim_object.geometry.image2geo(lrx,lry)
-                ulx=upperLeft[0]
-                uly=upperLeft[1]
-                lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
-                lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
+                uli = ulx
+                ulj = uly
+                lri = lrx
+                lrj = lry
+                upperLeft = self._jim_object.geometry.image2geo(ulx, uly)
+                lowerRight = self._jim_object.geometry.image2geo(lrx, lry)
+                ulx = upperLeft[0]
+                uly = upperLeft[1]
+                lrx = lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
+                lry = lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
             kwargs.update({'ulx': ulx})
             kwargs.update({'uly': uly})
             kwargs.update({'lrx': lrx})
@@ -514,7 +521,7 @@ class _Geometry():
         .. note::
            Possible values for the key 'eo' are: ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG. For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        self._jim_object._set(self._jim_object.cropOgr(extent,kwargs))
+        self._jim_object._set(self._jim_object.cropOgr(extent, kwargs))
 
     def cropBand(self, band):
         """Subset raster dataset.
@@ -579,7 +586,7 @@ class _Geometry():
             jim0.stackBand(jim1,band=[0,1,2])
         """
         if band:
-            self._jim_object.d_stackBand(jim_other,{'band': band})
+            self._jim_object.d_stackBand(jim_other, {'band': band})
         else:
             self._jim_object.d_stackBand(jim_other)
 
@@ -602,7 +609,8 @@ class _Geometry():
             jim1=jl.io.createJim('/path/to/raster1.tif')
             jim0.stackBandRange(jim1,startband=0,endband=2)
         """
-        self._jim_object.d_stackBand(jim_other,{'startband': startband,'endband': endband})
+        self._jim_object.d_stackBand(jim_other, {'startband': startband,
+                                                 'endband': endband})
 
     def extractOgr(self, jim_ref, **kwargs):
         """Extract pixel values from raster image based on a vector dataset sample.
@@ -711,9 +719,9 @@ class _Geometry():
         """
         if 'threshold' in kwargs:
             if '%' in kwargs['threshold']:
-                kwargs['threshold']=float(kwargs['threshold'].strip('%'))
+                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
             else:
-                kwargs['threshold']=-kwargs['threshold']
+                kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object.extractOgr(jim_ref, kwargs)
 
     def extractSample(self, **kwargs):
@@ -776,9 +784,9 @@ class _Geometry():
         """
         if 'threshold' in kwargs:
             if '%' in kwargs['threshold']:
-                kwargs['threshold']=float(kwargs['threshold'].strip('%'))
+                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
             else:
-                kwargs['threshold']=-kwargs['threshold']
+                kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object.extractSample(kwargs)
 
     def extractImg(self, reference, **kwargs):
@@ -855,9 +863,9 @@ class _Geometry():
         """
         if 'threshold' in kwargs:
             if '%' in kwargs['threshold']:
-                kwargs['threshold']=float(kwargs['threshold'].strip('%'))
+                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
             else:
-                kwargs['threshold']=-kwargs['threshold']
+                kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object.extractImg(reference, kwargs)
 
     def warp(self, t_srs, **kwargs):
@@ -984,7 +992,7 @@ class _Geometry():
         :param j: image row number (starting from 0)
         :return: georeferenced coordinates according to the object spatial reference system
         """
-        return self._jim_object.image2geo(i,j)
+        return self._jim_object.image2geo(i, j)
 
     def geo2image(self, x, y):
         """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
@@ -993,7 +1001,7 @@ class _Geometry():
         :param y: georeferenced coordinate in y according to the object spatial reference system
         :return: image coordinates (row and column, starting from 0)
         """
-        coord=self._jim_object.geo2image(x,y)
+        coord = self._jim_object.geo2image(x, y)
         return [int(coord[0]), int(coord[1])]
 
     # TODO: how to work with

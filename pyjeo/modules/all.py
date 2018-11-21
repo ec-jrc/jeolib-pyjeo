@@ -1,3 +1,5 @@
+"""Module containing all functions and methods from the others."""
+
 from .properties import *
 from .pjio import *
 from .pixops import *
@@ -19,4 +21,5 @@ from .demops import _DEMOps
 
 class _All(_Properties, _IO, _PixOps, _NgbOps, _Geometry, _CCOps, _Classify,
            _DEMOps):
+
     pass

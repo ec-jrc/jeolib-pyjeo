@@ -1,3 +1,5 @@
+"""Module for neighbourhood operations."""
+
 try:
     import pyjeo as _pj
 except ImportError:
@@ -29,7 +31,8 @@ def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     return _pj.Jim(jim_object.filter1d(kwargs))
 
 
-def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None, **kwargs):
+def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None,
+             **kwargs):
     """Filter Jim object in spatial domain performed on single or multi-band raster dataset.
 
     Subset raster dataset in spectral/temporal domain.
@@ -76,6 +79,7 @@ def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
 
 
 class _NgbOps():
+
     def __init__(self):
         """Initialize the module."""
         pass
@@ -252,7 +256,8 @@ class _NgbOps():
             kwargs.update({'otype': otype})
         self._jim_object._set(self._jim_object.filter1d(kwargs))
 
-    def filter2d(self, filter, dx=None, dy=None, pad=None, otype=None, **kwargs):
+    def filter2d(self, filter, dx=None, dy=None, pad=None, otype=None,
+                 **kwargs):
         """Filter Jim object in spatial domain performed on single or multi-band raster dataset.
 
         Subset raster dataset in spectral/temporal domain.

@@ -1,4 +1,4 @@
-"""Module for statistical funcions and interpolations."""
+"""Module for statistical functions and interpolations."""
 
 try:
     import pyjeo as _pj
@@ -52,6 +52,7 @@ def stretch(jim_object, **kwargs):
 
 
 class _Stats():
+
     def __init__(self):
         """Initialize the module."""
         pass

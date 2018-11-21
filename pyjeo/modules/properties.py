@@ -1,3 +1,5 @@
+"""Module for accessing Jim attributes and geospatial informations."""
+
 try:
     import pyjeo as _pj
 except ImportErrort:
@@ -6,7 +8,9 @@ except ImportErrort:
     except ImportError:
         import jeodpp.pyjeo as _pj
 
+
 class _Properties():
+
     def __init__(self):
         """Initialize the module."""
         pass

@@ -1,3 +1,5 @@
+"""Module for operations connected to classification."""
+
 try:
     import pyjeo as _pj
 except ImportError:
@@ -61,6 +63,7 @@ def sml(jim_object, **kwargs):
 
 
 class _Classify():
+
     def __init__(self):
         """Initialize the module."""
         pass

@@ -1,3 +1,5 @@
+"""Module for pixel-wise operations."""
+
 try:
     import pyjeo as _pj
 except ImportError:
@@ -45,29 +47,29 @@ def convert(jim_object, otype, **kwargs):
     """
 
     if len(kwargs) == 0:
-        if otype in ['Byte','GDT_Byte',_jl.GDT_Byte]:
+        if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
             return _pj.Jim(jim_object.convertToUchar8)
-        elif otype in ['UInt16','GDT_UInt16',_jl.GDT_UInt16]:
+        elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
             return _pj.Jim(jim_object.convertToUint16)
-        elif otype in ['UInt32','GDT_UInt32',_jl.GDT_UInt32]:
+        elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
             return _pj.Jim(jim_object.convertToUint32)
-        elif otype in ['Float32','GDT_Float32',_jl.GDT_Float32]:
+        elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
             return _pj.Jim(jim_object.convertToFloat32())
-        elif otype in ['Float64','GDT_Float64',_jl.GDT_Float64]:
+        elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
             return _pj.Jim(jim_object.convertToFloat64())
-    if otype in ['Byte','GDT_Byte',_jl.GDT_Byte]:
+    if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
         kwargs.update({'otype': 'GDT_Byte'})
-    elif otype in ['UInt16','GDT_UInt16',_jl.GDT_UInt16]:
+    elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
         kwargs.update({'otype': 'GDT_UInt16'})
-    elif otype in ['Int16','GDT_Int16',_jl.GDT_Int16]:
+    elif otype in ['Int16', 'GDT_Int16', _jl.GDT_Int16]:
         kwargs.update({'otype': 'GDT_Int16'})
-    elif otype in ['UInt32','GDT_UInt32',_jl.GDT_UInt32]:
+    elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
         kwargs.update({'otype': 'GDT_UInt32'})
-    elif otype in ['Int32','GDT_Int32',_jl.GDT_Int32]:
+    elif otype in ['Int32', 'GDT_Int32', _jl.GDT_Int32]:
         kwargs.update({'otype': 'GDT_Int32'})
-    elif otype in ['Float32','GDT_Float32',_jl.GDT_Float32]:
+    elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
         kwargs.update({'otype': 'GDT_Float32'})
-    elif otype in ['Float64','GDT_Float64',_jl.GDT_Float64]:
+    elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
         kwargs.update({'otype': 'GDT_Float32'})
     else:
         print("Warning: output type {} not supported".format(otype))
@@ -141,6 +143,7 @@ def supremum(jim, *args):
 
 
 class _PixOps():
+
     def __init__(self):
         """Initialize the module."""
         pass
@@ -171,9 +174,9 @@ class _PixOps():
         :return: a Jim object
         """
         if not dx:
-            dx=0
+            dx = 0
         if not dy:
-            dy=0
+            dy = 0
         for band in bands:
             self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx, dy,
                                      geo)
