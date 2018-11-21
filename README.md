@@ -5,6 +5,10 @@ JRC Ispra.
 
 # License
 
+pyJEO is released under an
+[EUPL](https://joinup.ec.europa.eu/collection/eupl) license (see
+[LICENSE.txt](LICENSE.txt))
+
 # Dependencies
 
  * jiplib
@@ -21,5 +25,5 @@ sudo python setup.py install
 
 From the directory of the repository, run:
 ```
-python -m unittest tests
+python -m unittest -v tests
 ```

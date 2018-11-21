@@ -1,3 +1,4 @@
+import pyjeo as _pj
 
 class _Properties():
     def __init__(self):
@@ -6,19 +7,6 @@ class _Properties():
 
     def _set_caller(self, caller):
         self._jim_object = caller
-
-    def dumpImg3D(self, x, y, z, nx, ny):
-        """
-        Dump on screen a dx*dy window with the image values around
-        coordinates (x,y) and within the plane z.
-
-        :param x: x coordinate
-        :param y: y coordinate
-        :param z: z coordinate
-        :param nx: integer for size of window along x-axis
-        :param ny: integer for size of window along y-axis
-        """
-        _jl.dumpxyz(self._jim_object, x, y, z, nx, ny)
 
     def nrOfCol(self):
         """Get number of columns in this raster dataset.
