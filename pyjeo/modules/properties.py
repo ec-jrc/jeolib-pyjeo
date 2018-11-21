@@ -1,7 +1,10 @@
 try:
     import pyjeo as _pj
 except:
-    from jeodpp import pyjeo as _pj
+    try:
+        from jeodpp import pyjeo as _pj
+    except:
+        import jeodpp.pyjeo as _pj
 
 class _Properties():
     def __init__(self):

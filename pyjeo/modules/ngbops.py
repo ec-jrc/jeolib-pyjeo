@@ -1,3 +1,11 @@
+try:
+    import pyjeo as _pj
+except:
+    try:
+        from jeodpp import pyjeo as _pj
+    except:
+        import jeodpp.pyjeo as _pj
+
 
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     """Filter Jim object in spectral/temporal domain performed on multi-band raster dataset.
