@@ -1,9 +1,9 @@
 try:
     import pyjeo as _pj
-except:
+except ImportError:
     try:
         from jeodpp import pyjeo as _pj
-    except:
+    except ImportError:
         import jeodpp.pyjeo as _pj
 
 
