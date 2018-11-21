@@ -3,12 +3,13 @@
 import sys
 import unittest
 
-from tests import test_pixops
+from tests import test_pixops, test_stats
 
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
-    return unittest.TestSuite([test_pixops.load_tests()])
+    return unittest.TestSuite([test_pixops.load_tests(),
+                               test_stats.load_tests()])
 
 
 if __name__ == "__main__":
