@@ -2,7 +2,10 @@ from __future__ import division
 import numpy as np
 import gc
 
-import jiplib as _jl
+try:
+    import jiplib as _jl
+except:
+    from jeodpp import jiplib as _jl
 
 from modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, clssfy, demops, stats, all
@@ -10,6 +13,11 @@ from modules import pjio as io, properties, pixops, ngbops, geometry, \
 
 del _jl.Jim.__del__
 
+def jim2np(aJim, band=0):
+    return _jl.jim2np(aJim,band)
+
+def np2jim(aNp):
+    return _jl.np2jim(aNp)
 
 class Jim(_jl.Jim):
     def __init__(self, image, *args):
