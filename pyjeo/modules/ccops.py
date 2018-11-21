@@ -1,4 +1,3 @@
-import jiplib as _jl
 import pyjeo as _pj
 
 
@@ -10,7 +9,7 @@ def labelImagePixels(jim_object):
     :param jim_object: a Jim object
     :return: labeled Jim object
     """
-    return _pj.Jim(_jl.Jim.labelPix(jim_object))
+    return _pj.Jim(jim_object.labelPix())
 
 
 def distance2dEuclideanSquared(jim_object, band=0):

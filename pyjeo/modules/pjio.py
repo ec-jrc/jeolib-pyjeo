@@ -202,3 +202,16 @@ class _IO():
         =========  =============================================================
         """
         self._jim_object.dumpImg(kwargs)
+
+    def dumpImg3D(self, x, y, z, nx, ny):
+        """
+        Dump on screen a dx*dy window with the image values around
+        coordinates (x,y) and within the plane z.
+
+        :param x: x coordinate
+        :param y: y coordinate
+        :param z: z coordinate
+        :param nx: integer for size of window along x-axis
+        :param ny: integer for size of window along y-axis
+        """
+        self._jim_object.imageDump(x, y, z, nx, ny)

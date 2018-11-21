@@ -1,6 +1,3 @@
-import jiplib as _jl
-
-
 class _NgbOps():
     def __init__(self):
         """Initialize the module."""
