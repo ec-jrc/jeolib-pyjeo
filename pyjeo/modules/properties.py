@@ -47,21 +47,15 @@ class _Properties():
         return self._jim_object.nrOfBand()
 
     def printNoDataVals(self):
-        """
-        Print the list of no data values of this raster dataset
-        """
+        """Print the list of no data values of this raster dataset."""
         self._jim_object.printNoDataValues()
 
     def pushNoDataVal(self, value):
-        """
-        Push a no data value for this raster dataset
-        """
+        """Push a no data value for this raster dataset."""
         self._jim_object.pushNoDataValue(value)
 
     def setNoDataVals(self, value):
-        """
-        Set the list of no data value for this raster dataset
-        """
+        """Set the list of no data value for this raster dataset."""
         if isinstance(value, list):
             self._jim_object.setNoData(value)
         elif type(value) in (float, int):
@@ -71,27 +65,25 @@ class _Properties():
                             'type {}'.format(type(value)))
 
     def getNoDataVals(self):
-        """
-        Get the list of no data values
-        """
+        """Get the list of no data values."""
         return self._jim_object.getNoDataValues()
 
     def clearNoData(self):
-        """
-        Clear the list of no data values for this raster dataset
-        """
+        """Clear the list of no data values for this raster dataset."""
         self._jim_object.clearNoData()
 
     def getDataType(self):
-        """
-        Get the internal datatype for this raster dataset
+        """Get the internal datatype for this raster dataset.
+
         :return: The datatype id of this Jim object
         """
         return self._jim_object.getDataType()
 
     def covers(self, *args):
-        """
-        Check if a geolocation is covered by this dataset. You can check the coverage for a :ref:`point of interest <covers1>` or :ref:`region of interest <covers2>`).
+        """Check if a geolocation is covered by this dataset.
+
+        You can check the coverage for a :ref:`point of interest
+        <covers1>` or :ref:`region of interest <covers2>`.
 
         .. _covers1:
 
@@ -116,8 +108,7 @@ class _Properties():
         return self._jim_object.covers(*args)
 
     def getGeoTransform(self):
-        """
-        Get the geotransform data for this dataset as a list of floats.
+        """Get the geotransform data for this dataset as a list of floats.
 
         :returns: List of floats with geotransform data:
 
@@ -131,8 +122,7 @@ class _Properties():
         return self._jim_object.getGeoTransform()
 
     def setGeoTransform(self, *args):
-        """
-        Set the geotransform data for this dataset.
+        """Set the geotransform data for this dataset.
 
         :args: List of floats with geotransform data:
 
@@ -146,22 +136,20 @@ class _Properties():
         self._jim_object.setGeoTransform(*args)
 
     def copyGeoTransform(self, sec_jim_object):
-        """
-        Copy geotransform information from another georeferenced image.
-        """
+        """Copy geotransform information from another georeferenced image."""
         self._jim_object.copyGeoTransform(sec_jim_object)
 
     def getProjection(self):
-        """
-        Get the projection for this dataget in well known text (wkt) format.
+        """Get the projection for this dataget in well known text (wkt) format.
 
         :return: The projection string in well known text format.
         """
         return self._jim_object.getProjection()
 
     def setProjection(self, *args):
-        """
-        Set the projection for this dataset in well known text (wkt) format or as a string epsg:<epsgcode>.
+        """Set the projection for this dataset.
+
+        Set it in well known text (wkt) format or as a string epsg:<epsgcode>.
 
         :args: the projection for this dataset in well known text (wkt) format or as a string epsg:<epsgcode>.
         """
@@ -169,71 +157,66 @@ class _Properties():
 
     def getCenterPos(self):
         """
-        Get the center position of this dataset in georeferenced coordinates
+        Get the center position of this dataset in georeferenced coordinates.
 
         :return: A list with the center position of this dataset in georeferenced coordinates.
         """
         return self._jim_object.getCenterPos()
 
     def getBoundingBox(self):
-        """
-        Get the bounding box (georeferenced) coordinates of this dataset
+        """Get the bounding box (georeferenced) coordinates of this dataset.
 
         :return: A list with upper left x, upper left y, lower right x, and lower right y
         """
         return self._jim_object.getBoundingBox()
 
     def getUlx(self):
-        """
-        Get the upper left corner x (georeferenced) coordinate of this dataset
+        """Get the upper left corner x coordinate of this dataset.
 
         :return: The upper left corner x (georeferenced) coordinate of this dataset
         """
         return self._jim_object.getUlx()
 
     def getUly(self):
-        """
-        Get the upper left corner y (georeferenced) coordinate of this dataset
+        """Get the upper left corner y coordinate of this dataset.
 
         :return: The upper left corner y (georeferenced) coordinate of this dataset
         """
         return self._jim_object.getUly()
 
     def getLrx(self):
-        """
-        Get the lower left corner x (georeferenced) coordinate of this dataset
+        """Get the lower left corner x coordinate of this dataset.
 
         :return: The lower left corner x (georeferenced) coordinate of this dataset
         """
         return self._jim_object.getLrx()
 
     def getLry(self):
-        """
-        Get the lower left corner y (georeferenced) coordinate of this dataset
+        """Get the lower left corner y coordinate of this dataset.
 
         :return: The lower left corner y (georeferenced) coordinate of this dataset
         """
         return self._jim_object.getLry()
 
     def getDeltaX(self):
-        """
-        Get the pixel cell spacing in x.
+        """Get the pixel cell spacing in x.
 
         :return: The pixel cell spacing in x.
         """
         return self._jim_object.getDeltaX()
 
     def getDeltaY(self):
-        """
-        Get the piyel cell spacing in y.
+        """Get the piyel cell spacing in y.
 
         :return: The piyel cell spacing in y.
         """
         return self._jim_object.getDeltaY()
 
     def getRefPix(self, *args):
-        """
-        Calculate the reference pixel as the center of gravity pixel (weighted average of all values not taking into account no data values) for a specific band (start counting from 0).
+        """Calculate the reference pixel as the center of gravity pixel.
+
+        Calculated as the weighted average of all values not taking into
+        account no data values for a specific band (start counting from 0).
 
         :return: The reference pixel as the centre of gravity pixel (weighted average of all values not taking into account no data values) for a specific band (start counting from 0).
         """

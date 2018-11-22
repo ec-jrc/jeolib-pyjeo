@@ -27,7 +27,8 @@ class BadStats(unittest.TestCase):
 
         assert min < mean < max, 'Error in getting statistics with getStats'
 
-        assert jim_min_dict == pj.stats.getStats(jim, function='min')
+        assert jim_min_dict == pj.stats.getStats(jim, function='min'), \
+            'Error in getting statistics with getStats'
 
     def test_histograms(self):
         """Test that values of histograms are not suspicious."""
