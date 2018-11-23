@@ -1,8 +1,8 @@
 """Basic file containing Jim and JimList objects."""
 
 from __future__ import division
-import numpy as np
-import gc
+import numpy as _np
+import gc as _gc
 
 try:
     import jiplib as _jl
@@ -49,7 +49,7 @@ class Jim(_jl.Jim):
     @property
     def all(self):
         self._all._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._all
 
     @all.setter
@@ -59,7 +59,7 @@ class Jim(_jl.Jim):
     @property
     def ccops(self):
         self._ccops._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._ccops
 
     @ccops.setter
@@ -69,7 +69,7 @@ class Jim(_jl.Jim):
     @property
     def clssfy(self):
         self._clssfy._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._clssfy
 
     @clssfy.setter
@@ -79,7 +79,7 @@ class Jim(_jl.Jim):
     @property
     def demops(self):
         self._demops._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._demops
 
     @demops.setter
@@ -89,7 +89,7 @@ class Jim(_jl.Jim):
     @property
     def geometry(self):
         self._geometry._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._geometry
 
     @geometry.setter
@@ -99,7 +99,7 @@ class Jim(_jl.Jim):
     @property
     def io(self):
         self._io._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._io
 
     @io.setter
@@ -109,7 +109,7 @@ class Jim(_jl.Jim):
     @property
     def ngbops(self):
         self._ngbops._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._ngbops
 
     @io.setter
@@ -119,7 +119,7 @@ class Jim(_jl.Jim):
     @property
     def pixops(self):
         self._pixops._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._pixops
 
     @pixops.setter
@@ -129,7 +129,7 @@ class Jim(_jl.Jim):
     @property
     def properties(self):
         self._properties._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._properties
 
     @properties.setter
@@ -139,7 +139,7 @@ class Jim(_jl.Jim):
     @property
     def stats(self):
         self._stats._set_caller(self)
-        gc.collect()
+        _gc.collect()
         return self._stats
 
     @stats.setter
@@ -549,7 +549,7 @@ class Jim(_jl.Jim):
                 anp = _jl.jim2np(right, iband)
             else:
                 anp = right
-            selfnp = np.uint8(1) * (selfnp == anp)
+            selfnp = _np.uint8(1) * (selfnp == anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
@@ -573,7 +573,7 @@ class Jim(_jl.Jim):
                 anp = _jl.jim2np(right, iband)
             else:
                 anp = right
-            selfnp = np.uint8(1) * (selfnp != anp)
+            selfnp = _np.uint8(1) * (selfnp != anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
@@ -593,7 +593,7 @@ class Jim(_jl.Jim):
                 anp = _jl.jim2np(right, iband)
             else:
                 anp = right
-            selfnp = np.uint8(1) * (selfnp < anp)
+            selfnp = _np.uint8(1) * (selfnp < anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
@@ -612,7 +612,7 @@ class Jim(_jl.Jim):
                 anp = _jl.jim2np(right, iband)
             else:
                 anp = right
-            selfnp = np.uint8(1) * (selfnp <= anp)
+            selfnp = _np.uint8(1) * (selfnp <= anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
@@ -631,7 +631,7 @@ class Jim(_jl.Jim):
                 anp = _jl.jim2np(right, iband)
             else:
                 anp = right
-            selfnp = np.uint8(1) * (selfnp > anp)
+            selfnp = _np.uint8(1) * (selfnp > anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
@@ -649,7 +649,7 @@ class Jim(_jl.Jim):
                 anp = _jl.jim2np(right, iband)
             else:
                 anp = right
-            selfnp = np.uint8(1) * (selfnp >= anp)
+            selfnp = _np.uint8(1) * (selfnp >= anp)
             if jim:
                 jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
             else:
