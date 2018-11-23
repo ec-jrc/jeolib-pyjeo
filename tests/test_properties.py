@@ -67,7 +67,10 @@ class BadProps(unittest.TestCase):
         assert gt[0] == self.ulx, 'Error in properties.getGeoTransform()'
         assert gt[3] == self.uly, 'Error in properties.getGeoTransform()'
 
-        # TODO: Test with DeltaX/DeltaY, but get why it returns negative DeltaY
+        assert gt[1] == self.jim.getDeltaX(), \
+            'Error in properties.getDeltaX() or getGeoTransform()'
+        assert abs(gt[5]) == self.jim.getDeltaY(), \
+            'Error in properties.getDeltaY() or getGeoTransform()'
 
         new_gt = [0, 1, 0, 0, 0, 1]
 
