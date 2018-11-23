@@ -428,3 +428,13 @@ class _NgbOps():
         :param trFlag: optional parameter (0 or 1)
         """
         self._jim_object.morphoErode(sec_jim_object, ox, oy, oz, trFlag)
+
+
+class _NgbOpsList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

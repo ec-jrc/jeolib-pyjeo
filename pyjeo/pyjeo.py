@@ -1,3 +1,5 @@
+"""Basic file containing Jim and JimList objects."""
+
 from __future__ import division
 import numpy as np
 import gc
@@ -23,6 +25,8 @@ def np2jim(aNp):
 
 
 class Jim(_jl.Jim):
+    """Definition of Jim object."""
+
     def __init__(self, image, *args):
         """Initialize the Jim object and modules for methods.
 
@@ -965,3 +969,26 @@ class Jim(_jl.Jim):
     #         raise TypeError('unsupported operand type for & : {}'.format(
     #           type(right)))
     #     return self
+
+
+class JimList(list, _jl.JimList):
+    """Definition of JimList object."""
+
+    def __init__(self, images_list, *args):
+        """Initialize the Jim object and modules for methods.
+
+        :param image: path to a raster or another Jim object as a basis for
+        the Jim object
+        """
+        super(JimList, self).__init__(images_list, *args)
+
+        self._all = all._AllList()
+        self._ccops = ccops._CCOpsList()
+        self._clssfy = clssfy._ClassifyList()
+        self._demops = demops._DEMOpsList()
+        self._geometry = geometry._GeometryList()
+        self._io = io._IOList()
+        self._ngbops = ngbops._NgbOpsList()
+        self._pixops = pixops._PixOpsList()
+        self._properties = properties._PropertiesList()
+        self._stats = stats._StatsList()

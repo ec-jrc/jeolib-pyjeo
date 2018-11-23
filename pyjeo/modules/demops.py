@@ -41,3 +41,13 @@ class _DEMOps():
         Modifies the instance on which the method was called.
         """
         self._jim_object._set(self._jim_object.demFlowDirectionD8())
+
+
+class _DEMOpsList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

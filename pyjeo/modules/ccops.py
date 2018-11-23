@@ -71,3 +71,13 @@ class _CCOps():
         """
         self._jim_object._set(self._jim_object.distance2dEuclideanSquared(
             band))
+
+
+class _CCOpsList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

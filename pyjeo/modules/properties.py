@@ -221,3 +221,13 @@ class _Properties():
         :return: The reference pixel as the centre of gravity pixel (weighted average of all values not taking into account no data values) for a specific band (start counting from 0).
         """
         return self._jim_object.getRefPix(*args)
+
+
+class _PropertiesList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

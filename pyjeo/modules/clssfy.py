@@ -121,3 +121,13 @@ class _Classify():
         """
         kwargs.update({'method': 'sml'})
         self._jim_object._set(self._jim_object.classify(kwargs))
+
+
+class _ClassifyList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

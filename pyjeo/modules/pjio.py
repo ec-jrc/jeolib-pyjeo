@@ -228,3 +228,13 @@ class _IO():
         :param ny: integer for size of window along y-axis
         """
         self._jim_object.imageDump(x, y, z, nx, ny)
+
+
+class _IOList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

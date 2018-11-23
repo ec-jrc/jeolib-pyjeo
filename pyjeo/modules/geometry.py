@@ -1008,3 +1008,13 @@ class _Geometry():
     # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to
     # grid (jim1.gridding(jim1, jim3, jim4, 1)), how and where nni,
     # where addframeboxelem, where subframeboxelem,
+
+
+class _GeometryList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

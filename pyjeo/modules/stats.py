@@ -92,3 +92,13 @@ class _Stats():
 
     def stretch(self, **kwargs):
         self._jim_object._set(self._jim_object.stretch(kwargs))
+
+
+class _StatsList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller

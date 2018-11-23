@@ -277,3 +277,13 @@ class _PixOps():
         """
         for jim in args:
             self._jim_object.d_pointOpArith(jim, 5)
+
+
+class _PixOpsList():
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_object = caller
