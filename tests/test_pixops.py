@@ -32,7 +32,7 @@ class BadMaxNDVI(unittest.TestCase):
         assert jim_red.pixops.isEqual(jim), 'Error in computing NDVI or ' \
                                             'NDVISeparateBands'
 
-        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir.convertToFloat32())
 
         assert not jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
 

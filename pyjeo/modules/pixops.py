@@ -89,20 +89,7 @@ def NDVI(jim_object, redBand, nirBand):
     red = _pj.geometry.cropBand(jim_object, redBand)
     nir = _pj.geometry.cropBand(jim_object, nirBand)
 
-    if nir.properties.getDataType() != 6:
-        nir = _pj.Jim(nir.convertToFloat32())
-    if red.properties.getDataType() != 6:
-        red = _pj.Jim(red.convertToFloat32())
-
-    numerator = nir - red
-    denominator = nir + red
-
-    denominator[denominator == 0] = 1
-    ndvi = numerator / denominator
-    ndvi[denominator == 0] = 1
-
-    return ndvi
-    # TODO: Check NODATA values
+    return _pj.Jim(nir.pointOpNDI(red))
 
 
 def NDVISeparateBands(redJim, nirJim):
@@ -112,20 +99,7 @@ def NDVISeparateBands(redJim, nirJim):
     :param nirJim: Jim object with values of NIR
     :return: a Jim object with values of NDVI
     """
-    if nirJim.properties.getDataType() != 6:
-        nirJim = _pj.Jim(nirJim.convertToFloat32())
-    if redJim.properties.getDataType() != 6:
-        redJim = _pj.Jim(redJim.convertToFloat32())
-
-    numerator = nirJim - redJim
-    denominator = nirJim + redJim
-
-    denominator[denominator == 0] = 1
-    ndvi = numerator / denominator
-    ndvi[denominator == 0] = 1
-
-    return ndvi
-    # TODO: Check NODATA values
+    return _pj.Jim(nirJim.pointOpNDI(redJim))
 
 
 def supremum(jim, *args):
@@ -283,20 +257,7 @@ class _PixOps():
         red = _pj.geometry.cropBand(self._jim_object, redBand)
         nir = _pj.geometry.cropBand(self._jim_object, nirBand)
 
-        if nir.properties.getDataType() != 6:
-            nir = _pj.Jim(nir.convertToFloat32())
-        if red.properties.getDataType() != 6:
-            red = _pj.Jim(red.convertToFloat32())
-
-        numerator = nir - red
-        denominator = nir + red
-
-        denominator[denominator == 0] = 1
-        ndvi = numerator / denominator
-        ndvi[denominator == 0] = 1
-
-        self._jim_object._set(ndvi)
-        # TODO: Check NODATA values
+        self._jim_object._set(nir.pointOpNDI(red))
 
     def NDVISeparateBands(self, nirJim):
         """Compute NDVI from two Jims (call on red band, use NIR as param).
@@ -305,20 +266,7 @@ class _PixOps():
 
         :param nirJim: Jim object with values of NIR
         """
-        if nirJim.properties.getDataType() != 6:
-            nirJim = _pj.Jim(nirJim.convertToFloat32())
-        if self._jim_object.properties.getDataType() != 6:
-            redJim = _pj.Jim(self._jim_object.convertToFloat32())
-
-        numerator = nirJim - redJim
-        denominator = nirJim + redJim
-
-        denominator[denominator == 0] = 1
-        ndvi = numerator / denominator
-        ndvi[denominator == 0] = 1
-
-        self._jim_object._set(ndvi)
-        # TODO: Check NODATA values
+        self._jim_object._set(nirJim.pointOpNDI(self._jim_object))
 
     def supremum(self, *args):
         """Change values of Jim for the biggest ones from provided Jim objects.
