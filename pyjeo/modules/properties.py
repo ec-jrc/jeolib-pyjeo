@@ -10,6 +10,7 @@ except ImportErrort:
 
 
 class _Properties():
+    """Define all properties methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -224,6 +225,7 @@ class _Properties():
 
 
 class _PropertiesList():
+    """Define all properties methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

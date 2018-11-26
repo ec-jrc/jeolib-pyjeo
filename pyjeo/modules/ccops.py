@@ -39,6 +39,7 @@ def distance2dEuclideanSquared(jim_object, band=0):
 
 
 class _CCOps():
+    """Define all CCOps methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -74,6 +75,7 @@ class _CCOps():
 
 
 class _CCOpsList():
+    """Define all CCOps methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

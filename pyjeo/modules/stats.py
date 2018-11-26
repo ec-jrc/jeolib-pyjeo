@@ -52,6 +52,7 @@ def stretch(jim_object, **kwargs):
 
 
 class _Stats():
+    """Define all statistical methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -95,6 +96,7 @@ class _Stats():
 
 
 class _StatsList():
+    """Define all statistical methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

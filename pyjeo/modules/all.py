@@ -21,11 +21,13 @@ from .demops import _DEMOps, _DEMOpsList
 
 class _All(_Properties, _IO, _PixOps, _NgbOps, _Geometry, _CCOps, _Classify,
            _DEMOps):
+    """Inherit all methods."""
 
     pass
 
 
 class _AllList(_PropertiesList, _IOList, _PixOpsList, _NgbOpsList,
                _GeometryList, _CCOpsList, _ClassifyList, _DEMOpsList):
+    """Inherit all methods for JimLists."""
 
     pass

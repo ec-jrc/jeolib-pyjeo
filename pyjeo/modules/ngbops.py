@@ -79,6 +79,7 @@ def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
 
 
 class _NgbOps():
+    """Define all NgbOps methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -431,6 +432,7 @@ class _NgbOps():
 
 
 class _NgbOpsList():
+    """Define all NgbOps methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

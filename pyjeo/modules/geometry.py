@@ -374,6 +374,7 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
 
 
 class _Geometry():
+    """Define all Geometry methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -1011,6 +1012,7 @@ class _Geometry():
 
 
 class _GeometryList():
+    """Define all Geometry methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

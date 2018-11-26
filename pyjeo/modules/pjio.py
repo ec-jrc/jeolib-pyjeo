@@ -163,6 +163,7 @@ def createVector(filename, **kwargs):
 
 
 class _IO():
+    """Define all IO methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -196,7 +197,6 @@ class _IO():
            jim=pj.io.createJim({'filename':ifn})
            jim.io.write('/tmp/test.tif','co':['COMPRESS=LZW','TILED=YES']})
         """
-
         kwargs.update({'filename': filename})
         self._jim_object.write(kwargs)
 
@@ -231,6 +231,7 @@ class _IO():
 
 
 class _IOList():
+    """Define all IO methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

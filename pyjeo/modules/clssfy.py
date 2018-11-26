@@ -70,6 +70,7 @@ def reclass(jim_object, classes, reclasses, otype=None):
 
 
 class _Classify():
+    """Define all classification methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -137,6 +138,7 @@ class _Classify():
 
 
 class _ClassifyList():
+    """Define all classification methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

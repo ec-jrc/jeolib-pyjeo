@@ -23,6 +23,7 @@ def demFlowDirectionD8(jim_object):
 
 
 class _DEMOps():
+    """Define all DEMOps methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -44,6 +45,7 @@ class _DEMOps():
 
 
 class _DEMOpsList():
+    """Define all DEMOps methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""

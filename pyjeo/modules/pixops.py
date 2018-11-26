@@ -117,6 +117,7 @@ def supremum(jim, *args):
 
 
 class _PixOps():
+    """Define all PixOps methods."""
 
     def __init__(self):
         """Initialize the module."""
@@ -280,6 +281,7 @@ class _PixOps():
 
 
 class _PixOpsList():
+    """Define all PixOps methods for JimLists."""
 
     def __init__(self):
         """Initialize the module."""
