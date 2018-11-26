@@ -11,6 +11,7 @@ pyJEO is released under an
 
 # Dependencies
 
+ * mialib
  * jiplib
  * numpy
 
