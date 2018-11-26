@@ -232,4 +232,4 @@ class _PropertiesList():
         pass
 
     def _set_caller(self, caller):
-        self._jim_object = caller
+        self._jim_list = caller
