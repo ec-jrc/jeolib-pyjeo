@@ -62,6 +62,13 @@ def sml(jim_object, **kwargs):
     return _pj.Jim(jim_object.classify(kwargs))
 
 
+def reclass(jim_object, classes, reclasses, otype=None):
+    kwargs = {'class': classes, 'reclass': reclasses}
+    if otype:
+        kwargs.update({'otype': otype})
+    return _pj.Jim(jim_object.reclass(kwargs))
+
+
 class _Classify():
 
     def __init__(self):
@@ -121,6 +128,12 @@ class _Classify():
         """
         kwargs.update({'method': 'sml'})
         self._jim_object._set(self._jim_object.classify(kwargs))
+
+    def reclass(self, classes, reclasses, otype=None):
+        kwargs = {'class': classes, 'reclass': reclasses}
+        if otype:
+            kwargs.update({'otype': otype})
+        self._jim_object._set(self._jim_object.reclass(kwargs))
 
 
 class _ClassifyList():
