@@ -37,10 +37,17 @@ class BadProps(unittest.TestCase):
 
         assert no_data == [5, 10], 'Error in properties.pushNoData()'
 
+        self.jim.properties.setNoDataVals(22)
+        no_data = self.jim.properties.getNoDataVals()
+
+        assert no_data == [22], \
+            'Error in properties.setNoDataVals() for one value'
+
         self.jim.properties.setNoDataVals([1, 2, 3])
         no_data = self.jim.properties.getNoDataVals()
 
-        assert no_data == [1, 2, 3], 'Error in properties.setNoDataVals()'
+        assert no_data == [1, 2, 3], \
+            'Error in properties.setNoDataVals() for multiple values'
 
         self.jim.properties.clearNoData()
         no_data = self.jim.properties.getNoDataVals()
