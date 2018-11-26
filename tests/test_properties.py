@@ -103,6 +103,27 @@ class BadProps(unittest.TestCase):
         assert self.jim.properties.getProjection() != proj, \
             'Error in properties.getProjection() or setProjection()'
 
+    def test_data_types(self):
+        """Test getDataType() and conversion methods."""
+        assert pj.Jim(
+            self.jim.convertToUchar8()).properties.getDataType() == 1, \
+            'Error in properties.getDataType() or converting methods'
+
+        assert pj.Jim(
+            self.jim.convertToUint32()).properties.getDataType() == 5, \
+            'Error in properties.getDataType() or converting methods'
+
+        assert pj.Jim(
+            self.jim.convertToFloat32()).properties.getDataType() == 6, \
+            'Error in properties.getDataType() or converting methods'
+
+        assert pj.Jim(
+            self.jim.convertToDouble64()).properties.getDataType() == 7, \
+            'Error in properties.getDataType() or converting methods'
+
+        # TODO: Types 0, 2, 3, 5, 8, 9, 10, 11
+        # TODO: Change the second assertion to 4 after fixing the bug in jiplib
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
