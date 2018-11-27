@@ -992,3 +992,22 @@ class JimList(list, _jl.JimList):
         self._pixops = pixops._PixOpsList()
         self._properties = properties._PropertiesList()
         self._stats = stats._StatsList()
+
+    def __dir__(self):
+        """Change behaviour of the method whisperer to ignore jiplib methods.
+
+        :return: a whispered module or method
+        """
+        pyjeo_Jim_methods = list(set(dir(JimList)) - set(dir(_jl.JimList)))
+        return [i for i in self.__dict__.keys() if i != 'this'] + \
+               pyjeo_Jim_methods
+
+    @property
+    def stats(self):
+        self._stats._set_caller(_jl.JimList(self))
+        _gc.collect()
+        return self._stats
+
+    @stats.setter
+    def stats(self, new_props):
+        self._stats = new_props

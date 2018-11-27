@@ -105,3 +105,10 @@ class _StatsList():
 
     def _set_caller(self, caller):
         self._jim_list = caller
+
+    def getStats(self, **kwargs):
+        return self._jim_list.getStats(kwargs)
+
+    def getStatProfile(self, function, **kwargs):
+        kwargs.update({'function': function})
+        return _pj.Jim(self._jim_list.statProfile(kwargs))

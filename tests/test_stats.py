@@ -100,9 +100,40 @@ class BadStats(unittest.TestCase):
             'Error in stats.getStatProfile()'
 
 
+class BadStatsLists(unittest.TestCase):
+    """Test JimList functions and methods for getting statistics."""
+
+    def test_getStatProfile(self):
+        """Test if values from getStatProfile are not wrong."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(tiles[1])
+        jiml = pj.JimList([jim1, jim2])
+
+        stats1 = jim1.stats.getStats()
+        stats2 = jim2.stats.getStats()
+
+        min = stats1['min']
+        if stats2['min'] < min:
+            min = stats2['min']
+
+        max = stats1['max']
+        if stats2['max'] > max:
+            max = stats2['max']
+
+        min_profile = jiml.stats.getStatProfile('min')
+        max_profile = jiml.stats.getStatProfile('max')
+
+        assert min_profile.stats.getStats()['min'] == min, \
+            'Error in stats.getStatProfile()'
+
+        assert max_profile.stats.getStats()['max'] == max, \
+            'Error in stats.getStatProfile()'
+
+
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
-    suite_list = [loader.loadTestsFromTestCase(BadStats)]
+    suite_list = [loader.loadTestsFromTestCase(BadStats),
+                  loader.loadTestsFromTestCase(BadStatsLists)]
     return unittest.TestSuite(suite_list)
