@@ -142,6 +142,10 @@ def createJim(filename=None, **kwargs):
     return _pj.Jim(_jl.createJim(filename, **kwargs))
 
 
+def createJimList(jims_list, **kwargs):
+    return _pj.JimList(_jl.createJimList(jims_list, **kwargs))
+
+
 def createVector(filename, **kwargs):
     """Create an empty VectorOgr object.
 
