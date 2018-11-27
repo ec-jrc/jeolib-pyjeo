@@ -28,3 +28,11 @@ From the directory of the repository, run:
 ```
 python -m unittest -v tests
 ```
+
+# Build documentation
+
+Go to directory `doc` and run `make html`.
+```
+cd doc
+make html
+```
