@@ -159,13 +159,6 @@ def createVector(filename, **kwargs):
     return _jl.createVector(filename, **kwargs)
 
 
-# def delJimObject(jim_object):
-#     if isinstance(jim_object, _pj.Jim):
-#         del jim_object.properties, jim_object.io, jim_object.pixops, \
-#             jim_object.ngbops, jim_object.geometry, jim_object.ccops, \
-#             jim_object.clssfy, jim_object.demops, jim_object.all
-
-
 class _IO():
     """Define all IO methods."""
 

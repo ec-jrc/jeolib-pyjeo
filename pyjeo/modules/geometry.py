@@ -148,7 +148,9 @@ def cropOgr(jim_object, extent, **kwargs):
     +------------------+---------------------------------------------------------------------------------+
 
     .. note::
-       Possible values for the key 'eo' are: ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG. For instance you can use 'eo':'ATTRIBUTE=fieldname'
+       Possible values for the key 'eo' are:
+       ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+       For instance you can use 'eo':'ATTRIBUTE=fieldname'
     """
     return _pj.Jim(jim_object.cropOgr(extent, kwargs))
 
@@ -270,15 +272,20 @@ def warp(jim_object, t_srs, **kwargs):
 
     Example:
 
-    Read a raster dataset from disk and warp to the target spatial reference system::
+    Read a raster dataset from disk and warp to the target spatial reference
+    system::
 
-        jim=jl.createJim('/path/to/file.tif')
+        jim = jl.createJim('/path/to/file.tif')
         jim.warp('epsg:3035')
 
-    Read a raster dataset from disk that is in lat lon (epsg:4326), select a bounding box in a different spatial reference system (epsg:3035). Notice the raster dataset read is still in the original projection (epsg:4326). Then warp the raster dataset to the target spatial reference system (epsg:3035)::
+    Read a raster dataset from disk that is in lat lon (epsg:4326), select
+    a bounding box in a different spatial reference system (epsg:3035).
+    Notice the raster dataset read is still in the original
+    projection (epsg:4326). Then warp the raster dataset to the target
+    spatial reference system (epsg:3035)::
 
-        jim=jl.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
-        jim.warp('epsg:3035',s_srs='epsg:4326')
+        jim = jl.createJim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
+        jim.warp('epsg:3035', s_srs='epsg:4326')
 
     """
     kwargs.update({'t_srs': t_srs})
@@ -397,7 +404,8 @@ class _Geometry():
         :param lrz: Lower right y value of bounding box to crop
         :param dx: spatial resolution in x to crop (stride if geo is False)
         :param dy: spatial resolution in y to crop (stride if geo is False)
-        :param nogeo: use image coordinates if True, default is spatial reference system coordinates
+        :param nogeo: use image coordinates if True, default is spatial
+            reference system coordinates
 
         """
         if ulz is not None or lrz is not None:
@@ -520,7 +528,9 @@ class _Geometry():
         +------------------+---------------------------------------------------------------------------------+
 
         .. note::
-           Possible values for the key 'eo' are: ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG. For instance you can use 'eo':'ATTRIBUTE=fieldname'
+           Possible values for the key 'eo' are:
+           ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+           For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
         self._jim_object._set(self._jim_object.cropOgr(extent, kwargs))
 
@@ -576,15 +586,16 @@ class _Geometry():
 
         Append all the bands of raster dataset jim1 to the current image jim0::
 
-            jim0=jl.io.createJim('/path/to/raster0.tif')
-            jim1=jl.io.createJim('/path/to/raster1.tif')
+            jim0 = jl.io.createJim('/path/to/raster0.tif')
+            jim1 = jl.io.createJim('/path/to/raster1.tif')
             jim0.stackBand(jim1)
 
-        Append the first three bands of raster dataset jim1 to the current image jim0::
+        Append the first three bands of raster dataset jim1 to the current
+        image jim0::
 
-            jim0=jl.io.createJim('/path/to/raster0.tif')
-            jim1=jl.io.createJim('/path/to/raster1.tif')
-            jim0.stackBand(jim1,band=[0,1,2])
+            jim0 = jl.io.createJim('/path/to/raster0.tif')
+            jim1 = jl.io.createJim('/path/to/raster1.tif')
+            jim0.stackBand(jim1, band=[0, 1, 2])
         """
         if band:
             self._jim_object.d_stackBand(jim_other, {'band': band})
@@ -594,7 +605,8 @@ class _Geometry():
     def stackBandRange(self, jim_other, startband, endband):
         """Subset raster dataset.
 
-        Stack range of bands from another raster dataset to current raster dataset.
+        Stack range of bands from another raster dataset to current raster
+        dataset.
 
         Modifies the instance on which the method was called.
 
@@ -604,17 +616,18 @@ class _Geometry():
 
         Example:
 
-        Append the first three bands of raster dataset jim1 to the current image jim0::
+        Append the first three bands of raster dataset jim1 to the current
+        image jim0::
 
-            jim0=jl.io.createJim('/path/to/raster0.tif')
-            jim1=jl.io.createJim('/path/to/raster1.tif')
-            jim0.stackBandRange(jim1,startband=0,endband=2)
+            jim0 = jl.io.createJim('/path/to/raster0.tif')
+            jim1 = jl.io.createJim('/path/to/raster1.tif')
+            jim0.stackBandRange(jim1, startband=0, endband=2)
         """
         self._jim_object.d_stackBand(jim_other, {'startband': startband,
                                                  'endband': endband})
 
     def extractOgr(self, jim_ref, **kwargs):
-        """Extract pixel values from raster image based on a vector dataset sample.
+        """Extract pixel values from raster image based on a vector dataset.
 
         :param jim_ref: reference Jim instance
         :param kwargs: See table below
@@ -686,7 +699,8 @@ class _Geometry():
 
 
         .. note::
-            To ignore some pixels from the extraction process, see list of :ref:`mask <extract_mask>` key values:
+            To ignore some pixels from the extraction process, see list
+            of :ref:`mask <extract_mask>` key values:
 
         .. _extract_mask:
 
@@ -711,11 +725,13 @@ class _Geometry():
 
         Example:
 
-        Extract a random sample of 100 points, calculating the mean value based on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector dataset in memory::
+        Extract a random sample of 100 points, calculating the mean value based
+        on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector
+        dataset in memory::
 
-            reference=jl.io.createVector('/path/to/reference.sqlite')
-            jim0=jl.io.createJim('/path/to/raster.tif')
-            v=jim0.extractOgr(reference,rule=['mean'],output='/path/to/output.sqlite',oformat='SQLite')
+            reference = jl.io.createVector('/path/to/reference.sqlite')
+            jim0 = jl.io.createJim('/path/to/raster.tif')
+            v = jim0.extractOgr(reference, rule=['mean'], output='/path/to/output.sqlite', oformat='SQLite')
             v.write()
         """
         if 'threshold' in kwargs:
@@ -766,20 +782,26 @@ class _Geometry():
         +------------------+---------------------------------------------------------------------------------+
 
         .. note::
-            To ignore some pixels from the extraction process, see list of :ref:`mask <extract_mask>` key values:
+            To ignore some pixels from the extraction process, see list
+            of :ref:`mask <extract_mask>` key values:
 
         Example:
 
-        Extract a random sample of 100 points, calculating the mean value based on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector dataset in memory::
+        Extract a random sample of 100 points, calculating the mean value based
+        on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector
+        dataset in memory::
 
-            v01=jim0.extractSample(random=100,buffer=1,rule=['mean'],output='mem01',oformat='Memory')
+            v01 = jim0.extractSample(random=100, buffer=1, rule=['mean'], output='mem01', oformat='Memory')
 
-        Extract a sample of 100 points using a regular grid sampling scheme. For each grid point, calculate the median value based on a 3x3 window (buffer value of 1 pixel neighborhood). Write the result in a SQLite vector dataset on disk::
+        Extract a sample of 100 points using a regular grid sampling scheme.
+        For each grid point, calculate the median value based on a 3x3 window
+        (buffer value of 1 pixel neighborhood). Write the result in a SQLite
+        vector dataset on disk::
 
-            outputfn='/path/to/output.sqlite'
-            npoint=100
-            gridsize=int(jim.nrOfCol()*jim.getDeltaX()/math.sqrt(npoint))
-            v=jim.extractSample(grid=gridsize,buffer=1,rule=['median'],output=outputfn,oformat='SQLite')
+            outputfn = '/path/to/output.sqlite'
+            npoint = 100
+            gridsize = int(jim.nrOfCol()*jim.getDeltaX()/math.sqrt(npoint))
+            v = jim.extractSample(grid=gridsize, buffer=1, rule=['median'], output=outputfn, oformat='SQLite')
             v.write()
 
         """
@@ -793,9 +815,11 @@ class _Geometry():
     def extractImg(self, reference, **kwargs):
         """Extract pixel values from an input based on a raster sample dataset.
 
-        :param reference: thematic raster dataset with integer values, typically a land cover map
+        :param reference: thematic raster dataset with integer values,
+            typically a land cover map
         :param kwargs: See table below
-        :return: A VectorOgr with fields for each of the calculated raster value (zonal) statistics
+        :return: A VectorOgr with fields for each of the calculated raster
+            value (zonal) statistics
 
         +------------------+---------------------------------------------------------------------------------+
         | key              | value                                                                           |
@@ -830,7 +854,8 @@ class _Geometry():
         +------------------+---------------------------------------------------------------------------------+
 
         .. note::
-            To ignore some pixels from the extraction process, see list of :ref:`nodata <extract_nodata>` key values:
+            To ignore some pixels from the extraction process, see list
+            of :ref:`nodata <extract_nodata>` key values:
 
         .. _extract_nodata:
 
@@ -850,7 +875,11 @@ class _Geometry():
 
         Example:
 
-        Open a raster sample dataset based on land cover map (e.g., Corine) and use it to extract a stratified sample of 100 points from an input raster dataset with four spectral bands ('B02', 'B03', 'B04', 'B08'). Only sample classes 2 (urban), 12 (agriculture), 25 (forest), 41 (water) and an aggregated (rest) class 50::
+        Open a raster sample dataset based on land cover map (e.g., Corine) and
+        use it to extract a stratified sample of 100 points from an input
+        raster dataset with four spectral bands ('B02', 'B03', 'B04', 'B08').
+        Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
+        41 (water) and an aggregated (rest) class 50::
 
             jim_ref=jl.createJim('/path/to/landcovermap.tif')
 
@@ -891,12 +920,17 @@ class _Geometry():
 
         Example:
 
-        Read a raster dataset from disk and warp to the target spatial reference system::
+        Read a raster dataset from disk and warp to the target spatial
+        reference system::
 
             jim=jl.createJim('/path/to/file.tif')
             jim.warp('epsg:3035')
 
-        Read a raster dataset from disk that is in lat lon (epsg:4326), select a bounding box in a different spatial reference system (epsg:3035). Notice the raster dataset read is still in the original projection (epsg:4326). Then warp the raster dataset to the target spatial reference system (epsg:3035)::
+        Read a raster dataset from disk that is in lat lon (epsg:4326), select
+        a bounding box in a different spatial reference system (epsg:3035).
+        Notice the raster dataset read is still in the original projection
+        (epsg:4326). Then warp the raster dataset to the target spatial
+        reference system (epsg:3035)::
 
             jim=jl.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
             jim.warp('epsg:3035',s_srs='epsg:4326')
@@ -987,28 +1021,32 @@ class _Geometry():
         self._jim_object.d_plotLine(x1, y1, x2, y2, val)
 
     def image2geo(self, i, j):
-        """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+        """Convert image coordinates to georeferenced coordinates.
+
+        Convert image coordinates (column and row) to georeferenced
+        coordinates (x and y)
 
         :param i: image column number (starting from 0)
         :param j: image row number (starting from 0)
-        :return: georeferenced coordinates according to the object spatial reference system
+        :return: georeferenced coordinates according to the object spatial
+            reference system
         """
         return self._jim_object.image2geo(i, j)
 
     def geo2image(self, x, y):
-        """ Convert image coordinates (column and row) to georeferenced coordinates (x and y)
+        """ Convert georeferenced coordinates to image coordinates.
 
-        :param x: georeferenced coordinate in x according to the object spatial reference system
-        :param y: georeferenced coordinate in y according to the object spatial reference system
+        Convert georeferenced coordinates (x and y) to image
+        coordinates (column and row).
+
+        :param x: georeferenced coordinate in x according to the object spatial
+            reference system
+        :param y: georeferenced coordinate in y according to the object spatial
+            reference system
         :return: image coordinates (row and column, starting from 0)
         """
         coord = self._jim_object.geo2image(x, y)
         return [int(coord[0]), int(coord[1])]
-
-    # TODO: how to work with
-    # compose (jim1.compose(jim2, jim3, jim4, 2)), how to ovlmatrix, how to
-    # grid (jim1.gridding(jim1, jim3, jim4, 1)), how and where nni,
-    # where addframeboxelem, where subframeboxelem,
 
 
 class _GeometryList():
