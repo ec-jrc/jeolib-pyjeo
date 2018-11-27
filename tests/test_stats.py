@@ -81,6 +81,24 @@ class BadStats(unittest.TestCase):
 
         assert jim.pixops.isEqual(jim_stretched), 'Error in stretching Jim'
 
+    def test_getStatProfile(self):
+        """Test if values from getStatProfile are not wrong."""
+        jim = pj.Jim(tiles[0])
+
+        stats = jim.stats.getStats()
+
+        min = stats['min']
+        max = stats['max']
+
+        min_profile = jim.stats.getStatProfile('min')
+        max_profile = jim.stats.getStatProfile('max')
+
+        assert min_profile.stats.getStats()['min'] == min, \
+            'Error in stats.getStatProfile()'
+
+        assert max_profile.stats.getStats()['max'] == max, \
+            'Error in stats.getStatProfile()'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
