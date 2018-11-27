@@ -64,7 +64,8 @@ class _Stats():
     def getStats(self, **kwargs):
         return self._jim_object.getStats(kwargs)
 
-    def getStatProfile(self, **kwargs):
+    def getStatProfile(self, function, **kwargs):
+        kwargs.update({'function': function})
         return _pj.Jim(self._jim_object.statProfile(kwargs))
 
     def getHisto1d(self):
