@@ -993,6 +993,8 @@ class JimList(list, _jl.JimList):
         self._properties = properties._PropertiesList()
         self._stats = stats._StatsList()
 
+        self.__dict__.update({'this': _jl.JimList(self)})
+
     def __dir__(self):
         """Change behaviour of the method whisperer to ignore jiplib methods.
 
@@ -1004,7 +1006,7 @@ class JimList(list, _jl.JimList):
 
     @property
     def stats(self):
-        self._stats._set_caller(_jl.JimList(self))
+        self._stats._set_caller(self)
         _gc.collect()
         return self._stats
 
