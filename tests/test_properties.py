@@ -65,8 +65,8 @@ class BadProps(unittest.TestCase):
 
     def test_bbox(self):
         """Test getBoundingBox() method."""
-        assert self.jim.getBoundingBox() == [self.ulx, self.uly, self.lrx,
-                                             self.lry], \
+        assert self.jim.properties.getBoundingBox() == [self.ulx, self.uly,
+                                                        self.lrx, self.lry], \
             'Error in properties.getBoundingBox()'
 
     def test_geo_transform(self):
@@ -76,9 +76,9 @@ class BadProps(unittest.TestCase):
         assert gt[0] == self.ulx, 'Error in properties.getGeoTransform()'
         assert gt[3] == self.uly, 'Error in properties.getGeoTransform()'
 
-        assert gt[1] == self.jim.getDeltaX(), \
+        assert gt[1] == self.jim.properties.getDeltaX(), \
             'Error in properties.getDeltaX() or getGeoTransform()'
-        assert abs(gt[5]) == self.jim.getDeltaY(), \
+        assert abs(gt[5]) == self.jim.properties.getDeltaY(), \
             'Error in properties.getDeltaY() or getGeoTransform()'
 
         new_gt = [0, 1, 0, 0, 0, 1]
@@ -100,7 +100,7 @@ class BadProps(unittest.TestCase):
     def test_projection(self):
         """Test Projection() methods."""
         proj = self.jim.properties.getProjection()
-        self.jim.setProjection('EPSG:5514')
+        self.jim.properties.setProjection('EPSG:5514')
 
         assert self.jim.properties.getProjection() != proj, \
             'Error in properties.getProjection() or setProjection()'
