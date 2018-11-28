@@ -56,9 +56,11 @@ class BadProps(unittest.TestCase):
 
     def test_covers(self):
         """Test covers() method."""
-        assert self.jim.covers(self.ulx + 0.1, self.uly - 0.1), \
+        assert self.jim.properties.covers(self.ulx + 0.1, self.uly - 0.1), \
             'Error in properties.covers(), getUlx() or getUly()'
-        assert self.jim.covers(self.lrx - 0.1, self.lry + 0.1), \
+        assert self.jim.properties.covers(self.lrx - 0.1, self.lry + 0.1), \
+            'Error in properties.covers(), getUlx() or getUly()'
+        assert not self.jim.properties.covers(self.lrx + 0.1, self.lry), \
             'Error in properties.covers(), getUlx() or getUly()'
 
     def test_bbox(self):
