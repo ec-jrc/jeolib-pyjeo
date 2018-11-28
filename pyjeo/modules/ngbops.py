@@ -10,14 +10,19 @@ except ImportError:
 
 
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
-    """Filter Jim object in spectral/temporal domain performed on multi-band raster dataset.
+    """Subset raster dataset in spectral/temporal domain.
 
-    Subset raster dataset in spectral/temporal domain.
+    Filter Jim object in spectral/temporal domain performed on multi-band
+    raster dataset.
 
     :param jim_object: a Jim object
-    :param filter: filter function (see values for different filter types :ref:`supported filters <filters1d>`)
-    :param dz: filter kernel size in z (spectral/temporal dimension), must be odd (example: 3)
-    :param pad: Padding method for filtering (how to handle edge effects). Possible values are: symmetric (default), replicate, circular, zero (pad with 0)
+    :param filter: filter function (see values for different filter
+        types :ref:`supported filters <filters1d>`)
+    :param dz: filter kernel size in z (spectral/temporal dimension), must be
+        odd (example: 3)
+    :param pad: Padding method for filtering (how to handle edge effects).
+        Possible values are: symmetric (default), replicate, circular,
+        zero (pad with 0)
     :param otype: Data type for output image
     :return: filtered Jim object
     """
@@ -33,15 +38,19 @@ def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
 
 def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None,
              **kwargs):
-    """Filter Jim object in spatial domain performed on single or multi-band raster dataset.
+    """Subset raster dataset in spectral/temporal domain.
 
-    Subset raster dataset in spectral/temporal domain.
+    Filter Jim object in spatial domain performed on single or multi-band
+    raster dataset.
 
     :param jim_object: a Jim object
-    :param filter: filter function (see values for different filter types :ref:`supported filters <filters2d>`)
+    :param filter: filter function (see values for different filter
+        types :ref:`supported filters <filters2d>`)
     :param dx: filter kernel size in x, use odd values only (default is 3)
     :param dy: filter kernel size in y, use odd values only (default is 3)
-    :param pad: Padding method for filtering (how to handle edge effects). Possible values are: symmetric (default), replicate, circular, zero (pad with 0)
+    :param pad: Padding method for filtering (how to handle edge effects).
+        Possible values are: symmetric (default), replicate, circular,
+        zero (pad with 0)
     :param otype: Data type for output image
     :return: filtered Jim object
     """
@@ -89,13 +98,18 @@ class _NgbOps():
         self._jim_object = caller
 
     def filter1d(self, filter, dz=None, pad=None, otype=None, **kwargs):
-        """Filter Jim image in spectral/temporal domain performed on multi-band raster dataset.
+        """Subset raster dataset in spectral/temporal domain.
 
-        Subset raster dataset in spectral/temporal domain.
+        Filter Jim image in spectral/temporal domain performed on multi-band
+        raster dataset.
 
-        :param filter: filter function (see values for different filter types :ref:`supported filters <filters1d>`)
-        :param dz: filter kernel size in z (spectral/temporal dimension), must be odd (example: 3)
-        :param pad: Padding method for filtering (how to handle edge effects). Possible values are: symmetric (default), replicate, circular, zero (pad with 0)
+        :param filter: filter function (see values for different filter
+            types :ref:`supported filters <filters1d>`)
+        :param dz: filter kernel size in z (spectral/temporal dimension), must
+            be odd (example: 3)
+        :param pad: Padding method for filtering (how to handle edge effects).
+            Possible values are: symmetric (default), replicate, circular,
+            zero (pad with 0)
         :param otype: Data type for output image
 
         .. _filters1d:
@@ -116,11 +130,13 @@ class _NgbOps():
 
         .. note::
 
-            The morphological filter uses a linear structural element with a size defined by the key 'dz'
+            The morphological filter uses a linear structural element with
+            a size defined by the key 'dz'
 
         Example:
 
-        Perform a morphological dilation with a linear structural element of size 5::
+        Perform a morphological dilation with a linear structural element
+        of size 5::
 
             jim_filtered=jim.filter1d('dilate',dz=5)
 
@@ -153,11 +169,17 @@ class _NgbOps():
         +--------------+------------------------------------------------------+
 
         .. note::
-            You can specify the no data value for the smoothnodata filter with the extra key 'nodata' and a list of no data values. The interpolation type can be set with the key 'interp' (check complete list of `values <http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html>`_, removing the leading "gsl_interp").
+            You can specify the no data value for the smoothnodata filter
+            with the extra key 'nodata' and a list of no data values.
+            The interpolation type can be set with the key 'interp'
+            (check complete list of
+            `values <http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html>`_,
+            removing the leading "gsl_interp").
 
         Example:
 
-        Smooth the 0 valued pixel values using a linear interpolation in a spectral/temporal neighborhood of 5 bands::
+        Smooth the 0 valued pixel values using a linear interpolation in
+        a spectral/temporal neighborhood of 5 bands::
 
             jim.filter1d('smoothnodata',dz=5,nodata=0,interp='linear')
 
@@ -166,9 +188,12 @@ class _NgbOps():
         Perform a wavelet transform (or inverse) in spectral/temporal domain.
 
         .. note::
-            The wavelet coefficients can be positive and negative. If the input raster dataset has an unsigned data type, make sure to set the output to a signed data type using the key 'otype'.
+            The wavelet coefficients can be positive and negative. If the input
+            raster dataset has an unsigned data type, make sure to set
+            the output to a signed data type using the key 'otype'.
 
-        You can use set the wavelet family with the key 'family' in the dictionary. The following wavelets are supported as values:
+        You can use set the wavelet family with the key 'family' in
+        the dictionary. The following wavelets are supported as values:
 
         * daubechies
         * daubechies_centered
@@ -188,11 +213,21 @@ class _NgbOps():
         +----------+--------------------------------------+
 
         .. note::
-            The filter 'dwt_cut' performs a forward and inverse transform, approximating the input signal. The approximation is performed by discarding a percentile of the wavelet coefficients that can be set with the key 'threshold'. A threshold of 0 (default) retains all and a threshold of 50 discards the lower half of the wavelet coefficients.
+            The filter 'dwt_cut' performs a forward and inverse transform,
+            approximating the input signal. The approximation is performed by
+            discarding a percentile of the wavelet coefficients that can be
+            set with the key 'threshold'. A threshold of 0 (default) retains
+            all and a threshold of 50 discards the lower half of the wavelet
+            coefficients.
 
         Example:
 
-        Approximate the multi-temporal raster dataset by discarding the lower 20 percent of the coefficients after a discrete wavelet transform. The input dataset has a Byte data type. We wavelet transform is calculated using an Int16 data type. The approximated image is then converted to a Byte dataset, making sure all values below 0 and above 255 are set to 0::
+        Approximate the multi-temporal raster dataset by discarding the lower
+        20 percent of the coefficients after a discrete wavelet transform.
+        The input dataset has a Byte data type. We wavelet transform is
+        calculated using an Int16 data type. The approximated image is then
+        converted to a Byte dataset, making sure all values below 0 and
+        above 255 are set to 0::
 
             jim_multitemp.filter1d('dwt_cut',threshold=20, otype=Int16)
             jim_multitemp[(jim_multitemp<0) | (jim_multitemp>255)]=0
@@ -200,13 +235,25 @@ class _NgbOps():
 
         :Hyperspectral filters:
 
-        Hyperspectral filters assume the bands in the input raster dataset correspond to contiguous spectral bands. Full width half max (FWHM) and spectral response filters are supported. They converts an N band input raster dataset to an M (< N) band output raster dataset.
+        Hyperspectral filters assume the bands in the input raster dataset
+        correspond to contiguous spectral bands. Full width half max (FWHM)
+        and spectral response filters are supported. They converts an N band
+        input raster dataset to an M (< N) band output raster dataset.
 
-        The full width half max (FWHM) filter expects a list of M center wavelenghts and a corresponding list of M FWHM values. The M center wavelenghts define the output wavelenghts and must be provided with the key 'wavelengthOut'. For the FHWM, use the key 'fwhm' and a list of M values. The algorithm needs to know the N wavelenghts that correspond to the N bands of the input raster dataset. Use the key 'wavelengthIn' and a list of N values. The units of input, output and FWHM are arbitrary, but should be identical (e.g., nm).
+        The full width half max (FWHM) filter expects a list of M center
+        wavelenghts and a corresponding list of M FWHM values. The M center
+        wavelenghts define the output wavelenghts and must be provided with
+        the key 'wavelengthOut'. For the FHWM, use the key 'fwhm' and a list
+        of M values. The algorithm needs to know the N wavelenghts that
+        correspond to the N bands of the input raster dataset. Use the key
+        'wavelengthIn' and a list of N values. The units of input, output and
+        FWHM are arbitrary, but should be identical (e.g., nm).
 
         Example:
 
-        Covert the hyperspectral input raster dataset, with the wavelengths defined in the list wavelenghts_in to a multispectral raster dataset with three bands, corresponding to Red, Green, and Blue::
+        Covert the hyperspectral input raster dataset, with the wavelengths
+        defined in the list wavelenghts_in to a multispectral raster dataset
+        with three bands, corresponding to Red, Green, and Blue::
 
             wavelengths_in=[]
             #define the wavelenghts of the input raster dataset
@@ -217,15 +264,26 @@ class _NgbOps():
                 print("Error: number of input wavelengths must be equal to number of bands in input raster dataset")
 
         .. note::
-                The input wavelenghts are automatically interpolated. You can specify the interpolation using the key 'interp' and values as listed interpolation http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html
+                The input wavelenghts are automatically interpolated. You can
+                specify the interpolation using the key 'interp' and values as
+                listed interpolation
+                http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html
 
         The spectral response filter (SRF)
 
-        The input raster dataset is filtered with M of spectral response functions (SRF).  Each spectral response function must be provided by the user in an ASCII file that consists of two columns: wavelengths and response. Use the key 'srf' and a list of paths to the ASCII file(s). The algorithm automatically takes care of the normalization of the SRF.
+        The input raster dataset is filtered with M of spectral response
+        functions (SRF).  Each spectral response function must be provided by
+        the user in an ASCII file that consists of two columns: wavelengths
+        and response. Use the key 'srf' and a list of paths to the ASCII
+        file(s). The algorithm automatically takes care of the normalization
+        of the SRF.
 
         Example:
 
-        Covert the hyperspectral input raster dataset, to a multispectral raster dataset with three bands, corresponding to Red, Green, and Blue as defined in the ASCII text files 'srf_red.txt', 'srf_green.txt', 'srf_blue.txt'::
+        Covert the hyperspectral input raster dataset, to a multispectral
+        raster dataset with three bands, corresponding to Red, Green, and Blue
+        as defined in the ASCII text files 'srf_red.txt', 'srf_green.txt',
+        'srf_blue.txt'::
 
             wavelengths_in=[]
             #specify the wavelenghts of the input raster dataset
@@ -236,16 +294,22 @@ class _NgbOps():
                 print("Error: number of input wavelengths must be equal to number of bands in input raster dataset")
 
         .. note::
-            The input wavelenghts are automatically interpolated. You can specify the interpolation using the key 'interp' and values as listed interpolation http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html
+            The input wavelenghts are automatically interpolated. You can
+            specify the interpolation using the key 'interp' and values as
+            listed interpolation
+            http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html
 
 
         :Custom filters:
 
-        For the custom filter, you can specify your own taps using the keyword 'tapz' and a list of filter tap values. The tap values are automatically normalized by the algorithm.
+        For the custom filter, you can specify your own taps using the keyword
+        'tapz' and a list of filter tap values. The tap values are
+        automatically normalized by the algorithm.
 
         Example:
 
-        Perform a simple smoothing filter by defining three identical tap values::
+        Perform a simple smoothing filter by defining three identical tap
+        values::
 
             jim.filter1d(tapz=[1,1,1])
         """
@@ -259,15 +323,19 @@ class _NgbOps():
 
     def filter2d(self, filter, dx=None, dy=None, pad=None, otype=None,
                  **kwargs):
-        """Filter Jim object in spatial domain performed on single or multi-band raster dataset.
+        """Subset raster dataset in spectral/temporal domain.
 
-        Subset raster dataset in spectral/temporal domain.
+        Filter Jim object in spatial domain performed on single or multi-band
+        raster dataset.
 
         :param jim_object: a Jim object
-        :param filter: filter function (see values for different filter types :ref:`supported filters <filters2d>`)
+        :param filter: filter function (see values for different filter
+            types :ref:`supported filters <filters2d>`)
         :param dx: filter kernel size in x, use odd values only (default is 3)
         :param dy: filter kernel size in y, use odd values only (default is 3)
-        :param pad: Padding method for filtering (how to handle edge effects). Possible values are: symmetric (default), replicate, circular, zero (pad with 0)
+        :param pad: Padding method for filtering (how to handle edge effects).
+            Possible values are: symmetric (default), replicate, circular,
+            zero (pad with 0)
         :param otype: Data type for output image
 
         .. _filters2d:
@@ -297,7 +365,8 @@ class _NgbOps():
         **Morphological filters**
 
         .. note::
-            For a more comprehensive list morphological operators, please refer to :ref:`advanced spatial morphological operators <mia_morpho2d>`.
+            For a more comprehensive list morphological operators, please refer
+            to :ref:`advanced spatial morphological operators <mia_morpho2d>`.
 
         +---------------------+------------------------------------------------------+
         | filter              | description                                          |
@@ -312,11 +381,16 @@ class _NgbOps():
         +---------------------+------------------------------------------------------+
 
         .. note::
-            You can use the optional key 'class' with a list value to take only these pixel values into account. For instance, use 'class':[255] to dilate clouds in the raster dataset that have been flagged with value 255. In addition, you can use a circular disc kernel (set the key 'circular' to True).
+            You can use the optional key 'class' with a list value to take only
+            these pixel values into account. For instance, use 'class':[255] to
+            dilate clouds in the raster dataset that have been flagged with
+            value 255. In addition, you can use a circular disc kernel (set
+            the key 'circular' to True).
 
         Example:
 
-        Perform a morphological dilation using a circular kernel with size (diameter) of 5 pixels::
+        Perform a morphological dilation using a circular kernel with size
+        (diameter) of 5 pixels::
 
             jim.filter2d('dilate',dx=5,dy=5,circular=True)
 
@@ -355,7 +429,12 @@ class _NgbOps():
         +--------------+------------------------------------------------------+
 
         .. note::
-            You can specify the no data value for the smoothnodata filter with the extra key 'nodata' and a list of no data values. The interpolation type can be set with the key 'interp' (check complete list of `values <http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html>`_, removing the leading "gsl_interp").
+            You can specify the no data value for the smoothnodata filter with
+            the extra key 'nodata' and a list of no data values.
+            The interpolation type can be set with the key 'interp' (check
+            complete list of
+            `values <http://www.gnu.org/software/gsl/manual/html_node/Interpolation-Types.html>`_,
+            removing the leading "gsl_interp").
 
         Example:
 
@@ -368,9 +447,12 @@ class _NgbOps():
         Perform a wavelet transform (or inverse) in spatial domain.
 
         .. note::
-            The wavelet coefficients can be positive and negative. If the input raster dataset has an unsigned data type, make sure to set the output to a signed data type using the key 'otype'.
+            The wavelet coefficients can be positive and negative. If the input
+            raster dataset has an unsigned data type, make sure to set
+            the output to a signed data type using the key 'otype'.
 
-        You can use set the wavelet family with the key 'family' in the dictionary. The following wavelets are supported as values:
+        You can use set the wavelet family with the key 'family' in
+        the dictionary. The following wavelets are supported as values:
 
         * daubechies
         * daubechies_centered
@@ -390,11 +472,21 @@ class _NgbOps():
         +----------+--------------------------------------+
 
         .. note::
-            The filter 'dwt_cut' performs a forward and inverse transform, approximating the input signal. The approximation is performed by discarding a percentile of the wavelet coefficients that can be set with the key 'threshold'. A threshold of 0 (default) retains all and a threshold of 50 discards the lower half of the wavelet coefficients.
+            The filter 'dwt_cut' performs a forward and inverse transform,
+            approximating the input signal. The approximation is performed by
+            discarding a percentile of the wavelet coefficients that can be
+            set with the key 'threshold'. A threshold of 0 (default) retains
+            all and a threshold of 50 discards the lower half of the wavelet
+            coefficients.
 
         Example:
 
-        Approximate the multi-temporal raster dataset by discarding the lower 20 percent of the coefficients after a discrete wavelet transform. The input dataset has a Byte data type. We wavelet transform is calculated using an Int16 data type. The approximated image is then converted to a Byte dataset, making sure all values below 0 and above 255 are set to 0::
+        Approximate the multi-temporal raster dataset by discarding the lower
+        20 percent of the coefficients after a discrete wavelet transform.
+        The input dataset has a Byte data type. We wavelet transform is
+        calculated using an Int16 data type. The approximated image is then
+        converted to a Byte dataset, making sure all values below 0 and above
+        255 are set to 0::
 
             jim_multitemp.filter2d('dwt_cut',threshold=20, otype=Int16)
             jim_multitemp[(jim_multitemp<0) | (jim_multitemp>255)]=0

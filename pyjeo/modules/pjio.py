@@ -41,7 +41,8 @@ except ImportError:
 
 def createJim(filename=None, **kwargs):
     """
-    Create a new Jim object, either :ref:`from file <create_Jim_from_file>` or :ref:`create new <create_Jim_new>`
+    Create a new Jim object, either :ref:`from file <create_Jim_from_file>`
+    or :ref:`create new <create_Jim_new>`
 
 
     :param filename: Path to a raster dataset or another Jim object
@@ -68,21 +69,29 @@ def createJim(filename=None, **kwargs):
     noread   Set this flag to True to not read data when opening
     ======== ===================================================
 
-    .. note:: You can specify a different spatial reference system to define the region of interest to read set with keys ulx, uly, lrx, and lry with the extra key 't_srs'. Notice this will not re-project the resulting image. You can use the function :py:func:`geometry:warp` for this.
+    .. note::
+         You can specify a different spatial reference system to define the
+         region of interest to read set with keys ulx, uly, lrx, and lry with
+         the extra key 't_srs'. Notice this will not re-project the resulting
+         image. You can use the function :py:func:`geometry:warp` for this.
     ..
 
-    .. note:: resample values: please check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a
+    .. note::
+        resample values: please check
+        http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a
 
     Example:
 
-    Create Jim image object by opening an existing file (file content will automatically be read in memory)::
+    Create Jim image object by opening an existing file (file content will
+    automatically be read in memory)::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
         jim=jl.createJim(ifn)
         #do stuff with jim ...
         jim.close()
 
-    Create Jim image object by opening an existing file for specific region of interest and spatial resolution using cubic convolution resampling::
+    Create Jim image object by opening an existing file for specific region of
+    interest and spatial resolution using cubic convolution resampling::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
         jim0=jl.createJim(ifn,'noread'=True)
@@ -108,7 +117,8 @@ def createJim(filename=None, **kwargs):
     a_srs Assign the spatial reference for the output file, e.g., psg:3035 to use European projection and force to European grid
     ===== =================
 
-    Supported keys used to initialize random pixel values in new Jim image object:
+    Supported keys used to initialize random pixel values in new Jim image
+    object:
 
     ======= ============================================
     seed    (default: 0) seed value for random generator
@@ -117,7 +127,8 @@ def createJim(filename=None, **kwargs):
     uniform (default: 0) Start and end values for random value with uniform distribution
     ======= ============================================
 
-    Create a new georeferenced Jim image object by defining the projection epsg code, bounding box, and pixel size::
+    Create a new georeferenced Jim image object by defining the projection epsg
+    code, bounding box, and pixel size::
 
         projection='epsg:32612'
         ULX=600000.0
@@ -128,7 +139,8 @@ def createJim(filename=None, **kwargs):
         #do stuff with jim ...
         jim.close()
 
-    Create a new georeferenced Jim image object for writing by defining the projection epsg code, bounding box and number of rows and columns::
+    Create a new georeferenced Jim image object for writing by defining
+    the projection epsg code, bounding box and number of rows and columns::
 
         projection='epsg:32612'
         ULX=600000.0
