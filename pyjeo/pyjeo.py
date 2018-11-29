@@ -166,7 +166,7 @@ class Jim(_jl.Jim):
         methods = list()
         for module in [properties._Properties, io._IO, pixops._PixOps,
                        ngbops._NgbOps, geometry._Geometry, ccops._CCOps,
-                       clssfy._Classify, demops._DEMOps]:
+                       clssfy._Classify, demops._DEMOps, stats._Stats]:
             methods.extend(treeStructure(module, queried_module))
 
         print('\n'.join(methods))
