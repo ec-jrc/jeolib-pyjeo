@@ -1005,6 +1005,16 @@ class JimList(list, _jl.JimList):
                pyjeo_Jim_methods
 
     @property
+    def properties(self):
+        self._properties._set_caller(self)
+        _gc.collect()
+        return self._properties
+
+    @properties.setter
+    def properties(self, new_props):
+        self._properties = new_props
+
+    @property
     def stats(self):
         self._stats._set_caller(self)
         _gc.collect()

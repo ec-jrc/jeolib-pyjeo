@@ -127,9 +127,65 @@ class BadProps(unittest.TestCase):
         # TODO: Change the second assertion to 4 after fixing the bug in jiplib
 
 
+class BadPropsLists(unittest.TestCase):
+    """Test JimList funcs and methods for getting and setting properties."""
+
+    jim1 = pj.Jim(testFile)
+    jim2 = pj.Jim(tiles[1])
+
+    jiml = pj.JimList([jim1, jim2])
+    ulx = jiml.properties.getUlx()
+    uly = jiml.properties.getUly()
+    lrx = jiml.properties.getLrx()
+    lry = jiml.properties.getLry()
+
+    def test_no_data_vals(self):
+        """Test JimList methods connected to no data values."""
+        self.jiml.properties.clearNoData()
+
+        self.jiml.properties.pushNoDataVal(0)
+
+        assert self.jiml.properties.getNoDataVals() == [0], \
+            'Error in properties.pushNoDataVal() or getNoDataVals for JimList'
+
+        self.jiml.properties.pushNoDataVal(1)
+
+        assert self.jiml.properties.getNoDataVals() == [0, 1], \
+            'Error in properties.pushNoDataVal() for JimList'
+
+        self.jiml.properties.clearNoData()
+
+        assert self.jiml.properties.getNoDataVals() == [], \
+            'Error in properties.clearNoData() for JimList'
+
+    def test_covers(self):
+        """Test JimList properties.covers() method."""
+        assert self.jiml.properties.covers(self.ulx + 0.1, self.uly - 0.1), \
+            'Error in properties.covers(), getUlx() or getUly()'
+        assert self.jiml.properties.covers(self.lrx - 0.1, self.lry + 0.1), \
+            'Error in properties.covers(), getLrx() or getLry()'
+        assert not self.jiml.properties.covers(self.lrx + 0.1, self.lry), \
+            'Error in properties.covers(), getLrx() or getLry()'
+
+    def test_bbox(self):
+        """Test JimList properties.getBoundingBox() method."""
+        assert self.jiml.properties.getBoundingBox() == [self.ulx, self.uly,
+                                                         self.lrx, self.lry], \
+            'Error in properties.getBoundingBox()'
+
+    def test_selectGeo(self):
+        """Test JimList properties.selectGeo() function and method."""
+        self.jiml.properties.selectGeo(self.ulx + 0.1, self.uly - 0.1)
+        assert len(self.jiml) == 1, 'Error in properties.selectGeo()'
+
+        self.jiml.properties.selectGeo(0, 0)
+        assert len(self.jiml) == 0, 'Error in properties.selectGeo()'
+
+
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
-    suite_list = [loader.loadTestsFromTestCase(BadProps)]
+    suite_list = [loader.loadTestsFromTestCase(BadProps),
+                  loader.loadTestsFromTestCase(BadPropsLists)]
     return unittest.TestSuite(suite_list)

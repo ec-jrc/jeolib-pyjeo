@@ -233,3 +233,82 @@ class _PropertiesList():
 
     def _set_caller(self, caller):
         self._jim_list = caller
+
+    def pushNoDataVal(self, value):
+        """Push a no data value for this raster JimList object."""
+        self._jim_list.pushNoDataValue(value)
+
+    def clearNoData(self):
+        """Clear the list of no data values for this JimList object."""
+        self._jim_list.clearNoData()
+
+    def getNoDataVals(self):
+        """Get the list of no data values."""
+        return self._jim_list.getNoDataValues()
+
+    def covers(self, *args):
+        """Check if a geolocation is covered by this dataset.
+
+        You can check the coverage for a :ref:`point of interest
+        <covers1>` or :ref:`region of interest <covers2>`.
+
+        .. _covers1:
+
+        :Using a point coordinates:
+
+        * ``x`` (float): x coordinate in spatial reference system of the raster dataset
+        * ``y`` (float): y coordinate in spatial reference system of the raster dataset
+
+        .. _covers2:
+
+        :Using a region of interest:
+
+        * ``ulx`` (float): upper left x coordinate in spatial reference system of the raster dataset
+        * ``uly`` (float): upper left y coordinate in spatial reference system of the raster dataset
+        * ``lrx`` (float): lower right x coordinate in spatial reference system of the raster dataset
+        * ``lry`` (float): lower right x coordinate in spatial reference system of the raster dataset
+        * ``all`` (bool): set to True if the entire bounding box must be covered by the raster dataset
+
+        Returns:
+        True if the raster dataset covers the point or region of interest.
+        """
+        return self._jim_list.covers(*args)
+
+    def getBoundingBox(self):
+        """Get the bounding box (georeferenced) coordinates of this dataset.
+
+        :return: A list with upper left x, upper left y, lower right x, and lower right y
+        """
+        return self._jim_list.getBoundingBox()
+
+    def getUlx(self):
+        """Get the upper left corner x coordinate of this dataset.
+
+        :return: The upper left corner x (georeferenced) coordinate of this dataset
+        """
+        return self._jim_list.getUlx()
+
+    def getUly(self):
+        """Get the upper left corner y coordinate of this dataset.
+
+        :return: The upper left corner y (georeferenced) coordinate of this dataset
+        """
+        return self._jim_list.getUly()
+
+    def getLrx(self):
+        """Get the lower left corner x coordinate of this dataset.
+
+        :return: The lower left corner x (georeferenced) coordinate of this dataset
+        """
+        return self._jim_list.getLrx()
+
+    def getLry(self):
+        """Get the lower left corner y coordinate of this dataset.
+
+        :return: The lower left corner y (georeferenced) coordinate of this dataset
+        """
+        return self._jim_list.getLry()
+
+    def selectGeo(self, *args):
+        self._jim_list.selectGeo(*args)
+        self._jim_list._set(self._jim_list)
