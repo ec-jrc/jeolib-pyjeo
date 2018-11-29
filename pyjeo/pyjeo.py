@@ -995,15 +995,6 @@ class JimList(list, _jl.JimList):
 
         self.__dict__.update({'this': _jl.JimList(self)})
 
-    def __dir__(self):
-        """Change behaviour of the method whisperer to ignore jiplib methods.
-
-        :return: a whispered module or method
-        """
-        pyjeo_Jim_methods = list(set(dir(JimList)) - set(dir(_jl.JimList)))
-        return [i for i in self.__dict__.keys() if i != 'this'] + \
-               pyjeo_Jim_methods
-
     @property
     def properties(self):
         self._properties._set_caller(self)
@@ -1043,3 +1034,16 @@ class JimList(list, _jl.JimList):
                 self.popImage()
             for image in modified_list:
                 self.pushImage(image)
+
+    def __dir__(self):
+        """Change behaviour of the method whisperer to ignore jiplib methods.
+
+        :return: a whispered module or method
+        """
+        pyjeo_JimList_methods = list(set(dir(JimList)) - set(dir(_jl.JimList)))
+        for param in dir(list):
+            if param[0] != '_' and param not in pyjeo_JimList_methods:
+                pyjeo_JimList_methods.append(param)
+
+        return [i for i in self.__dict__.keys() if i != 'this'] + \
+               pyjeo_JimList_methods
