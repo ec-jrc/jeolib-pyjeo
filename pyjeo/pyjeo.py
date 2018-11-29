@@ -1015,6 +1015,29 @@ class JimList(list, _jl.JimList):
     def stats(self, new_props):
         self._stats = new_props
 
+    def getMethods(self, queried_module=None):
+        """Print an overview of available methods in format module.method."""
+        def treeStructure(module, queried_module):
+            if queried_module and queried_module not in str(module):
+                return ''
+
+            module_methods = dir(module)
+            for default_method in ['__init__', '__module__', '__doc__']:
+                module_methods.remove(default_method)
+
+            for i in range(len(module_methods)):
+                module_methods[i] = module.__name__.lower()[1:-4] + '.' + \
+                                    module_methods[i]
+
+            return ['\nmodule {}:'.format(module.__name__.lower()[1:-4])] + \
+                   module_methods
+
+        methods = list()
+        for module in [properties._PropertiesList, stats._StatsList]:
+            methods.extend(treeStructure(module, queried_module))
+
+        print('\n'.join(methods))
+
     def _set(self, modified_list, from_list=False):
         """Apply changes done in modified_list to the parent JimList instance.
 
