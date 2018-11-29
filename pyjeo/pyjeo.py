@@ -1018,12 +1018,16 @@ class JimList(list, _jl.JimList):
         """Apply changes done in modified_list to the parent JimList instance.
 
         :param modified_object: modified JimList instance
+        :param from_list: set True if changing function originates in list()
         """
         if not from_list:
-            if modified_list.getSize() == 0:
-                del self[:]
+            del self[:]
             for i in range(modified_list.getSize()):
-                self[i] = modified_list.getImage(i)
+                im = modified_list.getImage(i)
+                if isinstance(im, Jim):
+                    self.append(im)
+                else:
+                    self.append(Jim(im))
         else:
             for _ in range(modified_list.getSize()):
                 self.popImage()
