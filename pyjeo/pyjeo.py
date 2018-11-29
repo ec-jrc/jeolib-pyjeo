@@ -1013,3 +1013,19 @@ class JimList(list, _jl.JimList):
     @stats.setter
     def stats(self, new_props):
         self._stats = new_props
+
+    def _set(self, modified_list, from_list=False):
+        """Apply changes done in modified_list to the parent JimList instance.
+
+        :param modified_object: modified JimList instance
+        """
+        if not from_list:
+            if modified_list.getSize() == 0:
+                del self[:]
+            for i in range(modified_list.getSize()):
+                self[i] = modified_list.getImage(i)
+        else:
+            for _ in range(modified_list.getSize()):
+                self.popImage()
+            for image in modified_list:
+                self.pushImage(image)
