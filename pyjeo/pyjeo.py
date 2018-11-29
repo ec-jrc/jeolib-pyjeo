@@ -146,15 +146,6 @@ class Jim(_jl.Jim):
     def stats(self, new_props):
         self._stats = new_props
 
-    def __dir__(self):
-        """Change behaviour of the method whisperer to ignore jiplib methods.
-
-        :return: a whispered module or method
-        """
-        pyjeo_Jim_methods = list(set(dir(Jim)) - set(dir(_jl.Jim)))
-        return [i for i in self.__dict__.keys() if i != 'this'] + \
-               pyjeo_Jim_methods
-
     def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
         def treeStructure(module, queried_module):
@@ -186,6 +177,15 @@ class Jim(_jl.Jim):
         :param modified_object: modified Jim instance
         """
         self.__dict__.update(modified_object.__dict__)
+
+    def __dir__(self):
+        """Change behaviour of the method whisperer to ignore jiplib methods.
+
+        :return: a whispered module or method
+        """
+        pyjeo_Jim_methods = list(set(dir(Jim)) - set(dir(_jl.Jim)))
+        return [i for i in self.__dict__.keys() if i != 'this'] + \
+               pyjeo_Jim_methods
 
     # *** unary operators *** #
 
