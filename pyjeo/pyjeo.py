@@ -1067,6 +1067,7 @@ class JimList(list, _jl.JimList):
         for param in dir(list):
             if param[0] != '_' and param not in pyjeo_JimList_methods:
                 pyjeo_JimList_methods.append(param)
+        del pyjeo_JimList_methods[pyjeo_JimList_methods.index('sort')]
 
         return [i for i in self.__dict__.keys() if i != 'this'] + \
                pyjeo_JimList_methods
