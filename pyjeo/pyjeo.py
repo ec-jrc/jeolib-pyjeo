@@ -1053,7 +1053,7 @@ class JimList(list, _jl.JimList):
                 else:
                     self.append(Jim(im))
         else:
-            for _ in range(modified_list.getSize()):
+            for _ in range(self.getSize()):
                 self.popImage()
             for image in modified_list:
                 self.pushImage(image)
