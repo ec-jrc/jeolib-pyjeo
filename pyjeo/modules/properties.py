@@ -152,7 +152,8 @@ class _Properties():
 
         Set it in well known text (wkt) format or as a string epsg:<epsgcode>.
 
-        :args: the projection for this dataset in well known text (wkt) format or as a string epsg:<epsgcode>.
+        :args: the projection for this dataset in well known text (wkt) format
+            or as a string epsg:<epsgcode>.
         """
         self._jim_object.setProjection(*args)
 
@@ -160,42 +161,48 @@ class _Properties():
         """
         Get the center position of this dataset in georeferenced coordinates.
 
-        :return: A list with the center position of this dataset in georeferenced coordinates.
+        :return: A list with the center position of this dataset in
+            georeferenced coordinates.
         """
         return self._jim_object.getCenterPos()
 
     def getBoundingBox(self):
         """Get the bounding box (georeferenced) coordinates of this dataset.
 
-        :return: A list with upper left x, upper left y, lower right x, and lower right y
+        :return: A list with upper left x, upper left y, lower right x, and
+            lower right y
         """
         return self._jim_object.getBoundingBox()
 
     def getUlx(self):
         """Get the upper left corner x coordinate of this dataset.
 
-        :return: The upper left corner x (georeferenced) coordinate of this dataset
+        :return: The upper left corner x (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_object.getUlx()
 
     def getUly(self):
         """Get the upper left corner y coordinate of this dataset.
 
-        :return: The upper left corner y (georeferenced) coordinate of this dataset
+        :return: The upper left corner y (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_object.getUly()
 
     def getLrx(self):
         """Get the lower left corner x coordinate of this dataset.
 
-        :return: The lower left corner x (georeferenced) coordinate of this dataset
+        :return: The lower left corner x (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_object.getLrx()
 
     def getLry(self):
         """Get the lower left corner y coordinate of this dataset.
 
-        :return: The lower left corner y (georeferenced) coordinate of this dataset
+        :return: The lower left corner y (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_object.getLry()
 
@@ -219,7 +226,9 @@ class _Properties():
         Calculated as the weighted average of all values not taking into
         account no data values for a specific band (start counting from 0).
 
-        :return: The reference pixel as the centre of gravity pixel (weighted average of all values not taking into account no data values) for a specific band (start counting from 0).
+        :return: The reference pixel as the centre of gravity pixel (weighted
+            average of all values not taking into account no data values) for
+            a specific band (start counting from 0).
         """
         return self._jim_object.getRefPix(*args)
 
@@ -277,35 +286,40 @@ class _PropertiesList():
     def getBoundingBox(self):
         """Get the bounding box (georeferenced) coordinates of this dataset.
 
-        :return: A list with upper left x, upper left y, lower right x, and lower right y
+        :return: A list with upper left x, upper left y, lower right x, and
+            lower right y
         """
         return self._jim_list.getBoundingBox()
 
     def getUlx(self):
         """Get the upper left corner x coordinate of this dataset.
 
-        :return: The upper left corner x (georeferenced) coordinate of this dataset
+        :return: The upper left corner x (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_list.getUlx()
 
     def getUly(self):
         """Get the upper left corner y coordinate of this dataset.
 
-        :return: The upper left corner y (georeferenced) coordinate of this dataset
+        :return: The upper left corner y (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_list.getUly()
 
     def getLrx(self):
         """Get the lower left corner x coordinate of this dataset.
 
-        :return: The lower left corner x (georeferenced) coordinate of this dataset
+        :return: The lower left corner x (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_list.getLrx()
 
     def getLry(self):
         """Get the lower left corner y coordinate of this dataset.
 
-        :return: The lower left corner y (georeferenced) coordinate of this dataset
+        :return: The lower left corner y (georeferenced) coordinate of this
+            dataset
         """
         return self._jim_list.getLry()
 

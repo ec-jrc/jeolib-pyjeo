@@ -63,7 +63,8 @@ def createJim(filename=None, **kwargs):
     lry      Lower right y value bounding box
     dx       Resolution in x
     dy       Resolution in y
-    resample Resample algorithm used for reading pixel data in case of interpolation
+    resample Resample algorithm used for reading pixel data in case of
+             interpolation
     extent   get boundary from extent from polygons in vector dataset
     nodata   Nodata value to put in image
     noread   Set this flag to True to not read data when opening
@@ -114,7 +115,8 @@ def createJim(filename=None, **kwargs):
     nrow  Number of rows
     nband (default: 1) Number of bands
     otype (default: Byte) Data type ({Byte/Int16/UInt16/UInt32/Int32/Int64/UInt64/Float32/Float64/CInt16/CInt32/CFloat32/CFloat64})
-    a_srs Assign the spatial reference for the output file, e.g., psg:3035 to use European projection and force to European grid
+    a_srs Assign the spatial reference for the output file, e.g., psg:3035 to
+          use European projection and force to European grid
     ===== =================
 
     Supported keys used to initialize random pixel values in new Jim image
@@ -124,7 +126,8 @@ def createJim(filename=None, **kwargs):
     seed    (default: 0) seed value for random generator
     mean    (default: 0) Mean value for random generator
     stdev   (default: 0) Standard deviation for Gaussian random generator
-    uniform (default: 0) Start and end values for random value with uniform distribution
+    uniform (default: 0) Start and end values for random value with uniform
+            distribution
     ======= ============================================
 
     Create a new georeferenced Jim image object by defining the projection epsg
@@ -214,14 +217,18 @@ class _IO():
 
         Supported keys as arguments:
 
-        =========  =============================================================
-        output     Output ascii file (Default is empty: dump to standard output)
-        oformat    Output format: matrix or list (x,y,z) form. Default is matrix format
-        geo        (bool) Set to True to dump x and y in spatial reference system of raster dataset (for list form only). Default is to dump column and row index (starting from 0)
+        =========  ============================================================
+        output     Output ascii file (Default is empty: dump to standard
+                   output)
+        oformat    Output format: matrix or list (x,y,z) form. Default is
+                   matrix format
+        geo        (bool) Set to True to dump x and y in spatial reference
+                   system of raster dataset (for list form only). Default is
+                   to dump column and row index (starting from 0)
         band       Band index to dump
         srcnodata  Do not dump these no data values (for list form only)
         force      (bool) Set to True to force full dump even for large images
-        =========  =============================================================
+        =========  ============================================================
         """
         self._jim_object.dumpImg(kwargs)
 

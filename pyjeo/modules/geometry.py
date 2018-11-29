@@ -125,27 +125,32 @@ def cropOgr(jim_object, extent, **kwargs):
     :param extent: Get boundary from extent from polygons in vector file
     :param kwargs: See table below
 
-    +------------------+---------------------------------------------------------------------------------+
-    | key              | value                                                                           |
-    +==================+=================================================================================+
-    | ln               | Layer name of extent to crop                                                    |
-    +------------------+---------------------------------------------------------------------------------+
-    | eo               | Special extent options controlling rasterization                                |
-    +------------------+---------------------------------------------------------------------------------+
-    | crop_to_cutline  | True will crop the extent of the target dataset to the extent of the cutline    |
-    |                  | The outside area will be set to no data (the value defined by the key 'nodata') |
-    +------------------+---------------------------------------------------------------------------------+
-    | crop_in_cutline  | True: inverse operation to crop_to_cutline                                      |
-    |                  | The inside area will be set to no data (the value defined by the key 'nodata')  |
-    +------------------+---------------------------------------------------------------------------------+
-    | dx               | Output resolution in x (default: keep original resolution)                      |
-    +------------------+---------------------------------------------------------------------------------+
-    | dy               | Output resolution in y (default: keep original resolution)                      |
-    +------------------+---------------------------------------------------------------------------------+
-    | nodata           | Nodata value to put in image if out of bounds                                   |
-    +------------------+---------------------------------------------------------------------------------+
-    | align            | Align output bounding box to input image                                        |
-    +------------------+---------------------------------------------------------------------------------+
+    +------------------+------------------------------------------------------+
+    | key              | value                                                |
+    +==================+======================================================+
+    | ln               | Layer name of extent to crop                         |
+    +------------------+------------------------------------------------------+
+    | eo               | Special extent options controlling rasterization     |
+    +------------------+------------------------------------------------------+
+    | crop_to_cutline  | True will crop the extent of the target dataset to   |
+    |                  | the extent of the cutline                            |
+    |                  | The outside area will be set to no data (the value   |
+    |                  | defined by the key 'nodata')                         |
+    +------------------+------------------------------------------------------+
+    | crop_in_cutline  | True: inverse operation to crop_to_cutline           |
+    |                  | The inside area will be set to no data (the value    |
+    |                  | defined by the key 'nodata')                         |
+    +------------------+------------------------------------------------------+
+    | dx               | Output resolution in x (default: keep original       |
+    |                  | resolution)                                          |
+    +------------------+------------------------------------------------------+
+    | dy               | Output resolution in y (default: keep original       |
+    |                  | resolution)                                          |
+    +------------------+------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds        |
+    +------------------+------------------------------------------------------+
+    | align            | Align output bounding box to input image             |
+    +------------------+------------------------------------------------------+
 
     .. note::
        Possible values for the key 'eo' are:
