@@ -1038,6 +1038,61 @@ class JimList(list, _jl.JimList):
 
         print('\n'.join(methods))
 
+    def append(self, jim_object):
+        """Add single element to the JimList."""
+        assert isinstance(jim_object, Jim), \
+            'Only Jim instances can be appended'
+        super(JimList, self).append(jim_object)
+        self._set(self, from_list=True)
+
+    def count(self, jim_object):
+        """Count the occurrences of element in the JimList.."""
+        i = 0
+        for jim in self:
+            if jim.pixops.isEqual(jim_object):
+                i += 1
+
+        return i
+
+    def extend(self, jim_list):
+        """Add elements of a JimList to another JimList."""
+        assert isinstance(jim_list, JimList), \
+            'Only JimList instances can be used to extend JimList'
+        super(JimList, self).extend(jim_list)
+        self._set(self, from_list=True)
+
+    def index(self, jim_object):
+        """Return smallest index of element in the JimList."""
+        for i in range(len(self)):
+            if self[i].isEqual(jim_object):
+                return i
+
+    def insert(self, index, jim_object):
+        """Insert elements to the JimList."""
+        assert isinstance(jim_object, Jim), \
+            'Only Jim instances can be inserted'
+        super(JimList, self).insert(index, jim_object)
+        self._set(self, from_list=True)
+
+    def pop(self, index):
+        """Remove and return element at given index."""
+        popped = super(JimList, self).pop(index)
+        self._set(self, from_list=True)
+        return popped
+
+    def remove(self, jim_object):
+        """Remove the first occurence of an element from the JimList."""
+        for i in range(len(self)):
+            if self[i].isEqual(jim_object):
+                del self[i]
+                break
+        self._set(self, from_list=True)
+
+    def reverse(self):
+        """Reverse the JimList."""
+        super(JimList, self).reverse()
+        self._set(self, from_list=True)
+
     def _set(self, modified_list, from_list=False):
         """Apply changes done in modified_list to the parent JimList instance.
 
