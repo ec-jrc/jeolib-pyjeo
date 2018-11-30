@@ -202,7 +202,7 @@ def cropBandRange(jim_object, startband, endband):
                                         'endband': endband}))
 
 
-def stackBand(jim_object, jim_other, band=None):
+def stackBand(jim_object, jim_other=None, band=None, **kwargs):
     """Stack bands from another raster dataset to current raster dataset.
 
     :param jim_object: a Jim object to stack bands
@@ -224,10 +224,15 @@ def stackBand(jim_object, jim_other, band=None):
         jim1=jl.io.createJim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
     """
-    if band:
-        return _pj.Jim(jim_object.stackBand(jim_other, {'band': band}))
+    if isinstance(jim_object, _pj.JimList):
+        if band:
+            kwargs.update({'band': band})
+        return _pj.Jim(jim_object.stackBand(kwargs))
     else:
-        return _pj.Jim(jim_object.stackBand(jim_other))
+        if band:
+            return _pj.Jim(jim_object.stackBand(jim_other, {'band': band}))
+        else:
+            return _pj.Jim(jim_object.stackBand(jim_other))
 
 
 def stackBandRange(jim_object, jim_other, startband, endband):
@@ -1063,3 +1068,6 @@ class _GeometryList():
 
     def _set_caller(self, caller):
         self._jim_list = caller
+
+    def stackBand(self, **kwargs):
+        return _pj.Jim(self._jim_list.stackBand(kwargs))

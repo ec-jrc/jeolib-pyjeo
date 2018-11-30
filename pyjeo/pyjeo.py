@@ -996,6 +996,16 @@ class JimList(list, _jl.JimList):
         self.__dict__.update({'this': _jl.JimList(self)})
 
     @property
+    def geometry(self):
+        self._geometry._set_caller(self)
+        _gc.collect()
+        return self._geometry
+
+    @geometry.setter
+    def geometry(self, new_props):
+        self._geometry = new_props
+
+    @property
     def properties(self):
         self._properties._set_caller(self)
         _gc.collect()
