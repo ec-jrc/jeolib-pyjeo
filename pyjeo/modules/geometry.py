@@ -485,7 +485,8 @@ class _Geometry():
             kwargs.update({'dy': dy})
             kwargs.update({'nogeo': nogeo})
             self._jim_object._set(self._jim_object.crop(kwargs))
-            # self._jim_object._set(self._jim_object.crop(ulx,uly,lrx,lry,dx,dy,geo))
+            # self._jim_object._set(self._jim_object.crop(ulx, uly, lrx, lry,
+            #                                             dx, dy, geo))
         else:
             if nogeo:
                 uli = ulx
@@ -515,27 +516,32 @@ class _Geometry():
         :param extent: Get boundary from extent from polygons in vector file
         :param kwargs: See table below
 
-        +------------------+---------------------------------------------------------------------------------+
-        | key              | value                                                                           |
-        +==================+=================================================================================+
-        | ln               | Layer name of extent to crop                                                    |
-        +------------------+---------------------------------------------------------------------------------+
-        | eo               | Special extent options controlling rasterization                                |
-        +------------------+---------------------------------------------------------------------------------+
-        | crop_to_cutline  | True will crop the extent of the target dataset to the extent of the cutline    |
-        |                  | The outside area will be set to no data (the value defined by the key 'nodata') |
-        +------------------+---------------------------------------------------------------------------------+
-        | crop_in_cutline  | True: inverse operation to crop_to_cutline                                      |
-        |                  | The inside area will be set to no data (the value defined by the key 'nodata')  |
-        +------------------+---------------------------------------------------------------------------------+
-        | dx               | Output resolution in x (default: keep original resolution)                      |
-        +------------------+---------------------------------------------------------------------------------+
-        | dy               | Output resolution in y (default: keep original resolution)                      |
-        +------------------+---------------------------------------------------------------------------------+
-        | nodata           | Nodata value to put in image if out of bounds                                   |
-        +------------------+---------------------------------------------------------------------------------+
-        | align            | Align output bounding box to input image                                        |
-        +------------------+---------------------------------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | ln               | Layer name of extent to crop                     |
+        +------------------+--------------------------------------------------+
+        | eo               | Special extent options controlling rasterization |
+        +------------------+--------------------------------------------------+
+        | crop_to_cutline  | True will crop the extent of the target dataset  |
+        |                  | to the extent of the cutline                     |
+        |                  | The outside area will be set to no data (the     |
+        |                  | value defined by the key 'nodata')               |
+        +------------------+--------------------------------------------------+
+        | crop_in_cutline  | True: inverse operation to crop_to_cutline       |
+        |                  | The inside area will be set to no data (the      |
+        |                  | value defined by the key 'nodata')               |
+        +------------------+--------------------------------------------------+
+        | dx               | Output resolution in x (default: keep original   |
+        |                  | resolution)                                      |
+        +------------------+--------------------------------------------------+
+        | dy               | Output resolution in y (default: keep original   |
+        |                  | resolution)                                      |
+        +------------------+--------------------------------------------------+
+        | nodata           | Nodata value to put in image if out of bounds    |
+        +------------------+--------------------------------------------------+
+        | align            | Align output bounding box to input image         |
+        +------------------+--------------------------------------------------+
 
         .. note::
            Possible values for the key 'eo' are:
@@ -647,65 +653,86 @@ class _Geometry():
             used for the output vector dataset
 
 
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | key              | value                                                                                                  |
-        +==================+========================================================================================================+
-        | rule             | Rule how to calculate zonal statistics per feature (see list of :ref:`supported rules <extract_rules>`)|
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | copy             | Copy these fields from the sample vector dataset (default is to copy all fields)                       |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | label            | Create extra field named 'label' with this value                                                       |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | fid              | Create extra field named 'fid' with this field identifier (sequence of features)                       |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | band             | List of bands to extract (0 indexed). Default is to use extract all bands                              |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | bandname         | List of band name corresponding to list of bands to extract                                            |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | startband        | Start band sequence number (0 indexed)                                                                 |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | endband          | End band sequence number (0 indexed)                                                                   |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | output           | Name of the output vector dataset in which the zonal statistics are saved                              |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | oformat          | Output vector dataset format                                                                           |
-        +------------------+--------------------------------------------------------------------------------------------------------+
-        | co               | Creation option for output vector dataset                                                              |
-        +------------------+--------------------------------------------------------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | rule             | Rule how to calculate zonal statistics per       |
+        |                  | feature (see list of                             |
+        |                  | :ref:`supported rules <extract_rules>`)          |
+        +------------------+--------------------------------------------------+
+        | copy             | Copy these fields from the sample vector dataset |
+        |                  | (default is to copy all fields)                  |
+        +------------------+--------------------------------------------------+
+        | label            | Create extra field named 'label' with this value |
+        +------------------+--------------------------------------------------+
+        | fid              | Create extra field named 'fid' with this field   |
+        |                  | identifier (sequence of features)                |
+        +------------------+--------------------------------------------------+
+        | band             | List of bands to extract (0 indexed). Default is |
+        |                  | to use extract all bands                         |
+        +------------------+--------------------------------------------------+
+        | bandname         | List of band name corresponding to list of bands |
+        |                  | to extract                                       |
+        +------------------+--------------------------------------------------+
+        | startband        | Start band sequence number (0 indexed)           |
+        +------------------+--------------------------------------------------+
+        | endband          | End band sequence number (0 indexed)             |
+        +------------------+--------------------------------------------------+
+        | output           | Name of the output vector dataset in which       |
+        |                  | the zonal statistics are saved                   |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
 
         .. _extract_rules:
 
         :Supported rules to extract:
 
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | rule             | description                                                                                       |
-        +==================+===================================================================================================+
-        | point            | extract a single pixel within the polygon or on each point feature                                |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | allpoints        | Extract all pixel values covered by the polygon                                                   |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | centroid         | Extract pixel value at the centroid of the polygon                                                |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | mean             | Extract average of all pixel values within the polygon                                            |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | stdev            | Extract standard deviation of all pixel values within the polygon                                 |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | median           | Extract median of all pixel values within the polygon                                             |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | min              | Extract minimum value of all pixels within the polygon                                            |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | max              | Extract maximum value of all pixels within the polygon                                            |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | sum              | Extract sum of the values of all pixels within the polygon                                        |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | mode             | Extract the mode of classes within the polygon (classes must be set with the option class)        |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | proportion       | Extract proportion of class(es) within the polygon (classes must be set with the option class)    |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | count            | Extract count of class(es) within the polygon (classes must be set with the option class)         |
-        +------------------+---------------------------------------------------------------------------------------------------+
-        | percentile       | Extract percentile as defined by option perc (e.g, 95th percentile of values covered by polygon)  |
-        +------------------+---------------------------------------------------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | rule             | description                                      |
+        +==================+==================================================+
+        | point            | extract a single pixel within the polygon or on  |
+        |                  | each point feature                               |
+        +------------------+--------------------------------------------------+
+        | allpoints        | Extract all pixel values covered by the polygon  |
+        +------------------+--------------------------------------------------+
+        | centroid         | Extract pixel value at the centroid of           |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | mean             | Extract average of all pixel values within the   |
+        |                  | polygon                                          |
+        +------------------+--------------------------------------------------+
+        | stdev            | Extract standard deviation of all pixel values   |
+        |                  | within the polygon                               |
+        +------------------+--------------------------------------------------+
+        | median           | Extract median of all pixel values within        |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | min              | Extract minimum value of all pixels within       |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | max              | Extract maximum value of all pixels within       |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | sum              | Extract sum of the values of all pixels within   |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | mode             | Extract the mode of classes within the polygon   |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | proportion       | Extract proportion of class(es) within           |
+        |                  | the polygon                                      |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | count            | Extract count of class(es) within the polygon    |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | percentile       | Extract percentile as defined by option perc     |
+        |                  | (e.g, 95th percentile of values covered by       |
+        |                  | polygon)                                         |
+        +------------------+--------------------------------------------------+
 
 
         .. note::
@@ -716,22 +743,26 @@ class _Geometry():
 
         :Supported key values to mask pixels that must be ignored in the extraction process:
 
-        +------------------+---------------------------------------------------------------------------------+
-        | key              | value                                                                           |
-        +==================+=================================================================================+
-        | srcnodata        | List of nodata values not to extract                                            |
-        +------------------+---------------------------------------------------------------------------------+
-        | bndnodata        | List of band in input image to check if pixel is valid (used for srcnodata)     |
-        +------------------+---------------------------------------------------------------------------------+
-        | mask             | Use the the specified file as a validity mask                                   |
-        +------------------+---------------------------------------------------------------------------------+
-        | mskband          | Use the the specified band of the mask file defined                             |
-        +------------------+---------------------------------------------------------------------------------+
-        | msknodata        | List of mask values not to extract                                              |
-        +------------------+---------------------------------------------------------------------------------+
-        | threshold        | Maximum number of features to extract. Use percentage value as string           |
-        |                  | (e.g., '10%') or integer value for absolute threshold                           |
-        +------------------+---------------------------------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | srcnodata        | List of nodata values not to extract             |
+        +------------------+--------------------------------------------------+
+        | bndnodata        | List of band in input image to check if pixel is |
+        |                  | valid (used for srcnodata)                       |
+        +------------------+--------------------------------------------------+
+        | mask             | Use the the specified file as a validity mask    |
+        +------------------+--------------------------------------------------+
+        | mskband          | Use the the specified band of the mask file      |
+        |                  | defined                                          |
+        +------------------+------------------------------------------------  +
+        | msknodata        | List of mask values not to extract               |
+        +------------------+--------------------------------------------------+
+        | threshold        | Maximum number of features to extract. Use       |
+        |                  | percentage value as string                       |
+        |                  | (e.g., '10%') or integer value for absolute      |
+        |                  | threshold                                        |
+        +------------------+--------------------------------------------------+
 
         Example:
 
@@ -758,38 +789,47 @@ class _Geometry():
         :return: A VectorOgr with fields for each of the calculated raster
             value (zonal) statistics
 
-        +------------------+---------------------------------------------------------------------------------+
-        | key              | value                                                                           |
-        +==================+=================================================================================+
-        | random           | Extract a random sample with a size equal to the defined value                  |
-        +------------------+---------------------------------------------------------------------------------+
-        | grid             | Extract a grid sample with a grid size equal to the defined value               |
-        +------------------+---------------------------------------------------------------------------------+
-        | rule             | Rule how to calculate zonal statistics per feature                              |
-        |                  | (see list of :ref:`supported rules <extract_rules>`)                            |
-        +------------------+---------------------------------------------------------------------------------+
-        | buffer           | Buffer for calculating statistics for point features (in number of pixels)      |
-        +------------------+---------------------------------------------------------------------------------+
-        | label            | Create extra field named 'label' with this value                                |
-        +------------------+---------------------------------------------------------------------------------+
-        | fid              | Create extra field named 'fid' with this field identifier (sequence of features)|
-        +------------------+---------------------------------------------------------------------------------+
-        | band             | List of bands to extract (0 indexed). Default is to use extract all bands       |
-        +------------------+---------------------------------------------------------------------------------+
-        | bandname         | List of band name corresponding to list of bands to extract                     |
-        +------------------+---------------------------------------------------------------------------------+
-        | startband        | Start band sequence number (0 indexed)                                          |
-        +------------------+---------------------------------------------------------------------------------+
-        | endband          | End band sequence number (0 indexed)                                            |
-        +------------------+---------------------------------------------------------------------------------+
-        | output           | Name of the output vector dataset in which the zonal statistics are saved       |
-        +------------------+---------------------------------------------------------------------------------+
-        | ln               | Layer name of output vector dataset                                             |
-        +------------------+---------------------------------------------------------------------------------+
-        | oformat          | Output vector dataset format                                                    |
-        +------------------+---------------------------------------------------------------------------------+
-        | co               | Creation option for output vector dataset                                       |
-        +------------------+---------------------------------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | random           | Extract a random sample with a size equal to     |
+        |                  | the defined value                                |
+        +------------------+--------------------------------------------------+
+        | grid             | Extract a grid sample with a grid size equal to  |
+        |                  | the defined value                                |
+        +------------------+--------------------------------------------------+
+        | rule             | Rule how to calculate zonal statistics per       |
+        |                  | feature                                          |
+        |                  | (see list of                                     |
+        |                  | :ref:`supported rules <extract_rules>`)          |
+        +------------------+--------------------------------------------------+
+        | buffer           | Buffer for calculating statistics for point      |
+        |                  | features (in number of pixels)                   |
+        +------------------+--------------------------------------------------+
+        | label            | Create extra field named 'label' with this value |
+        +------------------+--------------------------------------------------+
+        | fid              | Create extra field named 'fid' with this field   |
+        |                  | identifier (sequence of features)                |
+        +------------------+--------------------------------------------------+
+        | band             | List of bands to extract (0 indexed). Default is |
+        |                  | to use extract all bands                         |
+        +------------------+--------------------------------------------------+
+        | bandname         | List of band name corresponding to list of bands |
+        |                  | to extract                                       |
+        +------------------+--------------------------------------------------+
+        | startband        | Start band sequence number (0 indexed)           |
+        +------------------+--------------------------------------------------+
+        | endband          | End band sequence number (0 indexed)             |
+        +------------------+--------------------------------------------------+
+        | output           | Name of the output vector dataset in which       |
+        |                  | the zonal statistics are saved                   |
+        +------------------+--------------------------------------------------+
+        | ln               | Layer name of output vector dataset              |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
 
         .. note::
             To ignore some pixels from the extraction process, see list
@@ -831,37 +871,47 @@ class _Geometry():
         :return: A VectorOgr with fields for each of the calculated raster
             value (zonal) statistics
 
-        +------------------+---------------------------------------------------------------------------------+
-        | key              | value                                                                           |
-        +==================+=================================================================================+
-        | rule             | Rule how to calculate zonal statistics per feature                              |
-        |                  | (see list of :ref:`supported rules <extract_rules>`)                            |
-        +------------------+---------------------------------------------------------------------------------+
-        | class            | List of classes to extract from the raster sample dataset.                      |
-        |                  | Leave empty to extract all valid data pixels from thee sample                   |
-        +------------------+---------------------------------------------------------------------------------+
-        | cname            | Name of the class label in the output vector dataset (default is 'label')       |
-        +------------------+---------------------------------------------------------------------------------+
-        | fid              | Create extra field named 'fid' with this field identifier (sequence of features)|
-        +------------------+---------------------------------------------------------------------------------+
-        | band             | List of bands to extract (0 indexed). Default is to use extract all bands       |
-        +------------------+---------------------------------------------------------------------------------+
-        | bandname         | List of band name corresponding to list of bands to extract                     |
-        +------------------+---------------------------------------------------------------------------------+
-        | startband        | Start band sequence number (0 indexed)                                          |
-        +------------------+---------------------------------------------------------------------------------+
-        | endband          | End band sequence number (0 indexed)                                            |
-        +------------------+---------------------------------------------------------------------------------+
-        | down             | Down sampling factor to extract a subset of the sample based on a grid          |
-        +------------------+---------------------------------------------------------------------------------+
-        | output           | Name of the output vector dataset in which the zonal statistics are saved       |
-        +------------------+---------------------------------------------------------------------------------+
-        | ln               | Layer name of output vector dataset                                             |
-        +------------------+---------------------------------------------------------------------------------+
-        | oformat          | Output vector dataset format                                                    |
-        +------------------+---------------------------------------------------------------------------------+
-        | co               | Creation option for output vector dataset                                       |
-        +------------------+---------------------------------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | rule             | Rule how to calculate zonal statistics per       |
+        |                  | feature                                          |
+        |                  | (see list of                                     |
+        |                  | :ref:`supported rules <extract_rules>`)          |
+        +------------------+--------------------------------------------------+
+        | class            | List of classes to extract from the raster sample|
+        |                  | dataset.                                         |
+        |                  | Leave empty to extract all valid data pixels from|
+        |                  | thee sample                                      |
+        +------------------+--------------------------------------------------+
+        | cname            | Name of the class label in the output vector     |
+        |                  | dataset (default is 'label')                     |
+        +------------------+--------------------------------------------------+
+        | fid              | Create extra field named 'fid' with this field   |
+        |                  | identifier (sequence of features)                |
+        +------------------+--------------------------------------------------+
+        | band             | List of bands to extract (0 indexed). Default is |
+        |                  | to use extract all bands                         |
+        +------------------+--------------------------------------------------+
+        | bandname         | List of band name corresponding to list of bands |
+        |                  | to extract                                       |
+        +------------------+--------------------------------------------------+
+        | startband        | Start band sequence number (0 indexed)           |
+        +------------------+--------------------------------------------------+
+        | endband          | End band sequence number (0 indexed)             |
+        +------------------+--------------------------------------------------+
+        | down             | Down sampling factor to extract a subset of      |
+        |                  | the sample based on a grid                       |
+        +------------------+--------------------------------------------------+
+        | output           | Name of the output vector dataset in which       |
+        |                  | the zonal statistics are saved                   |
+        +------------------+--------------------------------------------------+
+        | ln               | Layer name of output vector dataset              |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
 
         .. note::
             To ignore some pixels from the extraction process, see list
@@ -871,17 +921,21 @@ class _Geometry():
 
         :Supported key values to mask pixels that must be ignored in the extraction process:
 
-        +------------------+---------------------------------------------------------------------------------+
-        | key              | value                                                                           |
-        +==================+=================================================================================+
-        | srcnodata        | List of nodata values not to extract                                            |
-        +------------------+---------------------------------------------------------------------------------+
-        | bndnodata        | List of band in input image to check if pixel is valid (used for srcnodata)     |
-        +------------------+---------------------------------------------------------------------------------+
-        | threshold        | Maximum number of features to extract. Use percentage value as string           |
-        |                  | (e.g., '10%') or integer value for absolute threshold.                          |
-        |                  | You can provide a list of threshold values, one for each class.                 |
-        +------------------+---------------------------------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | srcnodata        | List of nodata values not to extract             |
+        +------------------+--------------------------------------------------+
+        | bndnodata        | List of band in input image to check if pixel is |
+        |                  | valid (used for srcnodata)                       |
+        +------------------+--------------------------------------------------+
+        | threshold        | Maximum number of features to extract. Use       |
+        |                  | percentage value as string                       |
+        |                  | (e.g., '10%') or integer value for absolute      |
+        |                  | threshold.                                       |
+        |                  | You can provide a list of threshold values, one  |
+        |                  | for each class.                                  |
+        +------------------+--------------------------------------------------+
 
         Example:
 
