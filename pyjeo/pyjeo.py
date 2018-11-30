@@ -1006,6 +1006,16 @@ class JimList(list, _jl.JimList):
         self._geometry = new_props
 
     @property
+    def pixops(self):
+        self._pixops._set_caller(self)
+        _gc.collect()
+        return self._pixops
+
+    @pixops.setter
+    def pixops(self, new_props):
+        self._pixops = new_props
+
+    @property
     def properties(self):
         self._properties._set_caller(self)
         _gc.collect()

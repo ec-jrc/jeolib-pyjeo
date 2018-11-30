@@ -118,6 +118,10 @@ def supremum(jim, *args):
     return _pj.Jim(supremum)
 
 
+def composite(jim_list, **kwargs):
+    return _pj.Jim(jim_list.composite(kwargs))
+
+
 class _PixOps():
     """Define all PixOps methods."""
 
@@ -304,3 +308,6 @@ class _PixOpsList():
 
     def _set_caller(self, caller):
         self._jim_list = caller
+
+    def composite(self, **kwargs):
+        return _pj.Jim(self._jim_list.composite(kwargs))
