@@ -266,3 +266,6 @@ class _IOVect():
 
     def _set_caller(self, caller):
         self._jim_vect = caller
+
+    def write(self, filepath):
+        self._jim_vect.write(filepath)

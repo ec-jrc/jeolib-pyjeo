@@ -1174,6 +1174,16 @@ class JimVect(_jl.VectorOgr):
         self._stats = stats._StatsVect()
 
     @property
+    def io(self):
+        self._io._set_caller(self)
+        _gc.collect()
+        return self._io
+
+    @io.setter
+    def io(self, new_props):
+        self._io = new_props
+
+    @property
     def properties(self):
         self._properties._set_caller(self)
         _gc.collect()
