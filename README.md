@@ -1,5 +1,3 @@
-[![coverage report](https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO/badges/master/coverage.svg)](https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO/commits/master)
-
 # pyJEO
 
 pyJEO is a library for image processing for geospatial data implemented in 
@@ -37,4 +35,11 @@ Go to directory `doc` and run `make html`.
 ```
 cd doc
 make html
+```
+
+# See the code coverage
+
+```
+python -m coverage run --source=pyjeo -m unittest tests
+python -m coverage report -m
 ```
