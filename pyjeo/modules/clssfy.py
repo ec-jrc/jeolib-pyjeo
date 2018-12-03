@@ -146,3 +146,14 @@ class _ClassifyList():
 
     def _set_caller(self, caller):
         self._jim_list = caller
+
+
+class _ClassifyVect():
+    """Define all classification methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_vect = caller

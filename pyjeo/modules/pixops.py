@@ -356,3 +356,14 @@ class _PixOpsList():
 
     def composite(self, **kwargs):
         return _pj.Jim(self._jim_list.composite(kwargs))
+
+
+class _PixOpsVect():
+    """Define all PixOps methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_vect = caller

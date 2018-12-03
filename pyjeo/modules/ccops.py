@@ -83,3 +83,14 @@ class _CCOpsList():
 
     def _set_caller(self, caller):
         self._jim_list = caller
+
+
+class _CCOpsVect():
+    """Define all CCOps methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_vect = caller

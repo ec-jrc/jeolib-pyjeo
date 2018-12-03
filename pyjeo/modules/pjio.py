@@ -255,3 +255,14 @@ class _IOList():
 
     def _set_caller(self, caller):
         self._jim_list = caller
+
+
+class _IOVect():
+    """Define all IO methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_vect = caller

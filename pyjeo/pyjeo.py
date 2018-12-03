@@ -1149,3 +1149,26 @@ class JimList(list, _jl.JimList):
 
         return [i for i in self.__dict__.keys() if i != 'this'] + \
                pyjeo_JimList_methods
+
+
+class JimVect(_jl.VectorOgr):
+    """Definition of JimVect object."""
+
+    def __init__(self, vector, *args):
+        """Initialize the Jim object and modules for methods.
+
+        :param image: path to a raster or another Jim object as a basis for
+        the Jim object
+        """
+        super(JimVect, self).__init__(vector, *args)
+
+        self._all = all._AllVect()
+        self._ccops = ccops._CCOpsVect()
+        self._clssfy = clssfy._ClassifyVect()
+        self._demops = demops._DEMOpsVect()
+        self._geometry = geometry._GeometryVect()
+        self._io = io._IOVect()
+        self._ngbops = ngbops._NgbOpsVect()
+        self._pixops = pixops._PixOpsVect()
+        self._properties = properties._PropertiesVect()
+        self._stats = stats._StatsVect()

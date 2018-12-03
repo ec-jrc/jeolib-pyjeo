@@ -112,3 +112,14 @@ class _StatsList():
     def getStatProfile(self, function, **kwargs):
         kwargs.update({'function': function})
         return _pj.Jim(self._jim_list.statProfile(kwargs))
+
+
+class _StatsVect():
+    """Define all statistical methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_vect = caller

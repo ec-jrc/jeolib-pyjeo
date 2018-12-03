@@ -1125,3 +1125,14 @@ class _GeometryList():
 
     def stackBand(self, **kwargs):
         return _pj.Jim(self._jim_list.stackBand(kwargs))
+
+
+class _GeometryVect():
+    """Define all Geometry methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_vect = caller

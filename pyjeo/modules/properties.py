@@ -326,3 +326,14 @@ class _PropertiesList():
     def selectGeo(self, *args):
         self._jim_list.selectGeo(*args)
         self._jim_list._set(self._jim_list)
+
+
+class _PropertiesVect():
+    """Define all properties methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self, caller):
+        self._jim_vect = caller
