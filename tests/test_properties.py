@@ -204,7 +204,7 @@ class BadPropsVects(unittest.TestCase):
     def test_feature_layer_counts(self):
         """Test JimVect methods getLayerCount() and getFeatureType()"""
         assert self.jimv.properties.getLayerCount() == \
-               self.jimv.properties.getLayerCount() == 2, \
+               self.jimv.properties.getFeatureCount() == 2, \
             'Error in properties.getLayerCount or getFeatureCount for JimVects'
 
 
