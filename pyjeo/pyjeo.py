@@ -153,7 +153,8 @@ class Jim(_jl.Jim):
                 return ''
 
             module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__']:
+            for default_method in ['__init__', '__module__', '__doc__',
+                                   '_set_caller']:
                 module_methods.remove(default_method)
 
             for i in range(len(module_methods)):
@@ -1042,7 +1043,8 @@ class JimList(list, _jl.JimList):
                 return ''
 
             module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__']:
+            for default_method in ['__init__', '__module__', '__doc__',
+                                   '_set_caller']:
                 module_methods.remove(default_method)
 
             for i in range(len(module_methods)):
@@ -1053,7 +1055,8 @@ class JimList(list, _jl.JimList):
                    module_methods
 
         methods = list()
-        for module in [properties._PropertiesList, stats._StatsList]:
+        for module in [geometry._GeometryList, pixops._PixOpsList,
+                       properties._PropertiesList, stats._StatsList]:
             methods.extend(treeStructure(module, queried_module))
 
         print('\n'.join(methods))
