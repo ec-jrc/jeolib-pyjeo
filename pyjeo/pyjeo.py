@@ -1172,3 +1172,14 @@ class JimVect(_jl.VectorOgr):
         self._pixops = pixops._PixOpsVect()
         self._properties = properties._PropertiesVect()
         self._stats = stats._StatsVect()
+
+    def __dir__(self):
+        """Change behaviour of the method whisperer to ignore jiplib methods.
+
+        :return: a whispered module or method
+        """
+        pyjeo_JimList_methods = list(
+            set(dir(JimVect)) - set(dir(_jl.VectorOgr)))
+
+        return [i for i in self.__dict__.keys() if i != 'this'] + \
+               pyjeo_JimList_methods
