@@ -157,3 +157,7 @@ class _ClassifyVect():
 
     def _set_caller(self, caller):
         self._jim_vect = caller
+
+    def train(self, method, filename, **kwargs):
+        kwargs.update({'method': method, 'model': filename})
+        self._jim_vect.train(kwargs)
