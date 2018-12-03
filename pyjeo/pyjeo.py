@@ -1173,6 +1173,16 @@ class JimVect(_jl.VectorOgr):
         self._properties = properties._PropertiesVect()
         self._stats = stats._StatsVect()
 
+    @property
+    def properties(self):
+        self._properties._set_caller(self)
+        _gc.collect()
+        return self._properties
+
+    @properties.setter
+    def properties(self, new_props):
+        self._properties = new_props
+
     def __dir__(self):
         """Change behaviour of the method whisperer to ignore jiplib methods.
 

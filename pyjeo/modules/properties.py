@@ -337,3 +337,24 @@ class _PropertiesVect():
 
     def _set_caller(self, caller):
         self._jim_vect = caller
+
+    def getLayerCount(self):
+        return self._jim_vect.getLayerCount()
+
+    def getFeatureCount(self):
+        return self._jim_vect.getFeatureCount()
+
+    def getBBox(self):
+        return self._jim_vect.getBoundingBox()
+
+    def getUlx(self):
+        return self._jim_vect.getUlx()
+
+    def getUly(self):
+        return self._jim_vect.getUly()
+
+    def getLrx(self):
+        return self._jim_vect.getLrx()
+
+    def getLry(self):
+        return self._jim_vect.getLry()

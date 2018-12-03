@@ -6,6 +6,7 @@ import unittest
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
+vector = 'tests/data/nuts_italy.sqlite'
 
 
 class BadProps(unittest.TestCase):
@@ -182,10 +183,36 @@ class BadPropsLists(unittest.TestCase):
         assert len(self.jiml) == 0, 'Error in properties.selectGeo()'
 
 
+class BadPropsVects(unittest.TestCase):
+    """Test JimVect funcs and methods for getting and setting properties."""
+
+    jimv = pj.JimVect(vector)
+
+    def test_geospatial_infos(self):
+        """Test JimVect methods connected to geospatial informations."""
+        bbox = self.jimv.properties.getBBox()
+
+        assert self.jimv.properties.getUlx() == bbox[0], \
+            'Error in properties.getBBox() or properties.getUlx() for JimVects'
+        assert self.jimv.properties.getUly() == bbox[1], \
+            'Error in properties.getBBox() or properties.getUly() for JimVects'
+        assert self.jimv.properties.getLrx() == bbox[2], \
+            'Error in properties.getBBox() or properties.getLrx() for JimVects'
+        assert self.jimv.properties.getLry() == bbox[3], \
+            'Error in properties.getBBox() or properties.getLry() for JimVects'
+
+    def test_feature_layer_counts(self):
+        """Test JimVect methods getLayerCount() and getFeatureType()"""
+        assert self.jimv.properties.getLayerCount() == \
+               self.jimv.properties.getLayerCount() == 2, \
+            'Error in properties.getLayerCount or getFeatureCount for JimVects'
+
+
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
     suite_list = [loader.loadTestsFromTestCase(BadProps),
-                  loader.loadTestsFromTestCase(BadPropsLists)]
+                  loader.loadTestsFromTestCase(BadPropsLists),
+                  loader.loadTestsFromTestCase(BadPropsVects)]
     return unittest.TestSuite(suite_list)
