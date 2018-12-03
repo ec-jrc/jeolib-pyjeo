@@ -1,3 +1,5 @@
+[![coverage report](https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO/badges/master/coverage.svg)](https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO/commits/master)
+
 # pyJEO
 
 pyJEO is a library for image processing for geospatial data implemented in 
