@@ -112,9 +112,9 @@ class Jim(_jl.Jim):
         _gc.collect()
         return self._ngbops
 
-    @io.setter
-    def io(self, new_props):
-        self._io = new_props
+    @ngbops.setter
+    def ngbops(self, new_props):
+        self._ngbops = new_props
 
     @property
     def pixops(self):
