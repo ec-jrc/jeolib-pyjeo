@@ -1,6 +1,7 @@
 """Module for pixel-wise operations."""
 
 import pyjeo as _pj
+import jiplib as _jl
 
 
 def convert(jim_object, otype, **kwargs):
@@ -44,15 +45,16 @@ def convert(jim_object, otype, **kwargs):
 
     if len(kwargs) == 0:
         if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
-            return _pj.Jim(jim_object.convertToUchar8)
+            return _pj.Jim(jim_object.convertToUchar8())
         elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-            return _pj.Jim(jim_object.convertToUint16)
+            return _pj.Jim(jim_object.convertToUint16())
         elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-            return _pj.Jim(jim_object.convertToUint32)
+            return _pj.Jim(jim_object.convertToUint32())
         elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
             return _pj.Jim(jim_object.convertToFloat32())
         elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
-            return _pj.Jim(jim_object.convertToFloat64())
+            return _pj.Jim(jim_object.convertToDouble64())
+
     if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
         kwargs.update({'otype': 'GDT_Byte'})
     elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
@@ -68,10 +70,11 @@ def convert(jim_object, otype, **kwargs):
     elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
         kwargs.update({'otype': 'GDT_Float32'})
     else:
-        print("Warning: output type {} not supported".format(otype))
+        raise TypeError("Output type {} not supported".format(otype))
+        # TODO: Support CTypes when bug fixed in jiplib
+
     kwargs.update({'otype': otype})
-    # retJim = _pj.io.createJim(jim_object)
-    # return _pj.Jim(retJim.convert(kwargs))
+
     return _pj.Jim(jim_object.convert(kwargs))
 
 
@@ -219,7 +222,43 @@ class _PixOps():
             jim1.setThreshold(min=0,max=255,nodata=0)
             jim1.convert(Byte)
         """
+        if len(kwargs) == 0:
+            if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
+                self._jim_object.d_convertToUchar8()
+                return None
+            elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+                self._jim_object._set(self._jim_object.convertToUint16())
+                return None
+            elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+                self._jim_object._set(self._jim_object.convertToUint32())
+                return None
+            elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
+                self._jim_object._set(self._jim_object.convertToFloat32())
+                return None
+            elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
+                self._jim_object._set(self._jim_object.convertToDouble64())
+                return None
+
+        if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
+            kwargs.update({'otype': 'GDT_Byte'})
+        elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+            kwargs.update({'otype': 'GDT_UInt16'})
+        elif otype in ['Int16', 'GDT_Int16', _jl.GDT_Int16]:
+            kwargs.update({'otype': 'GDT_Int16'})
+        elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+            kwargs.update({'otype': 'GDT_UInt32'})
+        elif otype in ['Int32', 'GDT_Int32', _jl.GDT_Int32]:
+            kwargs.update({'otype': 'GDT_Int32'})
+        elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
+            kwargs.update({'otype': 'GDT_Float32'})
+        elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
+            kwargs.update({'otype': 'GDT_Float32'})
+        else:
+            raise TypeError("Output type {} not supported".format(otype))
+        # TODO: Support CTypes when bug fixed in jiplib
+
         kwargs.update({'otype': otype})
+
         self._jim_object._set(self._jim_object.convert(kwargs))
 
     def isEqual(self, other):
