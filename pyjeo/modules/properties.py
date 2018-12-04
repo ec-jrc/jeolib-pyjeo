@@ -160,7 +160,7 @@ class _Properties():
         """
         return self._jim_object.getCenterPos()
 
-    def getBoundingBox(self):
+    def getBBox(self):
         """Get the bounding box (georeferenced) coordinates of this dataset.
 
         :return: A list with upper left x, upper left y, lower right x, and
@@ -277,7 +277,7 @@ class _PropertiesList():
         """
         return self._jim_list.covers(*args)
 
-    def getBoundingBox(self):
+    def getBBox(self):
         """Get the bounding box (georeferenced) coordinates of this dataset.
 
         :return: A list with upper left x, upper left y, lower right x, and

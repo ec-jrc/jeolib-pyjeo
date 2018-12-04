@@ -55,6 +55,11 @@ class BadProps(unittest.TestCase):
 
         assert no_data == [], 'Error in properties.setNoDataVals()'
 
+        try:
+            self.jim.properties.setNoDataVals('string')
+        except TypeError:
+            pass
+
     def test_covers(self):
         """Test covers() method."""
         assert self.jim.properties.covers(self.ulx + 0.1, self.uly - 0.1), \
@@ -65,10 +70,10 @@ class BadProps(unittest.TestCase):
             'Error in properties.covers(), getUlx() or getUly()'
 
     def test_bbox(self):
-        """Test getBoundingBox() method."""
-        assert self.jim.properties.getBoundingBox() == [self.ulx, self.uly,
+        """Test getBBox() method."""
+        assert self.jim.properties.getBBox() == [self.ulx, self.uly,
                                                         self.lrx, self.lry], \
-            'Error in properties.getBoundingBox()'
+            'Error in properties.getBBox()'
 
     def test_geo_transform(self):
         """Test GeoTransform() methods."""
@@ -97,6 +102,17 @@ class BadProps(unittest.TestCase):
 
         assert self.jim.properties.getGeoTransform() == gt, \
             'Error in properties.copyGeoTransform()'
+
+        assert self.jim.properties.nrOfPlane() == \
+               self.jim.properties.nrOfBand(), \
+            'Error in properties.nrOfPlains() or properties.nrOfBands()'
+
+        center_pos = self.jim.properties.getCenterPos()
+
+        assert center_pos[0] > self.ulx and center_pos[0] < self.lrx, \
+            'Error in properties.getCenterPos()'
+        assert center_pos[1] < self.uly and center_pos[1] > self.lry, \
+            'Error in properties.getCenterPos()'
 
     def test_projection(self):
         """Test Projection() methods."""
@@ -169,10 +185,10 @@ class BadPropsLists(unittest.TestCase):
             'Error in properties.covers(), getLrx() or getLry()'
 
     def test_bbox(self):
-        """Test JimList properties.getBoundingBox() method."""
-        assert self.jiml.properties.getBoundingBox() == [self.ulx, self.uly,
-                                                         self.lrx, self.lry], \
-            'Error in properties.getBoundingBox()'
+        """Test JimList properties.getBBox() method."""
+        assert self.jiml.properties.getBBox() == [self.ulx, self.uly,
+                                                  self.lrx, self.lry], \
+            'Error in properties.getBBox()'
 
     def test_selectGeo(self):
         """Test JimList properties.selectGeo() function and method."""
