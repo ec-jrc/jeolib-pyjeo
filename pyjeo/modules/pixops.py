@@ -257,7 +257,7 @@ class _PixOps():
         self._jim_object._set(nirJim.pointOpNDI(self._jim_object))
 
     def setData(self, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
-                dx=0, dy=0, geo=True):
+                dx=0, dy=0, nogeo=False):
         """Set range of pixels to value.
 
         :param jim_object: a Jim object
@@ -273,18 +273,18 @@ class _PixOps():
         :param bands: List of band indices to crop (index is 0 based)
         :param dx: spatial resolution in x to crop (stride if geo is False)
         :param dy: spatial resolution in y to crop (stride if geo is False)
-        :param geo: use geospatial coordinates if True, image coordinates
-            if False
+        :param nogeo: use geospatial coordinates if False, image coordinates
+            if True
         :return: a Jim object
         """
         if all(v is None for v in [ulx, uly, lrx, lry]) and bands==[0] and \
-                dx==0 and dy==0 and geo:
+                dx==0 and dy==0 and not nogeo:
             for band in bands:
                 self._jim_object.setData(value)
         else:
             for band in bands:
                 self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx,
-                                         dy, geo)
+                                         dy, nogeo)
 
     def setThreshold(self, **kwargs):
         """Apply min and max threshold to pixel values in raster dataset.
