@@ -1,12 +1,6 @@
 """Module for statistical functions and interpolations."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def getStats(jim_object, **kwargs):

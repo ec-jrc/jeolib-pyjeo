@@ -1,12 +1,6 @@
 """Module for neighbourhood operations."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):

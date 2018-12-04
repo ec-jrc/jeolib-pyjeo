@@ -1,12 +1,6 @@
 """Module for accessing Jim attributes and geospatial informations."""
 
-try:
-    import pyjeo as _pj
-except ImportErrort:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 class _Properties():

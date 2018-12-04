@@ -1,16 +1,7 @@
 """Module for input-output operations."""
 
-try:
-    import jiplib as _jl
-except ImportError:
-    from jeodpp import jiplib as _jl
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import jiplib as _jl
+import pyjeo as _pj
 
 
 # def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,

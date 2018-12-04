@@ -4,10 +4,7 @@ from __future__ import division
 import numpy as _np
 import gc as _gc
 
-try:
-    import jiplib as _jl
-except ImportError:
-    from jeodpp import jiplib as _jl
+import jiplib as _jl
 
 from modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, clssfy, demops, stats, all

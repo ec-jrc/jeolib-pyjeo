@@ -1,12 +1,6 @@
 """Module for pixel-wise operations."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def convert(jim_object, otype, **kwargs):

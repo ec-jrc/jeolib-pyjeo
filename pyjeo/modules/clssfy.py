@@ -1,12 +1,6 @@
 """Module for operations connected to classification."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def classify(jim_object, method, model, **kwargs):
