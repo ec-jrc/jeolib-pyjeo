@@ -57,8 +57,11 @@ class BadProps(unittest.TestCase):
 
         try:
             self.jim.properties.setNoDataVals('string')
+            failed = True
         except TypeError:
-            pass
+            failed = False
+
+        assert not failed, 'Error in type checks in properties.setNoDataVals()'
 
     def test_covers(self):
         """Test covers() method."""
