@@ -1,19 +1,14 @@
 """Module for statistical functions and interpolations."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def getStats(jim_object, **kwargs):
     return jim_object.getStats(kwargs)
 
 
-def getStatProfile(jim_object, **kwargs):
+def getStatProfile(jim_object, function, **kwargs):
+    kwargs.update({'function': function})
     return _pj.Jim(jim_object.statProfile(kwargs))
 
 
@@ -64,9 +59,9 @@ class _Stats():
     def getStats(self, **kwargs):
         return self._jim_object.getStats(kwargs)
 
-    def getStatProfile(self, function, **kwargs):
+    def statProfile(self, function, **kwargs):
         kwargs.update({'function': function})
-        return _pj.Jim(self._jim_object.statProfile(kwargs))
+        self._jim_object._set(self._jim_object.statProfile(kwargs))
 
     def getHisto1d(self):
         """Compute the frequency distribution of the grey levels of im.

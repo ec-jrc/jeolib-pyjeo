@@ -1,12 +1,6 @@
 """Module for connected-component operations."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def labelImagePixels(jim_object):

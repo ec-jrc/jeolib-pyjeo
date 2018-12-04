@@ -1,12 +1,6 @@
 """Module for operations working with the geometry of the Jim objects."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def image2geo(jim_object, i, j):

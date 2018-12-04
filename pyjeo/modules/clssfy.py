@@ -1,12 +1,6 @@
 """Module for operations connected to classification."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def classify(jim_object, method, model, **kwargs):
@@ -157,3 +151,7 @@ class _ClassifyVect():
 
     def _set_caller(self, caller):
         self._jim_vect = caller
+
+    def train(self, method, filename, **kwargs):
+        kwargs.update({'method': method, 'model': filename})
+        self._jim_vect.train(kwargs)

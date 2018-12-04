@@ -1,12 +1,6 @@
 """Module for operations connected to digital elevation models."""
 
-try:
-    import pyjeo as _pj
-except ImportError:
-    try:
-        from jeodpp import pyjeo as _pj
-    except ImportError:
-        import jeodpp.pyjeo as _pj
+import pyjeo as _pj
 
 
 def demFlowDirectionD8(jim_object):

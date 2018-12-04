@@ -4,10 +4,7 @@ from __future__ import division
 import numpy as _np
 import gc as _gc
 
-try:
-    import jiplib as _jl
-except ImportError:
-    from jeodpp import jiplib as _jl
+import jiplib as _jl
 
 from modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, clssfy, demops, stats, all
@@ -1172,6 +1169,26 @@ class JimVect(_jl.VectorOgr):
         self._pixops = pixops._PixOpsVect()
         self._properties = properties._PropertiesVect()
         self._stats = stats._StatsVect()
+
+    @property
+    def clssfy(self):
+        self._clssfy._set_caller(self)
+        _gc.collect()
+        return self._clssfy
+
+    @clssfy.setter
+    def clssfy(self, new_props):
+        self._clssfy = new_props
+
+    @property
+    def io(self):
+        self._io._set_caller(self)
+        _gc.collect()
+        return self._io
+
+    @io.setter
+    def io(self, new_props):
+        self._io = new_props
 
     @property
     def properties(self):

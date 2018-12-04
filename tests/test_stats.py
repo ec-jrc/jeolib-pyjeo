@@ -91,13 +91,13 @@ class BadStats(unittest.TestCase):
         min = stats['min']
         max = stats['max']
 
-        min_profile = jim.stats.getStatProfile('min')
-        max_profile = jim.stats.getStatProfile('max')
+        min_profile = pj.stats.getStatProfile(jim, 'min')
+        jim.stats.statProfile('max')
 
         assert min_profile.stats.getStats()['min'] == min, \
             'Error in stats.getStatProfile()'
 
-        assert max_profile.stats.getStats()['max'] == max, \
+        assert jim.stats.getStats()['max'] == max, \
             'Error in stats.getStatProfile()'
 
 
@@ -110,7 +110,7 @@ class BadStatsLists(unittest.TestCase):
         jim2 = pj.Jim(tiles[1])
         jiml = pj.JimList([jim1, jim2])
 
-        stats1 = jim1.stats.getStats()
+        stats1 = jiml.stats.getStats()
         stats2 = jim2.stats.getStats()
 
         min = stats1['min']
