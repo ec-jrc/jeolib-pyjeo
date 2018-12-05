@@ -310,11 +310,19 @@ class _PixOps():
             if True
         :return: a Jim object
         """
-        if all(v is None for v in [ulx, uly, lrx, lry]) and bands==[0] and \
-                dx==0 and dy==0 and not nogeo:
+        if all(v is None for v in [ulx, uly, lrx, lry]) and dx==0 and dy==0 \
+                and not nogeo:
             for band in bands:
-                self._jim_object.setData(value)
+                self._jim_object.setData(value, band)
         else:
+            if ulx is None:
+                ulx = self._jim_object.properties.getUlx()
+            if uly is None:
+                uly = self._jim_object.properties.getUly()
+            if lrx is None:
+                lrx = self._jim_object.properties.getLrx()
+            if lry is None:
+                lry = self._jim_object.properties.getLry()
             for band in bands:
                 self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx,
                                          dy, nogeo)
