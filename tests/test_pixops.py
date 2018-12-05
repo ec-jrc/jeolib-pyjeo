@@ -12,6 +12,26 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadPixOps(unittest.TestCase):
     """Test functions and methods from pixops modules."""
 
+    def test_isEqual(self):
+        """Test isEqual() function."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(tiles[0])
+        jim3 = pj.Jim(tiles[1])
+
+        assert jim1.pixops.isEqual(jim2), \
+            'Error in pixops.isEqual() method (for two Jims)'
+        assert not jim1.pixops.isEqual(jim3), \
+            'Error in pixops.isEqual() method (non-equality)'
+        assert not jim1.pixops.isEqual(1), \
+            'Error in pixops.isEqual() method (for not Jim object)'
+
+        assert pj.pixops.isEqual(jim1, jim2), \
+            'Error in pixops.isEqual() function (for two Jims)'
+        assert not pj.pixops.isEqual(jim1, jim3), \
+            'Error in pixops.isEqual() function (non-equality)'
+        assert not pj.pixops.isEqual(jim1, 1), \
+            'Error in pixops.isEqual() function (for not Jim object)'
+
     def test_NDVI(self):
         """Test computing NDVI in different ways."""
         jim = pj.Jim(testFile)
@@ -59,7 +79,7 @@ class BadPixOps(unittest.TestCase):
 
     def test_setFunctions(self):
         """Test setData and setThreshold functions and methods."""
-        jim = pj.Jim(tiles[0])
+        jim = pj.Jim(testFile)
 
         stats = jim.stats.getStats()
         min = stats['min']
@@ -89,11 +109,18 @@ class BadPixOps(unittest.TestCase):
         assert jim.properties.getNoDataVals() == nodata, \
             'Error in pixops.setThreshold() or properties.getNoDataVals()'
 
-        jim.setData(5)
+        jim.pixops.setData(5, bands=[0, 1])
 
         stats = jim.stats.getStats()
 
         assert all(v==5 for v in [stats['min'], stats['max'], stats['mean']]),\
+            'Error in pixops.setData() or stats.getStats()'
+
+        jim.pixops.setData(10, dx=jim.properties.getDeltaX()+0.1, bands=[0, 1])
+
+        stats = jim.stats.getStats()
+
+        assert all(v==10 for v in [stats['min'], stats['max'], stats['mean']]),\
             'Error in pixops.setData() or stats.getStats()'
 
     def test_convert(self):
@@ -213,9 +240,31 @@ class BadPixOps(unittest.TestCase):
             'Error in checks for non-supported data types in pixops.convert()'
 
 
+class BadPixOpsLists(unittest.TestCase):
+    """Test JimList functions and methods from pixops modules."""
+
+    def test_composite(self):
+        """Test composite() function."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(tiles[1])
+        jim3 = pj.Jim(tiles[0][:-8] + 'nir' + tiles[0][-5] + '.tif')
+        jiml1 = pj.JimList([jim1, jim2])
+        jiml2 = pj.JimList([jim1, jim3])
+
+        comp1 = pj.pixops.composite(jiml1)
+        comp2 = jiml1.pixops.composite()
+        comp3 = jiml2.pixops.composite()
+        comp4 = jiml1.pixops.composite(otype='Byte')
+
+        assert comp1.pixops.isEqual(comp2)
+        assert not comp1.pixops.isEqual(comp3)
+        assert not comp2.pixops.isEqual(comp4)
+
+
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
-    suite_list = [loader.loadTestsFromTestCase(BadPixOps)]
+    suite_list = [loader.loadTestsFromTestCase(BadPixOps),
+                  loader.loadTestsFromTestCase(BadPixOpsLists)]
     return unittest.TestSuite(suite_list)
