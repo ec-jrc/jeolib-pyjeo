@@ -79,7 +79,7 @@ def convert(jim_object, otype, **kwargs):
 
 
 def isEqual(first_jim, second_jim):
-    if isinstance(other, _pj.Jim):
+    if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
         return first_jim.isEqual(second_jim)
     else:
         return False
