@@ -92,6 +92,12 @@ Accessing properties
 .. autoclass:: _Properties
    :members:
 
+.. autoclass:: _PropertiesList
+   :members:
+
+.. autoclass:: _PropertiesVect
+   :members:
+
 Input/Output
 ############
 
@@ -99,6 +105,12 @@ Input/Output
    :members:
 
 .. autoclass:: _IO
+   :members:
+
+.. autoclass:: _IOList
+   :members:
+
+.. autoclass:: _IOVect
    :members:
 
 Pixel operations
@@ -110,6 +122,12 @@ Pixel operations
 .. autoclass:: _PixOps
    :members:
 
+.. autoclass:: _PixOpsList
+   :members:
+
+.. autoclass:: _PixOpsVect
+   :members:
+
 Neighborhood operations
 #######################
 
@@ -117,6 +135,12 @@ Neighborhood operations
    :members:
 
 .. autoclass:: _NgbOps
+   :members:
+     
+.. autoclass:: _NgbOpsList
+   :members:
+     
+.. autoclass:: _NgbOpsVect
    :members:
      
 .. _mia_morpho2d:
@@ -134,6 +158,12 @@ Geometry operations
 .. autoclass:: _Geometry
    :members:
 
+.. autoclass:: _GeometryList
+   :members:
+
+.. autoclass:: _GeometryVect
+   :members:
+
 
 CC operations
 #############
@@ -142,6 +172,12 @@ CC operations
    :members:
 
 .. autoclass:: _CCOps
+   :members:
+
+.. autoclass:: _CCOpsList
+   :members:
+
+.. autoclass:: _CCOpsVect
    :members:
 
 Classification
@@ -153,6 +189,12 @@ Classification
 .. autoclass:: _Classify
    :members:
 
+.. autoclass:: _ClassifyList
+   :members:
+
+.. autoclass:: _ClassifyVect
+   :members:
+
 Digital elevation
 #################
 
@@ -160,4 +202,8 @@ Digital elevation
    :members:
 
 .. autoclass:: _DEMOps
+   :members:
+.. autoclass:: _DEMOpsList
+   :members:
+.. autoclass:: _DEMOpsVect
    :members:

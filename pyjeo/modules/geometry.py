@@ -167,7 +167,7 @@ def cropBand(jim_object, band):
 
     Crop the first three bands from raster dataset jim0::
 
-        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim0=pj.io.createJim('/path/to/raster0.tif')
         jim0.cropBand(band=[0,1,2])
 
     """
@@ -188,7 +188,7 @@ def cropBandRange(jim_object, startband, endband):
 
     Crop the first three bands from raster dataset jim0::
 
-        jim0=jl.io.createJim('/path/to/raster0.tif')
+        jim0=pj.io.createJim('/path/to/raster0.tif')
         jim0.cropBandRange(startband=0,startBand=2)
 
     """
@@ -208,14 +208,14 @@ def stackBand(jim_object, jim_other=None, band=None, **kwargs):
 
     Append all the bands of raster dataset jim1 to image jim0::
 
-        jim0=jl.io.createJim('/path/to/raster0.tif')
-        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0=pj.io.createJim('/path/to/raster0.tif')
+        jim1=pj.io.createJim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1)
 
     Append the first three bands of raster dataset jim1 to the image jim0::
 
-        jim0=jl.io.createJim('/path/to/raster0.tif')
-        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0=pj.io.createJim('/path/to/raster0.tif')
+        jim1=pj.io.createJim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
     """
     if isinstance(jim_object, _pj.JimList):
@@ -244,8 +244,8 @@ def stackBandRange(jim_object, jim_other, startband, endband):
 
     Append the first three bands of raster dataset jim1 to image jim0::
 
-        jim0=jl.io.createJim('/path/to/raster0.tif')
-        jim1=jl.io.createJim('/path/to/raster1.tif')
+        jim0=pj.io.createJim('/path/to/raster0.tif')
+        jim1=pj.io.createJim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1,startband=0,endband=0)
     """
     return _pj.Jim(jim_object.stackBand(jim_other, {'startband': startband,
@@ -279,7 +279,7 @@ def warp(jim_object, t_srs, **kwargs):
     Read a raster dataset from disk and warp to the target spatial reference
     system::
 
-        jim = jl.createJim('/path/to/file.tif')
+        jim = pj.createJim('/path/to/file.tif')
         jim.warp('epsg:3035')
 
     Read a raster dataset from disk that is in lat lon (epsg:4326), select
@@ -288,7 +288,7 @@ def warp(jim_object, t_srs, **kwargs):
     projection (epsg:4326). Then warp the raster dataset to the target
     spatial reference system (epsg:3035)::
 
-        jim = jl.createJim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
+        jim = pj.createJim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
         jim.warp('epsg:3035', s_srs='epsg:4326')
 
     """
@@ -557,7 +557,7 @@ class _Geometry():
 
         Crop the first three bands from raster dataset jim0::
 
-            jim0=jl.io.createJim('/path/to/raster0.tif')
+            jim0=pj.io.createJim('/path/to/raster0.tif')
             jim0.cropBand(band=[0,1,2])
 
         """
@@ -577,7 +577,7 @@ class _Geometry():
 
         Crop the first three bands from raster dataset jim0::
 
-            jim0=jl.io.createJim('/path/to/raster0.tif')
+            jim0=pj.io.createJim('/path/to/raster0.tif')
             jim0.cropBandRange(startband=0,startBand=2)
 
         """
@@ -596,15 +596,15 @@ class _Geometry():
 
         Append all the bands of raster dataset jim1 to the current image jim0::
 
-            jim0 = jl.io.createJim('/path/to/raster0.tif')
-            jim1 = jl.io.createJim('/path/to/raster1.tif')
+            jim0 = pj.io.createJim('/path/to/raster0.tif')
+            jim1 = pj.io.createJim('/path/to/raster1.tif')
             jim0.stackBand(jim1)
 
         Append the first three bands of raster dataset jim1 to the current
         image jim0::
 
-            jim0 = jl.io.createJim('/path/to/raster0.tif')
-            jim1 = jl.io.createJim('/path/to/raster1.tif')
+            jim0 = pj.io.createJim('/path/to/raster0.tif')
+            jim1 = pj.io.createJim('/path/to/raster1.tif')
             jim0.stackBand(jim1, band=[0, 1, 2])
         """
         if band:
@@ -629,17 +629,19 @@ class _Geometry():
         Append the first three bands of raster dataset jim1 to the current
         image jim0::
 
-            jim0 = jl.io.createJim('/path/to/raster0.tif')
-            jim1 = jl.io.createJim('/path/to/raster1.tif')
+            jim0 = pj.io.createJim('/path/to/raster0.tif')
+            jim1 = pj.io.createJim('/path/to/raster1.tif')
             jim0.stackBandRange(jim1, startband=0, endband=2)
         """
         self._jim_object.d_stackBand(jim_other, {'startband': startband,
                                                  'endband': endband})
 
-    def extractOgr(self, jim_ref, **kwargs):
+    def extractOgr(self, jim_ref, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
-        :param jim_ref: reference Jim instance
+        :param jim_ref: reference JimVect instance
+        :output: Name of the output vector dataset in which the zonal
+            statistics will be saved
         :param kwargs: See table below
         :return: A VectorOgr with the same geometry as the sample vector
             dataset and an extra field for each of the calculated raster value
@@ -671,9 +673,6 @@ class _Geometry():
         | startband        | Start band sequence number (0 indexed)           |
         +------------------+--------------------------------------------------+
         | endband          | End band sequence number (0 indexed)             |
-        +------------------+--------------------------------------------------+
-        | output           | Name of the output vector dataset in which       |
-        |                  | the zonal statistics are saved                   |
         +------------------+--------------------------------------------------+
         | oformat          | Output vector dataset format                     |
         +------------------+--------------------------------------------------+
@@ -764,11 +763,14 @@ class _Geometry():
         on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector
         dataset in memory::
 
-            reference = jl.io.createVector('/path/to/reference.sqlite')
-            jim0 = jl.io.createJim('/path/to/raster.tif')
+            reference = pj.io.createVector('/path/to/reference.sqlite')
+            jim0 = pj.io.createJim('/path/to/raster.tif')
             v = jim0.extractOgr(reference, rule=['mean'], output='/path/to/output.sqlite', oformat='SQLite')
             v.write()
+
         """
+
+        kwargs.update({'output': output})
         if 'threshold' in kwargs:
             if '%' in kwargs['threshold']:
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
@@ -776,9 +778,11 @@ class _Geometry():
                 kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object.extractOgr(jim_ref, kwargs)
 
-    def extractSample(self, **kwargs):
+    def extractSample(self, output, **kwargs):
         """Extract a random or grid sample from a raster dataset.
 
+        :output: Name of the output vector dataset in which the zonal
+            statistics will be saved
         :param kwargs: See table below
         :return: A VectorOgr with fields for each of the calculated raster
             value (zonal) statistics
@@ -815,9 +819,6 @@ class _Geometry():
         +------------------+--------------------------------------------------+
         | endband          | End band sequence number (0 indexed)             |
         +------------------+--------------------------------------------------+
-        | output           | Name of the output vector dataset in which       |
-        |                  | the zonal statistics are saved                   |
-        +------------------+--------------------------------------------------+
         | ln               | Layer name of output vector dataset              |
         +------------------+--------------------------------------------------+
         | oformat          | Output vector dataset format                     |
@@ -849,6 +850,7 @@ class _Geometry():
             v.write()
 
         """
+        kwargs.update({'output': output})
         if 'threshold' in kwargs:
             if '%' in kwargs['threshold']:
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
@@ -856,7 +858,7 @@ class _Geometry():
                 kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object.extractSample(kwargs)
 
-    def extractImg(self, reference, **kwargs):
+    def extractImg(self, reference, output, **kwargs):
         """Extract pixel values from an input based on a raster sample dataset.
 
         :param reference: thematic raster dataset with integer values,
@@ -897,9 +899,6 @@ class _Geometry():
         | down             | Down sampling factor to extract a subset of      |
         |                  | the sample based on a grid                       |
         +------------------+--------------------------------------------------+
-        | output           | Name of the output vector dataset in which       |
-        |                  | the zonal statistics are saved                   |
-        +------------------+--------------------------------------------------+
         | ln               | Layer name of output vector dataset              |
         +------------------+--------------------------------------------------+
         | oformat          | Output vector dataset format                     |
@@ -939,16 +938,17 @@ class _Geometry():
         Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
         41 (water) and an aggregated (rest) class 50::
 
-            jim_ref=jl.createJim('/path/to/landcovermap.tif')
+            jim_ref=pj.createJim('/path/to/landcovermap.tif')
 
             classes=[2,12,25,41,50]
             thresholds=['20%','25%','25%','10%','5%']
 
-            jim_ref=jl.createJim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
+            jim_ref=pj.createJim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
 
             outputfn='/path/to/output.sqlite'
             sample=jim.extractImg(jim_ref,srcnodata=[0],output=outputfn,class=classes,threshold=thresholds,bandname=['B02','B03','B04','B08'],band=[0,1,2,3])
         """
+        kwargs.update({'output': output})
         if 'threshold' in kwargs:
             if '%' in kwargs['threshold']:
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
@@ -981,7 +981,7 @@ class _Geometry():
         Read a raster dataset from disk and warp to the target spatial
         reference system::
 
-            jim=jl.createJim('/path/to/file.tif')
+            jim=pj.createJim('/path/to/file.tif')
             jim.warp('epsg:3035')
 
         Read a raster dataset from disk that is in lat lon (epsg:4326), select
@@ -990,7 +990,7 @@ class _Geometry():
         (epsg:4326). Then warp the raster dataset to the target spatial
         reference system (epsg:3035)::
 
-            jim=jl.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
+            jim=pj.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
             jim.warp('epsg:3035',s_srs='epsg:4326')
 
         """
@@ -1130,3 +1130,55 @@ class _GeometryVect():
 
     def _set_caller(self, caller):
         self._jim_vect = caller
+
+    def intersect(self, jim, output, **kwargs):
+        """Intersect JimVect object with Jim object and return only those features with an intersect
+
+        Subset raster dataset according in spatial (subset region) domain
+
+        :param jim: Jim object to intersect
+        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+        :param kwargs: See table below
+
+        +------------------+------------------------------------------------------+
+        | key              | value                                                |
+        +==================+======================================================+
+        | oformat          | Output vector dataset format                         |
+        +------------------+------------------------------------------------------+
+        | co               | Creation option for output vector dataset            |
+        +------------------+------------------------------------------------------+
+        """
+        kwargs.update({'output': output})
+        if isinstance(jim, Jim):
+            return _pj.JimVect(self._jim_vect.intersect(jim,kwargs))
+        else:
+            raise TypeError('Error: can only intersect with Jim object')
+
+    def join(self, jvec, output, **kwargs):
+        """Join JimVect object with another JimVect object.
+
+        Subset raster dataset according in spatial (subset region) domain
+
+        :param jim: Jim object to intersect
+        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+        :param kwargs: See table below
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | key              | Key(s) used to join (default is fid)             |
+        +------------------+--------------------------------------------------+
+        | method           | Join method: "INNER","OUTER_LEFT","OUTER_RIGHT", |
+        |                  | "OUTER_FULL". (default is INNER)                 |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+        """
+        kwargs.update({'output': output})
+        if isinstance(jvec, JimVect):
+            return _pj.JimVect(self._jim_vect.intersect(jvec,kwargs))
+        else:
+            raise TypeError('Error: can only join with JimVect object')
+

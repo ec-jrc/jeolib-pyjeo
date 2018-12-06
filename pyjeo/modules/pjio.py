@@ -78,7 +78,7 @@ def createJim(filename=None, **kwargs):
     automatically be read in memory)::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-        jim=jl.createJim(ifn)
+        jim=pj.io.createJim(ifn)
         #do stuff with jim ...
         jim.close()
 
@@ -86,12 +86,12 @@ def createJim(filename=None, **kwargs):
     interest and spatial resolution using cubic convolution resampling::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-        jim0=jl.createJim(ifn,'noread'=True)
+        jim0=pj.io.createJim(ifn,'noread'=True)
         ULX=jim0.getUlx()
         ULY=jim0.getUly()
         LRX=jim0.getUlx()+100*jim0.getDeltaX()
         LRY=jim0.getUly()-100*jim0.getDeltaY()
-        jim=jl.Jim.createImg(ifn,ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,dx=5,dy=5,resample='GRIORA_Cubic')
+        jim=pj.Jim.createImg(ifn,ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,dx=5,dy=5,resample='GRIORA_Cubic')
         #do stuff with jim ...
         jim.close()
 
@@ -129,7 +129,7 @@ def createJim(filename=None, **kwargs):
         ULY=4000020.0
         LRX=709800.0
         LRY=3890220.0
-        jim=jl.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',dx=100,dy=100)
+        jim=pj.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',dx=100,dy=100)
         #do stuff with jim ...
         jim.close()
 
@@ -141,7 +141,7 @@ def createJim(filename=None, **kwargs):
         ULY=4000020.0
         LRX=709800.0
         LRY=3890220.0
-        jim=jl.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',ncol=1098,nrow=1098)
+        jim=pj.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',ncol=1098,nrow=1098)
         #do stuff with jim ...
         jim.close()
     """
@@ -258,5 +258,24 @@ class _IOVect():
     def _set_caller(self, caller):
         self._jim_vect = caller
 
-    def write(self, filepath):
-        self._jim_vect.write(filepath)
+    def write(self, filename=None):
+        """
+        Write JimVect object to file. If no filename is provided, the original filename with which the JimVect object was created will be used.
+
+        :param filename: path to a raster dataset or another Jim object
+        """
+        if filename:
+            self._jim_vect.write(filename)
+        else:
+            self._jim_vect.write()
+
+    def dumpVect(self, name=None, **kwargs):
+        """
+        Dump vector content to screen of file (if output argument is provided)
+
+        :param name: the list of field name(s) to dump (default is empty: dump all fields)
+        :param output: output ascii file (default is empty: dump to standard output)
+        """
+        if name:
+            kwargs.update({'name': name})
+        self._jim_vect.dumpOgr(**args)
