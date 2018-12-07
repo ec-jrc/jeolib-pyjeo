@@ -246,4 +246,4 @@ class _ClassifyVect():
             :copy: copy these fields from input to output vector dataset
         """
         kwargs.update({'method': method, 'model': output})
-        self._jim_object._set(self._jim_object.classify(kwargs))
+        self._jim_vect._set(self._jim_vect.classify(kwargs))
