@@ -278,4 +278,4 @@ class _IOVect():
         """
         if name:
             kwargs.update({'name': name})
-        self._jim_vect.dumpOgr(**args)
+        self._jim_vect.dumpOgr(**kwargs)
