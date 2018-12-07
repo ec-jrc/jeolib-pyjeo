@@ -24,13 +24,13 @@ def np2jim(aNp):
 class Jim(_jl.Jim):
     """Definition of Jim object."""
 
-    def __init__(self, image, *args):
+    def __init__(self, image=None, **kwargs):
         """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
         the Jim object
         """
-        super(Jim, self).__init__(image, *args)
+        self._construct(image, kwargs)
 
         self._all = all._All()
         self._ccops = ccops._CCOps()
@@ -42,6 +42,20 @@ class Jim(_jl.Jim):
         self._pixops = pixops._PixOps()
         self._properties = properties._Properties()
         self._stats = stats._Stats()
+
+    def _construct(self, image, kwargs):
+        if kwargs:
+            if image:
+                if isinstance(image, Jim):
+                    if 'copyData' in kwargs.keys():
+                        super(Jim, self).__init__(image, kwargs['copyData'])
+                    else:
+                        super(Jim, self).__init__(image)
+                else:
+                    kwargs.update({'filename': image})
+                    super(Jim, self).__init__(kwargs)
+        else:
+            super(Jim, self).__init__(image)
 
     @property
     def all(self):
