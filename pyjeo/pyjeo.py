@@ -296,16 +296,18 @@ class Jim(_jl.Jim):
                         raise TypeError('Error: use 2 dimensions when slicing '
                                         '2-dim Jim object (x:y)')
         elif isinstance(item, Jim):
-            projection = self.properties.getProjection()
-            gt = self.properties.getGeoTransform()
-            selfnp = _jl.jim2np(self)
-            itemnp = _jl.jim2np(item)
-            # itemnp=itemnp==0
-            selfnp[itemnp == 0] = 0
-            retJim = Jim(_jl.np2jim(selfnp))
-            retJim.properties.setProjection(projection)
-            retJim.properties.setGeoTransform(gt)
-            return retJim
+            mask=item>0
+            return Jim(self*mask)
+            # projection = self.properties.getProjection()
+            # gt = self.properties.getGeoTransform()
+            # selfnp = _jl.jim2np(self)
+            # itemnp = _jl.jim2np(item)
+            # # itemnp=itemnp==0
+            # selfnp[itemnp == 0] = 0
+            # retJim = Jim(_jl.np2jim(selfnp))
+            # retJim.properties.setProjection(projection)
+            # retJim.properties.setGeoTransform(gt)
+            # return retJim
         elif isinstance(item, _jl.VectorOgr):
             if self.nrOfPlane() > 1:
                 raise ValueError('Error: __getitem__ not implemented for 3d '
@@ -325,19 +327,9 @@ class Jim(_jl.Jim):
             if value is None:
                 # TODO:set empty Jim?
                 raise AttributeError("can't set item of Jim")
-            projection = self.properties.getProjection()
-            gt = self.properties.getGeoTransform()
-            selfnp = _jl.jim2np(self)
-            itemnp = _jl.jim2np(item)
-            itemnp = itemnp > 0
-            if isinstance(value, Jim):
-                valuenp = _jl.jim2np(value)
-                selfnp[itemnp] = valuenp[itemnp]
-            else:
-                selfnp[itemnp] = value
-            self._set(_jl.np2jim(selfnp))
-            self.properties.setProjection(projection)
-            self.properties.setGeoTransform(gt)
+            mask=item>0
+            masked=value*mask
+            self.d_pointOpArith(masked, _jl.MASK_op)
         elif isinstance(item, tuple):
             if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d '
@@ -538,123 +530,43 @@ class Jim(_jl.Jim):
 
         :return: Jim object with pixels 1 if equal values, 0 otherwise
         """
-        projection = self.properties.getProjection()
-        gt = self.properties.getGeoTransform()
-        jim = None
-        for iband in range(0, self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self, iband)
-            if isinstance(right, Jim):
-                anp = _jl.jim2np(right, iband)
-            else:
-                anp = right
-            selfnp = _np.uint8(1) * (selfnp == anp)
-            if jim:
-                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
-            else:
-                jim = Jim(_jl.np2jim(selfnp))
-
-        jim.properties.setProjection(projection)
-        jim.properties.setGeoTransform(gt)
-        return jim
+        return Jim(self.eq(right))
 
     def __ne__(self, right):
         """Pixel wise check for non-equality
 
         :return: False if equal values, True otherwise
         """
-        projection = self.properties.getProjection()
-        gt = self.properties.getGeoTransform()
-        jim = None
-        for iband in range(0, self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self, iband)
-            if isinstance(right, Jim):
-                anp = _jl.jim2np(right, iband)
-            else:
-                anp = right
-            selfnp = _np.uint8(1) * (selfnp != anp)
-            if jim:
-                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
-            else:
-                jim = Jim(_jl.np2jim(selfnp))
-
-        jim.properties.setProjection(projection)
-        jim.properties.setGeoTransform(gt)
-        return jim
+        return Jim(self.ne(right))
 
     def __lt__(self, right):
-        projection = self.properties.getProjection()
-        gt = self.properties.getGeoTransform()
-        jim = None
-        for iband in range(0, self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self, iband)
-            if isinstance(right, Jim):
-                anp = _jl.jim2np(right, iband)
-            else:
-                anp = right
-            selfnp = _np.uint8(1) * (selfnp < anp)
-            if jim:
-                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
-            else:
-                jim = Jim(_jl.np2jim(selfnp))
-        jim.properties.setProjection(projection)
-        jim.properties.setGeoTransform(gt)
-        return jim
+        # projection = self.properties.getProjection()
+        # gt = self.properties.getGeoTransform()
+        # jim = None
+        # for iband in range(0, self.properties.nrOfBand()):
+        #     selfnp = _jl.jim2np(self, iband)
+        #     if isinstance(right, Jim):
+        #         anp = _jl.jim2np(right, iband)
+        #     else:
+        #         anp = right
+        #     selfnp = _np.uint8(1) * (selfnp < anp)
+        #     if jim:
+        #         jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
+        #     else:
+        #         jim = Jim(_jl.np2jim(selfnp))
+        # jim.properties.setProjection(projection)
+        # jim.properties.setGeoTransform(gt)
+        # return jim
+        return Jim(self.lt(right))
 
     def __le__(self, right):
-        projection = self.properties.getProjection()
-        gt = self.properties.getGeoTransform()
-        jim = None
-        for iband in range(0, self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self, iband)
-            if isinstance(right, Jim):
-                anp = _jl.jim2np(right, iband)
-            else:
-                anp = right
-            selfnp = _np.uint8(1) * (selfnp <= anp)
-            if jim:
-                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
-            else:
-                jim = Jim(_jl.np2jim(selfnp))
-        jim.properties.setProjection(projection)
-        jim.properties.setGeoTransform(gt)
-        return jim
+        return Jim(self.le(right))
 
     def __gt__(self, right):
-        projection = self.properties.getProjection()
-        gt = self.properties.getGeoTransform()
-        jim = None
-        for iband in range(0, self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self, iband)
-            if isinstance(right, Jim):
-                anp = _jl.jim2np(right, iband)
-            else:
-                anp = right
-            selfnp = _np.uint8(1) * (selfnp > anp)
-            if jim:
-                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
-            else:
-                jim = Jim(_jl.np2jim(selfnp))
-        jim.properties.setProjection(projection)
-        jim.properties.setGeoTransform(gt)
-        return jim
+        return Jim(self.gt(right))
 
     def __ge__(self, right):
-        projection = self.properties.getProjection()
-        gt = self.properties.getGeoTransform()
-        for iband in range(0, self.properties.nrOfBand()):
-            selfnp = _jl.jim2np(self, iband)
-            if isinstance(right, Jim):
-                anp = _jl.jim2np(right, iband)
-            else:
-                anp = right
-            selfnp = _np.uint8(1) * (selfnp >= anp)
-            if jim:
-                jim.geometry.stackBand(Jim(_jl.np2jim(selfnp)))
-            else:
-                jim = Jim(_jl.np2jim(selfnp))
-        jim.properties.setProjection(projection)
-        jim.properties.setGeoTransform(gt)
-        return jim
+        return Jim(self.ge(right))
 
     def __add__(self, right):
         if isinstance(right, Jim):
