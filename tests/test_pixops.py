@@ -69,7 +69,7 @@ class BadPixOps(unittest.TestCase):
                 max_ndvi[b > max_ndvi] = b
                 max_ndvi_func = pj.pixops.supremum(max_ndvi, b)
                 assert max_ndvi.pixops.isEqual(max_ndvi_func), \
-                    'Error in computing supremum'
+                    'Error in computing supremum or jim[a>jim] = a'
                 max_ndvi2.pixops.supremum(b)
                 assert max_ndvi.pixops.isEqual(max_ndvi2), \
                     'Error in computing supremum'

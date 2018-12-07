@@ -222,7 +222,7 @@ class _ClassifyVect():
         kwargs.update({'method': method, 'model': output})
         self._jim_vect.train(kwargs)
 
-    def classify(self, method, model, output, **kwargs):
+    def classify(self, method, output, **kwargs):
         """Supervised classification of a raster dataset.
 
         The classifier must have been trained via the train() method.
@@ -245,5 +245,5 @@ class _ClassifyVect():
                 specified as list
             :copy: copy these fields from input to output vector dataset
         """
-        kwargs.update({'method': method, 'model': model, 'output': output})
-        self._jim_object._set(self._jim_object.classify(kwargs))
+        kwargs.update({'method': method, 'model': output})
+        self._jim_vect._set(self._jim_vect.classify(kwargs))
