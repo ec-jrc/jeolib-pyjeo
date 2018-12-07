@@ -24,12 +24,14 @@ class BadStats(unittest.TestCase):
         jim_min_dict = jim.stats.getStats(function='min')
 
         for key, val in jim_min_dict.iteritems():
-            assert val == min, 'Error in getting statistics with getStats'
+            assert val == min, \
+                'Error in getting statistics with stats.getStats()'
 
-        assert min < mean < max, 'Error in getting statistics with getStats'
+        assert min < mean < max, \
+            'Error in getting statistics with stats.getStats()'
 
         assert jim_min_dict == pj.stats.getStats(jim, function='min'), \
-            'Error in getting statistics with getStats'
+            'Error in getting statistics with stats.getStats()'
 
     def test_histograms(self):
         """Test that values of histograms are not suspicious."""

@@ -3,12 +3,14 @@
 import sys
 import unittest
 
-from tests import test_jimlist_basics, test_pixops, test_properties, test_stats
+from tests import test_demops, test_jimlist_basics, test_pixops, \
+    test_properties, test_stats
 
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
-    return unittest.TestSuite([test_jimlist_basics.load_tests(),
+    return unittest.TestSuite([test_demops.load_tests(),
+                               test_jimlist_basics.load_tests(),
                                test_pixops.load_tests(),
                                test_properties.load_tests(),
                                test_stats.load_tests()])
