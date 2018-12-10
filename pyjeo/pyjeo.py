@@ -50,10 +50,17 @@ class Jim(_jl.Jim):
                     if 'copyData' in kwargs.keys():
                         super(Jim, self).__init__(image, kwargs['copyData'])
                     else:
+                        import warnings
+                        warnings.warn(
+                            'Not possible to create Jim image based on another'
+                            ' one together with other kwargs than copyData. '
+                            'kwargs ignored.', SyntaxWarning)
                         super(Jim, self).__init__(image)
                 else:
                     kwargs.update({'filename': image})
                     super(Jim, self).__init__(kwargs)
+            else:
+                super(Jim, self).__init__(kwargs)
         else:
             super(Jim, self).__init__(image)
 
