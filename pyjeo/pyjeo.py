@@ -206,7 +206,8 @@ class Jim(_jl.Jim):
         stridey = 1
         strideb = 1
         if isinstance(item, tuple):
-            try:
+            # try:
+            if True:
               if isinstance(item[0], slice):
                   minCol = item[0].start
                   maxCol = item[0].stop
@@ -249,12 +250,15 @@ class Jim(_jl.Jim):
                               if item[3].step:
                                   strideb = item[3].step
                               if item[3].start < 0:
-                                  item[3].start=self.properties.nrOfBand()+item[3].start
-                              if item[3].end < 0:
-                                  item[3].end=self.properties.nrOfBand()+item[3].end
-                              bands = range(item[3].start, item[3].stop,
-                                            strideb)
-                          if isinstance(item[3], tuple):
+                                  minBand=self.properties.nrOfBand()+item[3].start
+                              else:
+                                  minBand=item[3].start
+                              if item[3].stop < 0:
+                                  maxBand=self.properties.nrOfBand()+item[3].stop
+                              else:
+                                  maxBand=item[3].stop
+                              bands = range(minBand, maxBand, strideb)
+                          elif isinstance(item[3], tuple):
                               for band in item[3]:
                                   if band < 0:
                                       bands.append(self.properties.nrOfBand()+band)
@@ -262,8 +266,9 @@ class Jim(_jl.Jim):
                                       bands.append(band)
                           elif isinstance(item[3], int):
                               if item[3] < 0:
-                                item[3]=self.properties.nrOfBand()+item[3]
-                              bands.append(item[3])
+                                bands.append(self.properties.nrOfBand()+item[3])
+                              else:
+                                bands.append(item[3])
                           else:
                               raise ValueError('Error: band index must be slice,'
                                               ' list or integer')
@@ -282,7 +287,6 @@ class Jim(_jl.Jim):
                               '3-dim Jim object (x:y:z:band)')
                   else:
                       if len(item) == 3:  # do slice x,y,z
-                          #todo
                           if maxCol<=minCol or maxRow<=minRow or item[2].stop<=item[2].start:
                               raise IndexError('Warning: index error, returning empty Jim')
                           retJim = geometry.crop(self, ulx=minCol, uly=minRow,
@@ -301,11 +305,15 @@ class Jim(_jl.Jim):
                               if item[2].step:
                                   strideb = item[2].step
                               if item[2].start < 0:
-                                  item[2].start=self.properties.nrOfBand()+item[2].start
-                              if item[2].end < 0:
-                                  item[2].end=self.properties.nrOfBand()+item[2].end
-                              bands = range(item[2].start, item[2].stop, strideb)
-                          if isinstance(item[2], tuple):
+                                  minBand=self.properties.nrOfBand()+item[2].start
+                              else:
+                                  minBand=item[2].start
+                              if item[2].stop < 0:
+                                  maxBand=self.properties.nrOfBand()+item[2].stop
+                              else:
+                                  maxBand=item[2].stop
+                              bands = range(minBand, maxBand, strideb)
+                          elif isinstance(item[2], tuple):
                               for band in item[2]:
                                   if band < 0:
                                       bands.append(self.properties.nrOfBand()+band)
@@ -313,8 +321,9 @@ class Jim(_jl.Jim):
                                       bands.append(band)
                           elif isinstance(item[2], int):
                               if item[2] < 0:
-                                item[2]=self.properties.nrOfBand()+item[2]
-                              bands.append(item[2])
+                                bands.append(self.properties.nrOfBand()+item[2])
+                              else:
+                                bands.append(item[2])
                           else:
                               raise ValueError('Error: band index must be slice,'
                                               ' list or integer')
@@ -325,7 +334,6 @@ class Jim(_jl.Jim):
                                               lrx=maxCol, lry=maxRow, lrz=None,
                                               dx=stridex, dy=stridey,
                                               nogeo=True)
-                          #                      lry=lry,band=band)
                           return retJim
                       else:
                           raise TypeError(
@@ -344,6 +352,8 @@ class Jim(_jl.Jim):
                       else:
                           raise TypeError('Error: use 2 dimensions when slicing '
                                       '2-dim Jim object (x:y)')
+            try:
+                print("ok")
             except:
                 print('Warning: index error, returning empty Jim')
                 return Jim()
@@ -387,6 +397,7 @@ class Jim(_jl.Jim):
                 raise ValueError('Error: __setitem__ not implemented for 3d '
                                  'Jim objects')
             else:
+                bands = []
                 if self.properties.nrOfBand() > 1:
                     if len(item) == 3:  # do slice x,y,band
                         stridex = 1
@@ -429,18 +440,28 @@ class Jim(_jl.Jim):
                             raise ValueError('row item must be slice or '
                                              'integer value')
                         if isinstance(item[2], slice):
-                            if item[2].step:
-                                strideb = item[2].step
-                            if item[2].start < 0:
-                                item[2].start=self.properties.nrOfBand()+item[2].start
-                            if item[2].end < 0:
-                                item[2].end=self.properties.nrOfBand()+item[2].end
-                            bands = range(item[2].start, item[2].stop,
-                                          strideb)
-                        else:
+                              if item[2].step:
+                                  strideb = item[2].step
+                              if item[2].start < 0:
+                                  minBand=self.properties.nrOfBand()+item[2].start
+                              else:
+                                  minBand=item[2].start
+                              if item[2].stop < 0:
+                                  maxBand=self.properties.nrOfBand()+item[2].stop
+                              else:
+                                  maxBand=item[2].stop
+                              bands = range(minBand, maxBand, strideb)
+                        elif isinstance(item[2], tuple):
+                            for band in item[2]:
+                                if band < 0:
+                                    bands.append(self.properties.nrOfBand()+band)
+                                else:
+                                    bands.append(band)
+                        elif isinstance(item[2], int):
                             if item[2] < 0:
-                                item[2]=self.properties.nrOfBand()+item[2]
-                            bands = [item[2]]
+                              bands.append(self.properties.nrOfBand()+item[2])
+                            else:
+                              bands.append(item[2])
                         if isinstance(value, float):
                             if self.properties.getDataType() != _jl.GDT_Float32\
                                     and self.properties.getDataType() != _jl.GDT_Float64:
