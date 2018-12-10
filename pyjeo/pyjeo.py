@@ -18,7 +18,7 @@ def jim2np(aJim, band=0):
 
 
 def np2jim(aNp):
-    return _jl.np2jim(aNp)
+    return Jim(_jl.np2jim(aNp))
 
 
 class Jim(_jl.Jim):
