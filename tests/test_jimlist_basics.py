@@ -1,4 +1,4 @@
-"""Test suite for module basic methods originating in list() for JimLists."""
+"""Test suite for basic methods originating in list() for JimLists."""
 
 import pyjeo as pj
 import unittest
