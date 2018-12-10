@@ -1,4 +1,4 @@
-"""Test suite for module pyjeo.demops."""
+"""Test suite for module pyjeo.ccops."""
 
 import pyjeo as pj
 import unittest

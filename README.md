@@ -26,7 +26,7 @@ sudo python setup.py install
 
 From the directory of the repository, run:
 ```
-python -m unittest -v tests
+python -W ignore -m unittest -v tests
 ```
 
 # Build documentation
@@ -40,6 +40,6 @@ make html
 # See the code coverage
 
 ```
-python -m coverage run --source=pyjeo -m unittest tests
+python -W ignore -m coverage run --source=pyjeo -m unittest tests
 python -m coverage report -m
 ```
