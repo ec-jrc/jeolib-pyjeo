@@ -387,16 +387,11 @@ class Jim(_jl.Jim):
                                     nodata=nodata, align=True)
 
     def __setitem__(self, item, value):
-        # TODO: check if rasterize vector first and then set raster mask would
-        #       be better
         if isinstance(item, Jim):  # or isinstance(value, Jim):
             if value is None:
-                # TODO:set empty Jim?
-                raise AttributeError("can't set item of Jim")
-            mask = item>0
-            mask.pixops.convert(self.properties.getDataType())
-            masked = value*mask
-            self.d_pointOpArith(masked, _jl.MASK_op)
+                self._set(Jim(self,copyData=False))
+            else:
+                self.d_setMask(item,value)
         elif isinstance(item, tuple):
             if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d '
@@ -546,6 +541,8 @@ class Jim(_jl.Jim):
                         raise TypeError('Error: use 2 dimensions when slicing '
                                         '2-dim Jim object (x:y)')
         elif isinstance(item, _jl.VectorOgr):
+            # TODO: check if rasterize vector first and then set raster mask would
+            #       be better
             if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d '
                                  'Jim objects')
