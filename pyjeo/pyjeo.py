@@ -183,7 +183,7 @@ class Jim(_jl.Jim):
                       minCol = self.properties.nrOfCol()+minCol
                   if maxCol < 0:
                       maxCol = self.properties.nrOfCol()+maxCol+1
-              elif not any(not isinstance(i, int) for i in item):
+              elif isinstance(item[0], int):
                   if item[0] < 0:
                       minCol = self.properties.nrOfCol()+item[0]
                   else:
