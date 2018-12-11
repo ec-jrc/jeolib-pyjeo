@@ -362,7 +362,7 @@ class Jim(_jl.Jim):
                 print('Warning: index error, returning empty Jim')
                 return Jim()
         elif isinstance(item, Jim):
-            mask=item>0
+            mask = item>0
             return Jim(self*mask)
             # projection = self.properties.getProjection()
             # gt = self.properties.getGeoTransform()
@@ -393,9 +393,10 @@ class Jim(_jl.Jim):
             if value is None:
                 # TODO:set empty Jim?
                 raise AttributeError("can't set item of Jim")
-            mask=item>0
-            masked=value*mask
-            self.d_pointOpArith(masked, _jl.MASK_op, iband)
+            mask = item>0
+            mask.pixops.convert(self.properties.getDataType())
+            masked = value*mask
+            self.d_pointOpArith(masked, _jl.MASK_op)
         elif isinstance(item, tuple):
             if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d '
@@ -412,15 +413,15 @@ class Jim(_jl.Jim):
                             maxCol = item[0].stop
                             if item[0].step:
                                 stridex = item[0].step
-                            if minCol<0:
-                                minCol=self.properties.nrOfCol()+minCol
-                            if maxCol<0:
-                                maxCol=self.properties.nrOfCol()+maxCol+1
+                            if minCol < 0:
+                                minCol = self.properties.nrOfCol()+minCol
+                            if maxCol < 0:
+                                maxCol = self.properties.nrOfCol()+maxCol+1
                         elif isinstance(item[0], int):
-                            if item[0]<0:
-                                minCol=self.properties.nrOfCol()+item[0]
+                            if item[0] < 0:
+                                minCol = self.properties.nrOfCol()+item[0]
                             else:
-                                minCol=item[0]
+                                minCol = item[0]
                             maxCol = minCol+1
                         else:
                             raise ValueError('column item must be slice or '
@@ -430,13 +431,13 @@ class Jim(_jl.Jim):
                             maxRow = item[1].stop
                             if item[1].step:
                                 stridey = item[1].step
-                            if minRow<0:
-                                minRow=self.properties.nrOfRow()+minRow
-                            if maxRow<0:
-                                maxRow=self.properties.nrOfRow()+maxRow+1
+                            if minRow < 0:
+                                minRow = self.properties.nrOfRow()+minRow
+                            if maxRow < 0:
+                                maxRow = self.properties.nrOfRow()+maxRow+1
                         elif isinstance(item[1], int):
-                            if item[1]<0:
-                                minRow=self.properties.nrOfRow()+item[1]
+                            if item[1] < 0:
+                                minRow = self.properties.nrOfRow()+item[1]
                             else:
                                 minRow = item[1]
                             maxRow = minRow+1
@@ -447,18 +448,21 @@ class Jim(_jl.Jim):
                               if item[2].step:
                                   strideb = item[2].step
                               if item[2].start < 0:
-                                  minBand=self.properties.nrOfBand()+item[2].start
+                                  minBand = self.properties.nrOfBand() + \
+                                            item[2].start
                               else:
                                   minBand=item[2].start
                               if item[2].stop < 0:
-                                  maxBand=self.properties.nrOfBand()+item[2].stop
+                                  maxBand = self.properties.nrOfBand()+\
+                                            item[2].stop
                               else:
-                                  maxBand=item[2].stop
+                                  maxBand = item[2].stop
                               bands = range(minBand, maxBand, strideb)
                         elif isinstance(item[2], tuple):
                             for band in item[2]:
                                 if band < 0:
-                                    bands.append(self.properties.nrOfBand()+band)
+                                    bands.append(
+                                        self.properties.nrOfBand()+band)
                                 else:
                                     bands.append(band)
                         elif isinstance(item[2], int):

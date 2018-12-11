@@ -44,30 +44,30 @@ def convert(jim_object, otype, **kwargs):
     """
 
     if len(kwargs) == 0:
-        if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
+        if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             return _pj.Jim(jim_object.convertToUchar8())
-        elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+        elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
             return _pj.Jim(jim_object.convertToUint16())
-        elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+        elif otype in [4, 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
             return _pj.Jim(jim_object.convertToUint32())
-        elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
+        elif otype in [6, 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
             return _pj.Jim(jim_object.convertToFloat32())
-        elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
+        elif otype in [7, 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
             return _pj.Jim(jim_object.convertToDouble64())
 
-    if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
+    if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
         kwargs.update({'otype': 'GDT_Byte'})
-    elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+    elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
         kwargs.update({'otype': 'GDT_UInt16'})
-    elif otype in ['Int16', 'GDT_Int16', _jl.GDT_Int16]:
+    elif otype in [3, 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
         kwargs.update({'otype': 'GDT_Int16'})
-    elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+    elif otype in [4, 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
         kwargs.update({'otype': 'GDT_UInt32'})
-    elif otype in ['Int32', 'GDT_Int32', _jl.GDT_Int32]:
+    elif otype in [5, 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
         kwargs.update({'otype': 'GDT_Int32'})
-    elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
+    elif otype in [6, 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
         kwargs.update({'otype': 'GDT_Float32'})
-    elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
+    elif otype in [7, 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
         kwargs.update({'otype': 'GDT_Float32'})
     else:
         raise TypeError("Output type {} not supported".format(otype))
@@ -223,35 +223,35 @@ class _PixOps():
             jim1.convert(Byte)
         """
         if len(kwargs) == 0:
-            if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
+            if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
                 self._jim_object.d_convertToUchar8()
                 return None
-            elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+            elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
                 self._jim_object._set(self._jim_object.convertToUint16())
                 return None
-            elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+            elif otype in [4, 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
                 self._jim_object._set(self._jim_object.convertToUint32())
                 return None
-            elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
+            elif otype in [6, 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
                 self._jim_object._set(self._jim_object.convertToFloat32())
                 return None
-            elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
+            elif otype in [7, 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
                 self._jim_object._set(self._jim_object.convertToDouble64())
                 return None
 
-        if otype in ['Byte', 'GDT_Byte', _jl.GDT_Byte]:
+        if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
-        elif otype in ['UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+        elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
             kwargs.update({'otype': 'GDT_UInt16'})
-        elif otype in ['Int16', 'GDT_Int16', _jl.GDT_Int16]:
+        elif otype in [3, 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
             kwargs.update({'otype': 'GDT_Int16'})
-        elif otype in ['UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+        elif otype in [4, 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
             kwargs.update({'otype': 'GDT_UInt32'})
-        elif otype in ['Int32', 'GDT_Int32', _jl.GDT_Int32]:
+        elif otype in [5, 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
             kwargs.update({'otype': 'GDT_Int32'})
-        elif otype in ['Float32', 'GDT_Float32', _jl.GDT_Float32]:
+        elif otype in [6, 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
             kwargs.update({'otype': 'GDT_Float32'})
-        elif otype in ['Float64', 'GDT_Float64', _jl.GDT_Float64]:
+        elif otype in [7, 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
             kwargs.update({'otype': 'GDT_Float32'})
         else:
             raise TypeError("Output type {} not supported".format(otype))
