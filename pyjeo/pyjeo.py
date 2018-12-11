@@ -399,7 +399,6 @@ class Jim(_jl.Jim):
             mask = item>0
             mask.pixops.convert(self.properties.getDataType())
             masked = value*mask
-            masked.io.dumpImg()
             self.d_pointOpArith(masked, _jl.MASK_op)
         elif isinstance(item, tuple):
             if self.nrOfPlane() > 1:
