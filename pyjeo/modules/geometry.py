@@ -429,12 +429,10 @@ class _Geometry():
                 # lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
                 # lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
             else:
-                upperLeftImage = self._jim_object.properties.geo2image(ulx,
-                                                                       uly)
+                upperLeftImage = self._jim_object.geometry.geo2image(ulx, uly)
                 uli = upperLeftImage[0]
                 ulj = upperLeftImage[1]
-                lowerRightImage = self._jim_object.properties.geo2image(lrx,
-                                                                        lry)
+                lowerRightImage = self._jim_object.geometry.geo2image(lrx, lry)
                 lri = lowerRightImage[0]
                 lrj = lowerRightImage[1]
             for iband in range(0, self._jim_object.properties.nrOfBand()):
