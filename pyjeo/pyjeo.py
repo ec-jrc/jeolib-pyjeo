@@ -213,8 +213,7 @@ class Jim(_jl.Jim):
         stridey = 1
         strideb = 1
         if isinstance(item, tuple):
-            # try:
-            if True:
+            try:
               if isinstance(item[0], slice):
                   minCol = item[0].start
                   maxCol = item[0].stop
@@ -359,8 +358,6 @@ class Jim(_jl.Jim):
                       else:
                           raise TypeError('Error: use 2 dimensions when slicing '
                                       '2-dim Jim object (x:y)')
-            try:
-                print("ok")
             except:
                 print('Warning: index error, returning empty Jim')
                 return Jim()
