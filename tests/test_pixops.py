@@ -239,6 +239,27 @@ class BadPixOps(unittest.TestCase):
         assert not failed, \
             'Error in checks for non-supported data types in pixops.convert()'
 
+    def test_histoCompress(self):
+        """test histoCompress() function and method."""
+        jim = pj.Jim(tiles[0])
+
+        destructive_object = pj.Jim(jim)
+        compressed = pj.pixops.histoCompress(destructive_object)
+        destructive_object.pixops.histoCompress()
+
+        assert destructive_object.pixops.isEqual(compressed), \
+            'Error in pixops.histoCompress()'
+        assert destructive_object.stats.getStats()['min'] == 0, \
+            'Error in pixops.histoCompress() (minimum value not 0)'
+
+        compressed = pj.pixops.histoCompress(jim, 0)
+        jim.pixops.histoCompress(0)
+
+        assert jim.pixops.isEqual(compressed), \
+            'Error in pixops.histoCompress()'
+        assert jim.stats.getStats()['min'] == 0, \
+            'Error in pixops.histoCompress() (minimum value not 0)'
+
 
 class BadPixOpsLists(unittest.TestCase):
     """Test JimList functions and methods from pixops modules."""
