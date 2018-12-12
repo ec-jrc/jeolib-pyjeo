@@ -56,13 +56,6 @@ class _Stats():
     def _set_caller(self, caller):
         self._jim_object = caller
 
-    def getStats(self, **kwargs):
-        return self._jim_object.getStats(kwargs)
-
-    def statProfile(self, function, **kwargs):
-        kwargs.update({'function': function})
-        self._jim_object._set(self._jim_object.statProfile(kwargs))
-
     def getHisto1d(self):
         """Compute the frequency distribution of the grey levels of im.
 
@@ -87,6 +80,22 @@ class _Stats():
         """
         return _pj.Jim(self._jim_object.histo3d(jim_object2, jim_object3))
 
+    def getHistoCumulative(self):
+        """Compute the cumulative frequency distribution of the grey levels.
+
+        :return: a Jim object
+        """
+        if self._jim_object.properties.getDataType() not in [4, 5]:
+            raise TypeError('Object must be of type UInt32 or Int32')
+        return _pj.Jim(self._jim_object.histo1dCumulative())
+
+    def getStats(self, **kwargs):
+        return self._jim_object.getStats(kwargs)
+
+    def statProfile(self, function, **kwargs):
+        kwargs.update({'function': function})
+        self._jim_object._set(self._jim_object.statProfile(kwargs))
+
     def stretch(self, **kwargs):
         self._jim_object._set(self._jim_object.stretch(kwargs))
 
@@ -101,12 +110,12 @@ class _StatsList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
-    def getStats(self, **kwargs):
-        return self._jim_list.getStats(kwargs)
-
     def getStatProfile(self, function, **kwargs):
         kwargs.update({'function': function})
         return _pj.Jim(self._jim_list.statProfile(kwargs))
+
+    def getStats(self, **kwargs):
+        return self._jim_list.getStats(kwargs)
 
 
 class _StatsVect():

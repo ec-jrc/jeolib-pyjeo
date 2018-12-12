@@ -40,6 +40,7 @@ class BadStats(unittest.TestCase):
         jim1_rows = jim1.properties.nrOfRow()
         jim1_cols = jim1.properties.nrOfCol()
 
+        # Test getHisto1d()
         histo1d = jim1.stats.getHisto1d()
 
         assert histo1d.stats.getStats()['min'] >= 0, \
@@ -53,6 +54,7 @@ class BadStats(unittest.TestCase):
 
         jim2 = pj.Jim(tiles[0][:-8] + 'nir' + tiles[0][-5] + '.tif')
 
+        # Test getHisto2d()
         histo2d = jim1.stats.getHisto2d(jim2)
 
         assert histo2d.stats.getStats()['min'] >= 0, \
@@ -65,6 +67,21 @@ class BadStats(unittest.TestCase):
             'Function and method getHisto2d() return different results'
 
         # TODO: Cover histo3d()
+
+        # Test getHistoCumulative
+        try:
+            _ = jim1.stats.getHistoCumulative()
+            failed = True
+        except TypeError:
+            failed = False
+        assert not failed, 'Error in catching wrong data type in ' \
+                           'stats.getHistoCumulative()'
+
+        histo_cumul = pj.pixops.convert(jim1, 4).stats.getHistoCumulative()
+
+        assert histo_cumul.properties.nrOfCol() == jim1_rows * jim1_cols + 1, \
+            'Error in stats.getHistoCumulative() ' \
+            '(nrOfCol != nrOfRow*Col of original)'
 
     def test_stretch(self):
         """Test stretching a Jim object."""
