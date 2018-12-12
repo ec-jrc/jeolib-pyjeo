@@ -209,7 +209,8 @@ class Jim(_jl.Jim):
             else:
                 raise ValueError('row item must be slice or integer value')
 
-            if len(item) > 2:
+            bands = []
+            if self.properties.nrOfPlane() > 1 and len(item) > 2:
                 if isinstance(item[2], slice):
                     min_z = item[2].start
                     max_z = item[2].stop
@@ -228,8 +229,6 @@ class Jim(_jl.Jim):
                 else:
                     raise ValueError('Z index must be slice or integer value')
 
-            bands = []
-            if self.properties.nrOfPlane() > 1 and len(item) > 2:
                 if self.properties.nrOfBand() > 1:
                     if len(item) == 4:  # do slice x,y,z,band
                         if isinstance(item[3], slice):
