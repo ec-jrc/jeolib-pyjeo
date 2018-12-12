@@ -60,7 +60,11 @@ def reclass(jim_object, classes, reclasses, otype=None):
     kwargs = {'class': classes, 'reclass': reclasses}
     if otype:
         kwargs.update({'otype': otype})
-    return _pj.Jim(jim_object.reclass(kwargs))
+    retJim=_pj.Jim(jim_object)
+    retJim.d_reclass(kwargs)
+    return retJim
+    # return _pj.Jim(jim_object.reclass(kwargs))
+
 
 
 class _Classify():
@@ -127,7 +131,8 @@ class _Classify():
         kwargs = {'class': classes, 'reclass': reclasses}
         if otype:
             kwargs.update({'otype': otype})
-        self._jim_object._set(self._jim_object.reclass(kwargs))
+        # self._jim_object._set(self._jim_object.reclass(kwargs))
+        self._jim_object.d_reclass(kwargs)
 
 
 class _ClassifyList():

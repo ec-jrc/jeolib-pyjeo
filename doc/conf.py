@@ -156,7 +156,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'pyJEO.tex', u'pyJEO Documentation',
-     u'Pieter Kempeneers', 'manual'),
+     u'Pieter Kempeneers, Ondrej Pesek, Pierre Soille', 'manual'),
 ]
 
 
