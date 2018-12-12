@@ -70,19 +70,11 @@ class Jim(_jl.Jim):
         _gc.collect()
         return self._all
 
-    @all.setter
-    def all(self, new_props):
-        self._all = new_props
-
     @property
     def ccops(self):
         self._ccops._set_caller(self)
         _gc.collect()
         return self._ccops
-
-    @ccops.setter
-    def ccops(self, new_props):
-        self._ccops = new_props
 
     @property
     def clssfy(self):
@@ -90,19 +82,11 @@ class Jim(_jl.Jim):
         _gc.collect()
         return self._clssfy
 
-    @clssfy.setter
-    def clssfy(self, new_props):
-        self._clssfy = new_props
-
     @property
     def demops(self):
         self._demops._set_caller(self)
         _gc.collect()
         return self._demops
-
-    @demops.setter
-    def demops(self, new_props):
-        self._demops = new_props
 
     @property
     def geometry(self):
@@ -110,19 +94,11 @@ class Jim(_jl.Jim):
         _gc.collect()
         return self._geometry
 
-    @geometry.setter
-    def geometry(self, new_props):
-        self._geometry = new_props
-
     @property
     def io(self):
         self._io._set_caller(self)
         _gc.collect()
         return self._io
-
-    @io.setter
-    def io(self, new_props):
-        self._io = new_props
 
     @property
     def ngbops(self):
@@ -130,19 +106,11 @@ class Jim(_jl.Jim):
         _gc.collect()
         return self._ngbops
 
-    @ngbops.setter
-    def ngbops(self, new_props):
-        self._ngbops = new_props
-
     @property
     def pixops(self):
         self._pixops._set_caller(self)
         _gc.collect()
         return self._pixops
-
-    @pixops.setter
-    def pixops(self, new_props):
-        self._pixops = new_props
 
     @property
     def properties(self):
@@ -150,19 +118,11 @@ class Jim(_jl.Jim):
         _gc.collect()
         return self._properties
 
-    @properties.setter
-    def properties(self, new_props):
-        self._properties = new_props
-
     @property
     def stats(self):
         self._stats._set_caller(self)
         _gc.collect()
         return self._stats
-
-    @stats.setter
-    def stats(self, new_props):
-        self._stats = new_props
 
     def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
@@ -213,154 +173,188 @@ class Jim(_jl.Jim):
         stridey = 1
         strideb = 1
         if isinstance(item, tuple):
-            try:
-              if isinstance(item[0], slice):
-                  minCol = item[0].start
-                  maxCol = item[0].stop
-                  if item[0].step:
-                      stridex = item[0].step
-                  if minCol<0:
-                      minCol=self.properties.nrOfCol()+minCol
-                  if maxCol<0:
-                      maxCol=self.properties.nrOfCol()+maxCol+1
-              elif isinstance(item[0], int):
-                  if item[0]<0:
-                      minCol=self.properties.nrOfCol()+item[0]
-                  else:
-                      minCol=item[0]
-                  maxCol = minCol + 1
-              else:
-                  raise ValueError('column item must be slice or integer value')
-              if isinstance(item[1], slice):
-                  minRow = item[1].start
-                  maxRow = item[1].stop
-                  if item[1].step:
-                      stridey = item[1].step
-                  if minRow<0:
-                      minRow=self.properties.nrOfRow()+minRow
-                  if maxRow<0:
-                      maxRow=self.properties.nrOfRow()+maxRow+1
-              elif isinstance(item[1], int):
-                  if item[1]<0:
-                      minRow=self.properties.nrOfRow()+item[1]
-                  else:
-                      minRow = item[1]
-                  maxRow = minRow+1
-              else:
-                  raise ValueError('row item must be slice or integer value')
-              bands = []
-              if self.nrOfPlane() > 1:
-                  if self.properties.nrOfBand() > 1:
-                      if len(item) == 4:  # do slice x,y,z,band
-                          if isinstance(item[3], slice):
-                              if item[3].step:
-                                  strideb = item[3].step
-                              if item[3].start < 0:
-                                  minBand=self.properties.nrOfBand()+item[3].start
-                              else:
-                                  minBand=item[3].start
-                              if item[3].stop < 0:
-                                  maxBand=self.properties.nrOfBand()+item[3].stop
-                              else:
-                                  maxBand=item[3].stop
-                              bands = range(minBand, maxBand, strideb)
-                          elif isinstance(item[3], tuple):
-                              for band in item[3]:
-                                  if band < 0:
-                                      bands.append(self.properties.nrOfBand()+band)
-                                  else:
-                                      bands.append(band)
-                          elif isinstance(item[3], int):
-                              if item[3] < 0:
-                                bands.append(self.properties.nrOfBand()+item[3])
-                              else:
+            if isinstance(item[0], slice):
+                minCol = item[0].start
+                maxCol = item[0].stop
+                if item[0].step:
+                    stridex = item[0].step
+                if minCol < 0:
+                    minCol = self.properties.nrOfCol()+minCol
+                if maxCol < 0:
+                    maxCol = self.properties.nrOfCol()+maxCol+1
+            elif isinstance(item[0], int):
+                if item[0] < 0:
+                    minCol = self.properties.nrOfCol()+item[0]
+                else:
+                    minCol = item[0]
+                maxCol = minCol + 1
+            else:
+                raise ValueError('column item must be slice or integer value')
+
+            if isinstance(item[1], slice):
+                minRow = item[1].start
+                maxRow = item[1].stop
+                if item[1].step:
+                    stridey = item[1].step
+                if minRow < 0:
+                    minRow = self.properties.nrOfRow()+minRow
+                if maxRow < 0:
+                    maxRow = self.properties.nrOfRow()+maxRow+1
+            elif isinstance(item[1], int):
+                if item[1] < 0:
+                    minRow = self.properties.nrOfRow()+item[1]
+                else:
+                    minRow = item[1]
+                maxRow = minRow+1
+            else:
+                raise ValueError('row item must be slice or integer value')
+
+            bands = []
+            if self.properties.nrOfPlane() > 1 and len(item) > 2:
+                if isinstance(item[2], slice):
+                    min_z = item[2].start
+                    max_z = item[2].stop
+                    if item[2].step:
+                        stride_z = item[2].step
+                    if min_z < 0:
+                        min_z = self.properties.nrOfPlane()+min_z
+                    if max_z < 0:
+                        max_z = self.properties.nrOfPlane()+max_z+1
+                elif isinstance(item[2], int):
+                    if item[2] < 0:
+                        min_z = self.properties.nrOfPlane()+item[2]
+                    else:
+                        min_z = item[2]
+                    max_z = min_z+1
+                else:
+                    raise ValueError('Z index must be slice or integer value')
+
+                if self.properties.nrOfBand() > 1:
+                    if len(item) == 4:  # do slice x,y,z,band
+                        if isinstance(item[3], slice):
+                            if item[3].step:
+                                strideb = item[3].step
+                            if item[3].start < 0:
+                                minBand = self.properties.nrOfBand()+item[
+                                    3].start
+                            else:
+                                minBand = item[3].start
+                            if item[3].stop < 0:
+                                maxBand = self.properties.nrOfBand()+item[
+                                    3].stop
+                            else:
+                                maxBand = item[3].stop
+                            bands = range(minBand, maxBand, strideb)
+                        elif isinstance(item[3], tuple):
+                            for band in item[3]:
+                                if band < 0:
+                                    bands.append(
+                                        self.properties.nrOfBand()+band)
+                                else:
+                                    bands.append(band)
+                        elif isinstance(item[3], int):
+                            if item[3] < 0:
+                                bands.append(
+                                  self.properties.nrOfBand()+item[3])
+                            else:
                                 bands.append(item[3])
-                          else:
-                              raise ValueError('Error: band index must be slice,'
-                                              ' list or integer')
-                          retJim = geometry.cropBand(self, band=bands)
-                          if maxCol<=minCol or maxRow<=minRow or item[2].stop<=item[2].start:
-                              raise IndexError('Warning: index error, returning empty Jim')
-                          retJim.geometry.crop(ulx=minCol, lrx=maxCol,
-                                              uly=minRow, lry=maxRow,
-                                              ulz=item[2].start,
-                                              lrz=item[2].stop, dx=stridex,
-                                              dy=stridey, nogeo=True)
-                          return retJim
-                      else:
-                          raise TypeError(
-                              'Error: use 4 dimensions when slicing multiband '
-                              '3-dim Jim object (x:y:z:band)')
-                  else:
-                      if len(item) == 3:  # do slice x,y,z
-                          if maxCol<=minCol or maxRow<=minRow or item[2].stop<=item[2].start:
-                              raise IndexError('Warning: index error, returning empty Jim')
-                          retJim = geometry.crop(self, ulx=minCol, uly=minRow,
-                                                ulz=item[2].start, lrx=maxCol,
-                                                lry=maxRow, lrz=item[2].stop,
-                                                dx=stridex, dy=stridey,
-                                                nogeo=True)
-                          return retJim
-                      else:
-                          raise TypeError('Error: use 3 dimensions when slicing '
-                                          '3-dim Jim object (x:y:z)')
-              else:
-                  if self.properties.nrOfBand() > 1:
-                      if len(item) == 3:  # do slice x,y,band
-                          if isinstance(item[2], slice):
-                              if item[2].step:
-                                  strideb = item[2].step
-                              if item[2].start < 0:
-                                  minBand=self.properties.nrOfBand()+item[2].start
-                              else:
-                                  minBand=item[2].start
-                              if item[2].stop < 0:
-                                  maxBand=self.properties.nrOfBand()+item[2].stop
-                              else:
-                                  maxBand=item[2].stop
-                              bands = range(minBand, maxBand, strideb)
-                          elif isinstance(item[2], tuple):
-                              for band in item[2]:
-                                  if band < 0:
-                                      bands.append(self.properties.nrOfBand()+band)
-                                  else:
-                                      bands.append(band)
-                          elif isinstance(item[2], int):
-                              if item[2] < 0:
-                                bands.append(self.properties.nrOfBand()+item[2])
-                              else:
+                        else:
+                            raise ValueError('Error: band index must be '
+                                             'slice, list or integer')
+                        retJim = geometry.cropBand(self, band=bands)
+                        if maxCol <= minCol or maxRow <= minRow or \
+                              max_z <= min_z:
+                            raise IndexError(
+                                'Warning: index error, returning empty Jim')
+                        retJim.geometry.crop(ulx=minCol, lrx=maxCol,
+                                             uly=minRow, lry=maxRow,
+                                             ulz=min_z, lrz=max_z,
+                                             dx=stridex, dy=stridey,
+                                             nogeo=True)
+                        return retJim
+                    else:
+                        raise TypeError(
+                            'Error: use 4 dimensions when slicing multiband '
+                            '3-dim Jim object (x:y:z:band)')
+                else:
+                    if len(item) == 3:  # do slice x,y,z
+                        if maxCol <= minCol or maxRow <= minRow or \
+                                item[2].stop <= item[2].start:
+                            raise IndexError('Warning: index error, '
+                                             'returning empty Jim')
+                        retJim = geometry.crop(self, ulx=minCol, uly=minRow,
+                                               ulz=item[2].start, lrx=maxCol,
+                                               lry=maxRow, lrz=item[2].stop,
+                                               dx=stridex, dy=stridey,
+                                               nogeo=True)
+                        return retJim
+                    else:
+                        raise TypeError('Error: use 3 dimensions when slicing '
+                                        '3-dim Jim object (x:y:z)')
+            else:
+                if self.properties.nrOfBand() > 1:
+                    if len(item) == 3:  # do slice x,y,band
+                        if isinstance(item[2], slice):
+                            if item[2].step:
+                                strideb = item[2].step
+                            if item[2].start < 0:
+                                minBand = self.properties.nrOfBand()+item[
+                                    2].start
+                            else:
+                                minBand = item[2].start
+                            if item[2].stop < 0:
+                                maxBand = self.properties.nrOfBand()+item[
+                                    2].stop
+                            else:
+                                maxBand = item[2].stop
+                            bands = range(minBand, maxBand, strideb)
+                        elif isinstance(item[2], tuple):
+                            for band in item[2]:
+                                if band < 0:
+                                    bands.append(
+                                        self.properties.nrOfBand()+band)
+                                else:
+                                    bands.append(band)
+                        elif isinstance(item[2], int):
+                            if item[2] < 0:
+                                bands.append(
+                                  self.properties.nrOfBand()+item[2])
+                            else:
                                 bands.append(item[2])
-                          else:
-                              raise ValueError('Error: band index must be slice,'
-                                              ' list or integer')
-                          retJim = geometry.cropBand(self, band=bands)
-                          if maxCol<=minCol or maxRow<=minRow:
-                              raise IndexError('Warning: index error, returning empty Jim')
-                          retJim.geometry.crop(ulx=minCol, uly=minRow, ulz=None,
-                                              lrx=maxCol, lry=maxRow, lrz=None,
-                                              dx=stridex, dy=stridey,
-                                              nogeo=True)
-                          return retJim
-                      else:
-                          raise TypeError(
-                              'Error: use 3 dimensions when slicing multiband '
-                              '2-dim Jim object (x:y:band)')
-                  else:
-                      if len(item) == 2:  # do slice x,y
-                          if maxCol<=minCol or maxRow<=minRow:
-                              raise IndexError('Warning: index error, returning empty Jim ({}, {}, {}, {})'.format(minCol,minRow,maxCol,maxRow))
-                          retJim = geometry.crop(self, ulx=minCol, uly=minRow,
-                                                ulz=None, lrx=maxCol,
-                                                lry=maxRow, lrz=None,
-                                                dx=stridex, dy=stridey,
-                                                nogeo=True)
-                          return retJim
-                      else:
-                          raise TypeError('Error: use 2 dimensions when slicing '
-                                      '2-dim Jim object (x:y)')
-            except:
-                print('Warning: index error, returning empty Jim')
-                return Jim()
+                        else:
+                            raise ValueError('Error: band index must be '
+                                             'slice, list or integer')
+                        retJim = geometry.cropBand(self, band=bands)
+                        if maxCol<=minCol or maxRow<=minRow:
+                            raise IndexError(
+                                'Warning: index error, returning empty Jim')
+                        retJim.geometry.crop(ulx=minCol, uly=minRow, ulz=None,
+                                             lrx=maxCol, lry=maxRow, lrz=None,
+                                             dx=stridex, dy=stridey,
+                                             nogeo=True)
+                        return retJim
+                    else:
+                        raise TypeError(
+                            'Error: use 3 dimensions when slicing multiband '
+                            '2-dim Jim object (x:y:band)')
+                else:
+                    if len(item) == 2:  # do slice x,y
+                        if maxCol<=minCol or maxRow<=minRow:
+                            raise IndexError(
+                                'Warning: index error, returning empty '
+                                'Jim ({}, {}, {}, {})'.format(minCol,
+                                                              minRow,
+                                                              maxCol,
+                                                              maxRow))
+                        retJim = geometry.crop(self, ulx=minCol, uly=minRow,
+                                               ulz=None, lrx=maxCol,
+                                               lry=maxRow, lrz=None,
+                                               dx=stridex, dy=stridey,
+                                               nogeo=True)
+                        return retJim
+                    else:
+                        raise TypeError('Error: use 2 dimensions when '
+                                        'slicing 2-dim Jim object (x:y)')
         elif isinstance(item, Jim):
             mask = item>0
             return Jim(self*mask)
@@ -389,9 +383,9 @@ class Jim(_jl.Jim):
     def __setitem__(self, item, value):
         if isinstance(item, Jim):  # or isinstance(value, Jim):
             if value is None:
-                self._set(Jim(self,copyData=False))
+                self._set(Jim(self, copyData=False))
             else:
-                self.d_setMask(item,value)
+                self.d_setMask(item, value)
         elif isinstance(item, tuple):
             if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d '
@@ -541,8 +535,8 @@ class Jim(_jl.Jim):
                         raise TypeError('Error: use 2 dimensions when slicing '
                                         '2-dim Jim object (x:y)')
         elif isinstance(item, _jl.VectorOgr):
-            # TODO: check if rasterize vector first and then set raster mask would
-            #       be better
+            # TODO: check if rasterize vector first and then set raster mask
+            #       would be better
             if self.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ not implemented for 3d '
                                  'Jim objects')
@@ -1021,19 +1015,11 @@ class JimList(list, _jl.JimList):
         _gc.collect()
         return self._geometry
 
-    @geometry.setter
-    def geometry(self, new_props):
-        self._geometry = new_props
-
     @property
     def pixops(self):
         self._pixops._set_caller(self)
         _gc.collect()
         return self._pixops
-
-    @pixops.setter
-    def pixops(self, new_props):
-        self._pixops = new_props
 
     @property
     def properties(self):
@@ -1041,19 +1027,11 @@ class JimList(list, _jl.JimList):
         _gc.collect()
         return self._properties
 
-    @properties.setter
-    def properties(self, new_props):
-        self._properties = new_props
-
     @property
     def stats(self):
         self._stats._set_caller(self)
         _gc.collect()
         return self._stats
-
-    @stats.setter
-    def stats(self, new_props):
-        self._stats = new_props
 
     def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
@@ -1198,29 +1176,17 @@ class JimVect(_jl.VectorOgr):
         _gc.collect()
         return self._clssfy
 
-    @clssfy.setter
-    def clssfy(self, new_props):
-        self._clssfy = new_props
-
     @property
     def io(self):
         self._io._set_caller(self)
         _gc.collect()
         return self._io
 
-    @io.setter
-    def io(self, new_props):
-        self._io = new_props
-
     @property
     def properties(self):
         self._properties._set_caller(self)
         _gc.collect()
         return self._properties
-
-    @properties.setter
-    def properties(self, new_props):
-        self._properties = new_props
 
     def __dir__(self):
         """Change behaviour of the method whisperer to ignore jiplib methods.

@@ -85,6 +85,21 @@ def isEqual(first_jim, second_jim):
         return False
 
 
+def histoCompress(jim_object, band=None):
+    """Redistribute the intensity of histogram to fit full range of values.
+
+    Redistributes the intensity values of im in such a way that the
+    minimum value is zero and that all subsequent intensity values are
+    used until the maximum value (i.e. no gaps).
+
+    :return: a  Jim object
+    """
+    if band is not None:
+        return _pj.Jim(jim_object.histoCompress(band))
+    else:
+        return _pj.Jim(jim_object.histoCompress())
+
+
 def NDVI(jim_object, redBand, nirBand):
     """Compute NDVI on the Jim object.
 
@@ -260,6 +275,20 @@ class _PixOps():
         kwargs.update({'otype': otype})
 
         self._jim_object._set(self._jim_object.convert(kwargs))
+
+    def histoCompress(self, band=None):
+        """Redistribute the intensity of histogram to fit full range of values.
+
+        Redistributes the intensity values of im in such a way that the
+        minimum value is zero and that all subsequent intensity values are
+        used until the maximum value (i.e. no gaps).
+
+        Modifies the instance on which the method was called.
+        """
+        if band is not None:
+            self._jim_object.d_histoCompress(band)
+        else:
+            self._jim_object.d_histoCompress()
 
     def isEqual(self, other):
         if isinstance(other, _pj.Jim):
