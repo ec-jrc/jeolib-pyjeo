@@ -190,6 +190,7 @@ class Jim(_jl.Jim):
                 maxCol = minCol + 1
             else:
                 raise ValueError('column item must be slice or integer value')
+
             if isinstance(item[1], slice):
                 minRow = item[1].start
                 maxRow = item[1].stop
@@ -207,8 +208,28 @@ class Jim(_jl.Jim):
                 maxRow = minRow+1
             else:
                 raise ValueError('row item must be slice or integer value')
+
+            if len(item) > 2:
+                if isinstance(item[2], slice):
+                    min_z = item[2].start
+                    max_z = item[2].stop
+                    if item[2].step:
+                        stride_z = item[2].step
+                    if min_z < 0:
+                        min_z = self.properties.nrOfPlane()+min_z
+                    if max_z < 0:
+                        max_z = self.properties.nrOfPlane()+max_z+1
+                elif isinstance(item[2], int):
+                    if item[2] < 0:
+                        min_z = self.properties.nrOfPlane()+item[2]
+                    else:
+                        min_z = item[2]
+                    max_z = min_z+1
+                else:
+                    raise ValueError('Z index must be slice or integer value')
+
             bands = []
-            if self.nrOfPlane() > 1:
+            if self.properties.nrOfPlane() > 1 and len(item) > 2:
                 if self.properties.nrOfBand() > 1:
                     if len(item) == 4:  # do slice x,y,z,band
                         if isinstance(item[3], slice):
@@ -243,14 +264,14 @@ class Jim(_jl.Jim):
                                              'slice, list or integer')
                         retJim = geometry.cropBand(self, band=bands)
                         if maxCol <= minCol or maxRow <= minRow or \
-                              item[2].stop <= item[2].start:
+                              max_z <= min_z:
                             raise IndexError(
                                 'Warning: index error, returning empty Jim')
                         retJim.geometry.crop(ulx=minCol, lrx=maxCol,
-                                            uly=minRow, lry=maxRow,
-                                            ulz=item[2].start,
-                                            lrz=item[2].stop, dx=stridex,
-                                            dy=stridey, nogeo=True)
+                                             uly=minRow, lry=maxRow,
+                                             ulz=min_z, lrz=max_z,
+                                             dx=stridex, dy=stridey,
+                                             nogeo=True)
                         return retJim
                     else:
                         raise TypeError(
