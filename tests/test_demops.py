@@ -21,27 +21,36 @@ class BadDEMOps(unittest.TestCase):
         stats = flow.stats.getStats()
 
         assert stats['max'] <= 8, \
-            'Error in demops.demFlowDirectionD8()'
+            'Error in demops.flowDirectionD8()'
         assert stats['min'] >= 0, \
-            'Error in demops.demFlowDirectionD8()'
+            'Error in demops.flowDirectionD8()'
 
         destructive_object.demops.flowDirectionD8()
 
         assert destructive_object.pixops.isEqual(flow), \
-            'Error in demops.demFlowDirectionD8()'
+            'Error in demops.flowDirectionD8()'
 
-        flow = pj.demops.flow(destructive_object, 8)
-        stats = flow.stats.getStats()
+        flow_2 = pj.demops.flow(destructive_object, 8)
+        stats = flow_2.stats.getStats()
 
         assert stats['min'] >= 1, \
-            'Error in demops.demFlowDirectionD8()'
+            'Error in demops.flowDirectionD8()'
 
         destructive_object.demops.flow(8)
 
-        assert destructive_object.pixops.isEqual(flow), \
-            'Error in demops.demFlowDirectionD8()'
+        assert destructive_object.pixops.isEqual(flow_2), \
+            'Error in demops.flowDirectionD8()'
 
-        # TODO: flowNew()
+        destructive_object = pj.Jim(jim)
+
+        flowNew = pj.demops.flowNew(destructive_object, flow, 8)
+        destructive_object.demops.flowNew(flow, 8)
+
+        assert destructive_object.isEqual(flowNew), 'Error in demops.flowNew()'
+        assert flowNew.stats.getStats()['min'] > 0, 'Error in demops.flowNew()'
+        assert destructive_object.properties.getDataType() == \
+               flowNew.properties.getDataType(), \
+            'Error in demops.flowNew() (changed data type of object)'
 
         # flow = pj.demops.flowDirectionDInf(jim)
         # jim.demops.flowDirectionDInf()
