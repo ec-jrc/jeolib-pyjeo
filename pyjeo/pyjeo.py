@@ -177,10 +177,18 @@ class Jim():
         strideb = 1
         if isinstance(item, tuple):
             if isinstance(item[0], slice):
-                minCol = item[0].start
-                maxCol = item[0].stop
+                if item[0].start is None:
+                    minCol = 0
+                else:
+                    minCol =  item[0].start
+                if item[0].stop is None:
+                    maxCol = self.properties.nrOfCol()
+                else:
+                    maxCol = item[0].stop
+
                 if item[0].step:
                     stridex = item[0].step
+
                 if minCol < 0:
                     minCol = self.properties.nrOfCol()+minCol
                 if maxCol < 0:
@@ -195,10 +203,18 @@ class Jim():
                 raise ValueError('column item must be slice or integer value')
 
             if isinstance(item[1], slice):
-                minRow = item[1].start
-                maxRow = item[1].stop
+                if item[1].start is None:
+                    minRow = 0
+                else:
+                    minRow =  item[1].start
+                if item[1].stop is None:
+                    maxRow = self.properties.nrOfRow()
+                else:
+                    maxRow = item[1].stop
+
                 if item[1].step:
                     stridey = item[1].step
+
                 if minRow < 0:
                     minRow = self.properties.nrOfRow()+minRow
                 if maxRow < 0:
@@ -215,10 +231,18 @@ class Jim():
             bands = []
             if self.properties.nrOfPlane() > 1 and len(item) > 2:
                 if isinstance(item[2], slice):
-                    min_z = item[2].start
-                    max_z = item[2].stop
+                    if item[2].start is None:
+                        min_z = 0
+                    else:
+                        min_z = item[2].start
+                    if item[2].stop is None:
+                        max_z = self.properties.nrOfPlane()
+                    else:
+                        max_z = item[2].stop
+
                     if item[2].step:
                         stride_z = item[2].step
+
                     if min_z < 0:
                         min_z = self.properties.nrOfPlane()+min_z
                     if max_z < 0:
@@ -235,18 +259,26 @@ class Jim():
                 if self.properties.nrOfBand() > 1:
                     if len(item) == 4:  # do slice x,y,z,band
                         if isinstance(item[3], slice):
-                            if item[3].step:
-                                strideb = item[3].step
                             if item[3].start < 0:
                                 minBand = self.properties.nrOfBand()+item[
                                     3].start
                             else:
-                                minBand = item[3].start
+                                if item[3].start is None:
+                                    minBand = 0
+                                else:
+                                    minBand = item[3].start
                             if item[3].stop < 0:
                                 maxBand = self.properties.nrOfBand()+item[
                                     3].stop + 1
                             else:
-                                maxBand = item[3].stop
+                                if item[3].stop is None:
+                                    maxBand = self.properties.nrOfBand()
+                                else:
+                                    maxBand = item[3].stop
+
+                            if item[3].step:
+                                strideb = item[3].step
+
                             bands = range(minBand, maxBand, strideb)
                         elif isinstance(item[3], tuple):
                             for band in item[3]:
@@ -298,18 +330,26 @@ class Jim():
                 if self.properties.nrOfBand() > 1:
                     if len(item) == 3:  # do slice x,y,band
                         if isinstance(item[2], slice):
-                            if item[2].step:
-                                strideb = item[2].step
                             if item[2].start < 0:
                                 minBand = self.properties.nrOfBand()+item[
                                     2].start
                             else:
-                                minBand = item[2].start
+                                if item[2].start is None:
+                                    minBand = 0
+                                else:
+                                    minBand = item[2].start
                             if item[2].stop < 0:
                                 maxBand = self.properties.nrOfBand()+item[
                                     2].stop
                             else:
-                                maxBand = item[2].stop
+                                if item[2].stop is None:
+                                    maxBand = self.properties.nrOfBand()
+                                else:
+                                    maxBand = item[2].stop
+
+                            if item[2].step:
+                                strideb = item[2].step
+
                             bands = range(minBand, maxBand, strideb)
                         elif isinstance(item[2], tuple):
                             for band in item[2]:
@@ -394,10 +434,18 @@ class Jim():
                         stridey = 1
                         strideb = 1
                         if isinstance(item[0], slice):
-                            minCol = item[0].start
-                            maxCol = item[0].stop
+                            if item[0].start is None:
+                                minCol = 0
+                            else:
+                                minCol =  item[0].start
+                            if item[0].stop is None:
+                                maxCol = self.properties.nrOfCol()
+                            else:
+                                maxCol = item[0].stop
+
                             if item[0].step:
                                 stridex = item[0].step
+
                             if minCol < 0:
                                 minCol = self.properties.nrOfCol()+minCol
                             if maxCol < 0:
@@ -412,10 +460,18 @@ class Jim():
                             raise ValueError('column item must be slice or '
                                              'integer value')
                         if isinstance(item[1], slice):
-                            minRow = item[1].start
-                            maxRow = item[1].stop
+                            if item[1].start is None:
+                                minRow = 0
+                            else:
+                                minRow =  item[1].start
+                            if item[1].stop is None:
+                                maxRow = self.properties.nrOfRow()
+                            else:
+                                maxRow = item[1].stop
+
                             if item[1].step:
                                 stridey = item[1].step
+
                             if minRow < 0:
                                 minRow = self.properties.nrOfRow()+minRow
                             if maxRow < 0:
@@ -436,12 +492,18 @@ class Jim():
                                   minBand = self.properties.nrOfBand() + \
                                             item[2].start
                               else:
-                                  minBand=item[2].start
+                                  if item[2].start is None:
+                                      minBand = 0
+                                  else:
+                                      minBand = item[2].start
                               if item[2].stop < 0:
                                   maxBand = self.properties.nrOfBand()+\
                                             item[2].stop
                               else:
-                                  maxBand = item[2].stop
+                                  if item[2].stop is None:
+                                      maxBand = self.properties.nrOfBand()
+                                  else:
+                                      maxBand = item[2].stop
                               bands = range(minBand, maxBand, strideb)
                         elif isinstance(item[2], tuple):
                             for band in item[2]:
@@ -477,10 +539,18 @@ class Jim():
                     stridey = 1
                     if len(item) == 2:  # do slice x,y
                         if isinstance(item[0], slice):
-                            minCol = item[0].start
-                            maxCol = item[0].stop
+                            if item[0].start is None:
+                                minCol = 0
+                            else:
+                                minCol =  item[0].start
+                            if item[0].stop is None:
+                                maxCol = self.properties.nrOfCol()
+                            else:
+                                maxCol = item[0].stop
+
                             if item[0].step:
                                 stridex = item[0].step
+
                             if minCol<0:
                                 minCol=self.properties.nrOfCol()+minCol
                             if maxCol<0:
