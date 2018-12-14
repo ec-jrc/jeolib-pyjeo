@@ -28,7 +28,7 @@ def classify(jim_object, method, model, **kwargs):
         :priors: list of prior probabilities (one for each class)
     """
     kwargs.update({'method': method, 'model': model})
-    return _pj.Jim(jim_object.classify(kwargs))
+    return _pj.Jim(jim_object._jipjim.classify(kwargs))
 
 
 def sml(jim_object, **kwargs):
@@ -53,7 +53,7 @@ def sml(jim_object, **kwargs):
             to extract two classes only (1 against rest)
     """
     kwargs.update({'method': 'sml'})
-    return _pj.Jim(jim_object.classify(kwargs))
+    return _pj.Jim(jim_object._jipjim.classify(kwargs))
 
 
 def reclass(jim_object, classes, reclasses, otype=None):
@@ -61,10 +61,9 @@ def reclass(jim_object, classes, reclasses, otype=None):
     if otype:
         kwargs.update({'otype': otype})
     retJim=_pj.Jim(jim_object)
-    retJim.d_reclass(kwargs)
+    retJim._jipjim.d_reclass(kwargs)
     return retJim
     # return _pj.Jim(jim_object.reclass(kwargs))
-
 
 
 class _Classify():
@@ -101,7 +100,7 @@ class _Classify():
             :nodata: Nodata value to put where image is masked as no data
         """
         kwargs.update({'method': method, 'model': model})
-        self._jim_object._set(self._jim_object.classify(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
 
     def sml(self, **kwargs):
         """Supervised classification of a raster dataset.
@@ -125,14 +124,14 @@ class _Classify():
                 to extract two classes only (1 against rest)
         """
         kwargs.update({'method': 'sml'})
-        self._jim_object._set(self._jim_object.classify(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
 
     def reclass(self, classes, reclasses, otype=None):
         kwargs = {'class': classes, 'reclass': reclasses}
         if otype:
             kwargs.update({'otype': otype})
         # self._jim_object._set(self._jim_object.reclass(kwargs))
-        self._jim_object.d_reclass(kwargs)
+        self._jim_object._jipjim.d_reclass(kwargs)
 
 
 class _ClassifyList():
@@ -213,7 +212,7 @@ class _ClassifyVect():
         Keys specific to the ANN:
 
         ========== ==========================================================================
-        nneuron    List defining the number of neurons in each hidden layer in the neural network 
+        nneuron    List defining the number of neurons in each hidden layer in the neural network
         connection Connection rate (default: 1.0 for a fully connected network
         learning   Learning rate (default: 0.7)
         weights    Weights for neural network. Apply to fully connected network only, starting from first input neuron to last output neuron, including the bias neurons (last neuron in each but last layer)
@@ -225,7 +224,7 @@ class _ClassifyVect():
 
         """
         kwargs.update({'method': method, 'model': output})
-        self._jim_vect.train(kwargs)
+        self._jim_vect._jipjimvect.train(kwargs)
 
     def classify(self, method, output, **kwargs):
         """Supervised classification of a raster dataset.
@@ -251,4 +250,4 @@ class _ClassifyVect():
             :copy: copy these fields from input to output vector dataset
         """
         kwargs.update({'method': method, 'model': output})
-        self._jim_vect._set(self._jim_vect.classify(kwargs))
+        self._jim_vect._set(self._jim_vect._jipjimvect.classify(kwargs))

@@ -53,7 +53,8 @@ class BadPixOps(unittest.TestCase):
         assert jim_red.pixops.isEqual(jim), 'Error in computing NDVI or ' \
                                             'NDVISeparateBands'
 
-        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir.convertToFloat32())
+        jim_nir.pixops.convert('Float32')
+        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
 
         assert not jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
 
@@ -240,7 +241,7 @@ class BadPixOps(unittest.TestCase):
             'Error in checks for non-supported data types in pixops.convert()'
 
     def test_histoCompress(self):
-        """test histoCompress() function and method."""
+        """Test histoCompress() function and method."""
         jim = pj.Jim(tiles[0])
 
         destructive_object = pj.Jim(jim)

@@ -162,7 +162,7 @@ def createVector(filename, **kwargs):
     :param: see supported keys in table below
     :return: a VectorOgr object
     """
-    return _jl.createVector(filename, **kwargs)
+    return _pj.JimVect(_jl.createVector(filename, **kwargs))
 
 
 class _IO():
@@ -201,7 +201,7 @@ class _IO():
            jim.io.write('/tmp/test.tif','co':['COMPRESS=LZW','TILED=YES']})
         """
         kwargs.update({'filename': filename})
-        self._jim_object.write(kwargs)
+        self._jim_object._jipjim.write(kwargs)
 
     def dumpImg(self, **kwargs):
         """ Dump the raster dataset to output (standard output or ASCII file).
@@ -221,7 +221,7 @@ class _IO():
         force      (bool) Set to True to force full dump even for large images
         =========  ============================================================
         """
-        self._jim_object.dumpImg(kwargs)
+        self._jim_object._jipjim.dumpImg(kwargs)
 
     def dumpImg3D(self, x, y, z, nx, ny):
         """
@@ -234,7 +234,7 @@ class _IO():
         :param nx: integer for size of window along x-axis
         :param ny: integer for size of window along y-axis
         """
-        self._jim_object.imageDump(x, y, z, nx, ny)
+        self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
 
 class _IOList():
@@ -265,9 +265,9 @@ class _IOVect():
         :param filename: path to a raster dataset or another Jim object
         """
         if filename:
-            self._jim_vect.write(filename)
+            self._jim_vect._jipjimvect.write(filename)
         else:
-            self._jim_vect.write()
+            self._jim_vect._jipjimvect.write()
 
     def dumpVect(self, name=None, **kwargs):
         """
@@ -278,4 +278,4 @@ class _IOVect():
         """
         if name:
             kwargs.update({'name': name})
-        self._jim_vect.dumpOgr(**kwargs)
+        self._jim_vect._jipjimvect.dumpOgr(**kwargs)

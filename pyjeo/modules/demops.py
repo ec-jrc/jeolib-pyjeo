@@ -11,7 +11,7 @@ def catchmentBasinConfluence(jim_object, d8):
     :param d8: an image node holding d8 flow directions
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demCatchmenBasinOutlet(d8))
+    return _pj.Jim(jim_object._jipjim.demCatchmenBasinOutlet(d8))
 
 
 def catchmentBasinOutlet(jim_object, d8):
@@ -21,7 +21,7 @@ def catchmentBasinOutlet(jim_object, d8):
     :param d8: an image node holding d8 flow directions
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demCatchmentBasinOutlet(d8))
+    return _pj.Jim(jim_object._jipjim.demCatchmentBasinOutlet(d8))
 
 
 def contribDrainArea(jim_object, graph):
@@ -35,7 +35,7 @@ def contribDrainArea(jim_object, graph):
     :param graph: integer for number of possible flow directions (either 4 or 8)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demContributingDrainageArea(graph))
+    return _pj.Jim(jim_object._jipjim.demContributingDrainageArea(graph))
 
 
 def contribDrainAreaInf(jim_object):
@@ -49,7 +49,7 @@ def contribDrainAreaInf(jim_object):
     :param graph: integer for number of nearest neighbours to consider
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demContributingDrainageAreaDInf())
+    return _pj.Jim(jim_object._jipjim.demContributingDrainageAreaDInf())
 
 
 def contribDrainAreaStrat(cda, threshold, dir):
@@ -64,7 +64,9 @@ def contribDrainAreaStrat(cda, threshold, dir):
     :param dir: an image node (UCHAR) for flow directions
     :return:
     """
-    return _pj.Jim(cda.demContributingDrainageAreaStratify(threshold, dir))
+    return _pj.Jim(
+        cda._jipjim.demContributingDrainageAreaStratify(threshold._jipjim,
+                                                        dir._jipjim))
 
 
 def floodDir(jim_object, graph):
@@ -81,7 +83,7 @@ def floodDir(jim_object, graph):
         (either 4 or 8)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demFloodDirection(graph))
+    return _pj.Jim(jim_object._jipjim.demFloodDirection(graph))
 
 
 def flow(jim_object, graph):
@@ -91,7 +93,7 @@ def flow(jim_object, graph):
     :param graph: integer for number of nearest neighbours to consider
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demFlow(graph))
+    return _pj.Jim(jim_object._jipjim.demFlow(graph))
 
 
 def flowDirectionD8(jim_object):
@@ -104,7 +106,7 @@ def flowDirectionD8(jim_object):
     :param jim_object: a Jim object
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demFlowDirectionD8())
+    return _pj.Jim(jim_object._jipjim.demFlowDirectionD8())
 
 
 def flowDirectionDInf(jim_object):
@@ -118,7 +120,7 @@ def flowDirectionDInf(jim_object):
     :param jim_object: a Jim object
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demFlowDirectionDInf())
+    return _pj.Jim(jim_object._jipjim.demFlowDirectionDInf())
 
 
 def flowDirectionFlat(jim_object, dem_jim, graph):
@@ -132,7 +134,8 @@ def flowDirectionFlat(jim_object, dem_jim, graph):
     :param graph: integer for number of nearest neighbours to consider
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demFlowDirectionFlat(dem_jim, graph))
+    return _pj.Jim(jim_object._jipjim.demFlowDirectionFlat(dem_jim._jipjim,
+                                                           graph))
 
 
 def flowDirectionFlatGeodesic(jim_object, dem_jim, graph):
@@ -143,7 +146,9 @@ def flowDirectionFlatGeodesic(jim_object, dem_jim, graph):
     :param graph: integer for number of nearest neighbours to consider
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demFlowDirectionFlatGeodesic(dem_jim, graph))
+    return _pj.Jim(
+        jim_object._jipjim.demFlowDirectionFlatGeodesic(dem_jim._jipjim,
+                                                        graph))
 
 
 def flowNew(jim_object, drain_image, graph=8):
@@ -157,7 +162,7 @@ def flowNew(jim_object, drain_image, graph=8):
     :param graph: integer for connectivity (must be 8)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demFlowNew(drain_image, graph))
+    return _pj.Jim(jim_object._jipjim.demFlowNew(drain_image._jipjim, graph))
 
 
 def pitRemovalCarve(labeled_jim, grey_jim, graph, maxfl):
@@ -169,7 +174,8 @@ def pitRemovalCarve(labeled_jim, grey_jim, graph, maxfl):
     :param maxfl: an integer for highest flooding level
     :return: a Jim object
     """
-    return _pj.Jim(labeled_jim.demPitRemovalCarve(grey_jim, graph, maxfl))
+    return _pj.Jim(labeled_jim._jipjim.demPitRemovalCarve(grey_jim._jipjim,
+                                                          graph, maxfl))
 
 
 def pitRemovalOptimal(labeled_jim, grey_jim, graph, maxfl, flag):
@@ -185,8 +191,8 @@ def pitRemovalOptimal(labeled_jim, grey_jim, graph, maxfl, flag):
     :param flag: 0 (default) for energy based, area based otherwise
     :return: a Jim object
     """
-    return _pj.Jim(labeled_jim.demPitRemovalCarve(grey_jim, graph,
-                                                  maxfl, flag))
+    return _pj.Jim(labeled_jim._jipjim.demPitRemovalCarve(grey_jim._jipjim,
+                                                          graph, maxfl, flag))
 
 
 def slopeD8(jim_object):
@@ -197,7 +203,7 @@ def slopeD8(jim_object):
     :param jim_object: a Jim object
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demSlopeD8())
+    return _pj.Jim(jim_object._jipjim.demSlopeD8())
 
 
 def slopeDInf(jim_object):
@@ -206,7 +212,7 @@ def slopeDInf(jim_object):
     :param jim_object: a Jim object
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.demSlopeDInf())
+    return _pj.Jim(jim_object._jipjim.demSlopeDInf())
 
 
 def strahler(d8):
@@ -216,7 +222,7 @@ def strahler(d8):
         0 elsewhere
     :return: a Jim object
     """
-    return _pj.Jim(d8.demStrahlerOrder())
+    return _pj.Jim(d8._jipjim.demStrahlerOrder())
 
 
 class _DEMOps():
@@ -237,7 +243,7 @@ class _DEMOps():
         :param d8: an image node holding d8 flow directions
         :return: a Jim object
         """
-        self._jim_object.d_demCatchmenBasinConfluence(d8)
+        self._jim_object._jipjim.d_demCatchmenBasinConfluence(d8._jipjim)
 
     def catchmentBasinOutlet(self, d8):
         """Compute the catchment basin outlet.
@@ -246,7 +252,7 @@ class _DEMOps():
         :param d8: an image node holding d8 flow directions
         :return: a Jim object
         """
-        self._jim_object.d_demCatchmentBasinOutlet(d8)
+        self._jim_object._jipjim.d_demCatchmentBasinOutlet(d8._jipjim)
 
     def contribDrainArea(self, graph):
         """Output the contributing drainage areas of a DEM.
@@ -256,41 +262,42 @@ class _DEMOps():
         W=1, E=2, SW=6, S=4, SE=8.
 
         :param jim_object: an image node with D8 drainage directions (UCHAR)
-        :param graph: integer for number of possible flow directions (either 4 or 8)
+        :param graph: integer for number of possible flow directions
+            (either 4 or 8)
         :return: a Jim object
         """
         self._jim_object._set(
-            self._jim_object.demContributingDrainageArea(graph))
+            self._jim_object._jipjim.demContributingDrainageArea(graph))
 
     def contribDrainAreaInf(self):
         """Output the contributing drainage areas of a DEM.
 
-        Outputs the contributing drainage areas of a DEM given its dinf drainage
-        directions.
+        Outputs the contributing drainage areas of a DEM given its dinf
+        drainage directions. Jim object must be with Dinf drainage directions
+        (t FLOAT, -1.0 for undefined direction).
 
-        :param jim_object: a Jim object with Dinf drainage directions
-            (t FLOAT, -1.0 for undefined direction)
         :param graph: integer for number of nearest neighbours to consider
         :return: a Jim object
         """
         self._jim_object._set(
-            self._jim_object.demContributingDrainageAreaDInf())
+            self._jim_object._jipjim.demContributingDrainageAreaDInf())
 
     def contribDrainAreaStrat(self, threshold, dir):
         """Extract river networks.
 
         Do it by flagging the downstreams of all points whose contributing
-        drainage areas exceed those given by the threshold image. The dowstreams
-        are detected by following the drainage directions stored in the image dir.
+        drainage areas exceed those given by the threshold image. The
+        dowstreams are detected by following the drainage directions stored
+        in the image dir. Jim must be an image node (INT32) for contributing
+        drainage area.
 
-        :param cda: an image node (INT32) for contributing drainage area
         :param threshold: an image node (USHORT) for cda threshold levels
         :param dir: an image node (UCHAR) for flow directions
         :return:
         """
         self._jim_object._set(
-            self._jim_object.demContributingDrainageAreaStratify(threshold,
-                                                                 dir))
+            self._jim_object._jipjim.demContributingDrainageAreaStratify(
+                threshold._jipjim, dir._jipjim))
 
     def floodDir(self, graph):
         """Compute the local flow directions.
@@ -306,7 +313,7 @@ class _DEMOps():
             (either 4 or 8)
         :return: a Jim object
         """
-        self._jim_object.d_demFloodDirection(graph)
+        self._jim_object._jipjim.d_demFloodDirection(graph)
 
     def flow(self, graph):
         """Compute the contributing drainage areas using D8 drainage directions.
@@ -315,7 +322,7 @@ class _DEMOps():
         :param graph: integer for number of nearest neighbours to consider
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demFlow(graph))
+        self._jim_object._set(self._jim_object._jipjim.demFlow(graph))
 
     def flowDirectionD8(self):
         """Compute the D8 steepest slope direction of each pixel.
@@ -326,7 +333,7 @@ class _DEMOps():
 
         Modifies the instance on which the method was called.
         """
-        self._jim_object._set(self._jim_object.demFlowDirectionD8())
+        self._jim_object._set(self._jim_object._jipjim.demFlowDirectionD8())
 
     def flowDirectionDInf(self):
         """Compute the dinf steepest slope direction of each pixel.
@@ -339,7 +346,7 @@ class _DEMOps():
         :param jim_object: a Jim object
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demFlowDirectionDInf())
+        self._jim_object._set(self._jim_object._jipjim.demFlowDirectionDInf())
 
     def flowDirectionFlat(self, dem_jim, graph):
         """See publication (Soille, 2002).
@@ -352,8 +359,9 @@ class _DEMOps():
         :param graph: integer for number of nearest neighbours to consider
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demFlowDirectionFlat(dem_jim,
-                                                                    graph))
+        self._jim_object._set(
+            self._jim_object._jipjim.demFlowDirectionFlat(dem_jim._jipjim,
+                                                          graph))
 
     def flowDirectionFlatGeodesic(self, dem_jim, graph):
         """Inverse geodesic distance Away From Ascending Border.
@@ -363,8 +371,9 @@ class _DEMOps():
         :param graph: integer for number of nearest neighbours to consider
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demFlowDirectionFlatGeodesic(
-            dem_jim, graph))
+        self._jim_object._set(
+            self._jim_object._jipjim.demFlowDirectionFlatGeodesic(
+                dem_jim._jipjim, graph))
 
     def flowNew(self, drain_image, graph=8):
         """Compute the contributing drainage area of each pixel.
@@ -377,7 +386,9 @@ class _DEMOps():
         :param graph: integer for connectivity (must be 8)
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demFlowNew(drain_image, graph))
+        self._jim_object._set(
+            self._jim_object._jipjim.demFlowNew(drain_image._jipjim,
+                                                graph))
 
     def pitRemovalCarve(self, grey_jim, graph, maxfl):
         """Use for carving, algorithm description in Soille et al. 2003.
@@ -388,9 +399,9 @@ class _DEMOps():
         :param maxfl: an integer for highest flooding level
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demPitRemovalCarve(grey_jim,
-                                                                  graph,
-                                                                  maxfl))
+        self._jim_object._set(
+            self._jim_object._jipjim.demPitRemovalCarve(grey_jim._jipjim,
+                                                        graph, maxfl))
 
     def pitRemovalOptimal(self, grey_jim, graph, maxfl, flag):
         """Optimal removal of spurious pits in grid digital elevation models.
@@ -405,10 +416,9 @@ class _DEMOps():
         :param flag: 0 (default) for energy based, area based otherwise
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demPitRemovalCarve(grey_jim,
-                                                                  graph,
-                                                                  maxfl,
-                                                                  flag))
+        self._jim_object._set(
+            self._jim_object._jipjim.demPitRemovalCarve(grey_jim._jipjim,
+                                                        graph, maxfl, flag))
 
     def slopeD8(self):
         """Compute the steepest slope within a 3x3 neighbourhood for each pixel.
@@ -418,7 +428,7 @@ class _DEMOps():
         :param jim_object: a Jim object
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demSlopeD8())
+        self._jim_object._set(self._jim_object._jipjim.demSlopeD8())
 
     def slopeDInf(self):
         """Output the slope along the dinf drainage directions.
@@ -426,7 +436,7 @@ class _DEMOps():
         :param jim_object: a Jim object
         :return: a Jim object
         """
-        self._jim_object._set(self._jim_object.demSlopeDInf())
+        self._jim_object._set(self._jim_object._jipjim.demSlopeDInf())
 
     def strahler(self):
         """Compute the Strahler thing.
@@ -435,7 +445,7 @@ class _DEMOps():
             0 elsewhere
         :return: a Jim object
         """
-        self._jim_object.d_demStrahlerOrder()
+        self._jim_object._jipjim.d_demStrahlerOrder()
 
 
 class _DEMOpsList():

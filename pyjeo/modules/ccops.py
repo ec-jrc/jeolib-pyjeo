@@ -11,7 +11,7 @@ def labelImagePixels(jim_object):
     :param jim_object: a Jim object
     :return: labeled Jim object
     """
-    return _pj.Jim(jim_object.labelPix())
+    return _pj.Jim(jim_object._jipjim.labelPix())
 
 
 def distance2dEuclideanSquared(jim_object, band=0):
@@ -29,7 +29,7 @@ def distance2dEuclideanSquared(jim_object, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.distance2dEuclideanSquared(band))
+    return _pj.Jim(jim_object._jipjim.distance2dEuclideanSquared(band))
 
 
 class _CCOps():
@@ -49,7 +49,7 @@ class _CCOps():
 
         Modifies the instance on which the method was called.
         """
-        self._jim_object.d_labelPix()
+        self._jim_object._jipjim.d_labelPix()
 
     def distance2dEuclideanSquared(self, band=0):
         """Compute the squared Euclidean distance transform of im.
@@ -64,8 +64,8 @@ class _CCOps():
 
         Modifies the instance on which the method was called.
         """
-        self._jim_object._set(self._jim_object.distance2dEuclideanSquared(
-            band))
+        self._jim_object._set(
+            self._jim_object._jipjim.distance2dEuclideanSquared(band))
 
 
 class _CCOpsList():

@@ -45,15 +45,15 @@ def convert(jim_object, otype, **kwargs):
 
     if len(kwargs) == 0:
         if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
-            return _pj.Jim(jim_object.convertToUchar8())
+            return _pj.Jim(jim_object._jipjim.convertToUchar8())
         elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-            return _pj.Jim(jim_object.convertToUint16())
+            return _pj.Jim(jim_object._jipjim.convertToUint16())
         elif otype in [4, 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-            return _pj.Jim(jim_object.convertToUint32())
+            return _pj.Jim(jim_object._jipjim.convertToUint32())
         elif otype in [6, 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
-            return _pj.Jim(jim_object.convertToFloat32())
+            return _pj.Jim(jim_object._jipjim.convertToFloat32())
         elif otype in [7, 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
-            return _pj.Jim(jim_object.convertToDouble64())
+            return _pj.Jim(jim_object._jipjim.convertToDouble64())
 
     if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
         kwargs.update({'otype': 'GDT_Byte'})
@@ -75,12 +75,12 @@ def convert(jim_object, otype, **kwargs):
 
     kwargs.update({'otype': otype})
 
-    return _pj.Jim(jim_object.convert(kwargs))
+    return _pj.Jim(jim_object._jipjim.convert(kwargs))
 
 
 def isEqual(first_jim, second_jim):
     if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
-        return first_jim.isEqual(second_jim)
+        return first_jim._jipjim.isEqual(second_jim._jipjim)
     else:
         return False
 
@@ -95,9 +95,9 @@ def histoCompress(jim_object, band=None):
     :return: a  Jim object
     """
     if band is not None:
-        return _pj.Jim(jim_object.histoCompress(band))
+        return _pj.Jim(jim_object._jipjim.histoCompress(band))
     else:
-        return _pj.Jim(jim_object.histoCompress())
+        return _pj.Jim(jim_object._jipjim.histoCompress())
 
 
 def NDVI(jim_object, redBand, nirBand):
@@ -110,7 +110,7 @@ def NDVI(jim_object, redBand, nirBand):
     red = _pj.geometry.cropBand(jim_object, redBand)
     nir = _pj.geometry.cropBand(jim_object, nirBand)
 
-    return _pj.Jim(nir.pointOpNDI(red))
+    return _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
 
 
 def NDVISeparateBands(redJim, nirJim):
@@ -120,7 +120,7 @@ def NDVISeparateBands(redJim, nirJim):
     :param nirJim: Jim object with values of NIR
     :return: a Jim object with values of NDVI
     """
-    return _pj.Jim(nirJim.pointOpNDI(redJim))
+    return _pj.Jim(nirJim._jipjim.pointOpNDI(redJim._jipjim))
 
 
 def setThreshold(jim_object, **kwargs):
@@ -168,7 +168,7 @@ def setThreshold(jim_object, **kwargs):
 
         jim_threshold=jim.setThreshold(min=0,max=250,nodata=255)
     """
-    return _pj.Jim(jim_object.setThreshold(kwargs))
+    return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
 
 def supremum(jim, *args):
@@ -180,13 +180,13 @@ def supremum(jim, *args):
     """
     supremum = _pj.Jim(jim)
     for newJim in args:
-        supremum = supremum.pointOpArith(newJim, 5)
+        supremum = supremum._jipjim.pointOpArith(newJim._jipjim, 5)
 
     return _pj.Jim(supremum)
 
 
 def composite(jim_list, **kwargs):
-    return _pj.Jim(jim_list.composite(kwargs))
+    return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
 
 
 class _PixOps():
@@ -239,19 +239,23 @@ class _PixOps():
         """
         if len(kwargs) == 0:
             if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
-                self._jim_object.d_convertToUchar8()
+                self._jim_object._jipjim.d_convertToUchar8()
                 return None
             elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-                self._jim_object._set(self._jim_object.convertToUint16())
+                self._jim_object._set(
+                    self._jim_object._jipjim.convertToUint16())
                 return None
             elif otype in [4, 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-                self._jim_object._set(self._jim_object.convertToUint32())
+                self._jim_object._set(
+                    self._jim_object._jipjim.convertToUint32())
                 return None
             elif otype in [6, 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
-                self._jim_object._set(self._jim_object.convertToFloat32())
+                self._jim_object._set(
+                    self._jim_object._jipjim.convertToFloat32())
                 return None
             elif otype in [7, 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
-                self._jim_object._set(self._jim_object.convertToDouble64())
+                self._jim_object._set(
+                    self._jim_object._jipjim.convertToDouble64())
                 return None
 
         if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
@@ -274,7 +278,7 @@ class _PixOps():
 
         kwargs.update({'otype': otype})
 
-        self._jim_object._set(self._jim_object.convert(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
 
     def histoCompress(self, band=None):
         """Redistribute the intensity of histogram to fit full range of values.
@@ -286,13 +290,13 @@ class _PixOps():
         Modifies the instance on which the method was called.
         """
         if band is not None:
-            self._jim_object.d_histoCompress(band)
+            self._jim_object._jipjim.d_histoCompress(band)
         else:
-            self._jim_object.d_histoCompress()
+            self._jim_object._jipjim.d_histoCompress()
 
     def isEqual(self, other):
         if isinstance(other, _pj.Jim):
-            return self._jim_object.isEqual(other)
+            return self._jim_object._jipjim.isEqual(other._jipjim)
         else:
             return False
 
@@ -307,7 +311,7 @@ class _PixOps():
         red = _pj.geometry.cropBand(self._jim_object, redBand)
         nir = _pj.geometry.cropBand(self._jim_object, nirBand)
 
-        self._jim_object._set(nir.pointOpNDI(red))
+        self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
 
     def NDVISeparateBands(self, nirJim):
         """Compute NDVI from two Jims (call on red band, use NIR as param).
@@ -316,7 +320,8 @@ class _PixOps():
 
         :param nirJim: Jim object with values of NIR
         """
-        self._jim_object._set(nirJim.pointOpNDI(self._jim_object))
+        self._jim_object._set(
+            nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
 
     def setData(self, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
                 dx=0, dy=0, nogeo=False):
@@ -342,7 +347,7 @@ class _PixOps():
         if all(v is None for v in [ulx, uly, lrx, lry]) and dx==0 and dy==0 \
                 and not nogeo:
             for band in bands:
-                self._jim_object.setData(value, band)
+                self._jim_object._jipjim.setData(value, band)
         else:
             if ulx is None:
                 ulx = self._jim_object.properties.getUlx()
@@ -353,8 +358,8 @@ class _PixOps():
             if lry is None:
                 lry = self._jim_object.properties.getLry()
             for band in bands:
-                self._jim_object.setData(value, ulx, uly, lrx, lry, band, dx,
-                                         dy, nogeo)
+                self._jim_object._jipjim.setData(value, ulx, uly, lrx, lry,
+                                                 band, dx, dy, nogeo)
 
     def setThreshold(self, **kwargs):
         """Apply min and max threshold to pixel values in raster dataset.
@@ -401,7 +406,7 @@ class _PixOps():
 
             jim_threshold=jim.setThreshold(min=0,max=250,nodata=255)
         """
-        self._jim_object._set(self._jim_object.setThreshold(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.setThreshold(kwargs))
 
     def supremum(self, *args):
         """Change values of Jim for the biggest ones from provided Jim objects.
@@ -411,7 +416,7 @@ class _PixOps():
         :param args: Jim objects
         """
         for jim in args:
-            self._jim_object.d_pointOpArith(jim, 5)
+            self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
 
 
 class _PixOpsList():
@@ -425,7 +430,7 @@ class _PixOpsList():
         self._jim_list = caller
 
     def composite(self, **kwargs):
-        return _pj.Jim(self._jim_list.composite(kwargs))
+        return _pj.Jim(self._jim_list._jipjimlist.composite(kwargs))
 
 
 class _PixOpsVect():
