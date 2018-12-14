@@ -105,7 +105,7 @@ def createJim(filename=None, **kwargs):
     ncol  Number of columns
     nrow  Number of rows
     nband (default: 1) Number of bands
-    otype (default: Byte) Data type ({Byte/Int16/UInt16/UInt32/Int32/Int64/UInt64/Float32/Float64/CInt16/CInt32/CFloat32/CFloat64})
+    otype (default: Byte) Data type
     a_srs Assign the spatial reference for the output file, e.g., psg:3035 to
           use European projection and force to European grid
     ===== =================

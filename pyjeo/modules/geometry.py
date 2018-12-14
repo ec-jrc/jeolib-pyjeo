@@ -126,13 +126,10 @@ def cropOgr(jim_object, extent, **kwargs):
     +------------------+------------------------------------------------------+
     | eo               | Special extent options controlling rasterization     |
     +------------------+------------------------------------------------------+
-    | crop_to_cutline  | True will crop the extent of the target dataset to   |
-    |                  | the extent of the cutline                            |
-    |                  | The outside area will be set to no data (the value   |
+    | crop_to_cutline  | The outside area will be set to no data (the value   |
     |                  | defined by the key 'nodata')                         |
     +------------------+------------------------------------------------------+
-    | crop_in_cutline  | True: inverse operation to crop_to_cutline           |
-    |                  | The inside area will be set to no data (the value    |
+    | crop_in_cutline  | The inside area will be set to no data (the value    |
     |                  | defined by the key 'nodata')                         |
     +------------------+------------------------------------------------------+
     | dx               | Output resolution in x (default: keep original       |
@@ -148,7 +145,9 @@ def cropOgr(jim_object, extent, **kwargs):
 
     .. note::
        Possible values for the key 'eo' are:
+
        ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+
        For instance you can use 'eo':'ATTRIBUTE=fieldname'
     """
     return _pj.Jim(jim_object._jipjim.cropOgr(extent, kwargs))
@@ -521,13 +520,10 @@ class _Geometry():
         +------------------+--------------------------------------------------+
         | eo               | Special extent options controlling rasterization |
         +------------------+--------------------------------------------------+
-        | crop_to_cutline  | True will crop the extent of the target dataset  |
-        |                  | to the extent of the cutline                     |
-        |                  | The outside area will be set to no data (the     |
+        | crop_to_cutline  | The outside area will be set to no data (the     |
         |                  | value defined by the key 'nodata')               |
         +------------------+--------------------------------------------------+
-        | crop_in_cutline  | True: inverse operation to crop_to_cutline       |
-        |                  | The inside area will be set to no data (the      |
+        | crop_in_cutline  | The inside area will be set to no data (the      |
         |                  | value defined by the key 'nodata')               |
         +------------------+--------------------------------------------------+
         | dx               | Output resolution in x (default: keep original   |
@@ -543,7 +539,9 @@ class _Geometry():
 
         .. note::
            Possible values for the key 'eo' are:
+
            ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+
            For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
         self._jim_object._set(self._jim_object._jipjim.cropOgr(extent, kwargs))
