@@ -360,9 +360,9 @@ class _NgbOps():
 
         **Morphological filters**
 
-        .. note::
-            For a more comprehensive list morphological operators, please refer
-            to :ref:`advanced spatial morphological operators <mia_morpho2d>`.
+        # .. note::
+        #     For a more comprehensive list morphological operators, please refer
+        #     to :ref:`advanced spatial morphological operators <mia_morpho2d>`.
 
         +---------------------+-----------------------------------------------+
         | filter              | description                                   |

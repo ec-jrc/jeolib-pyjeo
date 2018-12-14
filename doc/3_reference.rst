@@ -143,10 +143,6 @@ Neighborhood operations
 .. autoclass:: _NgbOpsVect
    :members:
      
-.. _mia_morpho2d:
-
-**Advanced morphological filtering**
-:py:func:`ngbops.morphoErode`
 
 
 Geometry operations
