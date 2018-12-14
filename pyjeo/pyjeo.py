@@ -286,8 +286,8 @@ class Jim():
                             raise IndexError('Warning: index error, '
                                              'returning empty Jim')
                         retJim = geometry.crop(self, ulx=minCol, uly=minRow,
-                                               ulz=item[2].start, lrx=maxCol,
-                                               lry=maxRow, lrz=item[2].stop,
+                                               ulz=min_z, lrx=maxCol,
+                                               lry=maxRow, lrz=max_z,
                                                dx=stridex, dy=stridey,
                                                nogeo=True)
                         return retJim
