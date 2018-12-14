@@ -27,7 +27,7 @@ def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
         kwargs.update({'pad': pad})
     if otype:
         kwargs.update({'otype': otype})
-    return _pj.Jim(jim_object.filter1d(kwargs))
+    return _pj.Jim(jim_object._jipjim.filter1d(kwargs))
 
 
 def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None,
@@ -61,7 +61,7 @@ def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None,
         kwargs.update({'pad': pad})
     if otype:
         kwargs.update({'otype': otype})
-    return _pj.Jim(jim_object.filter2d(kwargs))
+    return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
 def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
@@ -78,7 +78,8 @@ def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
         :param oz: z coordinate
         :param trFlag: optional parameter (0 or 1)
         """
-        _pj.Jim(jim_object.morphoErode(sec_jim_object, ox, oy, oz, trFlag))
+        _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
+                                               ox, oy, oz, trFlag))
 
 
 class _NgbOps():
@@ -313,7 +314,7 @@ class _NgbOps():
             kwargs.update({'pad': pad})
         if otype:
             kwargs.update({'otype': otype})
-        self._jim_object._set(self._jim_object.filter1d(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.filter1d(kwargs))
 
     def filter2d(self, filter, dx=None, dy=None, pad=None, otype=None,
                  **kwargs):
@@ -500,8 +501,8 @@ class _NgbOps():
         if pad:
             kwargs.update({'pad': pad})
         if otype:
-            kwargs.upd
-        self._jim_object._set(self._jim_object.filter2d(kwargs))
+            kwargs.update({'otype': otype})
+        self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
     def morphoErode(self, sec_jim_object, ox, oy, oz, trFlag=0):
         """Output the erosion of im using the SE defined by imse.
@@ -516,7 +517,8 @@ class _NgbOps():
         :param oz: z coordinate
         :param trFlag: optional parameter (0 or 1)
         """
-        self._jim_object.morphoErode(sec_jim_object, ox, oy, oz, trFlag)
+        self._jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
+                                             ox, oy, oz, trFlag)
 
 
 class _NgbOpsList():

@@ -9,9 +9,10 @@ from tests import test_ccops, test_demops, test_jim_basics, \
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
-    # TODO: 
+    # NOTE: In case of raising segmentation faults, maybe there is still the
+    #       problem with mialib/jiplib in DEMOps. Try to comment them.
     return unittest.TestSuite([test_ccops.load_tests(),
-                               # test_demops.load_tests(),
+                               test_demops.load_tests(),
                                test_jim_basics.load_tests(),
                                test_pixops.load_tests(),
                                test_properties.load_tests(),

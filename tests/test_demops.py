@@ -46,7 +46,8 @@ class BadDEMOps(unittest.TestCase):
         flowNew = pj.demops.flowNew(destructive_object, flow, 8)
         destructive_object.demops.flowNew(flow, 8)
 
-        assert destructive_object.isEqual(flowNew), 'Error in demops.flowNew()'
+        assert destructive_object.pixops.isEqual(flowNew), \
+            'Error in demops.flowNew()'
         assert flowNew.stats.getStats()['min'] > 0, 'Error in demops.flowNew()'
         assert destructive_object.properties.getDataType() == \
                flowNew.properties.getDataType(), \
@@ -155,7 +156,7 @@ class BadDEMOps(unittest.TestCase):
         jim.demops.floodDir(4)
         stats = jim.stats.getStats()
 
-        assert jim.isEqual(flood_dir), 'Error in demops.floodDir()'
+        assert jim.pixops.isEqual(flood_dir), 'Error in demops.floodDir()'
         assert stats['min'] >= 1, 'Error in demops.floodDir()'
         assert stats['max'] <= jim.properties.nrOfRow() * \
                jim.properties.nrOfCol(), 'Error in demops.floodDir()'

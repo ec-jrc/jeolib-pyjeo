@@ -4,12 +4,12 @@ import pyjeo as _pj
 
 
 def getStats(jim_object, **kwargs):
-    return jim_object.getStats(kwargs)
+    return jim_object._jipjim.getStats(kwargs)
 
 
 def getStatProfile(jim_object, function, **kwargs):
     kwargs.update({'function': function})
-    return _pj.Jim(jim_object.statProfile(kwargs))
+    return _pj.Jim(jim_object._jipjim.statProfile(kwargs))
 
 
 def getHisto1d(jim_object):
@@ -18,7 +18,7 @@ def getHisto1d(jim_object):
     :param jim_object: a Jim object
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.histo1d())
+    return _pj.Jim(jim_object._jipjim.histo1d())
 
 
 def getHisto2d(jim_object, jim_object2):
@@ -28,7 +28,7 @@ def getHisto2d(jim_object, jim_object2):
     :param jim_object2: a Jim object
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.histo2d(jim_object2))
+    return _pj.Jim(jim_object._jipjim.histo2d(jim_object2._jipjim))
 
 
 def getHisto3d(jim_object, jim_object2, jim_object3):
@@ -39,11 +39,12 @@ def getHisto3d(jim_object, jim_object2, jim_object3):
     :param jim_object3: a Jim object
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.histo3d(jim_object2, jim_object3))
+    return _pj.Jim(jim_object._jipjim.histo3d(jim_object2._jipjim,
+                                              jim_object3._jipjim))
 
 
 def stretch(jim_object, **kwargs):
-    return _pj.Jim(jim_object.stretch(kwargs))
+    return _pj.Jim(jim_object._jipjim.stretch(kwargs))
 
 
 class _Stats():
@@ -61,7 +62,7 @@ class _Stats():
 
         :return: a Jim object
         """
-        return _pj.Jim(self._jim_object.histo1d())
+        return _pj.Jim(self._jim_object._jipjim.histo1d())
 
     def getHisto2d(self, jim_object2):
         """Compute the frequency distribution of the grey levels pairs.
@@ -69,7 +70,7 @@ class _Stats():
         :param jim_object2: a Jim object
         :return: a Jim object
         """
-        return _pj.Jim(self._jim_object.histo2d(jim_object2))
+        return _pj.Jim(self._jim_object._jipjim.histo2d(jim_object2._jipjim))
 
     def getHisto3d(self, jim_object2, jim_object3):
         """Compute the frequency distribution of the grey levels pairs.
@@ -78,7 +79,8 @@ class _Stats():
         :param jim_object3: a Jim object
         :return: a Jim object
         """
-        return _pj.Jim(self._jim_object.histo3d(jim_object2, jim_object3))
+        return _pj.Jim(self._jim_object._jipjim.histo3d(jim_object2._jipjim,
+                                                        jim_object3._jipjim))
 
     def getHistoCumulative(self):
         """Compute the cumulative frequency distribution of the grey levels.
@@ -87,17 +89,17 @@ class _Stats():
         """
         if self._jim_object.properties.getDataType() not in [4, 5]:
             raise TypeError('Object must be of type UInt32 or Int32')
-        return _pj.Jim(self._jim_object.histo1dCumulative())
+        return _pj.Jim(self._jim_object._jipjim.histo1dCumulative())
 
     def getStats(self, **kwargs):
-        return self._jim_object.getStats(kwargs)
+        return self._jim_object._jipjim.getStats(kwargs)
 
     def statProfile(self, function, **kwargs):
         kwargs.update({'function': function})
-        self._jim_object._set(self._jim_object.statProfile(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.statProfile(kwargs))
 
     def stretch(self, **kwargs):
-        self._jim_object._set(self._jim_object.stretch(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.stretch(kwargs))
 
 
 class _StatsList():
@@ -112,10 +114,10 @@ class _StatsList():
 
     def getStatProfile(self, function, **kwargs):
         kwargs.update({'function': function})
-        return _pj.Jim(self._jim_list.statProfile(kwargs))
+        return _pj.Jim(self._jim_list._jipjimlist.statProfile(kwargs))
 
     def getStats(self, **kwargs):
-        return self._jim_list.getStats(kwargs)
+        return self._jim_list._jipjimlist.getStats(kwargs)
 
 
 class _StatsVect():

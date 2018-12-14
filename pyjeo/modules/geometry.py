@@ -14,7 +14,7 @@ def image2geo(jim_object, i, j):
     :return: georeferenced coordinates according to the object spatial
         reference system
     """
-    return jim_object.im_object.image2geo(i, j)
+    return jim_object._jipjim.image2geo(i, j)
 
 
 def geo2image(jim_object, x, y):
@@ -29,7 +29,7 @@ def geo2image(jim_object, x, y):
         reference system
     :return: image coordinates (row and column, starting from 0)
     """
-    coords = jim_object.geo2image(x, y)
+    coords = jim_object._jipjim.geo2image(x, y)
     return [int(coords[0]), int(coords[1])]
 
 
@@ -90,7 +90,7 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         kwargs.update({'dx': dx})
         kwargs.update({'dy': dy})
         kwargs.update({'nogeo': nogeo})
-        return _pj.Jim(jim_object.crop(kwargs))
+        return _pj.Jim(jim_object._jipjim.crop(kwargs))
 
     else:
         if nogeo:
@@ -98,8 +98,8 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
             ulj = uly
             lri = lrx
             lrj = lry
-            upperLeft = jim_object.image2geo(ulx, uly)
-            lowerRight = jim_object.image2geo(lrx, lry)
+            upperLeft = jim_object._jipjim.image2geo(ulx, uly)
+            lowerRight = jim_object._jipjim.image2geo(lrx, lry)
             ulx = upperLeft[0]
             uly = upperLeft[1]
             lrx = lowerRight[0]+jim_object.properties.getDeltaX()/2.0
@@ -108,7 +108,7 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         kwargs.update({'uly': uly})
         kwargs.update({'lrx': lrx})
         kwargs.update({'lry': lry})
-        return _pj.Jim(jim_object.crop(kwargs))
+        return _pj.Jim(jim_object._jipjim.crop(kwargs))
 
 
 def cropOgr(jim_object, extent, **kwargs):
@@ -151,7 +151,7 @@ def cropOgr(jim_object, extent, **kwargs):
        ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
        For instance you can use 'eo':'ATTRIBUTE=fieldname'
     """
-    return _pj.Jim(jim_object.cropOgr(extent, kwargs))
+    return _pj.Jim(jim_object._jipjim.cropOgr(extent, kwargs))
 
 
 def cropBand(jim_object, band):
@@ -171,7 +171,7 @@ def cropBand(jim_object, band):
         jim0.cropBand(band=[0,1,2])
 
     """
-    return _pj.Jim(jim_object.cropBand({'band': band}))
+    return _pj.Jim(jim_object._jipjim.cropBand({'band': band}))
 
 
 def cropBandRange(jim_object, startband, endband):
@@ -192,8 +192,8 @@ def cropBandRange(jim_object, startband, endband):
         jim0.cropBandRange(startband=0,startBand=2)
 
     """
-    return _pj.Jim(jim_object.cropBand({'startband': startband,
-                                        'endband': endband}))
+    return _pj.Jim(jim_object._jipjim.cropBand({'startband': startband,
+                                                'endband': endband}))
 
 
 def stackBand(jim_object, jim_other=None, band=None, **kwargs):
@@ -221,12 +221,13 @@ def stackBand(jim_object, jim_other=None, band=None, **kwargs):
     if isinstance(jim_object, _pj.JimList):
         if band:
             kwargs.update({'band': band})
-        return _pj.Jim(jim_object.stackBand(kwargs))
+        return _pj.Jim(jim_object._jipjim.stackBand(kwargs))
     else:
         if band:
-            return _pj.Jim(jim_object.stackBand(jim_other, {'band': band}))
+            return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim,
+                                                        {'band': band}))
         else:
-            return _pj.Jim(jim_object.stackBand(jim_other))
+            return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim))
 
 
 def stackBandRange(jim_object, jim_other, startband, endband):
@@ -248,8 +249,9 @@ def stackBandRange(jim_object, jim_other, startband, endband):
         jim1=pj.io.createJim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1,startband=0,endband=0)
     """
-    return _pj.Jim(jim_object.stackBand(jim_other, {'startband': startband,
-                                                    'endband': endband}))
+    return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim,
+                                                {'startband': startband,
+                                                 'endband': endband}))
 
 
 def warp(jim_object, t_srs, **kwargs):
@@ -293,7 +295,7 @@ def warp(jim_object, t_srs, **kwargs):
 
     """
     kwargs.update({'t_srs': t_srs})
-    return _pj.Jim(jim_object._set(self._jim_object.warp(kwargs)))
+    return _pj.Jim(jim_object._set(self._jim_object._jipjim.warp(kwargs)))
 
 
 def imageInsert(jim_object, sec_jim_object, x, y, z, band=0):
@@ -307,7 +309,8 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.imageInsert(sec_jim_object, x, y, z, band))
+    return _pj.Jim(jim_object._jipjim.imageInsert(sec_jim_object._jipjim,
+                                                  x, y, z, band))
 
 
 def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
@@ -323,8 +326,9 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.imageInsertCompose(imlbl, im2, x, y, z, val,
-                                                 band))
+    return _pj.Jim(jim_object._jipjim.imageInsertCompose(imlbl._jipjim,
+                                                         im2._jipjim,
+                                                         x, y, z, val, band))
 
 
 def imageFrameSet(jim_object, l, r, t, b, u, d, val, band=0):
@@ -341,7 +345,8 @@ def imageFrameSet(jim_object, l, r, t, b, u, d, val, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.imageFrameSet([l, r, t, b, u, d], val, band))
+    return _pj.Jim(jim_object._jipjim.imageFrameSet([l, r, t, b, u, d], val,
+                                                    band))
 
 
 def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
@@ -358,7 +363,8 @@ def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.imageFrameAdd([l, r, t, b, u, d], val, band))
+    return _pj.Jim(jim_object._jipjim.imageFrameAdd([l, r, t, b, u, d], val,
+                                                    band))
 
 
 def magnify(jim_object, n):
@@ -368,7 +374,7 @@ def magnify(jim_object, n):
     :param n: a positive integer for magnifying size by pixel replication
     :return: a Jim object containing the magnified image
     """
-    return _pj.Jim(jim_object.imageMagnify(n))
+    return _pj.Jim(jim_object._jipjim.imageMagnify(n))
 
 
 def plotLine(jim_object, x1, y1, x2, y2, val):
@@ -381,7 +387,7 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     :param y2: an integer for y-coordinate of 2nd point
     :return: a Jim object
     """
-    return _pj.Jim(jim_object.plotLine(x1, y1, x2, y2, val))
+    return _pj.Jim(jim_object._jipjim.plotLine(x1, y1, x2, y2, val))
 
 
 class _Geometry():
@@ -436,7 +442,7 @@ class _Geometry():
                 lri = lowerRightImage[0]
                 lrj = lowerRightImage[1]
             for iband in range(0, self._jim_object.properties.nrOfBand()):
-                (self._jim_object.d_imageFrameSubstract([
+                (self._jim_object._jipjim.d_imageFrameSubstract([
                     uli, self._jim_object.properties.nrOfCol() - lri,
                     ulj, self._jim_object.properties.nrOfRow() - lrj,
                     ulz, self._jim_object.properties.nrOfPlane() - lrz],
@@ -476,7 +482,7 @@ class _Geometry():
             kwargs.update({'dx': dx})
             kwargs.update({'dy': dy})
             kwargs.update({'nogeo': nogeo})
-            self._jim_object._set(self._jim_object.crop(kwargs))
+            self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
             # self._jim_object._set(self._jim_object.crop(ulx, uly, lrx, lry,
             #                                             dx, dy, geo))
         else:
@@ -495,7 +501,7 @@ class _Geometry():
             kwargs.update({'uly': uly})
             kwargs.update({'lrx': lrx})
             kwargs.update({'lry': lry})
-            self._jim_object._set(self._jim_object.crop(kwargs))
+            self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
             # return _pj.Jim(self._jim_object.crop(kwargs))
 
     def cropOgr(self, extent, **kwargs):
@@ -540,7 +546,7 @@ class _Geometry():
            ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
            For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        self._jim_object._set(self._jim_object.cropOgr(extent, kwargs))
+        self._jim_object._set(self._jim_object._jipjim.cropOgr(extent, kwargs))
 
     def cropBand(self, band):
         """Subset raster dataset.
@@ -559,7 +565,7 @@ class _Geometry():
             jim0.cropBand(band=[0,1,2])
 
         """
-        self._jim_object.d_cropBand({'band': band})
+        self._jim_object._jipjim.d_cropBand({'band': band})
 
     def cropBandRange(self, startband, endband):
         """Subset raster dataset.
@@ -579,8 +585,8 @@ class _Geometry():
             jim0.cropBandRange(startband=0,startBand=2)
 
         """
-        self._jim_object.d_cropBand({'startband': startband,
-                                     'endband': endband})
+        self._jim_object._jipjim.d_cropBand({'startband': startband,
+                                             'endband': endband})
 
     def stackBand(self, jim_other, band=None):
         """Stack bands from another raster dataset to current raster dataset.
@@ -606,9 +612,10 @@ class _Geometry():
             jim0.stackBand(jim1, band=[0, 1, 2])
         """
         if band:
-            self._jim_object.d_stackBand(jim_other, {'band': band})
+            self._jim_object._jipjim.d_stackBand(jim_other._jipjim,
+                                                 {'band': band})
         else:
-            self._jim_object.d_stackBand(jim_other)
+            self._jim_object._jipjim.d_stackBand(jim_other._jipjim)
 
     def stackBandRange(self, jim_other, startband, endband):
         """Subset raster dataset.
@@ -631,8 +638,9 @@ class _Geometry():
             jim1 = pj.io.createJim('/path/to/raster1.tif')
             jim0.stackBandRange(jim1, startband=0, endband=2)
         """
-        self._jim_object.d_stackBand(jim_other, {'startband': startband,
-                                                 'endband': endband})
+        self._jim_object._jipjim.d_stackBand(jim_other._jipjim,
+                                             {'startband': startband,
+                                              'endband': endband})
 
     def extractOgr(self, jim_ref, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
@@ -774,7 +782,7 @@ class _Geometry():
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
             else:
                 kwargs['threshold'] = -kwargs['threshold']
-        return self._jim_object.extractOgr(jim_ref, kwargs)
+        return self._jim_object._jipjim.extractOgr(jim_ref._jipjim, kwargs)
 
     def extractSample(self, output, **kwargs):
         """Extract a random or grid sample from a raster dataset.
@@ -854,7 +862,7 @@ class _Geometry():
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
             else:
                 kwargs['threshold'] = -kwargs['threshold']
-        return self._jim_object.extractSample(kwargs)
+        return self._jim_object._jipjim.extractSample(kwargs)
 
     def extractImg(self, reference, output, **kwargs):
         """Extract pixel values from an input based on a raster sample dataset.
@@ -952,7 +960,7 @@ class _Geometry():
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
             else:
                 kwargs['threshold'] = -kwargs['threshold']
-        return self._jim_object.extractImg(reference, kwargs)
+        return self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
 
     def warp(self, t_srs, **kwargs):
         """
@@ -993,7 +1001,7 @@ class _Geometry():
 
         """
         kwargs.update({'t_srs': t_srs})
-        self._jim_object._set(self._jim_object.warp(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.warp(kwargs))
 
     def imageInsert(self, sec_jim_object, x, y, z, band=0):
         """Merge Jim instance with values of sec_jim_object in given coords.
@@ -1006,7 +1014,8 @@ class _Geometry():
         :param z: z coordinate of 1st pixel
         :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageInsert(sec_jim_object, x, y, z, band)
+        self._jim_object._jipjim.d_imageInsert(sec_jim_object._jipjim, x, y, z,
+                                               band)
 
     def imageInsertCompose(self, imlbl, im2, x, y, z, val, band=0):
         """Merge Jim instance with values of im2 if val of imlbl == val.
@@ -1021,7 +1030,9 @@ class _Geometry():
         :param val: integer for label value
         :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageInsertCompose(imlbl, im2, x, y, z, val, band)
+        self._jim_object._jipjim.d_imageInsertCompose(imlbl._jipjim,
+                                                      im2._jipjim,
+                                                      x, y, z, val, band)
 
     def imageFrameSet(self, l, r, t, b, u, d, val, band=0):
         """Set the values of the image frame to value val.
@@ -1037,7 +1048,7 @@ class _Geometry():
         :param val: value of frame
         :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageFrameSet([l, r, t, b, u, d], val, band)
+        self._jim_object._jipjim.d_imageFrameSet([l, r, t, b, u, d], val, band)
 
     def imageFrameAdd(self, l, r, t, b, u, d, val, band=0):
         """Set the values of the image frame to value val.
@@ -1053,7 +1064,7 @@ class _Geometry():
         :param val: value of frame
         :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object.d_imageFrameAdd([l, r, t, b, u, d], val, band)
+        self._jim_object._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val, band)
 
     def magnify(self, n):
         """Magnify the image.
@@ -1062,7 +1073,7 @@ class _Geometry():
 
         :param n: a positive integer for magnifying size by pixel replication
         """
-        self._jim_object._set(self._jim_object.imageMagnify(n))
+        self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
 
     def plotLine(self, x1, y1, x2, y2, val):
         """Draw a line from [x1, y1] to [x2, y2] by setting pixels to value val
@@ -1074,7 +1085,7 @@ class _Geometry():
         :param x2: an integer for x-coordinate of 2nd point
         :param y2: an integer for y-coordinate of 2nd point
         """
-        self._jim_object.d_plotLine(x1, y1, x2, y2, val)
+        self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
 
     def image2geo(self, i, j):
         """Convert image coordinates to georeferenced coordinates.
@@ -1087,7 +1098,7 @@ class _Geometry():
         :return: georeferenced coordinates according to the object spatial
             reference system
         """
-        return self._jim_object.image2geo(i, j)
+        return self._jim_object._jipjim.image2geo(i, j)
 
     def geo2image(self, x, y):
         """ Convert georeferenced coordinates to image coordinates.
@@ -1101,7 +1112,7 @@ class _Geometry():
             reference system
         :return: image coordinates (row and column, starting from 0)
         """
-        coord = self._jim_object.geo2image(x, y)
+        coord = self._jim_object._jipjim.geo2image(x, y)
         return [int(coord[0]), int(coord[1])]
 
 
@@ -1116,7 +1127,7 @@ class _GeometryList():
         self._jim_list = caller
 
     def stackBand(self, **kwargs):
-        return _pj.Jim(self._jim_list.stackBand(kwargs))
+        return _pj.Jim(self._jim_list._jipjimlist.stackBand(kwargs))
 
 
 class _GeometryVect():

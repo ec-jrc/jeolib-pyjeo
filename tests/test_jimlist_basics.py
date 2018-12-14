@@ -24,54 +24,57 @@ class BadBasicMethodLists(unittest.TestCase):
         jiml1.append(jim1)
 
         assert len(jiml1) == 3, 'Error in len(JimList) or JimList.append()'
-        assert len(jiml1) == jiml1.getSize(), \
+        assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
-        assert jiml1[2].isEqual(jiml1[0]), 'Error in JimList.append()'
-        assert not jiml1[2].isEqual(jiml1[1]), 'Error in JimList[index]'
-        assert jiml1[2].isEqual(jiml1.getImage(2)), 'Error in JimList.append()'
+        assert jiml1[2].pixops.isEqual(jiml1[0]), 'Error in JimList.append()'
+        assert not jiml1[2].pixops.isEqual(jiml1[1]), 'Error in JimList[index]'
+        assert jiml1[2].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(2))),\
+            'Error in JimList.append()'
 
         assert jiml1.count(jim1) == 2, 'Error in JimList.count(Jim)'
 
         jiml1.extend(jiml2)
 
         assert len(jiml1) == 6, 'Error in JimList.extend()'
-        assert len(jiml1) == jiml1.getSize(), \
+        assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
         assert jiml1.count(jim1) == 3, 'Error in JimList.count(Jim)'
-        assert jiml1[4].isEqual(jiml1.getImage(4)), 'Error in JimList.extend()'
+        assert jiml1[4].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(4))),\
+            'Error in JimList.extend()'
 
         jiml1.insert(1, jim3)
 
         assert len(jiml1) == 7, 'Error in JimList.insert()'
-        assert len(jiml1) == jiml1.getSize(), \
+        assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
         assert jiml1.count(jim3) == 2, 'Error in JimList.insert(Jim)'
-        assert jiml1[1].isEqual(jiml1.getImage(1)), 'Error in JimList.insert()'
+        assert jiml1[1].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
+            'Error in JimList.insert()'
 
         assert jiml1.index(jim3) == 1, 'Error in JimList.index() or insert()'
 
         popped = jiml1.pop(jiml1.index(jim3))
 
         assert len(jiml1) == 6, 'Error in JimList.pop()'
-        assert len(jiml1) == jiml1.getSize(), \
+        assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
         assert jiml1.count(jim3) == 1, 'Error in JimList.pop(Jim)'
-        assert popped.isEqual(jim3), 'Error in JimList.pop()'
+        assert popped.pixops.isEqual(jim3), 'Error in JimList.pop()'
 
         jiml1.remove(jim3)
 
         assert len(jiml1) == 5, 'Error in JimList.remove()'
-        assert len(jiml1) == jiml1.getSize(), \
+        assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
         assert jiml1.count(jim3) == 0, 'Error in JimList.remove(Jim)'
 
         jiml2.reverse()
 
         assert jiml2.index(jim1) == 2, 'Error in JimList.reverse()'
-        assert jiml1[1].isEqual(jiml1.getImage(1)), \
+        assert jiml1[1].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))), \
             'Error in JimList.reverse()'
 
 
