@@ -244,7 +244,7 @@ class Jim():
                                 minBand = item[3].start
                             if item[3].stop < 0:
                                 maxBand = self.properties.nrOfBand()+item[
-                                    3].stop
+                                    3].stop + 1
                             else:
                                 maxBand = item[3].stop
                             bands = range(minBand, maxBand, strideb)
