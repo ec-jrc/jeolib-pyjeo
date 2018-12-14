@@ -10,25 +10,6 @@
 .. |logo| image:: figures/JEODPP32.png
 
 
-.. only:: latex
-
-    pyJEO: User Guide
-    ==========================================
-    
-    General index
-    =============
-
-* :ref:`genindex`
-
-Alphabetical index for all classes
-==================================
-
-* :ref:`alpabetical-indexes`
-
-
-* :ref:`modindex`
-* :ref:`search`
-
 .. image:: figures/Transparent256.png
     :align: left
 
@@ -40,3 +21,8 @@ Alphabetical index for all classes
    2_tutorial
    3_reference
 
+* :ref:`alpabetical-indexes`
+  
+* :ref:`modindex`
+
+* :ref:`search`
