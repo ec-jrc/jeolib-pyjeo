@@ -415,13 +415,14 @@ class _Geometry():
         :param dy: spatial resolution in y to crop (stride if geo is False)
         :param nogeo: use image coordinates if True, default is spatial
             reference system coordinates
-
         """
         if ulz is not None or lrz is not None:
             assert len(kwargs) == 0, \
                 'It is not supported to use both z coords and special ' \
                 'cropping parameters'
             gt = self._jim_object.properties.getGeoTransform()
+            nr_of_cols = self._jim_object.properties.nrOfCol()
+            nr_of_rows = self._jim_object.properties.nrOfRow()
             if nogeo:
                 uli = ulx
                 ulj = uly
@@ -441,11 +442,11 @@ class _Geometry():
                 lri = lowerRightImage[0]
                 lrj = lowerRightImage[1]
             for iband in range(0, self._jim_object.properties.nrOfBand()):
-                (self._jim_object._jipjim.d_imageFrameSubstract([
-                    uli, self._jim_object.properties.nrOfCol() - lri,
-                    ulj, self._jim_object.properties.nrOfRow() - lrj,
+                self._jim_object._jipjim.d_imageFrameSubstract([
+                    uli, nr_of_cols - lri,
+                    ulj, nr_of_rows - lrj,
                     ulz, self._jim_object.properties.nrOfPlane() - lrz],
-                    iband))
+                    iband)
             gt[0] = ulx
             gt[3] = uly
             self._jim_object.properties.setGeoTransform(gt)

@@ -100,17 +100,35 @@ class BadBasicMethods(unittest.TestCase):
         first = jim1[0, 0, 0, 0]
         stats = first.stats.getStats()
         assert stats['max'] == stats['min'] == stats1['mean'] == 5, \
-            'Error in jim[int, int] (either get or set item)'
+            'Error in jim[int, int, int, int] (either get or set item)'
+        assert first.properties.nrOfBand() == 1, \
+            'Error in jim[int, int, int, int] (either get or set item, ' \
+            'wrong nrOfBand)'
+        assert first.properties.nrOfPlane() == 1, \
+            'Error in jim[int, int, int, int] (either get or set item, ' \
+            'wrong nrOfPlane)'
 
         last = jim1[-1, -1, -2, -2]
         stats = last.stats.getStats()
         assert stats['max'] == stats['min'] == stats['mean'] == 5, \
-            'Error in jim[-int, -int] (either get or set item)'
+            'Error in jim[-int, -int, -int, -int] (either get or set item)'
+        assert last.properties.nrOfBand() == 1, \
+            'Error in jim[-int, -int, -int, -int] (either get or set item, ' \
+            'wrong nrOfBand)'
+        assert last.properties.nrOfPlane() == 1, \
+            'Error in jim[-int, -int, -int, -int] (either get or set item, ' \
+            'wrong nrOfPlane)'
 
         last = jim1[-1, -1, -2:-1:1, -2]
         stats = last.stats.getStats()
         assert stats['max'] == stats['min'] == stats['mean'] == 5, \
             'Error in jim[-int, -int] (either get or set item)'
+        assert last.properties.nrOfBand() == 1, \
+            'Error in jim[int, int, int, int] (either get or set item, ' \
+            'wrong nrOfBand)'
+        assert last.properties.nrOfPlane() == 2, \
+            'Error in jim[int, int, int, int] (either get or set item, ' \
+            'wrong nrOfPlane)'
 
         try:
             _ = jim1[0, 0, 'a']
@@ -119,6 +137,17 @@ class BadBasicMethods(unittest.TestCase):
             failed = False
         assert not failed, \
             'Error in catching wrong indices in jim[index, index]'
+
+        # last = jim1[-1, -1, -2:-1:1, -2:-1:1]
+        # stats = last.stats.getStats()
+        # assert stats['max'] == stats['min'] == stats['mean'] == 5, \
+        #     'Error in jim[-int, -int] (either get or set item)'
+        # assert last.properties.nrOfBand() == 2, \
+        #     'Error in jim[int, int, int, int] (either get or set item, ' \
+        #     'wrong nrOfBand)'
+        # assert last.properties.nrOfPlane() == 2, \
+        #     'Error in jim[int, int, int, int] (either get or set item, ' \
+        #     'wrong nrOfPlane)'
 
     def test_operators(self):
         """Test basic operators (+, -, *, /, =)."""
