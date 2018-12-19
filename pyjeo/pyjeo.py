@@ -666,26 +666,61 @@ class Jim():
 
         :return: Jim object with pixels 1 if equal values, 0 otherwise
         """
-        return Jim(self._jipjim.eq(right._jipjim))
+        if isinstance(right, Jim):
+            return Jim(self._jipjim.eq(right._jipjim))
+        elif type(right) in (int, float):
+            return Jim(self._jipjim.eq(right))
+        else:
+            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+        # return Jim(self._jipjim.eq(right._jipjim))
 
     def __ne__(self, right):
         """Pixel wise check for non-equality
 
         :return: False if equal values, True otherwise
         """
-        return Jim(self._jipjim.ne(right._jipjim))
+        if isinstance(right, Jim):
+            return Jim(self._jipjim.ne(right._jipjim))
+        elif type(right) in (int, float):
+            return Jim(self._jipjim.ne(right))
+        else:
+            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
 
     def __lt__(self, right):
-        return Jim(self._jipjim.lt(right._jipjim))
+        if isinstance(right, Jim):
+            return Jim(self._jipjim.lt(right._jipjim))
+        elif type(right) in (int, float):
+            return Jim(self._jipjim.lt(right))
+        else:
+            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+        # return Jim(self._jipjim.lt(right._jipjim))
 
     def __le__(self, right):
-        return Jim(self._jipjim.le(right._jipjim))
+        if isinstance(right, Jim):
+            return Jim(self._jipjim.le(right._jipjim))
+        elif type(right) in (int, float):
+            return Jim(self._jipjim.le(right))
+        else:
+            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+        # return Jim(self._jipjim.le(right._jipjim))
 
     def __gt__(self, right):
-        return Jim(self._jipjim.gt(right._jipjim))
+        if isinstance(right, Jim):
+            return Jim(self._jipjim.gt(right._jipjim))
+        elif type(right) in (int, float):
+            return Jim(self._jipjim.gt(right))
+        else:
+            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+        # return Jim(self._jipjim.gt(right._jipjim))
 
     def __ge__(self, right):
-        return Jim(self._jipjim.ge(right._jipjim))
+        if isinstance(right, Jim):
+            return Jim(self._jipjim.ge(right._jipjim))
+        elif type(right) in (int, float):
+            return Jim(self._jipjim.ge(right))
+        else:
+            raise TypeError('unsupported operand type for - : {}'.format(type(right)))
+        # return Jim(self._jipjim.ge(right._jipjim))
 
     def __add__(self, right):
         if isinstance(right, Jim):
