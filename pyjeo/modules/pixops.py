@@ -1,7 +1,10 @@
 """Module for pixel-wise operations."""
 
 import pyjeo as _pj
-import jiplib as _jl
+try:
+    import jiplib as _jl
+except ImportError:
+    from jeodpp import jiplib as _jl
 
 
 def convert(jim_object, otype, **kwargs):
