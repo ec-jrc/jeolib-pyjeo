@@ -14,6 +14,29 @@ def labelImagePixels(jim_object):
     return _pj.Jim(jim_object._jipjim.labelPix())
 
 
+def labelGraph(jim_object, graph=4):
+    """Label each non-zero connected component with a unique label using graph-connectivity
+
+    :param jim_object: a Jim object holding a binary image
+    :return: labeled Jim object
+    """
+    if (graph==4):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0,1]=1
+        ngb[1,0]=1
+        ngb[1,2]=1
+        ngb[2,1]=1
+    elif (graph==8):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb.pixops.setData(1)
+        ngb[1,1]=0
+    else:
+        print("graph must be equal to 4 or 8")
+        raise ValueError('graph must be equal to 4 or 8')
+    
+    return _pj.Jim(jim_object._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
+
+
 def distance2dEuclideanSquared(jim_object, band=0):
     """Compute the squared Euclidean distance transform of im.
 
@@ -30,6 +53,80 @@ def distance2dEuclideanSquared(jim_object, band=0):
     :return: a Jim object
     """
     return _pj.Jim(jim_object._jipjim.distance2dEuclideanSquared(band))
+
+
+def getRegionalMinima(jim_object, graph):
+    """Compute the regional minima of the input image.  The pixels belonging to a regional minimum are set to 1, all other pixels are set to 0.
+
+    :param jim_object: a Jim object
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+    :return: a new Jim object of type unsigned char containing the regional minima of the input Jim object 
+    """
+    return _pj.Jim(jim_object._jipjim.getRegionalMinima(graph))
+
+
+def morphoGeodesicReconstructionByDilation(jim_object_mark, jim_object_mask, graph, flag=1):
+    """Compute the morphological reconstruction by dilation of mask image from mark image using graph connectivity.
+
+    :param jim_object_mark: a Jim object for marker image
+    :param jim_object_mask: a Jim object for mask image
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+    :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
+                 0, otherwise the image are internally processed by adding a border
+                 which is then removed at the end of the processing). Default value is 1.
+    :return: jim_object_mark containing the result of the morphological reconstruction by dilation
+    """
+    
+    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByDilation(jim_object_mask._jipjim, graph, flag))
+
+
+def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask, graph, flag=1):
+    """Compute the morphological reconstruction by erosion of mask image from mark image using graph connectivity.
+
+    :param jim_object_mark: a Jim object for marker image
+    :param jim_object_mask: a Jim object for mask image
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+    :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
+                 0, otherwise the image are internally processed by adding a border
+                 which is then removed at the end of the processing). Default value is 1.
+    :return: jim_object_mark containing the result of the morphological reconstruction by erosion
+    """
+    
+    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByErosion(jim_object_mask._jipjim, graph, flag))
+
+
+# (defun *rmborder (im graph &aux marqueur)
+#  ; \lspfunction{*}{rmborder}{im graph}
+#  ; \param{im}{an image node}
+#  ; \param{graph}{integer for connectivity}
+#  ; \return{an image node}
+#  ; \desc{remvoves the graph-connected components of im connected to its border.}
+#  ; \myseealso{}
+#  ; \lspfile{\crtlspfile}
+#  ; \example{}{}
+#  (setq marqueur (@blank (*imcopy im) (*getpixmin im)))
+#  (@framebox marqueur 1 1 1 1 0 0 (*getmax im))
+#  (@inf marqueur im) ; marqueur = bord de l'image
+#   (@rdil marqueur im graph)
+#   (@subswapovfl marqueur im)
+#   )
+  
+
+
+def morphoRemoveBorder(ajim, graph):
+    """
+    Remove the connected components of an image that are connected to the image border using graph connectivity
+    :param ajim: input Jim object
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+
+    :return: a new Jim object with the connected component of the imput object removed
+    """
+    marker=_pj.pixops.blank(ajim,0)
+    marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 65535)
+    marker.pixops.infimum(ajim)
+    marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
+    marker=ajim-marker
+    return marker
 
 
 class _CCOps():
@@ -51,8 +148,33 @@ class _CCOps():
         """
         self._jim_object._jipjim.d_labelPix()
 
+
+    def labelGraph(self, graph=4):
+        """Label each non-zero connected component with a unique label using graph-connectivity
+
+           :param jim_object: a Jim object holding a binary image
+           :return: labeled Jim object
+         """
+        if (graph==4):
+            ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+            ngb[0,1]=1
+            ngb[1,0]=1
+            ngb[1,2]=1
+            ngb[2,1]=1
+        elif (graph==8):
+            ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+            ngb.pixops.setData(1)
+            ngb[1,1]=0
+        else:
+            print("graph must be equal to 4 or 8")
+            raise ValueError('graph must be equal to 4 or 8')
+
+        self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
+
+
+
     def distance2dEuclideanSquared(self, band=0):
-        """Compute the squared Euclidean distance transform of im.
+        """Compute the squared Euclidean distance transform
 
         im must be a 2-D binary image. Original algorihtm proposed by Saito
         and Toriwaki (1994) and then optimised independently by (Hirata,
@@ -66,6 +188,48 @@ class _CCOps():
         """
         self._jim_object._set(
             self._jim_object._jipjim.distance2dEuclideanSquared(band))
+
+
+    def morphoGeodesicReconstructionByDilation(self, jim_object_mask, graph, flag=1):
+        """Compute the morphological reconstruction by dilation of the current object from mark image using graph connectivity.
+
+        :param jim_object_mask: a Jim object for mask image
+        :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+        :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
+                 0, otherwise the image are internally processed by adding a border
+                 which is then removed at the end of the processing). Default value is 1.
+        :return: jim_object_mark containing the result of the morphological reconstruction by dilation
+        """
+        self._jim_object._jipjim.d_geodesicReconstructionByDilation(jim_object_mask._jipjim, graph, flag)
+
+
+    def morphoGeodesicReconstructionByErosion(self, jim_object_mask, graph, flag=1):
+        """Compute the morphological reconstruction by erosion of the current object from mark image using graph connectivity.
+
+        :param jim_object_mask: a Jim object for mask image
+        :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+        :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
+                 0, otherwise the image are internally processed by adding a border
+                 which is then removed at the end of the processing). Default value is 1.
+        :return: jim_object_mark containing the result of the morphological reconstruction by erosion
+        """
+        self._jim_object._jipjim.d_geodesicReconstructionByErosion(jim_object_mask._jipjim, graph, flag)
+
+
+    def morphoRemoveBorder(self, graph):
+        """
+        Remove the connected components that are connected to the image border using graph connectivity
+
+        :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+
+        """
+        ajim=self._jim_object._jipjim
+        marker=_pj.pixops.blank(ajim,0)
+        marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 65535)
+        marker.pixops.infimum(ajim)
+        marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
+        self._jim_object._set(ajim-marker)
+
 
 
 class _CCOpsList():

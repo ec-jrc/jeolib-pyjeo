@@ -3,6 +3,16 @@
 import pyjeo as _pj
 
 
+
+
+def imageInfo(jim_object):
+    """Return image information (number of lines, columns, etc.)
+
+    """
+    return _pj.Jim(jim_object._jipjim.imageInfo())
+
+
+
 class _Properties():
     """Define all properties methods."""
 
@@ -12,6 +22,11 @@ class _Properties():
 
     def _set_caller(self, caller):
         self._jim_object = caller
+
+    def imageInfo(self):
+        """Return image information (number of lines, columns, etc.)
+        """
+        self._jim_object._jipjim.imageInfo()
 
     def nrOfCol(self):
         """Get number of columns in this raster dataset.
