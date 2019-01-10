@@ -191,7 +191,7 @@ def pitRemovalOptimal(labeled_jim, grey_jim, graph, maxfl, flag):
     :param flag: 0 (default) for energy based, area based otherwise
     :return: a Jim object
     """
-    return _pj.Jim(labeled_jim._jipjim.demPitRemovalCarve(grey_jim._jipjim,
+    return _pj.Jim(labeled_jim._jipjim.demPitRemovalOptimal(grey_jim._jipjim,
                                                           graph, maxfl, flag))
 
 
@@ -417,7 +417,7 @@ class _DEMOps():
         :return: a Jim object
         """
         self._jim_object._set(
-            self._jim_object._jipjim.demPitRemovalCarve(grey_jim._jipjim,
+            self._jim_object._jipjim.demPitRemovalOptimal(grey_jim._jipjim,
                                                         graph, maxfl, flag))
 
     def slopeD8(self):
