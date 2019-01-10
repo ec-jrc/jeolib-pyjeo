@@ -1,19 +1,19 @@
+################
 Reference Manual
-================
+################
 
 .. toctree::
    :maxdepth: 4
 
-Global functions
-################
+*********
+Operators
+*********
 
-.. automodule:: pyjeo
-   :members:
+======================
+Pixel access operators
+======================
 
-.. autoclass:: Jim
-   :members:
-
-   .. method:: Jim[ item ]
+   .. method:: Jim[item]
 
       Get subset of the raster dataset.
 
@@ -33,7 +33,7 @@ Global functions
 
         jim0[0:10,0:10]
 
-      Get a binary mask of all values not within [0,250]::
+      Get a binary mask of all values not within [0,250] (notice the parentheses to take care of the precedence of the operators!) ::
 
         jim0[(jim0<0) | (jim0>250)]
 
@@ -49,7 +49,7 @@ Global functions
         v=pj.io.createVector(cfn)
         jimcloud=jim[v]
 
-   .. method:: Jim[ item ]=
+   .. method:: Jim[item]=
 
         Set items of the raster dataset.
 
@@ -83,8 +83,267 @@ Global functions
           v=pj.io.createVector(cfn)
           jim[v]=255
    
+
+====================
+Comparison operators
+====================
+
+      Jim objects support comparison operations performed at pixel level. The result is a new binary Jim object (of type Byte) with value 1 if the comparison result is True and value 0 if the comparison result is False.
+
+      :equality: ``==``
+
+      Example:
+
+      Pixel wise check for equality. The result is a binary Jim object of type Byte: 1 if pixel values are equal and 0 if objects differ::
+
+        result = jim1==jim2
+
+      Set all pixel to 0 where Jim objects are equal::
+
+        jim1[jim1==jim2] = 0
+
+      :inequality: ``!=``
+
+      Example:
+
+      Pixel wise check for inequality. The result is a binary Jim object of type Byte: 0 if pixel values are equal and 1 if objects differ::
+
+        result = jim1!=jim2
+
+      Set all pixel to 0 where Jim objects differ::
+
+        jim1[jim1!=jim2] = 0
+
+      :less than: ``<``
+
+      Example:
+
+      Pixel wise check if an image is less than another::
+
+        result = jim1<jim2
+
+      Set all pixel values less than 0 to 0::
+
+        jim0[jim0<0] = 0
+
+      :less or equal than: ``<=``
+
+      Example:
+
+      Pixel wise check if an image is less than or equal to another::
+
+        result = jim1<=jim2
+
+      Set all pixel values less than or equal to 0 to 0::
+
+        jim0[jim0<=0] = 0
+
+      :greater than: ``>``
+
+      Example:
+
+      Pixel wise check if an image is greater than another::
+
+        result = jim1>jim2
+
+      Set all pixel values greater than 0 to 0::
+
+        jim0[jim0>0] = 0
+
+      :greater or equal than: ``>=``
+
+      Example:
+
+      Pixel wise check if an image is greater than or equal to another::
+
+        result = jim1>=jim2
+
+      Set all pixel values greater than or equal to 0 to 0::
+
+        jim0[jim0>=0] = 0
+
+=================
+Boolean operators
+=================
+
+      Jim objects support boolean operations performed at pixel level. Both input and result are assumed to be binary Jim objects of type Byte (0 is False, 1 is True).
+
+      :or: ``|`` (bitwise or)
+
+      Example:
+
+      Calculate the bitwise or value of to Jim object::
+
+        result=jim1 | jim2
+
+      Get a binary mask of all values not within [0,250] (notice the parentheses to take care of the precedence of the operators!) ::
+
+        result = jim0[(jim0<0) | (jim0>250)]
+
+      :xor: ``^`` (bitwise exclusive or)
+
+      Example:
+
+      Calculate the bitwise exclusive or (xor) value of to Jim object::
+
+        result=jim1 ^ jim2
+
+      :and: ``&`` (bitwise and)
+
+      Example:
+
+      Calculate the bitwise and value of to Jim object::
+
+        result=jim1 & jim2
+
+      Get a binary mask of all values within [100,200] (notice the parentheses to take care of the precedence of the operatands!) ::
+
+        result = jim0[(jim0>=100) & (jim0<=200)]
+
+
+==========================
+Arithmetic unary operators
+==========================
+
+      Jim objects support unary arithmetic operations performed at pixel level.
+
+      :abs: ``abs`` (absolute value)
+
+      Example:
+
+      Calculate the absolute value of Jim object::
+
+        jimabs=abs(jim)
+
+      :neg: ``-`` (negation). Notice that the output data type can be changed if the input was not signed. A warning message is given.
+
+      Example:
+
+      Calculate the negation of a jim object::
+
+        jimneg=-jim
+
+===========================
+Arithmetic binary operators
+===========================
+
+      Jim objects support binary arithmetic operations performed at pixel level.
+
+      :addition: ``+``
+
+      Example:
+
+      Add two Jim objects and return the result as a new Jim object::
+
+        jim=jim1+jim2
+
+      :addition and assignment operator: ``+=``
+
+      Example:
+
+      Replace the content of jim1 with the sum of jim1 and jim2::
+
+        jim1+=jim2
+
+      :subtraction: ``-``
+
+      Example:
+
+      Subtract two Jim objects and return the result as a new Jim object::
+
+        jim=jim1-jim2
+
+      :subtraction and assignment operator: ``-=``
+
+      Example:
+
+      Replace the content of jim1 with the difference of jim1 and jim2::
+
+        jim1-=jim2
+
+      :multiplication: ``*``
+
+      Example:
+
+      Multiply two Jim objects and return the result as a new Jim object::
+
+        jim=jim1*jim2
+
+      :multiplication and assignment operator: ``*=``
+
+      Example:
+
+      Replace the content of jim1 with the multiplication of jim1 and jim2::
+
+        jim1*=jim2
+
+      :division: ``/``
+
+      Example:
+
+      Divide two Jim objects and return the result as a new Jim object::
+
+        jim=jim1/jim2
+
+      :division and assignment operator: ``/=``
+
+      Example:
+
+      Replace the content of jim1 with the division of jim1 and jim2::
+
+        jim1/=jim2
+
+      :modulo: ``%`` (return the remainder of a division)
+
+      Example:
+
+      Calculate the modulo of 2 (remainder after division of 2) and return the result as a new Jim object::
+
+        jim=jim0%2
+
+      :modulo and assignment operator: ``%=``
+
+      Example:
+
+      Replace the content of jim1 with the modulo 2 (remainder after division of 2)::
+
+        jim%=2
+
+      :bitwise left shift: ``<<`` (Calculate the bitwise left shift (shifts the bits of the pixel values by the specified number)
+
+      Example:
+
+      Multiply the pixel values by 2 and return as a new Jim object::
+
+        jim2 = jim1 << 2
+
+      :bitwise left shift and assignment operator: ``<<=`` Replace the current object by the bitwise left shifted object (shifts the bits of the pixel values by the specified number)
+
+      Example:
+
+      Multiply the pixel values by 2 and replace the current Jim object::
+
+        jim<<=2
+
+      :bitwise right shift: ``<<`` (Calculate the bitwise right shift (shifts the bits of the pixel values by the specified number)
+
+      Example:
+
+      Divide the pixel values by 2 and return as a new Jim object::
+
+        jim2 = jim1 >> 2
+
+      :bitwise right shift and assignment operator: ``<<=`` Replace the current object by the bitwise right shifted object (shifts the bits of the pixel values by the specified number)
+
+      Example:
+
+      Divide the pixel values by 2 and replace the current Jim object::
+
+        jim>>=2
+
+********************
 Accessing properties
-####################
+********************
 
 .. automodule:: properties
    :members:
@@ -98,8 +357,9 @@ Accessing properties
 .. autoclass:: _PropertiesVect
    :members:
 
+************
 Input/Output
-############
+************
 
 .. automodule:: pjio
    :members:
@@ -113,8 +373,9 @@ Input/Output
 .. autoclass:: _IOVect
    :members:
 
+****************
 Pixel operations
-################
+****************
 
 .. automodule:: pixops
    :members:
@@ -128,8 +389,9 @@ Pixel operations
 .. autoclass:: _PixOpsVect
    :members:
 
+***********************
 Neighborhood operations
-#######################
+***********************
 
 .. automodule:: ngbops
    :members:
@@ -144,9 +406,9 @@ Neighborhood operations
    :members:
      
 
-
+*******************
 Geometry operations
-###################
+*******************
 
 .. automodule:: geometry
    :members:
@@ -161,8 +423,9 @@ Geometry operations
    :members:
 
 
+*************
 CC operations
-#############
+*************
 
 .. automodule:: ccops
    :members:
@@ -176,8 +439,9 @@ CC operations
 .. autoclass:: _CCOpsVect
    :members:
 
+**************
 Classification
-##############
+**************
 
 .. automodule:: clssfy
    :members:
@@ -191,8 +455,9 @@ Classification
 .. autoclass:: _ClassifyVect
    :members:
 
+*****************
 Digital elevation
-#################
+*****************
 
 .. automodule:: demops
    :members:

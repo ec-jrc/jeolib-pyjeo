@@ -663,6 +663,13 @@ class Jim():
             self.pixops.convert(otype='Int32')
         return -1 * self
 
+    def __invert__(self):
+        """Calculate the complement of Jim raster dataset
+
+        :return: The complement of Jim raster dataset (~dataset)
+        """
+        return Jim(self._jipjim.pointOpComplement())
+
     # *** binary operators *** #
     def __eq__(self, right):
         """Pixel wise check for equality
