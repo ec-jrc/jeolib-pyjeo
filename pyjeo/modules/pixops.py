@@ -123,6 +123,45 @@ def NDVISeparateBands(redJim, nirJim):
     return _pj.Jim(nirJim._jipjim.pointOpNDI(redJim._jipjim))
 
 
+def blank(jim_object, val):
+    """Set all pixels to val
+
+    :param val:  All pixels within [min,max] are set to val
+
+    Modifies the instance on which the method was called.
+
+    """
+    return _pj.Jim(jim_object._jipjim.pointOpBlank(val))
+
+
+
+def setLevel(jim_object, min, max, val):
+    """Set all pixels within min and max values to val
+
+    :param min:  Minimum threshold value       
+    :param max:  Maximum threshold value
+    :param val:  All pixels within [min,max] are set to val
+
+    Modifies the instance on which the method was called.
+
+    """
+    return _pj.Jim(jim_object._jipjim.pointOpSetLevel(min, max, val))
+
+
+def threshold(jim_object, min, max, fg_val, bg_val):
+    """Set all pixels within min and max values to val
+
+    :param min:  Minimum threshold value       
+    :param max:  Maximum threshold value
+    :param fg_val:  All pixels within [min,max] are set to fg_val
+    :param bg_val:  All pixels outside [min,max] are set to bg_val
+
+    Modifies the instance on which the method was called.
+
+    """
+    return _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
+
+
 def setThreshold(jim_object, **kwargs):
     """Apply min and max threshold to pixel values in raster dataset.
 
@@ -171,8 +210,25 @@ def setThreshold(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
 
+
+def simpleArithOp(jim, op, *args):
+    """Create Jim composed using a simple arithmetic operation (coded with op) from provided Jim objects.
+
+    :param jim: Jim object (to be sure that at least one is provided)
+    :param op: integer for operation type
+    :param args: Jim objects
+    :return: Jim holding specified arithmetic operation with from provided Jim objects
+    """
+    jout = _pj.Jim(jim)
+    for newJim in args:
+        jout._jipjim.d_pointOpArith(newJim._jipjim, op)
+
+    return _pj.Jim(jout)
+
+
+
 def supremum(jim, *args):
-    """Create Jim composed of biggest values from provided Jim objects.
+    """Create Jim composed using maximum rule from provided Jim objects.
 
     :param jim: Jim object (to be sure that at least one is provided)
     :param args: Jim objects
@@ -180,9 +236,22 @@ def supremum(jim, *args):
     """
     supremum = _pj.Jim(jim)
     for newJim in args:
-        supremum = supremum._jipjim.pointOpArith(newJim._jipjim, 5)
+        supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
 
     return _pj.Jim(supremum)
+
+def infimum(jim, *args):
+    """Create Jim composed using minimum rule from provided Jim objects.
+
+    :param jim: Jim object (to be sure that at least one is provided)
+    :param args: Jim objects
+    :return: Jim composed of biggest values from provided Jim objects
+    """
+    infimum = _pj.Jim(jim)
+    for newJim in args:
+        infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
+
+    return _pj.Jim(infimum)
 
 
 def composite(jim_list, **kwargs):
@@ -241,7 +310,7 @@ class _PixOps():
             if otype in [1, 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
                 self._jim_object._jipjim.d_convertToUchar8()
                 return None
-            elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+            elif otype in [2, 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16] and self._jim_object._jipjim.getDataType() != _jl.GDT_Int16:
                 self._jim_object._set(
                     self._jim_object._jipjim.convertToUint16())
                 return None
@@ -322,6 +391,16 @@ class _PixOps():
         """
         self._jim_object._set(
             nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
+
+    def blank(self, val):
+        """Set all pixels to val
+
+        :param val:  All pixels are set to val
+
+         Modifies the instance on which the method was called.
+
+        """
+        self._jim_object._jipjim.d_pointOpBlank(val)
 
     def setData(self, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
                 dx=0, dy=0, nogeo=False):
@@ -408,8 +487,19 @@ class _PixOps():
         """
         self._jim_object._set(self._jim_object._jipjim.setThreshold(kwargs))
 
+
+    def simpleArithOp(self, op, *args):
+        """Change values of Jim using an arithmetic operation (coded by op)  from provided Jim objects.
+
+        Modifies the instance on which the method was called.
+
+        :param args: Jim objects
+        """
+        for jim in args:
+            self._jim_object._jipjim.d_pointOpArith(jim._jipjim, op)
+
     def supremum(self, *args):
-        """Change values of Jim for the biggest ones from provided Jim objects.
+        """Change values of Jim using maximum composition rule from provided Jim objects.
 
         Modifies the instance on which the method was called.
 
@@ -417,6 +507,16 @@ class _PixOps():
         """
         for jim in args:
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
+
+    def infimum(self, *args):
+        """Change values of Jim using mimimum composition rule from provided Jim objects.
+
+        Modifies the instance on which the method was called.
+
+        :param args: Jim objects
+        """
+        for jim in args:
+            self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 4)
 
 
 class _PixOpsList():
