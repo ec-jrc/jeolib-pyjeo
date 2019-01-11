@@ -11,7 +11,7 @@ def catchmentBasinConfluence(jim_object, d8):
     :param d8: an image node holding d8 flow directions
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.demCatchmenBasinOutlet(d8))
+    return _pj.Jim(jim_object._jipjim.demCatchmenBasinOutlet(d8._jipjim))
 
 
 def catchmentBasinOutlet(jim_object, d8):
@@ -21,7 +21,7 @@ def catchmentBasinOutlet(jim_object, d8):
     :param d8: an image node holding d8 flow directions
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.demCatchmentBasinOutlet(d8))
+    return _pj.Jim(jim_object._jipjim.demCatchmentBasinOutlet(d8._jipjim))
 
 
 def contribDrainArea(jim_object, graph):

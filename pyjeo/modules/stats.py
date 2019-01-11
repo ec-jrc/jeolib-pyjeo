@@ -3,13 +3,26 @@
 import pyjeo as _pj
 
 
-def getStats(jim_object, **kwargs):
+def getStats(jim_object, function=['min','max','mean'], **kwargs):
+    kwargs.update({'function': function})
     return jim_object._jipjim.getStats(kwargs)
 
 
 def getStatProfile(jim_object, function, **kwargs):
     kwargs.update({'function': function})
     return _pj.Jim(jim_object._jipjim.statProfile(kwargs))
+
+
+# cannot overload?
+# def getStatProfile(jimlist, function, **kwargs):
+#     kwargs.update({'function': function})
+#     return _pj.Jim(jimlist._jim_list._jipjimlist.statProfile(kwargs))
+
+
+# cannot overload?
+# def getStats(jimlist, function=['min','max','mean'], **kwargs):
+#     kwargs.update({'function': function})
+#     return jimlist._jim_list._jipjimlist.getStats(kwargs)
 
 
 def getHisto1d(jim_object):
@@ -87,11 +100,12 @@ class _Stats():
 
         :return: a Jim object
         """
-        if self._jim_object.properties.getDataType() not in [4, 5]:
+        if self._jim_object.properties.getDataType() not in ['UInt32', 'Int32']:
             raise TypeError('Object must be of type UInt32 or Int32')
         return _pj.Jim(self._jim_object._jipjim.histo1dCumulative())
 
-    def getStats(self, **kwargs):
+    def getStats(self, function=['min','max','mean'], **kwargs):
+        kwargs.update({'function': function})
         return self._jim_object._jipjim.getStats(kwargs)
 
     def statProfile(self, function, **kwargs):
@@ -116,7 +130,8 @@ class _StatsList():
         kwargs.update({'function': function})
         return _pj.Jim(self._jim_list._jipjimlist.statProfile(kwargs))
 
-    def getStats(self, **kwargs):
+    def getStats(self, function=['min','max','mean'], **kwargs):
+        kwargs.update({'function': function})
         return self._jim_list._jipjimlist.getStats(kwargs)
 
 

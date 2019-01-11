@@ -129,26 +129,26 @@ class BadPixOps(unittest.TestCase):
         jim = pj.Jim(tiles[0])
 
         jim.pixops.convert('Byte')
-        assert jim.properties.getDataType() == 1, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Byte', 'Error in pixops.convert()'
 
         jim.pixops.convert('UInt16')
-        assert jim.properties.getDataType() == 2, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'UInt16', 'Error in pixops.convert()'
 
         jim.pixops.convert('Int16')
-        assert jim.properties.getDataType() == 3, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Int16', 'Error in pixops.convert()'
 
-        jim.pixops.convert('UInt32')
-        assert jim.properties.getDataType() == 5, 'Error in pixops.convert()'
+        jim.pixops.convert('UInt32',scale=1)
+        assert jim.properties.getDataType() == 'UInt32', 'Error in pixops.convert()'
         # TODO: Change the assertion to 4 after fixing the bug in jiplib
 
         jim.pixops.convert('Int32')
-        assert jim.properties.getDataType() == 5, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Int32', 'Error in pixops.convert()'
 
         jim.pixops.convert('Float32')
-        assert jim.properties.getDataType() == 6, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Float32', 'Error in pixops.convert()'
 
         jim.pixops.convert('Float64')
-        assert jim.properties.getDataType() == 7, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Float64', 'Error in pixops.convert()'
 
         # jim.pixops.convert('CInt16')
         # assert jim.properties.getDataType() == 8, 'Error in pixops.convert()'
@@ -164,16 +164,16 @@ class BadPixOps(unittest.TestCase):
         # # TODO: Uncomment when bug fixed in jiplib
 
         jim.pixops.convert('Byte', a_srs='EPSG:5514')
-        assert jim.properties.getDataType() == 1, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Byte', 'Error in pixops.convert()'
 
         jim.pixops.convert('UInt16', a_srs='EPSG:5514')
-        assert jim.properties.getDataType() == 2, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'UInt16', 'Error in pixops.convert()'
 
         jim.pixops.convert('Float32', a_srs='EPSG:5514')
-        assert jim.properties.getDataType() == 6, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Float32', 'Error in pixops.convert()'
 
         jim.pixops.convert('Float64', a_srs='EPSG:5514')
-        assert jim.properties.getDataType() == 7, 'Error in pixops.convert()'
+        assert jim.properties.getDataType() == 'Float64', 'Error in pixops.convert()'
 
         try:
             jim.pixops.convert('string')
@@ -185,26 +185,26 @@ class BadPixOps(unittest.TestCase):
             'Error in checks for non-supported data types in pixops.convert()'
 
         a = pj.pixops.convert(jim, 'Byte')
-        assert a.properties.getDataType() == 1, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Byte', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'UInt16')
-        assert a.properties.getDataType() == 2, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'UInt16', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'Int16')
-        assert a.properties.getDataType() == 3, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Int16', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'UInt32')
-        assert a.properties.getDataType() == 5, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'UInt32', 'Error in pixops.convert()'
         # TODO: Change the assertion to 4 after fixing the bug in jiplib
 
         a = pj.pixops.convert(a, 'Int32')
-        assert a.properties.getDataType() == 5, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Int32', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'Float32')
-        assert a.properties.getDataType() == 6, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Float32', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'Float64')
-        assert a.properties.getDataType() == 7, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Float64', 'Error in pixops.convert()'
 
         # a = pj.pixops.convert(jim, 'CInt16')
         # assert a.properties.getDataType() == 8, 'Error in pixops.convert()'
@@ -220,16 +220,16 @@ class BadPixOps(unittest.TestCase):
         # # TODO: Uncomment when bug fixed in jiplib
 
         a = pj.pixops.convert(a, 'Byte', a_srs='EPSG:5514')
-        assert a.properties.getDataType() == 1, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Byte', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'UInt16', a_srs='EPSG:5514')
-        assert a.properties.getDataType() == 2, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'UInt16', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'Float32', a_srs='EPSG:5514')
-        assert a.properties.getDataType() == 6, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Float32', 'Error in pixops.convert()'
 
         a = pj.pixops.convert(a, 'Float64', a_srs='EPSG:5514')
-        assert a.properties.getDataType() == 7, 'Error in pixops.convert()'
+        assert a.properties.getDataType() == 'Float64', 'Error in pixops.convert()'
 
         try:
             pj.pixops.convert(a, 'string')

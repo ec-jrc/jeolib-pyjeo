@@ -87,7 +87,37 @@ class _Properties():
 
         :return: The datatype id of this Jim object
         """
-        return self._jim_object._jipjim.getDataType()
+        otype=self._jim_object._jipjim.getDataType()
+        if otype == 1:
+            return 'Byte'
+        elif otype == 2:
+            return 'UInt16'
+        elif otype == 3:
+            return 'Int16'
+        elif otype == 4:
+            return 'UInt32'
+        elif otype == 5:
+            return 'Int32'
+        elif otype == 6:
+            return 'Float32'
+        elif otype == 7:
+            return 'Float64'
+        elif otype == 8:
+            return 'CInt16'
+        elif otype == 9:
+            return 'CInt32'
+        elif otype == 10:
+            return 'CFloat32'
+        elif otype == 11:
+            return 'CFloat64'
+        elif otype == 12:
+            return 'TypeCount'
+        elif otype == 14:
+            return 'Int64'
+        elif otype == 15:
+            return 'UInt64'
+        else:
+            raise TypeError("Unknown data format ".format(otype))
 
     def covers(self, *args):
         """Check if a geolocation is covered by this dataset.
