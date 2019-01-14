@@ -121,8 +121,11 @@ def morphoRemoveBorder(ajim, graph):
 
     :return: a new Jim object with the connected component of the imput object removed
     """
-    marker=_pj.pixops.blank(ajim,0)
-    marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 65535)
+    minmax=ajim.stats.getStats(function=['min','max'])
+    minval=minmax['min']
+    maxval=minmax['max']
+    marker=_pj.pixops.blank(ajim, minval)
+    marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
     marker.pixops.infimum(ajim)
     marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
     marker=ajim-marker
@@ -224,8 +227,11 @@ class _CCOps():
 
         """
         ajim=self._jim_object._jipjim
-        marker=_pj.pixops.blank(ajim,0)
-        marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 65535)
+        minmax=ajim.stats.getStats(function=['min','max'])
+        minval=minmax['min']
+        maxval=minmax['max']
+        marker=_pj.pixops.blank(ajim, minval)
+        marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
         marker.pixops.infimum(ajim)
         marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
         self._jim_object._set(ajim-marker)
