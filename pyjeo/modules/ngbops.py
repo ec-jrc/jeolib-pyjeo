@@ -64,6 +64,24 @@ def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None,
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
+def morphoDilateDiamond(jim_object, ox=1, oy=1):
+        """Output the dilation of im using the elementary diamond shaped SE
+
+        :param ox: integer for origin along x-axis of SE (default is 1 for centred)
+        :param oy: integer for origin along y-axis of SE (default is 1 for centred)
+        """
+        return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(ox, oy))
+
+
+def morphoErodeDiamond(jim_object, ox=1, oy=1):
+        """Output the erosion of im using the elementary diamond shaped SE
+
+        :param ox: integer for origin along x-axis of SE (default is 1 for centred)
+        :param oy: integer for origin along y-axis of SE (default is 1 for centred)
+        """
+        return _pj.Jim(jim_object._jipjim.morphoErodeNgb4(ox, oy))
+
+
 def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
         """Output the erosion of im using the line SE with slope dy/dx, length k, origin o, and line type
 
@@ -105,6 +123,24 @@ def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
         :param trFlag: optional parameter (0 or 1)
         """
         _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
+                                               ox, oy, oz, trFlag))
+
+
+def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
+        """Output the dilation of im using the SE defined by imse.
+
+        Its origin is set at coordinates (x,y,z). The reflection of the SE
+        is considered if trflag equals 1 (no reflection by default). Points of
+        the SE are points with a non zero value in imse.
+
+        :param jim_object: image on which to perform the dilation
+        :param sec_jim_object: an image node for SE (UCHAR type)
+        :param ox: x coordinate
+        :param oy: y coordinate
+        :param oz: z coordinate
+        :param trFlag: optional parameter (0 or 1)
+        """
+        _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
                                                ox, oy, oz, trFlag))
 
 
@@ -530,6 +566,26 @@ class _NgbOps():
             kwargs.update({'otype': otype})
         self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
+    def morphoErodeDiamond(self, ox=1, oy=1):
+        """Output the erosion of im using the elementary diamond shaped SE
+
+        Its origin is set at coordinates (x,y).
+
+        :param ox: x coordinate
+        :param oy: y coordinate
+        """
+        self._jim_object._jipjim.d_morphoErodeNgb4(ox, oy)
+
+    def morphoDilateDiamond(self, ox=1, oy=1):
+        """Output the dilation of im using the elementary diamond shaped SE
+
+        Its origin is set at coordinates (x,y).
+
+        :param ox: x coordinate
+        :param oy: y coordinate
+        """
+        self._jim_object._jipjim.d_morphoDilateNgb4(ox, oy)
+    
     def morphoErode(self, sec_jim_object, ox, oy, oz, trFlag=0):
         """Output the erosion of im using the SE defined by imse.
 
@@ -544,6 +600,22 @@ class _NgbOps():
         :param trFlag: optional parameter (0 or 1)
         """
         self._jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
+                                             ox, oy, oz, trFlag)
+
+    def morphoDilate(self, sec_jim_object, ox, oy, oz, trFlag=0):
+        """Output the dilation of im using the SE defined by imse.
+
+        Its origin is set at coordinates (x,y,z). The reflection of the SE
+        is considered if trflag equals 1 (no reflection by default). Points of
+        the SE are points with a non zero value in imse.
+
+        :param sec_jim_object: an image node for SE (UCHAR type)
+        :param ox: x coordinate
+        :param oy: y coordinate
+        :param oz: z coordinate
+        :param trFlag: optional parameter (0 or 1)
+        """
+        self._jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
                                              ox, oy, oz, trFlag)
 
 

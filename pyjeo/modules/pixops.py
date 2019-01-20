@@ -125,6 +125,17 @@ def NDVISeparateBands(redJim, nirJim):
     return _pj.Jim(nirJim._jipjim.pointOpNDI(redJim._jipjim))
 
 
+def modulo(jim_object, val):
+    """Set all pixels to their value modulo val
+
+    :param val:  modulo value (integer)
+
+    Modifies the instance on which the method was called.
+
+    """
+    return _pj.Jim(jim_object._jipjim.pointOpModulo(val))
+
+
 def blank(jim_object, val):
     """Set all pixels to val
 
@@ -222,6 +233,21 @@ def simpleArithOp(jim, op, *args):
     jout = _pj.Jim(jim)
     for newJim in args:
         jout._jipjim.d_pointOpArith(newJim._jipjim, op)
+
+    return _pj.Jim(jout)
+
+
+def simpleBitwiseOp(jim, op, *args):
+    """Create Jim composed using a simple bitwise operation (coded with op) from provided Jim objects.
+
+    :param jim: Jim object (to be sure that at least one is provided)
+    :param op: integer for operation type
+    :param args: Jim objects
+    :return: Jim holding specified bitwise operation with from provided Jim objects
+    """
+    jout = _pj.Jim(jim)
+    for newJim in args:
+        jout._jipjim.d_pointOpBitwise(newJim._jipjim, op)
 
     return _pj.Jim(jout)
 
@@ -392,6 +418,18 @@ class _PixOps():
         self._jim_object._set(
             nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
 
+ 
+    def modulo(self, val):
+        """Set all pixels to their value modulo val
+
+        :param val:  modulo value (integer)
+
+         Modifies the instance on which the method was called.
+
+        """
+        self._jim_object._jipjim.d_pointOpModulo(val)
+        
+        
     def blank(self, val):
         """Set all pixels to val
 
@@ -515,7 +553,18 @@ class _PixOps():
         """
         for jim in args:
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, op)
+            
+    def simpleBitwiseOp(self, op, *args):
+        """Change values of Jim using an bitwise operation (coded by op) from provided Jim objects.
 
+        Modifies the instance on which the method was called.
+
+        :param op: integer coding operation type (see table below)
+        :param args: Jim objects
+        """
+        for jim in args:
+            self._jim_object._jipjim.d_pointOpBitwise(jim._jipjim, op)
+    
     def supremum(self, *args):
         """Change values of Jim using maximum composition rule from provided Jim objects.
 
