@@ -152,14 +152,17 @@ class BadDEMOps(unittest.TestCase):
         """Test floodDir() func and method."""
         jim = pj.Jim(tiles[0])
 
-        flood_dir = pj.demops.floodDir(jim, 4)
-        jim.demops.floodDir(4)
+        flood_dir = pj.demops.floodDir(jim, 8)
+        jim.demops.floodDir(8)
         stats = jim.stats.getStats()
 
         assert jim.pixops.isEqual(flood_dir), 'Error in demops.floodDir()'
-        assert stats['min'] >= 1, 'Error in demops.floodDir()'
-        assert stats['max'] <= jim.properties.nrOfRow() * \
-               jim.properties.nrOfCol(), 'Error in demops.floodDir()'
+        assert stats['min'] >= 0, 'Error in demops.floodDir()'
+        
+        assert stats['max'] <= 8, 'Error in demops.floodDir()'
+        
+        #assert stats['max'] <= jim.properties.nrOfRow() * \
+        #       jim.properties.nrOfCol(), 'Error in demops.floodDir()'
 
     def test_catchments(self):
         """Test catchment basin funcs and methods."""
