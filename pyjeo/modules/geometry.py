@@ -399,6 +399,12 @@ class _Geometry():
     def _set_caller(self, caller):
         self._jim_object = caller
 
+    def band2plane(self):
+        """Convert 2-dimensional multi-band image to 3-dimensional single band multi-plane image)
+
+        """
+        self._jim_object._jipjim.band2plane()
+
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
              lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
         """Subset raster dataset.

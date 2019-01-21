@@ -6,7 +6,7 @@ from .pixops import *
 from .ngbops import *
 from .geometry import *
 from .ccops import *
-from .clssfy import *
+from .classify import *
 from .demops import *
 
 from .properties import _Properties, _PropertiesList, _PropertiesVect
@@ -15,7 +15,7 @@ from .pixops import _PixOps, _PixOpsList, _PixOpsVect
 from .ngbops import _NgbOps, _NgbOpsList, _NgbOpsVect
 from .geometry import _Geometry, _GeometryList, _GeometryVect
 from .ccops import _CCOps, _CCOpsList, _CCOpsVect
-from .clssfy import _Classify, _ClassifyList, _ClassifyVect
+from .classify import _Classify, _ClassifyList, _ClassifyVect
 from .demops import _DEMOps, _DEMOpsList, _DEMOpsVect
 
 

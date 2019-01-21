@@ -10,7 +10,7 @@ except ImportError:
     from jeodpp import jiplib as _jl
 
 from modules import pjio as io, properties, pixops, ngbops, geometry, \
-    ccops, clssfy, demops, stats, all
+    ccops, classify, demops, stats, all
 
 
 del _jl.Jim.__del__
@@ -70,7 +70,7 @@ class Jim():
 
         self._all = all._All()
         self._ccops = ccops._CCOps()
-        self._clssfy = clssfy._Classify()
+        self._classify = classify._Classify()
         self._demops = demops._DEMOps()
         self._geometry = geometry._Geometry()
         self._io = io._IO()
@@ -92,10 +92,10 @@ class Jim():
         return self._ccops
 
     @property
-    def clssfy(self):
-        self._clssfy._set_caller(self)
+    def classify(self):
+        self._classify._set_caller(self)
         _gc.collect()
-        return self._clssfy
+        return self._classify
 
     @property
     def demops(self):
@@ -160,7 +160,7 @@ class Jim():
         methods = list()
         for module in [properties._Properties, io._IO, pixops._PixOps,
                        ngbops._NgbOps, geometry._Geometry, ccops._CCOps,
-                       clssfy._Classify, demops._DEMOps, stats._Stats]:
+                       classify._Classify, demops._DEMOps, stats._Stats]:
             methods.extend(treeStructure(module, queried_module))
 
         print('\n'.join(methods))
@@ -317,7 +317,8 @@ class Jim():
                 else:
                     if len(item) == 3:  # do slice x,y,z
                         if maxCol <= minCol or maxRow <= minRow or \
-                                item[2].stop <= item[2].start:
+                           max_z <= min_z:
+                                #item[2].stop <= item[2].start:
                             raise IndexError('Warning: index error, '
                                              'returning empty Jim')
                         retJim = geometry.crop(self, ulx=minCol, uly=minRow,
@@ -1038,7 +1039,7 @@ class JimList(list):
 
         self._all = all._AllList()
         self._ccops = ccops._CCOpsList()
-        self._clssfy = clssfy._ClassifyList()
+        self._classify = classify._ClassifyList()
         self._demops = demops._DEMOpsList()
         self._geometry = geometry._GeometryList()
         self._io = io._IOList()
@@ -1203,7 +1204,7 @@ class JimVect():
 
         self._all = all._AllVect()
         self._ccops = ccops._CCOpsVect()
-        self._clssfy = clssfy._ClassifyVect()
+        self._classify = classify._ClassifyVect()
         self._demops = demops._DEMOpsVect()
         self._geometry = geometry._GeometryVect()
         self._io = io._IOVect()
@@ -1213,10 +1214,10 @@ class JimVect():
         self._stats = stats._StatsVect()
 
     @property
-    def clssfy(self):
-        self._clssfy._set_caller(self)
+    def classify(self):
+        self._classify._set_caller(self)
         _gc.collect()
-        return self._clssfy
+        return self._classify
 
     @property
     def io(self):
@@ -1249,7 +1250,7 @@ class JimVect():
                    module_methods
 
         methods = list()
-        for module in [clssfy._ClassifyVect, io._IOVect,
+        for module in [classify._ClassifyVect, io._IOVect,
                        properties._PropertiesVect]:
             methods.extend(treeStructure(module, queried_module))
 
