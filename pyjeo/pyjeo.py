@@ -16,8 +16,12 @@ from modules import pjio as io, properties, pixops, ngbops, geometry, \
 del _jl.Jim.__del__
 
 
-def jim2np(aJim, band=0):
-    return _jl.jim2np(aJim._jipjim, band)
+def np(aJim):
+    return _jl.np(aJim._jipjim)
+
+
+def jim2np(aJim, band=0, copyData=True):
+    return _jl.jim2np(aJim._jipjim, band, copyData)
 
 
 def np2jim(aNp):
@@ -164,6 +168,10 @@ class Jim():
             methods.extend(treeStructure(module, queried_module))
 
         print('\n'.join(methods))
+
+    def np(self):
+        return _jl.np(self._jipjim)
+
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
