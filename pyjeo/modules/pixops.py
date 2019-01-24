@@ -59,7 +59,7 @@ def convert(jim_object, otype, **kwargs):
     #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
     #         return _pj.Jim(jim_object._jipjim.convertToDouble64())
 
-    if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
+    if otype in [1, 'int8', 'uint8', 'UInt8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
         kwargs.update({'otype': 'GDT_Byte'})
     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
         kwargs.update({'otype': 'GDT_UInt16'})
