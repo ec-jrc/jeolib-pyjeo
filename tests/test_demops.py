@@ -103,24 +103,21 @@ class BadDEMOps(unittest.TestCase):
             'Error in demops.contribDrainArea()'
         assert destructive_object.stats.getStats()['min'] >= 1, \
             'Error in demops.contribDrainArea()'
-
         thresh = pj.Jim(jim)
         thresh.pixops.setData(5)
 
         strat = pj.demops.contribDrainAreaStrat(cda, thresh, d8)
         destructive_object.demops.contribDrainAreaStrat(thresh, d8)
         stats = destructive_object.stats.getStats()
-
         assert destructive_object.pixops.isEqual(strat), \
             'Error in demops.contribDrainAreaStrat()'
         assert stats['min'] == 0, 'Error in demops.contribDrainAreaStrat()'
         assert stats['max'] == 1, 'Error in demops.contribDrainAreaStrat()'
 
         inf = pj.demops.flowDirectionDInf(jim)
-        
+
         cda_inf = pj.demops.contribDrainAreaInf(inf)
         inf.demops.contribDrainAreaInf()
-        
         assert inf.pixops.isEqual(cda_inf), \
             'Error in demops.contribDrainAreaInf()'
         assert abs(inf.stats.getStats()['min']) == 1, \
@@ -138,13 +135,11 @@ class BadDEMOps(unittest.TestCase):
             'Error in demops.slopeD8()'
 
         destructive_object.demops.slopeD8()
-
         assert destructive_object.pixops.isEqual(slope), \
             'Error in demops.slopeD8()'
 
         inf = pj.demops.slopeDInf(jim)
         jim.demops.slopeDInf()
-        
         assert jim.pixops.isEqual(inf), 'Error in demops.slopeDInf()'
         assert inf.stats.getStats()['min'] >= 0, 'Error in demops.slopeDInf()'
 

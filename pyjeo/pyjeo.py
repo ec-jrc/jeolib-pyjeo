@@ -15,22 +15,6 @@ from modules import pjio as io, properties, pixops, ngbops, geometry, \
 
 del _jl.Jim.__del__
 
-def dtype2dataType(dtype):
-    if dtype in [1, 'int8', 'uint8', 'UInt8', 'Byte', 'GDT_Byte']:
-        return _jl.GDT_Byte
-    elif dtype in [2, 'uint16', 'UInt16', 'GDT_UInt16']:
-        return _jl.GDT_UInt16
-    elif dtype in [3, 'int16', 'Int16', 'GDT_Int16']:
-        return _jl.GDT_Int16
-    elif dtype in [4, 'uint32', 'UInt32', 'GDT_UInt32']:
-        return _jl.GDT_UInt32
-    elif dtype in [5, 'int32', 'Int32', 'GDT_Int32']:
-        return _jl.GDT_Int32
-    elif dtype in [6, 'float32', 'Float32', 'GDT_Float32']:
-        return _jl.GDT_Float32
-    elif dtype in [7, 'float64', 'Float64', 'GDT_Float64']:
-        return _jl.GDT_Float64
-
 def np(aJim):
     return _jl.np(aJim._jipjim)
 
@@ -66,6 +50,7 @@ class _ParentJim(_jl.Jim):
                         super(_ParentJim, self).__init__(image._jipjim)
                 else:
                     kwargs.update({'filename': image})
+                    # kwargs.update({'band2plane':True})
                     super(_ParentJim, self).__init__(kwargs)
             else:
                 super(_ParentJim, self).__init__(kwargs)
@@ -208,18 +193,33 @@ class Jim():
                 nodata = 0
             return geometry.cropOgr(self, item, crop_to_cutline=True, nodata=nodata, align=True)
 
+        elif isinstance(item, Jim):
+            mask = item>0
+            return Jim(self*mask)
         else:
             npresult=numpy.array(self.np()[item],copy=True)
             # npresult=numpy.array(self.np()[item])
-            if len(npresult.shape)>2:
+            if len(npresult.shape)==3:
                 nplane=npresult.shape[0]
                 nrow=npresult.shape[1]
                 ncol=npresult.shape[2]
-            else:
+            elif len(npresult.shape)==2:
                 nplane=1
                 nrow=npresult.shape[0]
                 ncol=npresult.shape[1]
+            elif len(npresult.shape)==1:
+                nplane=1
+                nrow=1
+                ncol=npresult.shape[0]
+            elif len(npresult.shape)==0:
+                nplane=1
+                nrow=1
+                ncol=1
+            else:
+                raise IndexError('Error: index in __getitem__ out of range')
 
+            #[gs]item only supports single band image (use plane instead)
+            nband=1
             if self.properties.nrOfPlane()>1:
                 dim=3
             else:
@@ -243,6 +243,9 @@ class Jim():
                     else:
                         cropuli=item[dim-1]
                         # croplri=item[dim-1]+1
+                else:
+                    #test
+                    print('we should not end up here for cols?')
                 #rows
                 if len(item)>dim-2:
                     if isinstance(item[dim-2], slice):
@@ -254,9 +257,12 @@ class Jim():
                     else:
                         cropulj=item[dim-2]
                         # croplrj=item[dim-2]+1
+                else:
+                    #test
+                    print('we should not end up here for rows?')
 
             upperLeft=self.geometry.image2geo(cropuli,cropulj);
-            result=Jim(ncol=ncol,nrow=nrow,nplane=nplane,dataType=self._jipjim.getDataType())
+            result=Jim(ncol=ncol,nrow=nrow,nband=nband,nplane=nplane,otype=self.properties.getDataType())
             result.properties.setProjection(self.properties.getProjection())
             gt=self.properties.getGeoTransform()
 
@@ -276,7 +282,7 @@ class Jim():
     def __setitem__(self, item, value):
         if isinstance(item, _jl.VectorOgr):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError('Error: __setitem__ not implemented for 3d '
+                raise ValueError('Error: __setitem__ with VectorOgr not implemented for 3d '
                                  'Jim objects')
             # TODO: decide on default behaviour of ALL_TOUCHED=TRUE
             if type(value) in (float, int):
@@ -292,8 +298,21 @@ class Jim():
                     item,
                     {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
                 self[templateJim > 0] = value
+        elif isinstance(item, Jim):  # or isinstance(value, Jim):
+            if value is None:
+                self._set(Jim(self, copyData=False))
+            else:
+                if isinstance(value, Jim):
+                    self._jipjim.d_setMask(item._jipjim, value._jipjim)
+                else:
+                    self._jipjim.d_setMask(item._jipjim, value)
+        elif isinstance(item, tuple):
+            if isinstance(value, Jim):
+                self.np()[item]=value.np()
+            else:
+                self.np()[item]=value
         else:
-            self.np()[item]=value
+            raise ValueError('Error: __setitem__ only implemented for Vector, Jim or tuples')
 
     def __nonzero__(self):
         """Check if Jim contains data
@@ -345,7 +364,10 @@ class Jim():
         jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
-        jim.np()[:]=(self.np()==right)
+        if isinstance(right, Jim):
+            jim.np()[:]=(self.np()==right.np())
+        else:
+            jim.np()[:]=(self.np()==right)
         return jim
 
     def __ne__(self, right):
@@ -356,51 +378,60 @@ class Jim():
         jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
-        jim.np()[:]=(self.np()!=right)
+        if isinstance(right, Jim):
+            jim.np()[:]=(self.np()!=right.np())
+        else:
+            jim.np()[:]=(self.np()!=right)
         return jim
 
     def __lt__(self, right):
         jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
-        jim.np()[:]=(self.np()<right)
+        if isinstance(right, Jim):
+            jim.np()[:]=(self.np()<right.np())
+        else:
+            jim.np()[:]=(self.np()<right)
         return jim
 
     def __le__(self, right):
         jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
-        jim.np()[:]=(self.np()<=right)
+        if isinstance(right, Jim):
+            jim.np()[:]=(self.np()<=right.np())
+        else:
+            jim.np()[:]=(self.np()<=right)
         return jim
 
     def __gt__(self, right):
         jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
-        jim.np()[:]=(self.np()>right)
+        if isinstance(right, Jim):
+            jim.np()[:]=(self.np()>right.np())
+        else:
+            jim.np()[:]=(self.np()>right)
         return jim
 
     def __ge__(self, right):
         jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
-        jim.np()[:]=(self.np()>=right)
+        if isinstance(right, Jim):
+            jim.np()[:]=(self.np()>=right.np())
+        else:
+            jim.np()[:]=(self.np()>=right)
         return jim
 
     def __add__(self, right):
         if isinstance(right, Jim):
-            nptype=numpy.result_type(self.np(),right.np())
+            return Jim(self._jipjim.pointOpArith(right._jipjim, _jl.ADD_op))
+        elif type(right) in (int, float):
+            return Jim(self._jipjim.pointOpArithCst(right, _jl.ADD_op))
         else:
-            nptype=numpy.result_type(self.np(),right)
-        jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),dtype2dataType(nptype)))
-        jim.np()[:]=(self.np()+right)
-        # if isinstance(right, Jim):
-        #     return Jim(self._jipjim.pointOpArith(right._jipjim, _jl.ADD_op))
-        # elif type(right) in (int, float):
-        #     return Jim(self._jipjim.pointOpArithCst(right, _jl.ADD_op))
-        # else:
-        #     raise TypeError('unsupported operand type for - : {}'.format(
-        #         type(right)))
+            raise TypeError('unsupported operand type for - : {}'.format(
+                type(right)))
 
     def __radd__(self, left):
         if isinstance(left, Jim):
@@ -497,31 +528,39 @@ class Jim():
     def _trueDiv(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
+            result.np()[:]=self.np()/right.np()
+        else:
             result.np()[:]=self.np()/right
         return self
 
     def _itrueDiv(self, right):
-        self.np()[:]/=self.np()
+        if isinstance(right, Jim):
+            self.np()[:]/=right.np()
+        else:
+            self.np()[:]/=right
         return self
 
     def __div__(self, right):
-        self.np()[:]=self.np()/right
+        if isinstance(right, Jim):
+            self.np()[:]=self.np()/right.np()
+        else:
+            self.np()[:]=self.np()/right
         return self
 
     def __idiv__(self, right):
         self.np()[:]/=self.np()
         return self
-        if self.properties.getDataType() != _jl.GDT_Float32 and \
-                self.properties.getDataType() != _jl.GDT_Float64:
-            self.pixops.convert(otype='GDT_Float32')
-        if isinstance(right, Jim):
-            self._jipjim.d_pointOpArith(right._jipjim, _jl.DIV_op)
-        elif type(right) in (int, float):
-            self._jipjim.d_pointOpArithCst(right, _jl.DIV_op)
-        else:
-            raise TypeError('unsupported operand type for / : {}'.format(
-                type(right)))
-        return self
+        # if self.properties.getDataType() != _jl.GDT_Float32 and \
+        #         self.properties.getDataType() != _jl.GDT_Float64:
+        #     self.pixops.convert(otype='GDT_Float32')
+        # if isinstance(right, Jim):
+        #     self._jipjim.d_pointOpArith(right._jipjim, _jl.DIV_op)
+        # elif type(right) in (int, float):
+        #     self._jipjim.d_pointOpArithCst(right, _jl.DIV_op)
+        # else:
+        #     raise TypeError('unsupported operand type for / : {}'.format(
+        #         type(right)))
+        # return self
 
     def __mod__(self, right):
         if isinstance(right, int):

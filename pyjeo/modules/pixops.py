@@ -6,6 +6,7 @@ try:
 except ImportError:
     from jeodpp import jiplib as _jl
 
+import numpy
 
 def convert(jim_object, otype, **kwargs):
     """Convert Jim image with respect to data type.
@@ -82,7 +83,8 @@ def convert(jim_object, otype, **kwargs):
 
 def isEqual(first_jim, second_jim):
     if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
-        return first_jim._jipjim.isEqual(second_jim._jipjim)
+        return numpy.array_equal(first_jim.np(),second_jim.np())
+        # return first_jim._jipjim.isEqual(second_jim._jipjim)
     else:
         return False
 
@@ -391,7 +393,8 @@ class _PixOps():
 
     def isEqual(self, other):
         if isinstance(other, _pj.Jim):
-            return self._jim_object._jipjim.isEqual(other._jipjim)
+            # return self._jim_object._jipjim.isEqual(other._jipjim)
+            return numpy.array_equal(self._jim_object.np(),other.np())
         else:
             return False
 

@@ -1,6 +1,7 @@
 """Module for statistical functions and interpolations."""
 
 import pyjeo as _pj
+import numpy
 
 
 def getStats(jim_object, function=['min','max','mean'], **kwargs):
@@ -105,8 +106,25 @@ class _Stats():
         return _pj.Jim(self._jim_object._jipjim.histo1dCumulative())
 
     def getStats(self, function=['min','max','mean'], **kwargs):
-        kwargs.update({'function': function})
-        return self._jim_object._jipjim.getStats(kwargs)
+        if not isinstance(function,list):
+            function=[function]
+        statDict={}
+        if 'min' in function:
+            statDict['min']=numpy.min(self._jim_object.np())
+        if 'max' in function:
+            statDict['max']=numpy.max(self._jim_object.np())
+        if 'mean' in function:
+            statDict['mean']=numpy.mean(self._jim_object.np())
+        if 'median' in function:
+            statDict['median']=numpy.median(self._jim_object.np())
+
+        for f in function:
+            if f not in ['min','max','mean','median']:
+                kwargs.update({'function': f})
+            if kwargs:
+                print("calling jiplib stats")
+                statDict.update(self._jim_object._jipjim.getStats(kwargs))
+        return statDict
 
     def statProfile(self, function, **kwargs):
         kwargs.update({'function': function})
