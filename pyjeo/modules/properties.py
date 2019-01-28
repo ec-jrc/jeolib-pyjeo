@@ -398,5 +398,5 @@ class _PropertiesVect():
     def getLry(self):
         return self._jim_vect._jipjimvect.getLry()
 
-    def getFields(self, layer=0):
-        return self._jim_vect._jipjimvect.getFields(layer)
+    def getFieldNames(self, layer=0):
+        return self._jim_vect._jipjimvect.getFieldNames(layer)

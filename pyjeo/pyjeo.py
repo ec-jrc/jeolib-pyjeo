@@ -182,7 +182,7 @@ class Jim():
     # *** unary operators *** #
 
     def __getitem__(self, item):
-        if isinstance(item, _jl.VectorOgr):
+        if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
                 raise ValueError('Error: __getitem__ not implemented for 3d '
                                  'Jim objects')
@@ -191,7 +191,7 @@ class Jim():
                 nodata = nodata[0]
             else:
                 nodata = 0
-            return geometry.cropOgr(self, item, crop_to_cutline=True, nodata=nodata, align=True)
+            return geometry.cropOgr(self, item._jipjimvect, crop_to_cutline=True, nodata=nodata, align=True)
 
         elif isinstance(item, Jim):
             mask = item>0
@@ -280,14 +280,14 @@ class Jim():
             return result
 
     def __setitem__(self, item, value):
-        if isinstance(item, _jl.VectorOgr):
+        if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError('Error: __setitem__ with VectorOgr not implemented for 3d '
+                raise ValueError('Error: __setitem__ with JimVect not implemented for 3d '
                                  'Jim objects')
             # TODO: decide on default behaviour of ALL_TOUCHED=TRUE
             if type(value) in (float, int):
                 nodataValues = self.properties.getNoDataVals()
-                self._set(self.setMask(item, {'eo': ['ALL_TOUCHED=TRUE'],
+                self._set(self.setMask(item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
                                               'nodata': value}))
                 self.properties.clearNoData()
                 self.properties.setNoDataVals(nodataValues)
@@ -700,6 +700,12 @@ class JimList(list):
         return self._geometry
 
     @property
+    def io(self):
+        self._io._set_caller(self)
+        _gc.collect()
+        return self._io
+
+    @property
     def pixops(self):
         self._pixops._set_caller(self)
         _gc.collect()
@@ -736,7 +742,8 @@ class JimList(list):
                    module_methods
 
         methods = list()
-        for module in [geometry._GeometryList, pixops._PixOpsList,
+
+        for module in [geometry._GeometryList, io._IOList, pixops._PixOpsList,
                        properties._PropertiesList, stats._StatsList]:
             methods.extend(treeStructure(module, queried_module))
 
@@ -827,25 +834,46 @@ class JimList(list):
 
 class _ParentVect(_jl.VectorOgr):
 
-    def __init__(self, vector, *args):
-        """Initialize the Jim object and modules for methods.
+    # def __init__(self, vector, *args):
+    def __init__(self, vector, kwargs):
+        """Initialize the JimVect object and modules for methods.
 
-        :param image: path to a raster or another Jim object as a basis for
-            the Jim object
+        :param vector: path to a vector or another JimVect object as a basis for
+            the JimVect object
         """
-        super(_ParentVect, self).__init__(vector, *args)
+        # super(_ParentVect, self).__init__(vector, *args)
+        if kwargs:
+            if vector:
+                if isinstance(vector, Jimvect):
+                    super(_ParentVect, self).__init__(vector._jipjimvect,kwargs)
+                else:
+                    kwargs.update({'filename': vector})
+                    super(_ParentVect, self).__init__(kwargs)
+            else:
+                super(_ParentVect, self).__init__(kwargs)
+        else:
+            if isinstance(vector, JimVect):
+                super(_ParentVect, self).__init__(vector._jipjimvect)
+            else:
+                if vector:
+                    super(_ParentVect, self).__init__(vector)
+                else:
+                    super(_ParentVect, self).__init__()
+        # super(_ParentVect, self).__init__(vector, *args)
 
 
 class JimVect():
     """Definition of JimVect object."""
 
-    def __init__(self, vector, *args):
+    # def __init__(self, vector, *args):
+    def __init__(self, vector=None, **kwargs):
         """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
         the Jim object
         """
-        self._jipjimvect = _ParentVect(vector, *args)
+        # self._jipjimvect = _ParentVect(vector, *args)
+        self._jipjimvect = _ParentVect(vector, kwargs)
 
         self._all = all._AllVect()
         self._ccops = ccops._CCOpsVect()
@@ -876,6 +904,12 @@ class JimVect():
         _gc.collect()
         return self._properties
 
+    @property
+    def geometry(self):
+        self._geometry._set_caller(self)
+        _gc.collect()
+        return self._geometry
+
     def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
         def treeStructure(module, queried_module):
@@ -900,3 +934,10 @@ class JimVect():
             methods.extend(treeStructure(module, queried_module))
 
         print('\n'.join(methods))
+
+    def _set(self, modified_object):
+        """Apply changes done in modified_object to the parent VectorOgr instance.
+
+        :param modified_object: modified VectorOgr instance
+        """
+        self._jipjimvect.__dict__.update(modified_object.__dict__)

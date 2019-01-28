@@ -92,8 +92,6 @@ class BadBasicMethods(unittest.TestCase):
             'Error in jim[-int:-int:stride, -int:-int:stride] or jim[slice] ' \
             '(either get or set item)'
 
-        #test
-        print("debug0")
         try:
             _ = jim1['a', 'a']
             failed = True
@@ -102,8 +100,6 @@ class BadBasicMethods(unittest.TestCase):
         assert not failed, \
             'Error in catching wrong indices in jim[index, index]'
 
-        #test
-        print("debug1")
         try:
             _ = jim1[1, 'a']
             failed = True

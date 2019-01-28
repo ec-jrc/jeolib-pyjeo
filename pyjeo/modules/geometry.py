@@ -787,7 +787,8 @@ class _Geometry():
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
             else:
                 kwargs['threshold'] = -kwargs['threshold']
-        return self._jim_object._jipjim.extractOgr(jim_ref._jipjim, kwargs)
+
+        return _pj.JimVect(self._jim_object._jipjim.extractOgr(jim_ref._jim_vect, kwargs))
 
     def extractSample(self, output, **kwargs):
         """Extract a random or grid sample from a raster dataset.
@@ -1134,6 +1135,17 @@ class _GeometryList():
     def stackBand(self, **kwargs):
         return _pj.Jim(self._jim_list._jipjimlist.stackBand(kwargs))
 
+    def extractOgr(self, sample, rule, output, **kwargs):
+        if isinstance(sample, _pj.JimVect):
+            kwargs.update({'rule': rule})
+            kwargs.update({'output': output})
+            avect=self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,kwargs)
+            pjvect=_pj.JimVect()
+            pjvect._set(avect)
+            return pjvect
+            # return _pj.JimVect(self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,kwargs))
+        else:
+            raise TypeError('Error: extractOgr must operate on vector sample of type JimVect')
 
 class _GeometryVect():
     """Define all Geometry methods for JimVects."""
@@ -1164,7 +1176,11 @@ class _GeometryVect():
         """
         kwargs.update({'output': output})
         if isinstance(jim, Jim):
-            return _pj.JimVect(self._jim_vect.intersect(jim,kwargs))
+            avect=self._jim_vect._jipjimvect.intersect(jim_jipjim,kwargs)
+            pjvect=_pj.JimVect()
+            pjvect._set(avect)
+            return pjvect
+            # return _pj.JimVect(self._jim_vect._jipjimvect.intersect(jim_jipjim,kwargs))
         else:
             raise TypeError('Error: can only intersect with Jim object')
 
@@ -1191,8 +1207,12 @@ class _GeometryVect():
         +------------------+--------------------------------------------------+
         """
         kwargs.update({'output': output})
-        if isinstance(jvec, JimVect):
-            return _pj.JimVect(self._jim_vect.intersect(jvec,kwargs))
+        if isinstance(jvec, _pj.JimVect):
+            avect=self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs)
+            pjvect=_pj.JimVect()
+            pjvect._set(avect)
+            return pjvect
+            # return _pj.JimVect(self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
         else:
             raise TypeError('Error: can only join with JimVect object')
 

@@ -239,6 +239,12 @@ class _IO():
         """
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
+    def close(self):
+        """
+        Close Jim object
+
+        """
+        self._jim_object._jipjim.close()
 
 class _IOList():
     """Define all IO methods for JimLists."""
@@ -250,6 +256,12 @@ class _IOList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
+    def close(self):
+        """
+        Close JimList object
+
+        """
+        self._jim_list._jipjimlist.close()
 
 class _IOVect():
     """Define all IO methods for JimVects."""
@@ -271,6 +283,13 @@ class _IOVect():
             self._jim_vect._jipjimvect.write(filename)
         else:
             self._jim_vect._jipjimvect.write()
+
+    def close(self):
+        """
+        Close JimVect object.
+
+        """
+        self._jim_vect._jipjimvect.close()
 
     def dumpVect(self, name=None, **kwargs):
         """
