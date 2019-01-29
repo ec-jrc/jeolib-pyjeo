@@ -14,10 +14,11 @@ def labelImagePixels(jim_object):
     return _pj.Jim(jim_object._jipjim.labelPix())
 
 
-def labelGraph(jim_object, graph=4):
+def labelGraph(jim_object, graph=8):
     """Label each non-zero connected component with a unique label using graph-connectivity
 
     :param jim_object: a Jim object holding a binary image
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
     :return: labeled Jim object
     """
     if (graph==4):
@@ -35,6 +36,54 @@ def labelGraph(jim_object, graph=4):
         raise ValueError('graph must be equal to 4 or 8')
     
     return _pj.Jim(jim_object._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
+
+
+def labelFlatZonesGraph(jim_object, graph=8):
+    """Label each image flat zone with a unique label using graph-connectivity
+
+    :param jim_object: a Jim object holding a grey level image
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :return: labeled Jim object
+    """
+    if (graph==4):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0,1]=1
+        ngb[1,0]=1
+        ngb[1,2]=1
+        ngb[2,1]=1
+    elif (graph==8):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb.pixops.setData(1)
+        ngb[1,1]=0
+    else:
+        print("graph must be equal to 4 or 8")
+        raise ValueError('graph must be equal to 4 or 8')
+    
+    return _pj.Jim(jim_object._jipjim.labelFlatZones(ngb._jipjim, 1, 1, 0))
+
+
+def labelAlphaCCsGraph(jim_object, localRange, globalRange, graph=8):
+    """Label each alpha-connected component with a unique label using graph-connectivity
+
+    :param jim_object: a Jim object holding a grey level image
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :return: labeled Jim object
+    """
+    if (graph==4):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0,1]=1
+        ngb[1,0]=1
+        ngb[1,2]=1
+        ngb[2,1]=1
+    elif (graph==8):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb.pixops.setData(1)
+        ngb[1,1]=0
+    else:
+        print("graph must be equal to 4 or 8")
+        raise ValueError('graph must be equal to 4 or 8')
+    
+    return _pj.Jim(jim_object._jipjim.labelAlphaCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
 def distance2dEuclideanSquared(jim_object, band=0):
@@ -95,24 +144,6 @@ def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask, grap
     return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByErosion(jim_object_mask._jipjim, graph, flag))
 
 
-# (defun *rmborder (im graph &aux marqueur)
-#  ; \lspfunction{*}{rmborder}{im graph}
-#  ; \param{im}{an image node}
-#  ; \param{graph}{integer for connectivity}
-#  ; \return{an image node}
-#  ; \desc{remvoves the graph-connected components of im connected to its border.}
-#  ; \myseealso{}
-#  ; \lspfile{\crtlspfile}
-#  ; \example{}{}
-#  (setq marqueur (@blank (*imcopy im) (*getpixmin im)))
-#  (@framebox marqueur 1 1 1 1 0 0 (*getmax im))
-#  (@inf marqueur im) ; marqueur = bord de l'image
-#   (@rdil marqueur im graph)
-#   (@subswapovfl marqueur im)
-#   )
-  
-
-
 def morphoRemoveBorder(ajim, graph):
     """
     Remove the connected components of an image that are connected to the image border using graph connectivity
@@ -128,7 +159,7 @@ def morphoRemoveBorder(ajim, graph):
     marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
     marker.pixops.infimum(ajim)
     marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
-    marker=ajim-marker
+    marker.pixops.simpleArithOp(17, ajim) # 17 for SUBSWAP_op_ovf
     return marker
 
 
@@ -152,10 +183,11 @@ class _CCOps():
         self._jim_object._jipjim.d_labelPix()
 
 
-    def labelGraph(self, graph=4):
+    def labelGraph(self, graph=8):
         """Label each non-zero connected component with a unique label using graph-connectivity
 
            :param jim_object: a Jim object holding a binary image
+           :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
            :return: labeled Jim object
          """
         if (graph==4):
@@ -234,7 +266,8 @@ class _CCOps():
         marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
         marker.pixops.infimum(ajim)
         marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
-        self._jim_object._set(ajim-marker)
+        marker.pixops.simpleArithOp(17, ajim) # 17 for SUBSWAP_op_ovf
+        self._jim_object._set(marker)
 
 
 
