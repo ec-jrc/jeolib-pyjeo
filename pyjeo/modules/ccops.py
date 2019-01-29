@@ -172,17 +172,13 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
 
     :return: a new Jim object with the connected component of the imput object removed
     """
-    minmax=ajim.stats.getStats(function=['max'])
-    maxval=minmax['max']
+    maxval=int(ajim.stats.getStats('max')['max'])
     marker=_pj.pixops.blank(ajim, maxval)
     if borderFlag:
         marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 0)
     else:
         marker.geometry.imageFrameSet(2, 2, 2, 2, 0, 0, 0)
     marker.pixops.supremum(ajim)
-    
-    marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
-    marker.pixops.infimum(ajim)
     marker.ccops.morphoGeodesicReconstructionByErosion(ajim, graph, borderFlag)
     return marker
 
