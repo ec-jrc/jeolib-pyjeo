@@ -859,7 +859,6 @@ class _ParentVect(_jl.VectorOgr):
                     super(_ParentVect, self).__init__(vector)
                 else:
                     super(_ParentVect, self).__init__()
-        # super(_ParentVect, self).__init__(vector, *args)
 
 
 class JimVect():

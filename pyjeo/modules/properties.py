@@ -400,3 +400,6 @@ class _PropertiesVect():
 
     def getFieldNames(self, layer=0):
         return self._jim_vect._jipjimvect.getFieldNames(layer)
+
+    def getProjection(self, layer=0):
+        return self._jim_vect._jipjimvect.getProjection(layer)

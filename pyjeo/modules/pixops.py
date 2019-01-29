@@ -282,7 +282,8 @@ def infimum(jim, *args):
     return _pj.Jim(infimum)
 
 
-def composite(jim_list, **kwargs):
+def composite(jim_list, crule='overwrite', **kwargs):
+    kwargs.update({'crule': crule})
     return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
 
 
@@ -421,7 +422,7 @@ class _PixOps():
         self._jim_object._set(
             nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
 
- 
+
     def modulo(self, val):
         """Set all pixels to their value modulo val
 
@@ -431,8 +432,8 @@ class _PixOps():
 
         """
         self._jim_object._jipjim.d_pointOpModulo(val)
-        
-        
+
+
     def blank(self, val):
         """Set all pixels to val
 
@@ -599,7 +600,8 @@ class _PixOpsList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
-    def composite(self, **kwargs):
+    def composite(self, crule='overwrite', **kwargs):
+        kwargs.update({'crule': crule})
         return _pj.Jim(self._jim_list._jipjimlist.composite(kwargs))
 
 
