@@ -114,34 +114,34 @@ def getRegionalMinima(jim_object, graph):
     return _pj.Jim(jim_object._jipjim.getRegionalMinima(graph))
 
 
-def morphoGeodesicReconstructionByDilation(jim_object_mark, jim_object_mask, graph, flag=1):
+def morphoGeodesicReconstructionByDilation(jim_object_mark, jim_object_mask, graph, borderFlag=1):
     """Compute the morphological reconstruction by dilation of mask image from mark image using graph connectivity.
 
     :param jim_object_mark: a Jim object for marker image
     :param jim_object_mask: a Jim object for mask image
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
-    :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
+    :param borderFlag: integer (border values are set to PIX MIN in BOTH images if flag equals
                  0, otherwise the image are internally processed by adding a border
                  which is then removed at the end of the processing). Default value is 1.
     :return: jim_object_mark containing the result of the morphological reconstruction by dilation
     """
     
-    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByDilation(jim_object_mask._jipjim, graph, flag))
+    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByDilation(jim_object_mask._jipjim, graph, borderFlag))
 
 
-def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask, graph, flag=1):
+def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask, graph, borderFlag=1):
     """Compute the morphological reconstruction by erosion of mask image from mark image using graph connectivity.
 
     :param jim_object_mark: a Jim object for marker image
     :param jim_object_mask: a Jim object for mask image
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
-    :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
+    :param borderFlag: integer (border values are set to PIX MIN in BOTH images if flag equals
                  0, otherwise the image are internally processed by adding a border
                  which is then removed at the end of the processing). Default value is 1.
     :return: jim_object_mark containing the result of the morphological reconstruction by erosion
     """
     
-    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByErosion(jim_object_mask._jipjim, graph, flag))
+    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByErosion(jim_object_mask._jipjim, graph, borderFlag))
 
 
 def morphoRemoveBorder(ajim, graph):
@@ -162,6 +162,29 @@ def morphoRemoveBorder(ajim, graph):
     marker.pixops.simpleArithOp(17, ajim) # 17 for SUBSWAP_op_ovf
     return marker
 
+
+def morphoFillHoles(ajim, graph, borderFlag=1):
+    """
+    Remove the regional minima of the image that are not connected to the image border using graph connectivity
+    :param ajim: input Jim object
+    :param borderFlag: 
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
+
+    :return: a new Jim object with the connected component of the imput object removed
+    """
+    minmax=ajim.stats.getStats(function=['max'])
+    maxval=minmax['max']
+    marker=_pj.pixops.blank(ajim, maxval)
+    if borderFlag:
+        marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 0)
+    else:
+        marker.geometry.imageFrameSet(2, 2, 2, 2, 0, 0, 0)
+    marker.pixops.supremum(ajim)
+    
+    marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
+    marker.pixops.infimum(ajim)
+    marker.ccops.morphoGeodesicReconstructionByErosion(ajim, graph, borderFlag)
+    return marker
 
 class _CCOps():
     """Define all CCOps methods."""
