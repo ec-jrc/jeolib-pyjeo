@@ -166,7 +166,7 @@ def cropBand(jim_object, band):
 
     Crop the first three bands from raster dataset jim0::
 
-        jim0=pj.io.createJim('/path/to/raster0.tif')
+        jim0=pj.Jim('/path/to/raster0.tif')
         jim0.cropBand(band=[0,1,2])
 
     """
@@ -187,7 +187,7 @@ def cropBandRange(jim_object, startband, endband):
 
     Crop the first three bands from raster dataset jim0::
 
-        jim0=pj.io.createJim('/path/to/raster0.tif')
+        jim0=pj.Jim('/path/to/raster0.tif')
         jim0.cropBandRange(startband=0,startBand=2)
 
     """
@@ -207,14 +207,14 @@ def stackBand(jim_object, jim_other=None, band=None, **kwargs):
 
     Append all the bands of raster dataset jim1 to image jim0::
 
-        jim0=pj.io.createJim('/path/to/raster0.tif')
-        jim1=pj.io.createJim('/path/to/raster1.tif')
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1)
 
     Append the first three bands of raster dataset jim1 to the image jim0::
 
-        jim0=pj.io.createJim('/path/to/raster0.tif')
-        jim1=pj.io.createJim('/path/to/raster1.tif')
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
     """
     if isinstance(jim_object, _pj.JimList):
@@ -244,8 +244,8 @@ def stackBandRange(jim_object, jim_other, startband, endband):
 
     Append the first three bands of raster dataset jim1 to image jim0::
 
-        jim0=pj.io.createJim('/path/to/raster0.tif')
-        jim1=pj.io.createJim('/path/to/raster1.tif')
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
         pj.geometry.stackBand(jim0,jim1,startband=0,endband=0)
     """
     return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim,
@@ -280,7 +280,7 @@ def warp(jim_object, t_srs, **kwargs):
     Read a raster dataset from disk and warp to the target spatial reference
     system::
 
-        jim = pj.createJim('/path/to/file.tif')
+        jim = pj.Jim('/path/to/file.tif')
         jim.warp('epsg:3035')
 
     Read a raster dataset from disk that is in lat lon (epsg:4326), select
@@ -289,7 +289,7 @@ def warp(jim_object, t_srs, **kwargs):
     projection (epsg:4326). Then warp the raster dataset to the target
     spatial reference system (epsg:3035)::
 
-        jim = pj.createJim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
+        jim = pj.Jim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
         jim.warp('epsg:3035', s_srs='epsg:4326')
 
     """
@@ -566,7 +566,7 @@ class _Geometry():
 
         Crop the first three bands from raster dataset jim0::
 
-            jim0=pj.io.createJim('/path/to/raster0.tif')
+            jim0=pj.Jim('/path/to/raster0.tif')
             jim0.cropBand(band=[0,1,2])
 
         """
@@ -586,7 +586,7 @@ class _Geometry():
 
         Crop the first three bands from raster dataset jim0::
 
-            jim0=pj.io.createJim('/path/to/raster0.tif')
+            jim0=pj.Jim('/path/to/raster0.tif')
             jim0.cropBandRange(startband=0,startBand=2)
 
         """
@@ -605,15 +605,15 @@ class _Geometry():
 
         Append all the bands of raster dataset jim1 to the current image jim0::
 
-            jim0 = pj.io.createJim('/path/to/raster0.tif')
-            jim1 = pj.io.createJim('/path/to/raster1.tif')
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
             jim0.stackBand(jim1)
 
         Append the first three bands of raster dataset jim1 to the current
         image jim0::
 
-            jim0 = pj.io.createJim('/path/to/raster0.tif')
-            jim1 = pj.io.createJim('/path/to/raster1.tif')
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
             jim0.stackBand(jim1, band=[0, 1, 2])
         """
         if band:
@@ -639,8 +639,8 @@ class _Geometry():
         Append the first three bands of raster dataset jim1 to the current
         image jim0::
 
-            jim0 = pj.io.createJim('/path/to/raster0.tif')
-            jim1 = pj.io.createJim('/path/to/raster1.tif')
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
             jim0.stackBandRange(jim1, startband=0, endband=2)
         """
         self._jim_object._jipjim.d_stackBand(jim_other._jipjim,
@@ -774,8 +774,8 @@ class _Geometry():
         on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector
         dataset in memory::
 
-            reference = pj.io.createVector('/path/to/reference.sqlite')
-            jim0 = pj.io.createJim('/path/to/raster.tif')
+            reference = pj.JimVect('/path/to/reference.sqlite')
+            jim0 = pj.Jim('/path/to/raster.tif')
             v = jim0.extractOgr(reference, rule=['mean'], output='/path/to/output.sqlite', oformat='SQLite')
             v.write()
 
@@ -950,12 +950,12 @@ class _Geometry():
         Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
         41 (water) and an aggregated (rest) class 50::
 
-            jim_ref=pj.createJim('/path/to/landcovermap.tif')
+            jim_ref=pj.Jim('/path/to/landcovermap.tif')
 
             classes=[2,12,25,41,50]
             thresholds=['20%','25%','25%','10%','5%']
 
-            jim_ref=pj.createJim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
+            jim_ref=pj.Jim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
 
             outputfn='/path/to/output.sqlite'
             sample=jim.extractImg(jim_ref,srcnodata=[0],output=outputfn,class=classes,threshold=thresholds,bandname=['B02','B03','B04','B08'],band=[0,1,2,3])
@@ -993,7 +993,7 @@ class _Geometry():
         Read a raster dataset from disk and warp to the target spatial
         reference system::
 
-            jim=pj.createJim('/path/to/file.tif')
+            jim=pj.Jim('/path/to/file.tif')
             jim.warp('epsg:3035')
 
         Read a raster dataset from disk that is in lat lon (epsg:4326), select
@@ -1002,7 +1002,7 @@ class _Geometry():
         (epsg:4326). Then warp the raster dataset to the target spatial
         reference system (epsg:3035)::
 
-            jim=pj.createJim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
+            jim=pj.Jim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
             jim.warp('epsg:3035',s_srs='epsg:4326')
 
         """
