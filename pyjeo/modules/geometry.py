@@ -294,7 +294,8 @@ def warp(jim_object, t_srs, **kwargs):
 
     """
     kwargs.update({'t_srs': t_srs})
-    return _pj.Jim(jim_object._set(self._jim_object._jipjim.warp(kwargs)))
+    # return _pj.Jim(jim_object._set(self._jim_object._jipjim.warp(kwargs)))
+    return _pj.Jim(jim_object._jipjim.warp(kwargs))
 
 
 def imageInsert(jim_object, sec_jim_object, x, y, z, band=0):
@@ -387,6 +388,38 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     :return: a Jim object
     """
     return _pj.Jim(jim_object._jipjim.plotLine(x1, y1, x2, y2, val))
+
+
+def polygonize(jim_object, output, **kwargs):
+    """Polygonize Jim object based on GDALPolygonize
+
+
+    :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+    :param kwargs: See table below
+    :return: JimVect object with polygons
+
+    +------------------+------------------------------------------------------+
+    | key              | value                                                |
+    +==================+======================================================+
+    | ln               | Output layer name                                    |
+    +------------------+------------------------------------------------------+
+    | oformat          | Output vector dataset format                         |
+    +------------------+------------------------------------------------------+
+    | co               | Creation option for output vector dataset            |
+    +------------------+------------------------------------------------------+
+    | name             | Field name of the output layer (default is DN)       |
+    +------------------+------------------------------------------------------+
+    | nodata           | Disgard this nodata value when creating polygons     |
+    +------------------+------------------------------------------------------+
+    """
+    kwargs.update({'output': output})
+    if isinstance(jim, _pj.Jim):
+        avect=jim_object._jipjim.polygonize(kwargs)
+        pjvect=_pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
+    else:
+        raise TypeError('Error: can only intersect with Jim object')
 
 
 class _Geometry():
@@ -647,10 +680,11 @@ class _Geometry():
                                              {'startband': startband,
                                               'endband': endband})
 
-    def extractOgr(self, jim_ref, output, **kwargs):
+    def extractOgr(self, jim_ref, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
         :param jim_ref: reference JimVect instance
+        :rule: Rule how to calculate zonal statistics per feature (see list of :ref:`supported rules <extract_rules>`)
         :output: Name of the output vector dataset in which the zonal
             statistics will be saved
         :param kwargs: See table below
@@ -663,10 +697,6 @@ class _Geometry():
         +------------------+--------------------------------------------------+
         | key              | value                                            |
         +==================+==================================================+
-        | rule             | Rule how to calculate zonal statistics per       |
-        |                  | feature (see list of                             |
-        |                  | :ref:`supported rules <extract_rules>`)          |
-        +------------------+--------------------------------------------------+
         | copy             | Copy these fields from the sample vector dataset |
         |                  | (default is to copy all fields)                  |
         +------------------+--------------------------------------------------+
@@ -782,6 +812,7 @@ class _Geometry():
         """
 
         kwargs.update({'output': output})
+        kwargs.update({'rule': rule})
         if 'threshold' in kwargs:
             if '%' in kwargs['threshold']:
                 kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
@@ -1121,6 +1152,35 @@ class _Geometry():
         coord = self._jim_object._jipjim.geo2image(x, y)
         return [int(coord[0]), int(coord[1])]
 
+    def polygonize(self, output, **kwargs):
+        """Polygonize Jim object based on GDALPolygonize
+
+
+        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+        :param kwargs: See table below
+        :return: JimVect object with polygons
+
+        +------------------+------------------------------------------------------+
+        | key              | value                                                |
+        +==================+======================================================+
+        | ln               | Output layer name                                    |
+        +------------------+------------------------------------------------------+
+        | oformat          | Output vector dataset format                         |
+        +------------------+------------------------------------------------------+
+        | co               | Creation option for output vector dataset            |
+        +------------------+------------------------------------------------------+
+        | name             | Field name of the output layer (default is DN)       |
+        +------------------+------------------------------------------------------+
+        | nodata           | Disgard this nodata value when creating polygons     |
+        +------------------+------------------------------------------------------+
+        """
+        kwargs.update({'output': output})
+        avect=self._jim_object._jipjim.polygonize(kwargs)
+        print("type of avect: {}".format(type(avect)))
+        pjvect=_pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
+
 
 class _GeometryList():
     """Define all Geometry methods for JimLists."""
@@ -1139,6 +1199,11 @@ class _GeometryList():
         if isinstance(sample, _pj.JimVect):
             kwargs.update({'rule': rule})
             kwargs.update({'output': output})
+            if 'threshold' in kwargs:
+                if '%' in kwargs['threshold']:
+                    kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+                else:
+                    kwargs['threshold'] = -kwargs['threshold']
             avect=self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,kwargs)
             pjvect=_pj.JimVect()
             pjvect._set(avect)
@@ -1160,8 +1225,6 @@ class _GeometryVect():
     def intersect(self, jim, output, **kwargs):
         """Intersect JimVect object with Jim object and return only those features with an intersect
 
-        Subset raster dataset according in spatial (subset region) domain
-
         :param jim: Jim object to intersect
         :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
         :param kwargs: See table below
@@ -1175,19 +1238,18 @@ class _GeometryVect():
         +------------------+------------------------------------------------------+
         """
         kwargs.update({'output': output})
-        if isinstance(jim, Jim):
-            avect=self._jim_vect._jipjimvect.intersect(jim_jipjim,kwargs)
+        if isinstance(jim, _pj.Jim):
+            avect=self._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs)
             pjvect=_pj.JimVect()
             pjvect._set(avect)
+            #todo: do not return but overwrite self
             return pjvect
-            # return _pj.JimVect(self._jim_vect._jipjimvect.intersect(jim_jipjim,kwargs))
+            # return _pj.JimVect(self._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs))
         else:
             raise TypeError('Error: can only intersect with Jim object')
 
     def join(self, jvec, output, **kwargs):
         """Join JimVect object with another JimVect object.
-
-        Subset raster dataset according in spatial (subset region) domain
 
         :param jim: Jim object to intersect
         :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
@@ -1211,8 +1273,30 @@ class _GeometryVect():
             avect=self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs)
             pjvect=_pj.JimVect()
             pjvect._set(avect)
+            #todo: do not return but overwrite self
             return pjvect
             # return _pj.JimVect(self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
         else:
             raise TypeError('Error: can only join with JimVect object')
 
+    def convexHull(self, output, **kwargs):
+        """Create the convex hull on a JimVect object.
+
+        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+        :param kwargs: See table below
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+        """
+        kwargs.update({'output': output})
+        print("kwargs: {}".format(kwargs))
+        avect=self._jim_vect._jipjimvect.convexHull(kwargs)
+        pjvect=_pj.JimVect()
+        pjvect._set(avect)
+        #todo: do not return but overwrite self
+        return pjvect

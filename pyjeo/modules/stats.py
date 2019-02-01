@@ -110,13 +110,13 @@ class _Stats():
             function=[function]
         statDict={}
         if 'min' in function:
-            statDict['min']=numpy.min(self._jim_object.np())
+            statDict['min']=numpy.min(self._jim_object.np()).item()
         if 'max' in function:
-            statDict['max']=numpy.max(self._jim_object.np())
+            statDict['max']=numpy.max(self._jim_object.np()).item()
         if 'mean' in function:
-            statDict['mean']=numpy.mean(self._jim_object.np())
+            statDict['mean']=numpy.mean(self._jim_object.np()).item()
         if 'median' in function:
-            statDict['median']=numpy.median(self._jim_object.np())
+            statDict['median']=numpy.median(self._jim_object.np()).item()
 
         for f in function:
             if f not in ['min','max','mean','median']:

@@ -224,6 +224,33 @@ def setThreshold(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
 
+def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
+            dx=0, dy=0, nogeo=False):
+    """Set range of pixels to value.
+
+    :param jim: a Jim object
+    :param value: new value for pixels of Jim object
+    :param ulx: upper left corner x coordinate (in projected coordinates
+        if geo is True, else in image coordinates)
+    :param uly: upper left corner y coordinate (in projected coordinates
+        if geo is True, else in image coordinates)
+    :param lrx: lower right corner x coordinate (in projected coordinates
+        if geo is True, else in image coordinates)
+    :param lry: lower right corner y coordinate (in projected coordinates
+        if geo is True, else in image coordinates)
+    :param bands: List of band indices to crop (index is 0 based)
+    :param dx: spatial resolution in x to crop (stride if geo is False)
+    :param dy: spatial resolution in y to crop (stride if geo is False)
+    :param nogeo: use geospatial coordinates if False, image coordinates
+        if True
+    :return: a Jim object
+    """
+
+    jout = _pj.Jim(jim)
+    jout.pixops.setData(value)
+    return _pj.Jim(jout)
+
+
 def simpleArithOp(jim, op, *args):
     """Create Jim composed using a simple arithmetic operation (coded with op) from provided Jim objects.
 
