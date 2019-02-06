@@ -285,19 +285,18 @@ class Jim():
                 raise ValueError('Error: __setitem__ with JimVect not implemented for 3d '
                                  'Jim objects')
             # TODO: decide on default behaviour of ALL_TOUCHED=TRUE
-            if type(value) in (float, int):
-                nodataValues = self.properties.getNoDataVals()
-                self._set(self.setMask(item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
-                                              'nodata': value}))
-                self.properties.clearNoData()
-                self.properties.setNoDataVals(nodataValues)
-            elif isinstance(value, Jim):
-                templateJim = Jim(self, False)
-                templateJim.setData(0)
-                templateJim = Jim(templateJim.setMask(
-                    item,
-                    {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
-                self[templateJim > 0] = value
+            template=Jim(self)
+            template.geometry.rasterize(item,1)
+            self[template>0]=value
+            # if type(value) in (float, int):
+            #     template=Jim(self)
+            #     template.geometry.rasterize(item,1)
+            #     self[template>0]=value
+            # elif isinstance(value, Jim):
+            #     templateJim = Jim(self, copyData=False)
+            #     templateJim.pixops.setData(0)
+            #     templateJim = Jim(templateJim._jipjim.setMask(item, {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
+            #     self[templateJim > 0] = value
         elif isinstance(item, Jim):  # or isinstance(value, Jim):
             if value is None:
                 self._set(Jim(self, copyData=False))
@@ -844,7 +843,7 @@ class _ParentVect(_jl.VectorOgr):
         # super(_ParentVect, self).__init__(vector, *args)
         if kwargs:
             if vector:
-                if isinstance(vector, Jimvect):
+                if isinstance(vector, JimVect):
                     super(_ParentVect, self).__init__(vector._jipjimvect,kwargs)
                 else:
                     kwargs.update({'filename': vector})

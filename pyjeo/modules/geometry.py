@@ -394,6 +394,7 @@ def polygonize(jim_object, output, **kwargs):
     """Polygonize Jim object based on GDALPolygonize
 
 
+    :param jim_object: a Jim object
     :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
     :param kwargs: See table below
     :return: JimVect object with polygons
@@ -413,7 +414,7 @@ def polygonize(jim_object, output, **kwargs):
     +------------------+------------------------------------------------------+
     """
     kwargs.update({'output': output})
-    if isinstance(jim, _pj.Jim):
+    if isinstance(jim_object, _pj.Jim):
         avect=jim_object._jipjim.polygonize(kwargs)
         pjvect=_pj.JimVect()
         pjvect._set(avect)
@@ -421,6 +422,32 @@ def polygonize(jim_object, output, **kwargs):
     else:
         raise TypeError('Error: can only intersect with Jim object')
 
+
+def rasterize(jim_object, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
+    """Rasterize Jim object based on GDALRasterizeLayersBuf
+
+    :param jim_object: a template Jim object
+    :param jim_vect: JimVect object that needs to be polygonized
+    :param burnValue: burn value
+    :param eo: option (default is ALL_TOUCHED)
+    :param ln: layer names (optional)
+    :return: rasterized Jim object
+
+    .. note::
+       Possible values for the key 'eo' are:
+
+       ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+
+       For instance you can use 'eo':'ATTRIBUTE=fieldname'
+    """
+    if not isinstance(jim_object, _pj.Jim):
+        raise TypeError('Error: template must be a Jim object')
+    if not isinstance(jim_vect, _pj.JimVect):
+        raise TypeError('Error: can only rasterize a JimVect')
+
+    ajim=_pj.Jim(jim_object)
+    ajim._jipjim.d_rasterizeBuf(item._jipjimvect,burnValue,eo,ln)
+    return ajim
 
 class _Geometry():
     """Define all Geometry methods."""
@@ -1176,11 +1203,34 @@ class _Geometry():
         """
         kwargs.update({'output': output})
         avect=self._jim_object._jipjim.polygonize(kwargs)
-        print("type of avect: {}".format(type(avect)))
         pjvect=_pj.JimVect()
         pjvect._set(avect)
         return pjvect
 
+    def rasterize(self, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
+        """Rasterize Jim object based on GDALRasterizeLayersBuf
+
+    CPLErr Jim::rasterizeBuf(VectorOgr& ogrReader, double burnValue, const std::vector<std::string>& eoption, const std::vector<std::string>& layernames ){
+
+        :param jim_vect: JimVect object that needs to be polygonized
+        :param burnValue: burn value
+        :param eo: option (default is ALL_TOUCHED)
+        :param ln: layer names (optional)
+
+        .. note::
+          Possible values for the key 'eo' are:
+
+          ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+
+          For instance you can use 'eo':'ATTRIBUTE=fieldname'
+        """
+
+        # print("type of jim_vect {}:".format(type(jim_vect)))
+        # if not isinstance(jim_vect, _pj.JimVect):
+        #     raise TypeError('Error: can only rasterize JimVect')
+
+        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,float(burnValue),eo,ln)
+        self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,float(burnValue))
 
 class _GeometryList():
     """Define all Geometry methods for JimLists."""
