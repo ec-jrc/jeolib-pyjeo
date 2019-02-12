@@ -285,18 +285,20 @@ class Jim():
                 raise ValueError('Error: __setitem__ with JimVect not implemented for 3d '
                                  'Jim objects')
             # TODO: decide on default behaviour of ALL_TOUCHED=TRUE
-            template=Jim(self)
-            template.geometry.rasterize(item,1)
-            self[template>0]=value
-            # if type(value) in (float, int):
-            #     template=Jim(self)
-            #     template.geometry.rasterize(item,1)
-            #     self[template>0]=value
-            # elif isinstance(value, Jim):
-            #     templateJim = Jim(self, copyData=False)
-            #     templateJim.pixops.setData(0)
-            #     templateJim = Jim(templateJim._jipjim.setMask(item, {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
-            #     self[templateJim > 0] = value
+            # TODO: next lines should work, but problem with GML files when SRS is not defined as in S2 cloud masks
+            # template=Jim(self)
+            # print(item)
+            # print("type of item: {}".format(type(item)))
+            # template.geometry.rasterize(item,1.0)
+            # self[template>0]=value
+            if type(value) in (float, int):
+                templateJim = Jim(self, copyData=False)
+                templateJim = Jim(templateJim._jipjim.setMask(item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
+                self[templateJim>0]=value
+            elif isinstance(value, Jim):
+                templateJim = Jim(self, copyData=False)
+                templateJim = Jim(templateJim._jipjim.setMask(item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
+                self[templateJim > 0] = value
         elif isinstance(item, Jim):  # or isinstance(value, Jim):
             if value is None:
                 self._set(Jim(self, copyData=False))
@@ -424,113 +426,96 @@ class Jim():
         return jim
 
     def __add__(self, right):
+        result=Jim(self)
         if isinstance(right, Jim):
-            return Jim(self._jipjim.pointOpArith(right._jipjim, _jl.ADD_op))
-        elif type(right) in (int, float):
-            return Jim(self._jipjim.pointOpArithCst(right, _jl.ADD_op))
+            result.np()[:]+=right.np()
         else:
-            raise TypeError('unsupported operand type for - : {}'.format(
-                type(right)))
+            result.np()[:]+=right
+        return result
 
     def __radd__(self, left):
+        result=Jim(self)
         if isinstance(left, Jim):
-            return Jim(self._jipjim.pointOpArith(left._jipjim, _jl.ADD_op))
-        elif type(left) in (int, float):
-            return Jim(self._jipjim.pointOpArithCst(left, _jl.ADD_op))
+            result.np()[:]+=left.np()
         else:
-            raise TypeError('unsupported operand type for + : {}'.format(
-                type(left)))
+            result.np()[:]+=left
+        return result
 
     def __iadd__(self, right):
         if isinstance(right, Jim):
-            self._jipjim.d_pointOpArith(right._jipjim, _jl.ADD_op)
-        elif type(right) in (int, float):
-            self._jipjim.d_pointOpArithCst(right, _jl.ADD_op)
+            self.np()[:]+=right.np()
         else:
-            raise TypeError('unsupported operand type for + : {}'.format(
-                type(right)))
+            self.np()[:]+=right
         return self
 
     def __sub__(self, right):
+        result=Jim(self)
         if isinstance(right, Jim):
-            return Jim(self._jipjim.pointOpArith(right._jipjim, _jl.SUB_op))
-        elif type(right) in (int, float):
-            return Jim(self._jipjim.pointOpArithCst(right, _jl.SUB_op))
+            result.np()[:]-=right.np()
         else:
-            raise TypeError('unsupported operand type for - : {}'.format(
-                type(right)))
+            result.np()[:]-=right
+        return result
 
     def __rsub__(self, left):
+        result=Jim(self)
         if isinstance(left, Jim):
-            return -1 * Jim(self._jipjim.pointOpArith(left._jipjim,
-                                                      _jl.SUB_op))
-        elif type(left) in (int, float):
-            return -1 * Jim(self._jipjim.pointOpArithCst(left, _jl.SUB_op))
+            result.np()[:]-=left.np()
         else:
-            raise TypeError('unsupported operand type for - : {}'.format(
-                type(left)))
+            result.np()[:]-=left
+        return result
 
     def __isub__(self, right):
         if isinstance(right, Jim):
-            self._jipjim.d_pointOpArith(right._jipjim, _jl.SUB_op)
-        elif type(right) in (int, float):
-            self._jipjim.d_pointOpArithCst(right, _jl.SUB_op)
+            self.np()[:]-=right.np()
         else:
-            raise TypeError('unsupported operand type for - : {}'.format(
-                type(right)))
+            self.np()[:]-=right
         return self
 
     def __mul__(self, right):
+        result=Jim(self)
         if isinstance(right, Jim):
-            return Jim(self._jipjim.pointOpArith(right._jipjim, _jl.MULT_op))
-        elif isinstance(right, int):
-            return Jim(self._jipjim.pointOpArithCst(right, _jl.MULT_op))
-        elif isinstance(right, float):
-            if self.properties.getDataType() != _jl.GDT_Float32 and \
-                    self.properties.getDataType() != _jl.GDT_Float64:
-                self_float = pixops.convert(self, otype='GDT_Float32')
-                self_float._jipjim.d_pointOpArithCst(right, _jl.MULT_op)
-                return Jim(self_float)
-            else:
-                return Jim(self._jipjim.pointOpArithCst(right, _jl.MULT_op))
+            result.np()[:]*=right.np()
         else:
-            raise TypeError('unsupported operand type for * : {}'.format(
-                type(right)))
+            result.np()[:]*=right
+        return result
+        # if isinstance(right, Jim):
+        #     if right.properties.getDataType() == _jl.GDT_Float32 or \
+        #        right.properties.getDataType() != _jl.GDT_Float64:
+        #         if result.properties.getDataType() != _jl.GDT_Float32 and \
+        #            result.properties.getDataType() != _jl.GDT_Float64:
+        #             result.pixops.convert(otype=right.properties.getDataType())
+        #     result.np()[:]*=right.np()
+        # else:
+        #     elif isinstance(right, int):
+        #         result.np()[:]*=right
+        #     elif isinstance(right, float):
+        #         if result.properties.getDataType() != _jl.GDT_Float32 and \
+        #            result.properties.getDataType() != _jl.GDT_Float64:
+        #             result.pixops.convert(otype=right.properties.getDataType())
+        # return self
 
     def __rmul__(self, left):
+        result=Jim(self)
         if isinstance(left, Jim):
-            return Jim(self._jipjim.pointOpArith(left._jipjim, _jl.MULT_op))
-        elif isinstance(left, int):
-            return Jim(self._jipjim.pointOpArithCst(left, _jl.MULT_op))
-        elif isinstance(left, float):
-            if self.properties.getDataType() != _jl.GDT_Float32 and \
-                    self.properties.getDataType() != _jl.GDT_Float64:
-                self_float = pixops.convert(self, otype='GDT_Float32')
-                self_float._jipjim.d_pointOpArithCst(left, _jl.MULT_op)
-                return Jim(self_float)
-            else:
-                return Jim(self._jipjim.pointOpArithCst(left, _jl.MULT_op))
+            result.np()[:]*=left.np()
         else:
-            raise TypeError('unsupported operand type for * : {}'.format(
-                type(left)))
+            result.np()[:]*=left
+        return result
 
     def __imul__(self, right):
         if isinstance(right, Jim):
-            self._jipjim.d_pointOpArith(right._jipjim, _jl.MULT_op)
-        elif type(right) in (int, float):
-            self._jipjim.d_pointOpArithCst(right, _jl.MULT_op)
+            self.np()[:]*=right.np()
         else:
-            raise TypeError('unsupported operand type for * : {}'.format(
-                type(right)))
+            self.np()[:]*=right
         return self
 
     def _trueDiv(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
-            result.np()[:]=self.np()/right.np()
+            result.np()[:]/=right.np()
         else:
-            result.np()[:]=self.np()/right
-        return self
+            result.np()[:]/=right
+        return result
 
     def _itrueDiv(self, right):
         if isinstance(right, Jim):
@@ -540,56 +525,47 @@ class Jim():
         return self
 
     def __div__(self, right):
+        result=Jim(self)
         if isinstance(right, Jim):
-            self.np()[:]=self.np()/right.np()
+            result.np()[:]/=right.np()
         else:
-            self.np()[:]=self.np()/right
-        return self
+            result.np()[:]/=right
+        return result
 
     def __idiv__(self, right):
-        self.np()[:]/=self.np()
+        if isinstance(right, Jim):
+            self.np()[:]/=right.np()
+        else:
+            self.np()[:]/=right
         return self
-        # if self.properties.getDataType() != _jl.GDT_Float32 and \
-        #         self.properties.getDataType() != _jl.GDT_Float64:
-        #     self.pixops.convert(otype='GDT_Float32')
-        # if isinstance(right, Jim):
-        #     self._jipjim.d_pointOpArith(right._jipjim, _jl.DIV_op)
-        # elif type(right) in (int, float):
-        #     self._jipjim.d_pointOpArithCst(right, _jl.DIV_op)
-        # else:
-        #     raise TypeError('unsupported operand type for / : {}'.format(
-        #         type(right)))
-        # return self
 
     def __mod__(self, right):
-        if isinstance(right, int):
-            return Jim(self._jipjim.pointOpModulo(right))
+        result=Jim(self)
+        if isinstance(right, Jim):
+            result.np()[:]%=right.np()
         else:
-            raise TypeError('unsupported operand type for % : {}'.format(
-                type(right)))
+            result.np()[:]%=right
+        return result
 
     def __imod__(self, right):
-        if isinstance(right, int):
-            self._jipjim.d_pointOpModulo(right)
+        if isinstance(right, Jim):
+            self.np()[:]%=right.np()
         else:
-            raise TypeError('unsupported operand type for % : {}'.format(
-                type(right)))
+            self.np()[:]%=right
         return self
 
     def __lshift__(self, right):
         if isinstance(right, int):
-            jim = io.createJim(self)
-            for iband in range(0, self._jipjim.properties.nrOfBand()):
-                jim.d_pointOpBitShift(-right, iband)
-            return Jim(jim)
+            jim = Jim(self)
+            jim.np()[:]<<=right
+            return jim
         else:
             raise TypeError('unsupported operand type for << : {}'.format(
                 type(right)))
 
     def __ilshift__(self, right):
         if isinstance(right, int):
-            for iband in range(0, self._jipjim.properties.nrOfBand()):
-                self._jipjim.d_pointOpBitShift(-right, iband)
+            self.np()[:]<<=right
         else:
             raise TypeError('unsupported operand type for << : {}'.format(
                 type(right)))
@@ -597,61 +573,95 @@ class Jim():
 
     def __rshift__(self, right):
         if isinstance(right, int):
-            jim = io.createJim(self)
-            for iband in range(0, self._jipjim.properties.nrOfBand()):
-                jim.d_pointOpBitShift(right, iband)
-            return Jim(jim)
+            jim = Jim(self)
+            jim.np()[:]>>=right
+            return jim
         else:
-            raise TypeError('unsupported operand type for << : {}'.format(
+            raise TypeError('unsupported operand type for >> : {}'.format(
                 type(right)))
 
     def __irshift__(self, right):
         if isinstance(right, int):
-            for iband in range(0, self._jipjim.properties.nrOfBand()):
-                self._jipjim.d_pointOpBitShift(right, iband)
+            self.np()[:]>>=right
         else:
-            raise TypeError('unsupported operand type for << : {}'.format(
+            raise TypeError('unsupported operand type for >> : {}'.format(
                 type(right)))
         return self
 
     def __or__(self, right):
         if isinstance(right, Jim):
-            return Jim(self._jipjim.pointOpBitwise(right._jipjim, _jl.OR_op))
+            jim = Jim(self)
+            jim.np()[:]|=right.np()
+            return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
                 type(right)))
 
+    def __ior__(self, right):
+        if isinstance(right, Jim):
+            self.np()[:]|=right.np()
+        else:
+            raise TypeError('unsupported operand type for | : {}'.format(
+                type(right)))
+        return self
+
     def __ror__(self, left):
         if isinstance(left, Jim):
-            return Jim(self._jipjim.pointOpBitwise(left._jipjim, _jl.OR_op))
+            jim = Jim(self)
+            jim.np()[:]|=left.np()
+            return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
                 type(left)))
 
     def __xor__(self, right):
         if isinstance(right, Jim):
-            return Jim(self._jipjim.pointOpBitwise(right._jipjim, _jl.XOR_op))
+            jim = Jim(self)
+            jim.np()[:]^=right.np()
+            return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
                 type(right)))
 
+    def __ixor__(self, right):
+        if isinstance(right, Jim):
+            self.np()[:]^=right.np()
+        else:
+            raise TypeError('unsupported operand type for ^ : {}'.format(
+                type(right)))
+        return self
+
     def __rxor__(self, left):
         if isinstance(left, Jim):
-            return Jim(self._jipjim.pointOpBitwise(left._jipjim, _jl.XOR_op))
+            jim = Jim(self)
+            jim.np()[:]^=left.np()
+            return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
                 type(left)))
 
     def __and__(self, right):
         if isinstance(right, Jim):
-            return Jim(self._jipjim.pointOpBitwise(right._jipjim, _jl.AND_op))
+            jim = Jim(self)
+            jim.np()[:]&=right.np()
+            return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(
                 type(right)))
 
+    def __iand__(self, right):
+        if isinstance(right, Jim):
+            self.np()[:]&=right.np()
+        else:
+            raise TypeError('unsupported operand type for | : {}'.format(
+                type(right)))
+        return self
+
     def __rand__(self, left):
         if isinstance(left, Jim):
-            return Jim(self._jipjim.pointOpBitwise(left._jipjim, _jl.AND_op))
+            jim = Jim(self)
+            jim.np()[:]&=left.np()
+            return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(
                 type(left)))

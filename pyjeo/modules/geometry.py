@@ -150,7 +150,7 @@ def cropOgr(jim_object, extent, **kwargs):
 
        For instance you can use 'eo':'ATTRIBUTE=fieldname'
     """
-    return _pj.Jim(jim_object._jipjim.cropOgr(extent, kwargs))
+    return _pj.Jim(jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
 
 
 def cropBand(jim_object, band):
@@ -446,7 +446,11 @@ def rasterize(jim_object, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
         raise TypeError('Error: can only rasterize a JimVect')
 
     ajim=_pj.Jim(jim_object)
-    ajim._jipjim.d_rasterizeBuf(item._jipjimvect,burnValue,eo,ln)
+    kwargs={}
+    kwargs.update({'burn':float(burnValue)})
+    kwargs.update({'eo':eo})
+    kwargs.update({'ln':ln})
+    ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
     return ajim
 
 class _Geometry():
@@ -611,7 +615,7 @@ class _Geometry():
 
            For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        self._jim_object._set(self._jim_object._jipjim.cropOgr(extent, kwargs))
+        self._jim_object._set(self._jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
 
     def cropBand(self, band):
         """Subset raster dataset.
@@ -1225,12 +1229,18 @@ class _Geometry():
           For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
 
-        # print("type of jim_vect {}:".format(type(jim_vect)))
-        # if not isinstance(jim_vect, _pj.JimVect):
-        #     raise TypeError('Error: can only rasterize JimVect')
+        print(jim_vect)
+        print("type of jim_vect: {}".format(type(jim_vect)))
+        if not isinstance(jim_vect, _pj.JimVect):
+            raise TypeError('Error: can only rasterize JimVect')
 
+        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,float(burnValue))
         # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,float(burnValue),eo,ln)
-        self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,float(burnValue))
+        kwargs={}
+        kwargs.update({'burn':float(burnValue)})
+        kwargs.update({'eo':eo})
+        kwargs.update({'ln':ln})
+        self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
 
 class _GeometryList():
     """Define all Geometry methods for JimLists."""

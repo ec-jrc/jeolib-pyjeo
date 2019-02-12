@@ -1,7 +1,8 @@
 """Module for neighbourhood operations."""
 
 import pyjeo as _pj
-
+import numpy
+from scipy import signal
 
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     """Subset raster dataset in spectral/temporal domain.
