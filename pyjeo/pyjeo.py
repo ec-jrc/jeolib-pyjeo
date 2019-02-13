@@ -70,11 +70,10 @@ class Jim():
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
-        if 'stdev' in kwargs.keys() or 'uniform' in kwargs.keys():
-            #remove stdev and uniform from kwargs
-            stdev=kwargs.pop('stdev',None)
-            uniform=kwargs.pop('uniform',None)
-            seed=kwargs.pop('seed',None)
+        #remove stdev and uniform from kwargs
+        stdev=kwargs.pop('stdev',None)
+        uniform=kwargs.pop('uniform',None)
+        seed=kwargs.pop('seed',None)
         self._jipjim = _ParentJim(image, kwargs)
 
         if stdev or uniform or seed:
