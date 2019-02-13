@@ -83,3 +83,28 @@ To test the installation, run::
 To build the documentation, go to directory doc and run::
 
   make html.
+
+Usage
+-----
+
+Usage in your local environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In your local environment, import the pyjeo module::
+
+  import pyjeo as pj
+
+Usage in the execute function in the interactive processing JEO-lab
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The pyjeo module is automatically imported as pj
+
+Usage on the cluster
+^^^^^^^^^^^^^^^^^^^^
+In your condor submit file, use this docker file::
+  
+  docker_image    =  jeoreg.cidsn.jrc.it:5000/jeodpp-proc/jeodpp_jupyter_inter_py2_deb9
+
+
+In your execution script launched by the condor submit file, define the following environment variables::
+
+   export PYTHONPATH="${PYTHONPATH}:/eos/jeodpp/shared/dev/lib/python:/eos/jeodpp/shared/dev/lib/python/jeodpp:/eos/jeodpp/shared/dev/lib/python/pyjeo"
+   export LD_LIBRARY_PATH=/eos/jeodpp/shared/dev/lib/cpp/jeodpp

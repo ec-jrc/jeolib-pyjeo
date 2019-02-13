@@ -38,9 +38,8 @@ Create Jim object from file
     lry      Lower right y value bounding box
     dx       Resolution in x
     dy       Resolution in y
-    resample Resample algorithm used for reading pixel data in case of
-              interpolation
-    extent   get boundary from extent from polygons in vector dataset
+    resample Resample algorithm used for reading pixel data in case of interpolation
+    extent   filename of a vector dataset from which to get boundary constraint
     nodata   Nodata value to put in image
     noread   Set this flag to True to not read data when opening
     ======== ===================================================
@@ -49,7 +48,8 @@ Create Jim object from file
         You can specify a different spatial reference system to define the
         region of interest to read set with keys ulx, uly, lrx, and lry with
         the extra key 't_srs'. Notice this will not re-project the resulting
-        image. You can use the function :py:func:`geometry:warp` for this.
+        image. You can use the function :py:func:`geometry.warp` or the corresponding
+        method on a Jim object :py:meth:`geometry._Geometry.warp` for this.
    ..
 
    .. note::
@@ -64,7 +64,6 @@ Create Jim object from file
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
         jim=pj.Jim(ifn)
         #do stuff with jim ...
-        jim.close()
 
    Create Jim image object by opening an existing file for specific region of
    interest and spatial resolution using cubic convolution resampling::
@@ -75,9 +74,8 @@ Create Jim object from file
         ULY=jim0.getUly()
         LRX=jim0.getUlx()+100*jim0.getDeltaX()
         LRY=jim0.getUly()-100*jim0.getDeltaY()
-        jim=pj.Jim.createImg(ifn,ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,dx=5,dy=5,resample='GRIORA_Cubic')
+        jim=pj.Jim(ifn,ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,dx=5,dy=5,resample='GRIORA_Cubic')
         #do stuff with jim ...
-        jim.close()
 
 .. _create_Jim_new:
 
@@ -548,9 +546,9 @@ Geometry operations
    :members:
 
 
-*************
-CC operations
-*************
+******************************
+Connected component operations
+******************************
 
 .. automodule:: ccops
    :members:
@@ -568,7 +566,7 @@ CC operations
 Classification
 **************
 
-.. automodule:: clssfy
+.. automodule:: classify
    :members:
 
 .. autoclass:: _Classify

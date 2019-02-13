@@ -70,7 +70,33 @@ class Jim():
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
+        if 'stdev' in kwargs.keys() or 'uniform' in kwargs.keys():
+            #remove stdev and uniform from kwargs
+            stdev=kwargs.pop('stdev',None)
+            uniform=kwargs.pop('uniform',None)
+            seed=kwargs.pop('seed',None)
         self._jipjim = _ParentJim(image, kwargs)
+
+        if stdev or uniform or seed:
+            mean=kwargs.pop('mean',None)
+            if seed:
+                numpy.random.seed(seed)
+            if len(uniform) == 2:
+                min=uniform[0]
+                max=uniform[1]
+                scale=max-min
+                offset=min
+                self.np()[:]=numpy.random.rand(*(self.np().shape))
+            else:
+                if not stdev:
+                    stdev=1
+                if not mean:
+                    mean=0
+                scale=stdev
+                offset=mean
+            self.np()[:]=numpy.random.rand(*(self.np().shape))
+            self*=scale
+            self+=offset
 
         self._all = all._All()
         self._ccops = ccops._CCOps()
