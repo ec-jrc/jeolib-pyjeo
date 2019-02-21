@@ -5,9 +5,48 @@ import numpy as np
 from scipy import signal
 
 
-def slope(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
-    if jim_object.properties.getNoDataVals() and not nodata:
-        nodata=jim_object.properties.getNoDataVals()[0]
+# this numpy implementation works and is faster but does not ignore nodata values in the image during the convolution process
+# def slopenp(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
+#     if jim_object.properties.getNoDataVals() and not nodata:
+#         nodata=jim_object.properties.getNoDataVals()[0]
+#     tapsdx=np.array([[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]])
+#     tapsdy=np.array([[-1.0,-2.0,-1.0],[0.0,0.0,0.0],[1.0,2.0,1.0]])
+#     tapsdx*=zscale
+#     tapsdy*=zscale
+#     jimdx=_pj.Jim(jim_object)
+#     jimdy=_pj.Jim(jim_object)
+#     if jim_object.properties.getDataType() != 'Float32' and \
+#        jim_object.properties.getDataType() != 'Float64':
+#         jimdx.pixops.convert(otype="Float32")
+#         jimdy.pixops.convert(otype="Float32")
+#     if jim_object.properties.getNoDataVals():
+#         for ndval in jim_object.properties.getNoDataVals():
+#             jimdx[jimdx==ndval]=nodata
+#         jimdx.np()[jimdx.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
+#     else:
+#         jimdx.np()[:]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
+#     jimdx/=8.0*jimdx.properties.getDeltaX()*scale
+#     jimdx*=jimdx
+#     if jim_object.properties.getNoDataVals():
+#         for ndval in jim_object.properties.getNoDataVals():
+#             jimdy[jimdy==ndval]=nodata
+#         jimdy.np()[jimdy.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
+#     else:
+#         jimdy.np()[:]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
+#     jimdy/=8.0*jimdy.properties.getDeltaX()*scale
+#     jimdy*=jimdy
+#     rad2deg=180.0/np.pi
+#     jimdx+=jimdy
+#     jimdx.np()[:]=np.sqrt(jimdx.np())
+#     if percent:
+#         jimdx*=100
+#     else:
+#         jimdx.np()[:]=np.arctan(jimdx.np())
+#         jimdx*=rad2deg
+#         # jimdx=90-jimdx
+#     return jimdx
+
+def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
     tapsdx=np.array([[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]])
     tapsdy=np.array([[-1.0,-2.0,-1.0],[0.0,0.0,0.0],[1.0,2.0,1.0]])
     tapsdx*=zscale
@@ -18,21 +57,11 @@ def slope(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
        jim_object.properties.getDataType() != 'Float64':
         jimdx.pixops.convert(otype="Float32")
         jimdy.pixops.convert(otype="Float32")
-    if jim_object.properties.getNoDataVals():
-        for ndval in jim_object.properties.getNoDataVals():
-            jimdx[jimdx==ndval]=nodata
-        jimdx.np()[jimdx.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
-    else:
-        jimdx.np()[:]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
-    jimdx/=8.0*jimdx.properties.getDeltaX()*scale
+    jimdx.ngbops.filter2d(tapsdx,nodata=jim_object.properties.getNoDataVals(),abs=True,norm=True)
+    jimdx/=jimdx.properties.getDeltaX()*scale
     jimdx*=jimdx
-    if jim_object.properties.getNoDataVals():
-        for ndval in jim_object.properties.getNoDataVals():
-            jimdy[jimdy==ndval]=nodata
-        jimdy.np()[jimdy.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
-    else:
-        jimdy.np()[:]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
-    jimdy/=8.0*jimdy.properties.getDeltaX()*scale
+    jimdy.ngbops.filter2d(tapsdy,nodata=jim_object.properties.getNoDataVals(),abs=True,norm=True)
+    jimdy/=jimdy.properties.getDeltaX()*scale
     jimdy*=jimdy
     rad2deg=180.0/np.pi
     jimdx+=jimdy
@@ -42,7 +71,7 @@ def slope(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
     else:
         jimdx.np()[:]=np.arctan(jimdx.np())
         jimdx*=rad2deg
-        jimdx=90-jimdx
+        jimdx=jimdx
     return jimdx
 
 def catchmentBasinConfluence(jim_object, d8):

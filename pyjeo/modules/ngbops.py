@@ -31,8 +31,7 @@ def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.filter1d(kwargs))
 
 
-def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None,
-             **kwargs):
+def filter2d(jim_object, filter, **kwargs):
     """Subset raster dataset in spectral/temporal domain.
 
     Filter Jim object in spatial domain performed on single or multi-band
@@ -49,19 +48,12 @@ def filter2d(jim_object, filter, dx=None, dy=None, pad=None, otype=None,
     :param otype: Data type for output image
     :return: filtered Jim object
     """
-    kwargs.update({'filter': filter})
-    if dx:
-        kwargs.update({'dx': dx})
-        if not dy:
-            kwargs.update({'dy': dx})
-    if dy:
-        kwargs.update({'dy': dy})
-        if not dx:
-            kwargs.update({'dx': dy})
-    if pad:
-        kwargs.update({'pad': pad})
-    if otype:
-        kwargs.update({'otype': otype})
+    if isinstance(filter,numpy.ndarray ):
+        kwargs.update({'dy': filter.shape[0]})
+        kwargs.update({'dx': filter.shape[1]})
+        kwargs.update({'tap':filter.flatten().tolist()})
+    else:
+        kwargs.update({'filter': filter})
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
@@ -379,8 +371,7 @@ class _NgbOps():
             kwargs.update({'otype': otype})
         self._jim_object._set(self._jim_object._jipjim.filter1d(kwargs))
 
-    def filter2d(self, filter, dx=None, dy=None, pad=None, otype=None,
-                 **kwargs):
+    def filter2d(self, filter, **kwargs):
         """Subset raster dataset in spectral/temporal domain.
 
         Filter Jim object in spatial domain performed on single or multi-band
@@ -552,19 +543,12 @@ class _NgbOps():
             jim_multitemp[(jim_multitemp<0) | (jim_multitemp>255)]=0
             jim_multitemp.convert(otype='Byte')
         """
-        kwargs.update({'filter': filter})
-        if dx:
-            kwargs.update({'dx': dx})
-            if not dy:
-                kwargs.update({'dy': dx})
-        if dy:
-            kwargs.update({'dy': dy})
-            if not dx:
-                kwargs.update({'dx': dy})
-        if pad:
-            kwargs.update({'pad': pad})
-        if otype:
-            kwargs.update({'otype': otype})
+        if isinstance(filter,numpy.ndarray ):
+            kwargs.update({'dy': filter.shape[0]})
+            kwargs.update({'dx': filter.shape[1]})
+            kwargs.update({'tap':filter.flatten().tolist()})
+        else:
+            kwargs.update({'filter': filter})
         self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
     def morphoErodeDiamond(self, ox=1, oy=1):
@@ -586,7 +570,7 @@ class _NgbOps():
         :param oy: y coordinate
         """
         self._jim_object._jipjim.d_morphoDilateNgb4(ox, oy)
-    
+
     def morphoErode(self, sec_jim_object, ox, oy, oz, trFlag=0):
         """Output the erosion of im using the SE defined by imse.
 
