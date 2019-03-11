@@ -33,31 +33,31 @@ except ImportError:
 #                                nBufXSize, nBufYSize))
 
 
-def createJim(filename=None, **kwargs):
-    """
-    :param filename: Path to a raster dataset or another Jim object
-    :param: see supported keys in table below
-    :return: a Jim object
-    """
+# def createJim(filename=None, **kwargs):
+#     """
+#     :param filename: Path to a raster dataset or another Jim object
+#     :param: see supported keys in table below
+#     :return: a Jim object
+#     """
 
-    return _pj.Jim(_jl.createJim(filename, **kwargs))
-
-
-def createJimList(jims_list, **kwargs):
-    return _pj.JimList(_jl.createJimList(jims_list, **kwargs))
+#     return _pj.Jim(_jl.createJim(filename, **kwargs))
 
 
-def createVector(filename, **kwargs):
-    """Create an empty VectorOgr object.
+# def createJimList(jims_list, **kwargs):
+#     return _pj.JimList(_jl.createJimList(jims_list, **kwargs))
 
-    Created object is an instance of the basis vector class of the pyJEO
-    library
 
-    :param filename: Path to a vector dataset or another VectorOgr object
-    :param: see supported keys in table below
-    :return: a VectorOgr object
-    """
-    return _pj.JimVect(_jl.createVector(filename, **kwargs))
+# def createVector(filename, **kwargs):
+#     """Create an empty VectorOgr object.
+
+#     Created object is an instance of the basis vector class of the pyJEO
+#     library
+
+#     :param filename: Path to a vector dataset or another VectorOgr object
+#     :param: see supported keys in table below
+#     :return: a VectorOgr object
+#     """
+#     return _pj.JimVect(_jl.createVector(filename, **kwargs))
 
 
 class _IO():
@@ -85,7 +85,7 @@ class _IO():
 
         .. note::
 
-           Supported GDAL output formats are restricted to those that support creation (see http://www.gdal.org/formats_list.html#footnote1)
+           Supported GDAL output formats are restricted to those that support `creation <http://www.gdal.org/formats_list.html#footnote1>`_.
 
         Example:
 
@@ -150,8 +150,7 @@ class _IOList():
 
     def close(self):
         """
-        Close JimList object
-
+        Close all Jim object in the JimList object
         """
         self._jim_list._jipjimlist.close()
 
@@ -185,7 +184,7 @@ class _IOVect():
 
     def dumpVect(self, name=None, **kwargs):
         """
-        Dump vector content to screen of file (if output argument is provided)
+        Dump vector content to screen or file (if output argument is provided)
 
         :param name: the list of field name(s) to dump (default is empty: dump all fields)
         :param output: output ascii file (default is empty: dump to standard output)

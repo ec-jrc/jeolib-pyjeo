@@ -12,6 +12,20 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadDEMOps(unittest.TestCase):
     """Test functions and methods from pixops modules."""
 
+    def test_slope(self):
+        """Test DEM flow functions and methods."""
+        jim = pj.Jim(tiles[0])
+
+        slope = pj.demops.slope(jim)
+        stats = slope.stats.getStats()
+
+        assert stats['max'] <= 90, \
+            'Error: max>90 in demops.slope()'
+        assert stats['min'] >= 0, \
+            'Error: min<0 in demops.slope()'
+        print('stats for slope: {}'.format(stats))
+
+
     def test_flows(self):
         #todo: data type of flowDirectionFlat should be UInt16
         """Test DEM flow functions and methods."""

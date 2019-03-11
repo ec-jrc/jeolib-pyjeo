@@ -89,6 +89,10 @@ todo_include_todos = False
 
 numfig = True
 
+#20190305 : do not print module name
+#https://stackoverflow.com/questions/32858931/how-to-stop-sphinx-automethod-prefixing-method-name-with-class-name
+#add_module_names = False
+
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

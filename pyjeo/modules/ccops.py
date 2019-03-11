@@ -155,7 +155,8 @@ def morphoRemoveBorder(ajim, graph):
     minmax=ajim.stats.getStats(function=['min','max'])
     minval=minmax['min']
     maxval=minmax['max']
-    marker=_pj.pixops.blank(ajim, minval)
+    # marker=_pj.pixops.blank(ajim, minval)
+    marker=_pj.pixops.setData(ajim, minval)
     marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
     marker.pixops.infimum(ajim)
     marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
@@ -275,7 +276,8 @@ class _CCOps():
         minmax=ajim.stats.getStats(function=['min','max'])
         minval=minmax['min']
         maxval=minmax['max']
-        marker=_pj.pixops.blank(ajim, minval)
+        # marker=_pj.pixops.blank(ajim, minval)
+        marker=_pj.pixops.setData(ajim, minval)
         marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
         marker.pixops.infimum(ajim)
         marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)

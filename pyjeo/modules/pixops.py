@@ -28,9 +28,9 @@ def convert(jim_object, otype, **kwargs):
     | a_srs            | Override the projection for the output file          |
     +------------------+------------------------------------------------------+
 
-    .. note::
-        To ignore some pixels from the extraction process, see list
-        of :ref:`mask <extract_mask>` key values:
+    # .. note::
+    #     To ignore some pixels from the extraction process, see list
+    #     of :ref:`mask <extract_mask>` key values:
 
     Example:
 
@@ -127,32 +127,32 @@ def NDVISeparateBands(redJim, nirJim):
     return _pj.Jim(nirJim._jipjim.pointOpNDI(redJim._jipjim))
 
 
-def modulo(jim_object, val):
-    """Set all pixels to their value modulo val
+# def modulo(jim_object, val):
+#     """Set all pixels to their value modulo val
 
-    :param val:  modulo value (integer)
+#     :param val:  modulo value (integer)
 
-    Modifies the instance on which the method was called.
+#     Modifies the instance on which the method was called.
 
-    """
-    return _pj.Jim(jim_object._jipjim.pointOpModulo(val))
+#     """
+#     return _pj.Jim(jim_object._jipjim.pointOpModulo(val))
 
 
-def blank(jim_object, val):
-    """Set all pixels to val
+# def blank(jim_object, val):
+#     """Set all pixels to val
 
-    :param val:  All pixels within [min,max] are set to val
+#     :param val:  All pixels within [min,max] are set to val
 
-    Modifies the instance on which the method was called.
+#     Modifies the instance on which the method was called.
 
-    """
-    return _pj.Jim(jim_object._jipjim.pointOpBlank(val))
+#     """
+#     return _pj.Jim(jim_object._jipjim.pointOpBlank(val))
 
 
 def setLevel(jim_object, min, max, val):
     """Set all pixels within min and max values to val
 
-    :param min:  Minimum threshold value       
+    :param min:  Minimum threshold value
     :param max:  Maximum threshold value
     :param val:  All pixels within [min,max] are set to val
 
@@ -165,7 +165,7 @@ def setLevel(jim_object, min, max, val):
 def simpleThreshold(jim_object, min, max, bg_val, fg_val):
     """Set all pixels within min and max values to val
 
-    :param min:  Minimum threshold value       
+    :param min:  Minimum threshold value
     :param max:  Maximum threshold value
     :param bg_val:  All pixels outside [min,max] are set to bg_val
     :param fg_val:  All pixels within [min,max] are set to fg_val
@@ -206,8 +206,7 @@ def setThreshold(jim_object, **kwargs):
 
     .. note::
 
-        A simplified interface to set a threshold is provided via the index
-        operator [] (see :ref:`example <setitem_example>` below).
+        A simplified interface to set a threshold is provided via :ref:`indexing <indexing>` (see also example below).
 
     .. _setitem_example:
 
@@ -344,9 +343,9 @@ class _PixOps():
         | a_srs            | Override the projection for the output file      |
         +------------------+--------------------------------------------------+
 
-        .. note::
-            To ignore some pixels from the extraction process, see list
-            of :ref:`mask <extract_mask>` key values:
+        # .. note::
+        #     To ignore some pixels from the extraction process, see list
+        #     of :ref:`mask <extract_mask>` key values:
 
         Example:
 
@@ -450,26 +449,26 @@ class _PixOps():
             nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
 
 
-    def modulo(self, val):
-        """Set all pixels to their value modulo val
+    # def modulo(self, val):
+    #     """Set all pixels to their value modulo val
 
-        :param val:  modulo value (integer)
+    #     :param val:  modulo value (integer)
 
-         Modifies the instance on which the method was called.
+    #      Modifies the instance on which the method was called.
 
-        """
-        self._jim_object._jipjim.d_pointOpModulo(val)
+    #     """
+    #     self._jim_object._jipjim.d_pointOpModulo(val)
 
 
-    def blank(self, val):
-        """Set all pixels to val
+    # def blank(self, val):
+    #     """Set all pixels to val
 
-        :param val:  All pixels are set to val
+    #     :param val:  All pixels are set to val
 
-         Modifies the instance on which the method was called.
+    #      Modifies the instance on which the method was called.
 
-        """
-        self._jim_object._jipjim.d_pointOpBlank(val)
+    #     """
+    #     self._jim_object._jipjim.d_pointOpBlank(val)
 
     def setData(self, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
                 dx=0, dy=0, nogeo=False):
@@ -514,7 +513,7 @@ class _PixOps():
     def simpleThreshold(self, min, max, bg_val, fg_val):
         """Set all pixels within min and max values to val
 
-        :param min:  Minimum threshold value       
+        :param min:  Minimum threshold value
         :param max:  Maximum threshold value
         :param bg_val:  All pixels outside [min,max] are set to bg_val
         :param fg_val:  All pixels within [min,max] are set to fg_val
@@ -556,8 +555,7 @@ class _PixOps():
 
         .. note::
 
-            A simplified interface to set a threshold is provided via the index
-            operator [] (see :ref:`example <setitem_example>` below).
+            A simplified interface to set a threshold is provided via :ref:`indexing <indexing>` (see also example below).
 
         .. _setitem_example:
 
@@ -584,7 +582,7 @@ class _PixOps():
         """
         for jim in args:
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, op)
-            
+
     def simpleBitwiseOp(self, op, *args):
         """Change values of Jim using an bitwise operation (coded by op) from provided Jim objects.
 
@@ -595,7 +593,7 @@ class _PixOps():
         """
         for jim in args:
             self._jim_object._jipjim.d_pointOpBitwise(jim._jipjim, op)
-    
+
     def supremum(self, *args):
         """Change values of Jim using maximum composition rule from provided Jim objects.
 
@@ -627,6 +625,7 @@ class _PixOpsList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
+    #todo: write Python function
     def composite(self, crule='overwrite', **kwargs):
         kwargs.update({'crule': crule})
         return _pj.Jim(self._jim_list._jipjimlist.composite(kwargs))

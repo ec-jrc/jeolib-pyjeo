@@ -80,19 +80,20 @@ class Jim():
             mean=kwargs.pop('mean',None)
             if seed:
                 numpy.random.seed(seed)
-            if len(uniform) == 2:
-                min=uniform[0]
-                max=uniform[1]
-                scale=max-min
-                offset=min
-                self.np()[:]=numpy.random.rand(*(self.np().shape))
-            else:
-                if not stdev:
-                    stdev=1
-                if not mean:
-                    mean=0
-                scale=stdev
-                offset=mean
+            if uniform:
+                if len(uniform) == 2:
+                    min=uniform[0]
+                    max=uniform[1]
+                    scale=max-min
+                    offset=min
+                    self.np()[:]=numpy.random.rand(*(self.np().shape))
+                else:
+                    if not stdev:
+                        stdev=1
+                    if not mean:
+                        mean=0
+                    scale=stdev
+                    offset=mean
             self.np()[:]=numpy.random.rand(*(self.np().shape))
             self*=scale
             self+=offset
@@ -900,12 +901,15 @@ class JimVect():
 
     # def __init__(self, vector, *args):
     def __init__(self, vector=None, **kwargs):
-        """Initialize the Jim object and modules for methods.
 
-        :param image: path to a raster or another Jim object as a basis for
-        the Jim object
+        """Create an empty VectorOgr object.
+
+        Created object is an instance of the basis vector class of the pyJEO
+        library
+
+        :param filename: Path to a vector dataset
+        :return: a JimVect object
         """
-        # self._jipjimvect = _ParentVect(vector, *args)
         self._jipjimvect = _ParentVect(vector, kwargs)
 
         self._all = all._AllVect()

@@ -10,7 +10,8 @@ def classify(jim_object, method, model, **kwargs):
     The classifier can be selected with the key 'method'.
 
     :param jim_object: a Jim object
-    :param method: Classification method (svm or ann)
+
+    :param method: Classification method (:ref:`svm <svm>` or :ref:`ann <ann>`)
     :param model: Model filename for trained classifier
     :param kwargs: See below
     :return: a Jim object
@@ -84,7 +85,7 @@ class _Classify():
 
         Modifies the instance on which the method was called.
 
-        :param method: Classification method (svm or ann)
+        :param method: Classification method (:ref:`svm <svm>` or :ref:`ann <ann>`)
         :param model: Model filename for trained classifier
         :param kwargs: See below
 
@@ -159,8 +160,7 @@ class _ClassifyVect():
         """Train a supervised classifier based on extracted data including
         label information (typically obtained via :py:func:`geometry:extractOgr`).
 
-        :param method: classification method: 'svm' (support vector machine),
-           'ann' (artificial neural network)
+        :param method: Classification method (:ref:`svm <svm>` or :ref:`ann <ann>`)
         :param output: output filepath where model will be written
         :param kwargs: See below
 
@@ -183,6 +183,9 @@ class _ClassifyVect():
         min      Set to a value to not take classes into account with a sample size that is lower than this value
         ======== ================================================================================================
 
+
+        .. _svm:
+
         **Support vector machine**
 
         The support vector machine (SVM) supervised classifier is described `here <http://dx.doi.org/10.1007/BF00994018>`_. The implementation in JIPlib is based on the open source `libsvm <https://www.csie.ntu.edu.tw/~cjlin/libsvm/>`_.
@@ -204,9 +207,11 @@ class _ClassifyVect():
         probest    Whether to train a SVC or SVR model for probability estimates",true,2)
         ========== ======================================================================
 
+        .. _ann:
+
         **Artificial neural network**
 
-        The artificial neural network (ANN) supervised classifier is based on the back propagation model as introduced by D. E. Rumelhart, G. E. Hinton, and R. J. Williams (Nature, vol. 323, pp. 533-536, 1986). The implementation is based on the open source C++ library fann (http://leenissen.dk/fann/wp/).
+        The artificial neural network (ANN) supervised classifier is based on the back propagation model as introduced by D. E. Rumelhart, G. E. Hinton, and R. J. Williams (Nature, vol. 323, pp. 533-536, 1986). The implementation is based on the open source C++ library `fann <http://leenissen.dk/fann/wp/>`_.
 
 
         Keys specific to the ANN:

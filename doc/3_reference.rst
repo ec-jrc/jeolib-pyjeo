@@ -9,13 +9,9 @@ Reference Manual
 Data structures: rasters (Jim) and vectors (JimVect)
 ****************************************************
 
-=================================
-Creating a Jim raster data object
-=================================
-
 .. method:: Jim(filename=None, **kwargs)
 
-  Create a new Jim object, either :ref:`from file <create_Jim_from_file>`
+  Creates a new Jim object, either :ref:`from file <create_Jim_from_file>`
   or :ref:`create new <create_Jim_new>`
 
 :param filename: Path to a raster dataset or another Jim object
@@ -25,6 +21,7 @@ Creating a Jim raster data object
 
 .. _create_Jim_from_file:
 
+===========================
 Create Jim object from file
 ===========================
 
@@ -38,7 +35,7 @@ Create Jim object from file
     lry      Lower right y value bounding box
     dx       Resolution in x
     dy       Resolution in y
-    resample Resample algorithm used for reading pixel data in case of interpolation
+    resample Resample algorithm used for reading pixel data
     extent   filename of a vector dataset from which to get boundary constraint
     nodata   Nodata value to put in image
     noread   Set this flag to True to not read data when opening
@@ -49,12 +46,11 @@ Create Jim object from file
         region of interest to read set with keys ulx, uly, lrx, and lry with
         the extra key 't_srs'. Notice this will not re-project the resulting
         image. You can use the function :py:func:`geometry.warp` or the corresponding
-        method on a Jim object :py:meth:`geometry._Geometry.warp` for this.
+        method on a Jim object :py:meth:`~geometry._Geometry.warp` in the :py:mod:`geometry` module.
    ..
 
    .. note::
-        resample values: please check
-        http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a
+      for resample values, please check `gdal site <http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a>`_.
 
    Example:
 
@@ -79,6 +75,7 @@ Create Jim object from file
 
 .. _create_Jim_new:
 
+===============================================================================
 Create a new Jim image object by defining image attributes (not read from file)
 ===============================================================================
 
@@ -112,9 +109,8 @@ code, bounding box, and pixel size::
         ULY=4000020.0
         LRX=709800.0
         LRY=3890220.0
-        jim=pj.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',dx=100,dy=100)
+        jim=pj.Jim(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',dx=100,dy=100)
         #do stuff with jim ...
-        jim.close()
 
 Create a new georeferenced Jim image object for writing by defining
 the projection epsg code, bounding box and number of rows and columns::
@@ -124,29 +120,50 @@ the projection epsg code, bounding box and number of rows and columns::
         ULY=4000020.0
         LRX=709800.0
         LRY=3890220.0
-        jim=pj.Jim.createImg(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',ncol=1098,nrow=1098)
+        jim=pj.Jim(ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,a_srs=projection,otype='GDT_UInt16',ncol=1098,nrow=1098)
         #do stuff with jim ...
-        jim.close()
 
-*********
-Operators
-*********
+
+=================================
+Creating a JimVect data object
+=================================
+
+.. method:: JimVect(filename, **kwargs)
+
+  Create a new JimVect object from file
+
+:param filename:        Path to a vector dataset
+:param ln:              Layer name to read (default is to read all layers)
+:param attributeFilter: Set an attribute filter
+:param noread:          Set this flag to True to not read data when opening
+:return: a JimVect object
+
+Example:
+
+Open a vector and read all layers::
+
+  v0=pj.JimVect('/path/to/vector.sqlite')
+
+Open a vector and read layer named lodi::
+
+  v0=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
+
+
+.. _indexing:
 
 ======================
-Pixel access operators
+Indexing Jim objects
 ======================
 
    .. method:: Jim[item]
 
-      Get subset of the raster dataset.
-
-      :param items can be of type:
+      Get subset of the raster dataset. Item can be of type:
 
       :tuple: get all pixels defined by tuple (e.g., [0:10,0:10] for first 10 rows and columns in a single band image)
 
-      :Jim object: get all pixels where the specified raster dataset object is > 0
+      :Jim: get all pixels where the specified raster dataset object is > 0
 
-      :VectorOgr: get spatial subset of all pixels covered by the specified vector dataset object
+      :JimVect: get spatial subset of all pixels covered by the specified vector dataset object
 
       :returns: subset of the raster dataset
 
@@ -174,13 +191,11 @@ Pixel access operators
 
    .. method:: Jim[item]=
 
-        Set items of the raster dataset.
-
-        :param items can be of type:
+        Set items of the raster dataset. Item can be of type:
 
         :tuple: set all pixels defined by tuple (e.g., [0:10,0:10] for first 10 rows and columns in a single band image)
-        :Jim object: set all pixels where the specified raster dataset object is > 0
-        :VectorOgr: set all pixels covered by the specified vector dataset object
+        :Jim: set all pixels where the specified raster dataset object is > 0
+        :JimVect: set all pixels covered by the specified vector dataset object
 
         Modifies the instance on which the method was called.
 
@@ -206,6 +221,11 @@ Pixel access operators
           v=pj.JimVect(cfn)
           jim[v]=255
    
+*********
+Operators
+*********
+
+.. _comparison_operators:
 
 ====================
 Comparison operators
@@ -213,9 +233,18 @@ Comparison operators
 
       Jim objects support comparison operations performed at pixel level. The result is a new binary Jim object (of type Byte) with value 1 if the comparison result is True and value 0 if the comparison result is False.
 
-      :equality: ``==``
+========   ============
+Operator   Meaning
+========   ============
+``==``     Pixel wise check for equality
+``!=``     Pixel wise check for inequality
+``<``      Pixel wise check for less than
+``>``      Pixel wise check for greater than
+``<=``     Pixel wise check for less than or equal to
+``>=``     Pixel wise check for greater than or equal to
+========   ============
 
-      Example:
+      Examples:
 
       Pixel wise check for equality. The result is a binary Jim object of type Byte: 1 if pixel values are equal and 0 if objects differ::
 
@@ -225,10 +254,6 @@ Comparison operators
 
         jim1[jim1==jim2] = 0
 
-      :inequality: ``!=``
-
-      Example:
-
       Pixel wise check for inequality. The result is a binary Jim object of type Byte: 0 if pixel values are equal and 1 if objects differ::
 
         result = jim1!=jim2
@@ -236,10 +261,6 @@ Comparison operators
       Set all pixel to 0 where Jim objects differ::
 
         jim1[jim1!=jim2] = 0
-
-      :less than: ``<``
-
-      Example:
 
       Pixel wise check if an image is less than another::
 
@@ -249,10 +270,6 @@ Comparison operators
 
         jim0[jim0<0] = 0
 
-      :less or equal than: ``<=``
-
-      Example:
-
       Pixel wise check if an image is less than or equal to another::
 
         result = jim1<=jim2
@@ -260,10 +277,6 @@ Comparison operators
       Set all pixel values less than or equal to 0 to 0::
 
         jim0[jim0<=0] = 0
-
-      :greater than: ``>``
-
-      Example:
 
       Pixel wise check if an image is greater than another::
 
@@ -273,10 +286,6 @@ Comparison operators
 
         jim0[jim0>0] = 0
 
-      :greater or equal than: ``>=``
-
-      Example:
-
       Pixel wise check if an image is greater than or equal to another::
 
         result = jim1>=jim2
@@ -285,15 +294,25 @@ Comparison operators
 
         jim0[jim0>=0] = 0
 
+
+.. _boolean_operators:
+
 =================
 Boolean operators
 =================
 
-      Jim objects support boolean operations performed at pixel level. Both input and result are assumed to be binary Jim objects of type Byte (0 is False, 1 is True).
+Jim objects support boolean operations performed at pixel level. Both input and result are assumed to be binary Jim objects of type Byte (0 is False, 1 is True).
 
-      :or: ``|`` (bitwise or)
+========   ============
+Operator   Meaning
+========   ============
+``|``      bitwise or
+``^``      bitwise exclusive or
+``&``      bitwise and
+========   ============
 
-      Example:
+
+      Examples:
 
       Calculate the bitwise or value of to Jim object::
 
@@ -303,17 +322,9 @@ Boolean operators
 
         result = jim0[(jim0<0) | (jim0>250)]
 
-      :xor: ``^`` (bitwise exclusive or)
-
-      Example:
-
       Calculate the bitwise exclusive or (xor) value of to Jim object::
 
         result=jim1 ^ jim2
-
-      :and: ``&`` (bitwise and)
-
-      Example:
 
       Calculate the bitwise and value of to Jim object::
 
@@ -324,27 +335,32 @@ Boolean operators
         result = jim0[(jim0>=100) & (jim0<=200)]
 
 
+.. _unary_operators:
+
 ==========================
 Arithmetic unary operators
 ==========================
 
       Jim objects support unary arithmetic operations performed at pixel level.
 
-      :abs: ``abs`` (absolute value)
+========   ============
+Operator   Meaning
+========   ============
+``abs``    absolute value
+``-``      negation
+========   ============
 
-      Example:
+      Examples:
 
       Calculate the absolute value of Jim object::
 
         jimabs=abs(jim)
 
-      :neg: ``-`` (negation). Notice that the output data type can be changed if the input was not signed. A warning message is given.
-
-      Example:
-
-      Calculate the negation of a jim object::
+      Calculate the negation of a jim object. Notice that the output data type can be changed if the input was not signed. A warning message is given::
 
         jimneg=-jim
+
+.. _binary_operators:
 
 ===========================
 Arithmetic binary operators
@@ -352,115 +368,80 @@ Arithmetic binary operators
 
       Jim objects support binary arithmetic operations performed at pixel level.
 
-      :addition: ``+``
+========   ============
+Operator   Meaning
+========   ============
+``+``      addition
+``+=``     addition and assignment
+``-``      subtraction
+``-=``     subtraction and assignment
+``*``      multiplication
+``*=``     multiplication and assignment
+``/``      division
+``/=``     division and assignment
+``%``      modulo
+``%=``     modulo and assignment
+``<<``     bitwise left shift
+``<<=``    bitwise left shift and assignment
+``>>``     bitwise right shift
+``>>=``    bitwise right shift and assignment
+========   ============
 
-      Example:
+      Examples:
 
       Add two Jim objects and return the result as a new Jim object::
 
         jim=jim1+jim2
 
-      :addition and assignment operator: ``+=``
-
-      Example:
-
       Replace the content of jim1 with the sum of jim1 and jim2::
 
         jim1+=jim2
-
-      :subtraction: ``-``
-
-      Example:
 
       Subtract two Jim objects and return the result as a new Jim object::
 
         jim=jim1-jim2
 
-      :subtraction and assignment operator: ``-=``
-
-      Example:
-
       Replace the content of jim1 with the difference of jim1 and jim2::
 
         jim1-=jim2
-
-      :multiplication: ``*``
-
-      Example:
 
       Multiply two Jim objects and return the result as a new Jim object::
 
         jim=jim1*jim2
 
-      :multiplication and assignment operator: ``*=``
-
-      Example:
-
       Replace the content of jim1 with the multiplication of jim1 and jim2::
 
         jim1*=jim2
-
-      :division: ``/``
-
-      Example:
 
       Divide two Jim objects and return the result as a new Jim object::
 
         jim=jim1/jim2
 
-      :division and assignment operator: ``/=``
-
-      Example:
-
       Replace the content of jim1 with the division of jim1 and jim2::
 
         jim1/=jim2
-
-      :modulo: ``%`` (return the remainder of a division)
-
-      Example:
 
       Calculate the modulo of 2 (remainder after division of 2) and return the result as a new Jim object::
 
         jim=jim0%2
 
-      :modulo and assignment operator: ``%=``
-
-      Example:
-
       Replace the content of jim1 with the modulo 2 (remainder after division of 2)::
 
         jim%=2
 
-      :bitwise left shift: ``<<`` (Calculate the bitwise left shift (shifts the bits of the pixel values by the specified number)
-
-      Example:
-
-      Multiply the pixel values by 2 and return as a new Jim object::
+      Multiply the pixel values by 2 and return as a new Jim object (by calculating the bitwise left shift)::
 
         jim2 = jim1 << 2
 
-      :bitwise left shift and assignment operator: ``<<=`` Replace the current object by the bitwise left shifted object (shifts the bits of the pixel values by the specified number)
-
-      Example:
-
-      Multiply the pixel values by 2 and replace the current Jim object::
+      Multiply the pixel values by 2 and replace the current Jim object (by calculating the bitwise left shift)::
 
         jim<<=2
 
-      :bitwise right shift: ``<<`` (Calculate the bitwise right shift (shifts the bits of the pixel values by the specified number)
-
-      Example:
-
-      Divide the pixel values by 2 and return as a new Jim object::
+      Divide the pixel values by 2 and return as a new Jim object (by calculating the bitwise right shift)::
 
         jim2 = jim1 >> 2
 
-      :bitwise right shift and assignment operator: ``<<=`` Replace the current object by the bitwise right shifted object (shifts the bits of the pixel values by the specified number)
-
-      Example:
-
-      Divide the pixel values by 2 and replace the current Jim object::
+      Divide the pixel values by 2 and replace the current Jim object (by calculating the bitwise right shift)::
 
         jim>>=2
 
@@ -470,62 +451,99 @@ Accessing properties
 
 .. automodule:: properties
    :members:
-                
+
+==============
+Jim properties
+==============
+
 .. autoclass:: _Properties
    :members:
 
-.. autoclass:: _PropertiesList
-   :members:
+==================
+JimVect properties
+==================
 
 .. autoclass:: _PropertiesVect
    :members:
 
-************
-Input/Output
-************
+==================
+JimList properties
+==================
+
+.. autoclass:: _PropertiesList
+   :members:
+
+********************
+Input/Output methods
+********************
 
 .. automodule:: pjio
    :members:
 
+========================
+Jim Input/Output methods
+========================
+
 .. autoclass:: _IO
    :members:
 
-.. autoclass:: _IOList
-   :members:
+============================
+JimVect Input/Output methods
+============================
 
 .. autoclass:: _IOVect
+   :members:
+
+============================
+JimList Input/Output methods
+============================
+
+.. autoclass:: _IOList
    :members:
 
 ****************
 Pixel operations
 ****************
 
+=========================
+Pixel operation functions
+=========================
+
 .. automodule:: pixops
    :members:
+   :exclude-members: simpleArithOp, simpleBitwiseOp, simpleThreshold, setLevel
+
+==============================
+Pixel operation methods on Jim
+==============================
 
 .. autoclass:: _PixOps
    :members:
+   :exclude-members: simpleArithOp, simpleBitwiseOp, simpleThreshold, setLevel
+
+==================================
+Pixel operation methods on JimList
+==================================
 
 .. autoclass:: _PixOpsList
-   :members:
-
-.. autoclass:: _PixOpsVect
    :members:
 
 ***********************
 Neighborhood operations
 ***********************
 
+================================
+Neighborhood operation functions
+================================
+
 .. automodule:: ngbops
    :members:
 
+=====================================
+Neighborhood operation methods on Jim
+=====================================
+
 .. autoclass:: _NgbOps
-   :members:
-     
-.. autoclass:: _NgbOpsList
-   :members:
-     
-.. autoclass:: _NgbOpsVect
    :members:
      
 
@@ -533,14 +551,23 @@ Neighborhood operations
 Geometry operations
 *******************
 
+============================
+Geometry operation functions
+============================
+
 .. automodule:: geometry
    :members:
+
+=================================
+Geometry operation methods on Jim
+=================================
 
 .. autoclass:: _Geometry
    :members:
 
-.. autoclass:: _GeometryList
-   :members:
+=====================================
+Geometry operation methods on JimVect
+=====================================
 
 .. autoclass:: _GeometryVect
    :members:
@@ -550,30 +577,41 @@ Geometry operations
 Connected component operations
 ******************************
 
+=======================================
+Connected component operation functions
+=======================================
+
 .. automodule:: ccops
    :members:
 
+============================================
+Connected component operation methods on Jim
+============================================
+
 .. autoclass:: _CCOps
-   :members:
-
-.. autoclass:: _CCOpsList
-   :members:
-
-.. autoclass:: _CCOpsVect
    :members:
 
 **************
 Classification
 **************
 
+========================
+Classification functions
+========================
+
 .. automodule:: classify
    :members:
+
+=============================
+Classification methods on Jim
+=============================
 
 .. autoclass:: _Classify
    :members:
 
-.. autoclass:: _ClassifyList
-   :members:
+=================================
+Classification methods on JimVect
+=================================
 
 .. autoclass:: _ClassifyVect
    :members:
@@ -582,12 +620,16 @@ Classification
 Digital elevation
 *****************
 
+===========================
+Digital elevation functions
+===========================
+
 .. automodule:: demops
    :members:
 
+================================
+Digital elevation methods on Jim
+================================
+
 .. autoclass:: _DEMOps
-   :members:
-.. autoclass:: _DEMOpsList
-   :members:
-.. autoclass:: _DEMOpsVect
    :members:

@@ -5,12 +5,11 @@ import pyjeo as _pj
 
 
 
-def imageInfo(jim_object):
-    """Return image information (number of lines, columns, etc.)
+# def imageInfo(jim_object):
+#     """Return image information (number of lines, columns, etc.)
 
-    """
-    return _pj.Jim(jim_object._jipjim.imageInfo())
-
+#     """
+#     return _pj.Jim(jim_object._jipjim.imageInfo())
 
 
 class _Properties():
@@ -180,7 +179,7 @@ class _Properties():
         self._jim_object._jipjim.copyGeoTransform(sec_jim_object._jipjim)
 
     def getProjection(self):
-        """Get the projection for this dataget in well known text (wkt) format.
+        """Get the projection for this dataset in well known text (wkt) format.
 
         :return: The projection string in well known text format.
         """
@@ -378,28 +377,76 @@ class _PropertiesVect():
         self._jim_vect = caller
 
     def getLayerCount(self):
+        """Get the number of layers of this dataset.
+
+        :return: the number of layers of this dataset
+        """
         return self._jim_vect._jipjimvect.getLayerCount()
 
-    def getFeatureCount(self):
-        return self._jim_vect._jipjimvect.getFeatureCount()
+    def getFeatureCount(self, layer=None):
+        """Get the number of features of this dataset.
+
+        :layer: the layer number (default is all layers)
+        :return: the number of layers of this dataset
+        """
+        if layer:
+            return self._jim_vect._jipjimvect.getFeatureCount(layer)
+        else:
+            return self._jim_vect._jipjimvect.getFeatureCount()
 
     def getBBox(self):
+        """Get the bounding box (georeferenced) coordinates of this dataset.
+
+        :return: A list with upper left x, upper left y, lower right x, and
+            lower right y
+        """
         return self._jim_vect._jipjimvect.getBoundingBox()
 
     def getUlx(self):
+        """Get the upper left corner x coordinate of this dataset.
+
+        :return: The upper left corner x (georeferenced) coordinate of this
+            dataset
+        """
         return self._jim_vect._jipjimvect.getUlx()
 
     def getUly(self):
+        """Get the upper left corner y coordinate of this dataset.
+
+        :return: The upper left corner y (georeferenced) coordinate of this
+            dataset
+        """
         return self._jim_vect._jipjimvect.getUly()
 
     def getLrx(self):
+        """Get the lower left corner x coordinate of this dataset.
+
+        :return: The lower left corner x (georeferenced) coordinate of this
+            dataset
+        """
         return self._jim_vect._jipjimvect.getLrx()
 
     def getLry(self):
+        """Get the lower left corner y coordinate of this dataset.
+
+        :return: The lower left corner y (georeferenced) coordinate of this
+            dataset
+        """
         return self._jim_vect._jipjimvect.getLry()
 
     def getFieldNames(self, layer=0):
+        """Get the list of field names for this dataset
+
+        :layer: The layer to get the field names, index starting from 0 (default is 0: first layer)
+        :return: The list of field names
+            dataset
+        """
         return self._jim_vect._jipjimvect.getFieldNames(layer)
 
     def getProjection(self, layer=0):
+        """Get the projection for this dataset in well known text (wkt) format.
+
+        :layer: The layer to get the projection from, index starting from 0 (default is 0: first layer)
+        :return: The projection string in well known text format.
+        """
         return self._jim_vect._jipjimvect.getProjection(layer)

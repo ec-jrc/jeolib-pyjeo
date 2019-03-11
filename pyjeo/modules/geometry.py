@@ -813,6 +813,9 @@ class _Geometry():
         +==================+==================================================+
         | srcnodata        | List of nodata values not to extract             |
         +------------------+--------------------------------------------------+
+        | buffer           | Buffer (in geometric units of raster dataset).   |
+        |                  | Use neg. value to exclude pixels within buffer   |
+        +------------------+--------------------------------------------------+
         | bndnodata        | List of band in input image to check if pixel is |
         |                  | valid (used for srcnodata)                       |
         +------------------+--------------------------------------------------+
@@ -831,14 +834,12 @@ class _Geometry():
 
         Example:
 
-        Extract a random sample of 100 points, calculating the mean value based
-        on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector
-        dataset in memory::
+        Extract the mean value of the pixels within the polygon of the provided reference vector. Exclude the pixels within a buffer of 10m of the polygon boundary. Use a temporary vector in memory for the calculation. Write the result to the final destination on disk::
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
-            v = jim0.extractOgr(reference, rule=['mean'], output='/path/to/output.sqlite', oformat='SQLite')
-            v.write()
+            v = jim0.extractOgr(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v.write('/path/to/output.sqlite)
 
         """
 
@@ -876,7 +877,7 @@ class _Geometry():
         |                  | :ref:`supported rules <extract_rules>`)          |
         +------------------+--------------------------------------------------+
         | buffer           | Buffer for calculating statistics for point      |
-        |                  | features (in number of pixels)                   |
+        |                  | features (in geometric units of raster dataset)  |
         +------------------+--------------------------------------------------+
         | label            | Create extra field named 'label' with this value |
         +------------------+--------------------------------------------------+
@@ -907,20 +908,20 @@ class _Geometry():
         Example:
 
         Extract a random sample of 100 points, calculating the mean value based
-        on a 3x3 window (buffer value of 1 pixel neighborhood) in a vector
+        on a 3x3 window (buffer value of 100 m) in a vector
         dataset in memory::
 
-            v01 = jim0.extractSample(random=100, buffer=1, rule=['mean'], output='mem01', oformat='Memory')
+            v01 = jim0.extractSample(random=100, buffer=100, rule=['mean'], output='mem01', oformat='Memory')
 
         Extract a sample of 100 points using a regular grid sampling scheme.
         For each grid point, calculate the median value based on a 3x3 window
-        (buffer value of 1 pixel neighborhood). Write the result in a SQLite
+        (buffer value of 100 m neighborhood). Write the result in a SQLite
         vector dataset on disk::
 
             outputfn = '/path/to/output.sqlite'
             npoint = 100
             gridsize = int(jim.nrOfCol()*jim.getDeltaX()/math.sqrt(npoint))
-            v = jim.extractSample(grid=gridsize, buffer=1, rule=['median'], output=outputfn, oformat='SQLite')
+            v = jim.extractSample(grid=gridsize, buffer=100, rule=['median'], output=outputfn, oformat='SQLite')
             v.write()
 
         """
