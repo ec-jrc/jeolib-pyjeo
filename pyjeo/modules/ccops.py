@@ -114,25 +114,6 @@ def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph
     return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
-def labelConstrainedCCsMultiband(jim_object, se, ox, oy, oz, r1, r2):
-    """TODO
-
-    :param jim_object: a multi-band Jim object
-    :param se:
-    :param ox:
-    :param oy:
-    :param oz:
-    :param r1:
-    :param r2:
-    :return: labeled Jim object
-    """
-    if jim_object.properties.nrOfBand() < 2:
-        print("Jim image must be a multi-band image")
-        raise ValueError('Jim image must be a multi-band image')
-
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(se._jipjim, ox, oy, oz, r1, r2))
-
-
 def distance2dEuclideanSquared(jim_object, band=0):
     """Compute the squared Euclidean distance transform of im.
 
