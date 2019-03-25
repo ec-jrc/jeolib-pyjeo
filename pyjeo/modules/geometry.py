@@ -4,9 +4,7 @@ import pyjeo as _pj
 
 
 def image2geo(jim_object, i, j):
-    """ Convert image coordinates to georeferenced.
-
-    Convert image coordinates (column and row) to georeferenced
+    """Convert image coordinates (column and row) to georeferenced
     coordinates (x and y)
 
     :param i: image column number (starting from 0)
@@ -18,9 +16,7 @@ def image2geo(jim_object, i, j):
 
 
 def geo2image(jim_object, x, y):
-    """ Convert georeferenced coordinates to image.
-
-    Convert georeferenced coordinates (column and row) to image
+    """ Convert georeferenced coordinates (column and row) to image
     coordinates (x and y).
 
     :param x: georeferenced coordinate in x according to the object spatial
@@ -1157,9 +1153,7 @@ class _Geometry():
         self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
 
     def image2geo(self, i, j):
-        """Convert image coordinates to georeferenced coordinates.
-
-        Convert image coordinates (column and row) to georeferenced
+        """Convert image coordinates (column and row) to georeferenced
         coordinates (x and y)
 
         :param i: image column number (starting from 0)
@@ -1170,9 +1164,7 @@ class _Geometry():
         return self._jim_object._jipjim.image2geo(i, j)
 
     def geo2image(self, x, y):
-        """ Convert georeferenced coordinates to image coordinates.
-
-        Convert georeferenced coordinates (x and y) to image
+        """Convert georeferenced coordinates (x and y) to image
         coordinates (column and row).
 
         :param x: georeferenced coordinate in x according to the object spatial

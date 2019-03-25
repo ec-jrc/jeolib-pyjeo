@@ -80,23 +80,23 @@ class Jim():
             mean=kwargs.pop('mean',None)
             if seed:
                 numpy.random.seed(seed)
+            scale=1
+            offset=0
             if uniform:
                 if len(uniform) == 2:
                     min=uniform[0]
                     max=uniform[1]
                     scale=max-min
                     offset=min
-                    self.np()[:]=numpy.random.rand(*(self.np().shape))
-                else:
-                    if not stdev:
-                        stdev=1
-                    if not mean:
-                        mean=0
-                    scale=stdev
-                    offset=mean
-            self.np()[:]=numpy.random.rand(*(self.np().shape))
-            self*=scale
-            self+=offset
+                    self.np()[:]=scale*numpy.random.rand(*(self.np().shape))+offset
+            else:
+                if not stdev:
+                    stdev=1
+                if not mean:
+                    mean=0
+                scale=stdev
+                offset=mean
+                self.np()[:]=scale*numpy.random.rand(*(self.np().shape))+offset
 
         self._all = all._All()
         self._ccops = ccops._CCOps()
@@ -195,8 +195,12 @@ class Jim():
 
         print('\n'.join(methods))
 
-    def np(self):
-        return _jl.np(self._jipjim)
+    def np(self,band=0):
+        """Return numpy array from Jim object
+        :band: band index (starting from 0)
+        :return: numpy array representation
+        """
+        return _jl.np(self._jipjim,band)
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.

@@ -3,6 +3,7 @@
 import pyjeo as _pj
 import numpy
 from scipy import signal
+from scipy import ndimage
 
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     """Subset raster dataset in spectral/temporal domain.
@@ -20,6 +21,8 @@ def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
         zero (pad with 0)
     :param otype: Data type for output image
     :return: filtered Jim object
+
+    see the corresponding method :py:meth:`.filter1d` for more information
     """
     kwargs.update({'filter': filter})
     if dz:
@@ -47,6 +50,8 @@ def filter2d(jim_object, filter, **kwargs):
         zero (pad with 0)
     :param otype: Data type for output image
     :return: filtered Jim object
+
+    see the corresponding method :py:meth:`.filter2d` for more information
     """
     if isinstance(filter,numpy.ndarray ):
         kwargs.update({'dy': filter.shape[0]})
@@ -415,10 +420,6 @@ class _NgbOps():
 
         **Morphological filters**
 
-        # .. note::
-        #     For a more comprehensive list morphological operators, please refer
-        #     to :ref:`advanced spatial morphological operators <mia_morpho2d>`.
-
         +---------------------+-----------------------------------------------+
         | filter              | description                                   |
         +=====================+===============================================+
@@ -444,6 +445,11 @@ class _NgbOps():
         (diameter) of 5 pixels::
 
             jim.filter2d('dilate',dx=5,dy=5,circular=True)
+
+
+        .. note::
+            For a more comprehensive list of morphological operators, please refer
+            to the corresponding methods, e.g., :py:meth:`~._NgbOps.morphoDilate`
 
         **Statistical filters**
 
