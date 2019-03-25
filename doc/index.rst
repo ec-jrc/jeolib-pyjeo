@@ -21,6 +21,15 @@
    2_tutorial
    3_reference
 
+
+
+.. only:: html
+
+   .. rubric:: Bibliographic references
+
+.. bibliography:: all.bib
+
+
 * :ref:`alpabetical-indexes`
   
 * :ref:`modindex`
