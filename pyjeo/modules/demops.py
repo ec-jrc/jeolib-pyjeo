@@ -286,14 +286,14 @@ def slopeDInf(jim_object):
     return _pj.Jim(jim_object._jipjim.demSlopeDInf())
 
 
-def strahler(d8):
+def strahler(jim_object):
     """Compute the Strahler thing.
 
-    :param d8: an image node holding d8 directions on river networks,
+    :param jim_object: an image node holding d8 directions on river networks,
         0 elsewhere
     :return: a Jim object
     """
-    return _pj.Jim(d8._jipjim.demStrahlerOrder())
+    return _pj.Jim(jim_object._jipjim.demStrahlerOrder())
 
 
 class _DEMOps():
@@ -496,7 +496,6 @@ class _DEMOps():
 
         It corresponds to the slope along the D8 direction.
 
-        :param jim_object: a Jim object
         :return: a Jim object
         """
         self._jim_object._set(self._jim_object._jipjim.demSlopeD8())
@@ -504,15 +503,12 @@ class _DEMOps():
     def slopeDInf(self):
         """Output the slope along the dinf drainage directions.
 
-        :param jim_object: a Jim object
         :return: a Jim object
         """
         self._jim_object._set(self._jim_object._jipjim.demSlopeDInf())
 
     def strahler(self):
-        """Compute the Strahler thing.
-
-        :param d8: an image node holding d8 directions on river networks,
+        """Compute the Strahler thing on a Jim object holding d8 directions on river networks,
             0 elsewhere
         :return: a Jim object
         """

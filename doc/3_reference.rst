@@ -5,6 +5,7 @@ Reference Manual
 .. toctree::
    :maxdepth: 4
 
+
 ****************************************************
 Data structures: rasters (Jim) and vectors (JimVect)
 ****************************************************
@@ -124,6 +125,15 @@ the projection epsg code, bounding box and number of rows and columns::
         #do stuff with jim ...
 
 
+=====================================
+Converting Jim object to numpy arrays
+=====================================
+
+.. method:: Jim.np()
+
+   Return numpy array from Jim object
+   :return: numpy array representation
+
 =================================
 Creating a JimVect data object
 =================================
@@ -151,9 +161,13 @@ Open a vector and read layer named lodi::
 
 .. _indexing:
 
-======================
+********************
 Indexing Jim objects
-======================
+********************
+
+=============
+Get Jim items
+=============
 
    .. method:: Jim[item]
 
@@ -189,6 +203,10 @@ Indexing Jim objects
         v=pj.JimVect(cfn)
         jimcloud=jim[v]
 
+=============
+Set Jim items
+=============
+
    .. method:: Jim[item]=
 
         Set items of the raster dataset. Item can be of type:
@@ -204,6 +222,13 @@ Indexing Jim objects
         Set first 10 columns in first 10 rows to 255::
 
           jim0[0:10,0:10]=255
+
+        Set all edge pixels to 0::
+
+          jim[0,:]=0
+          jim[:,0]=0
+          jim[-1,:]=0
+          jim[:,-1]=0
 
         Mask all values not within [0,250] and set to 255 (no data)::
 
@@ -532,16 +557,34 @@ Pixel operation methods on JimList
 Neighborhood operations
 ***********************
 
-================================
-Neighborhood operation functions
-================================
+===========================================
+Neighborhood operation from scipy (ndimage)
+===========================================
+
+The neighborhood operations from scipy ndimage can be applied to a :py:class:`Jim` object by using its numpy representation (:py:meth:`Jim.np`)
+
+Perform a Gaussian filter using a standard deviation (sigma) of 2::
+
+  jim=pj.Jim('/path/to/image.tif')
+  npfiltered=ndimage.gaussian_filter(jim.np(),2)
+  jim_filtered=pj.np2jim(npfiltered)
+
+The jim_filtered object does not contain projection and geotransform information. These can be easily obtained from the original jim object::
+
+  jim_filtered.properties.setProjection(jim.properties.getProjection())
+  jim_filtered.properties.setGeoTransform(jim.properties.getGeoTransform())
+
+
+=======================================
+Native neighborhood operation functions
+=======================================
 
 .. automodule:: ngbops
    :members:
 
-=====================================
-Neighborhood operation methods on Jim
-=====================================
+============================================
+Native neighborhood operation methods on Jim
+============================================
 
 .. autoclass:: _NgbOps
    :members:
@@ -557,6 +600,7 @@ Geometry operation functions
 
 .. automodule:: geometry
    :members:
+   :exclude-members: imageInsert, imageInsertCompose, imageFrameSet, imageFrameAdd, magnify 
 
 =================================
 Geometry operation methods on Jim
@@ -564,6 +608,7 @@ Geometry operation methods on Jim
 
 .. autoclass:: _Geometry
    :members:
+   :exclude-members: imageInsert, imageInsertCompose, imageFrameSet, imageFrameAdd, magnify 
 
 =====================================
 Geometry operation methods on JimVect
