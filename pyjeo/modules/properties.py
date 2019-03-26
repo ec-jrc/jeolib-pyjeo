@@ -376,6 +376,13 @@ class _PropertiesVect():
     def _set_caller(self, caller):
         self._jim_vect = caller
 
+    def isEmpty(self):
+        """Check if object contains features (non-emtpy)
+
+        :return: True if empty, False if not
+        """
+        return self._jim_vect._jipjimvect.isEmpty()
+
     def getLayerCount(self):
         """Get the number of layers of this dataset.
 

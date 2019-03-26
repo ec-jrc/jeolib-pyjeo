@@ -847,7 +847,10 @@ class _Geometry():
             else:
                 kwargs['threshold'] = -kwargs['threshold']
 
-        return _pj.JimVect(self._jim_object._jipjim.extractOgr(jim_ref._jim_vect, kwargs))
+        avect=self._jim_object._jipjim.extractOgr(jim_ref._jipjimvect, kwargs)
+        pjvect=_pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
 
     def extractSample(self, output, **kwargs):
         """Extract a random or grid sample from a raster dataset.
