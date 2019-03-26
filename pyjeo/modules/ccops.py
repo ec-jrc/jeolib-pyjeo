@@ -62,8 +62,8 @@ def labelFlatZonesGraph(jim_object, graph=8):
     return _pj.Jim(jim_object._jipjim.labelFlatZones(ngb._jipjim, 1, 1, 0))
 
 
-def labelAlphaCCsGraph(jim_object, localRange, globalRange, graph=8):
-    """Label each alpha-connected component with a unique label using graph-connectivity
+def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=8):
+    """Label each alpha-omega connected components with a unique label using graph-connectivity
 
     :param jim_object: a Jim object holding a grey level image
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
@@ -83,26 +83,35 @@ def labelAlphaCCsGraph(jim_object, localRange, globalRange, graph=8):
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    return _pj.Jim(jim_object._jipjim.labelAlphaCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
+    return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
-def labelConstrainedCCsMultiband(jim_object, se, ox, oy, oz, r1, r2):
-    """TODO
+def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph=8):
+    """Label each alpha-omega connected component with a unique label using graph-connectivity :cite:`soille2008pami`
 
-    :param jim_object: a multi-band Jim object
-    :param se:
-    :param ox:
-    :param oy:
-    :param oz:
-    :param r1:
-    :param r2:
+    :param jim_object: a Jim object holding a multi-band image
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
     :return: labeled Jim object
     """
-    if jim_object.properties.nrOfBand() < 2:
-        print("Jim image must be a multi-band image")
-        raise ValueError('Jim image must be a multi-band image')
+    # if jim_object.properties.nrOfBand() < 2:
+    #     print("Jim image must be a multi-band image")
+    #     raise ValueError('Jim image must be a multi-band image')
 
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(se._jipjim, ox, oy, oz, r1, r2))
+    if (graph==4):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0,1]=1
+        ngb[1,0]=1
+        ngb[1,2]=1
+        ngb[2,1]=1
+    elif (graph==8):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb.pixops.setData(1)
+        ngb[1,1]=0
+    else:
+        print("graph must be equal to 4 or 8")
+        raise ValueError('graph must be equal to 4 or 8')
+
+    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
 def distance2dEuclideanSquared(jim_object, band=0):

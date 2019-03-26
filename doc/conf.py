@@ -149,6 +149,18 @@ latex_elements = {
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
+ 'preamble': r'''
+     % make phantomsection empty inside figures
+     \usepackage{breakurl}
+     \usepackage[final]{pdfpages}
+     \usepackage{etoolbox}
+     \AtBeginEnvironment{figure}{\renewcommand{\phantomsection}{}}
+     \providecommand{\doi}[1]{doi: \href{http://dx.doi.org/#1}{\path{#1}}}
+     \usepackage{enumitem}
+     \usepackage{hyperref}
+     \setlistdepth{999}
+ '''
+
 
     # Latex figure (float) alignment
     #
