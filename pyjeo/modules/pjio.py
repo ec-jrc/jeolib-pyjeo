@@ -191,4 +191,6 @@ class _IOVect():
         """
         if name:
             kwargs.update({'name': name})
-        self._jim_vect._jipjimvect.dumpOgr(**kwargs)
+        if not kwargs:
+            kwargs={}
+        self._jim_vect._jipjimvect.dumpOgr(kwargs)

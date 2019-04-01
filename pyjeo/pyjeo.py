@@ -892,7 +892,7 @@ class _ParentVect(_jl.VectorOgr):
                 super(_ParentVect, self).__init__(kwargs)
         else:
             if isinstance(vector, JimVect):
-                super(_ParentVect, self).__init__(vector._jipjimvect)
+                super(_ParentVect, self).__init__(vector._jipjimvect,kwargs)
             else:
                 if vector:
                     super(_ParentVect, self).__init__(vector)

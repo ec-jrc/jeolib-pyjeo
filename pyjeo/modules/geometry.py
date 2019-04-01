@@ -449,6 +449,89 @@ def rasterize(jim_object, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
     ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
     return ajim
 
+def join(jvec1, jvec2, output, **kwargs):
+    """Join JimVect object with another JimVect object. A key field is used to find corresponding features in both objects.
+
+    :param jvec: first JimVect object to join
+    :param jvec: second JimVect object to join
+    :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+    :param kwargs: See table below
+    :return: joined JimVect object
+
+    +------------------+--------------------------------------------------+
+    | key              | value                                            |
+    +==================+==================================================+
+    | key              | Key(s) used to join (default is fid)             |
+    +------------------+--------------------------------------------------+
+    | method           | Join method: "INNER","OUTER_LEFT","OUTER_RIGHT", |
+    |                  | "OUTER_FULL". (default is INNER)                 |
+    +------------------+--------------------------------------------------+
+    | oformat          | Output vector dataset format                     |
+    +------------------+--------------------------------------------------+
+    | co               | Creation option for output vector dataset        |
+    +------------------+--------------------------------------------------+
+
+    .. |inner| image:: figures/join_inner.png
+         :width: 20 %
+    .. |outer_left| image:: figures/join_outer_left.png
+         :width: 20 %
+    .. |outer_right| image:: figures/join_outer_right.png
+         :width: 20 %
+    .. |outer_full| image:: figures/join_outer_full.png
+         :width: 20 %
+
+    The join methods currently supported are:
+
+    INNER |inner|: join two JimVect objects, keeping only those features for which identical keys in both objects are found
+
+    OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features from first object
+
+    OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features from second object
+
+    OUTER_FULL |outer_full|: join two JimVect objects, keeping all features from both objects
+
+    Example: join two vectors, based on the key 'id', which is a common field shared between v1 and v2. Use OUTER_FULL as the join method::
+
+      v1=pj.JimVect('/path/to/vector1.sqlite')
+      v2=pj.JimVect('/path/to/vector2.sqlite')
+      v3=pj.geometry.join(v1,v2,'/tmp/test.sqlite', oformat='SQLite', co=['OVERWRITE=YES'], key=['id'], method='OUTER_FULL')
+    """
+    kwargs.update({'output': output})
+    if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
+        avect=jvec1._jipjimvect.join(jvec2._jipjimvect,kwargs)
+        pjvect=_pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
+        # return _pj.JimVect(self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
+    else:
+        raise TypeError('Error: can only join two JimVect objects')
+
+def intersect(jvec, jim, output, **kwargs):
+    """Intersect JimVect object with Jim object and return only those features with an intersect
+
+    :param jvec: JimVect object to intersect
+    :param jim: Jim object with which to intersect
+    :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+    :param kwargs: See table below
+    :return: intersected JimVect object
+
+    +------------------+------------------------------------------------------+
+    | key              | value                                                |
+    +==================+======================================================+
+    | oformat          | Output vector dataset format                         |
+    +------------------+------------------------------------------------------+
+    | co               | Creation option for output vector dataset            |
+    +------------------+------------------------------------------------------+
+    """
+    kwargs.update({'output': output})
+    if isinstance(jim, _pj.Jim):
+        avect=jvec._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs)
+        pjvect=_pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
+    else:
+        raise TypeError('Error: can only intersect with Jim object')
+
 class _Geometry():
     """Define all Geometry methods."""
 
@@ -1304,36 +1387,17 @@ class _GeometryVect():
         else:
             raise TypeError('Error: can only intersect with Jim object')
 
-    def join(self, jvec, output, **kwargs):
-        """Join JimVect object with another JimVect object.
+    # def append(self, jvec):
+    #     """Append JimVect object with another JimVect object.
 
-        :param jim: Jim object to intersect
-        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
-        :param kwargs: See table below
-
-        +------------------+--------------------------------------------------+
-        | key              | value                                            |
-        +==================+==================================================+
-        | key              | Key(s) used to join (default is fid)             |
-        +------------------+--------------------------------------------------+
-        | method           | Join method: "INNER","OUTER_LEFT","OUTER_RIGHT", |
-        |                  | "OUTER_FULL". (default is INNER)                 |
-        +------------------+--------------------------------------------------+
-        | oformat          | Output vector dataset format                     |
-        +------------------+--------------------------------------------------+
-        | co               | Creation option for output vector dataset        |
-        +------------------+--------------------------------------------------+
-        """
-        kwargs.update({'output': output})
-        if isinstance(jvec, _pj.JimVect):
-            avect=self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs)
-            pjvect=_pj.JimVect()
-            pjvect._set(avect)
-            #todo: do not return but overwrite self
-            return pjvect
-            # return _pj.JimVect(self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
-        else:
-            raise TypeError('Error: can only join with JimVect object')
+    #     :param jvec: JimVect object to append
+    #     """
+    #     if isinstance(jvec, _pj.JimVect):
+    #         self._jim_vect._jipjimvect.append(jvec._jipjimvect)
+    #         # return pjvect
+    #         # return _pj.JimVect(self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
+    #     else:
+    #         raise TypeError('Error: can only join with JimVect object')
 
     def convexHull(self, output, **kwargs):
         """Create the convex hull on a JimVect object.

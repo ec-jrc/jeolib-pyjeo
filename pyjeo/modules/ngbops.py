@@ -495,9 +495,9 @@ class _NgbOps():
 
         Example:
 
-        Perform a median filter with kernel size of 5x5 pixels::
+        Perform a median filter with kernel size of 3x3 pixels::
 
-            jim.filter2d('median',dz=5)
+            jim.filter2d('median',dx=5, dy=5)
 
         **Wavelet filters**
 
