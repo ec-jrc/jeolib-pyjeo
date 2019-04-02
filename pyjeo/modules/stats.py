@@ -122,7 +122,6 @@ class _Stats():
             if f not in ['min','max','mean','median']:
                 kwargs.update({'function': f})
             if kwargs:
-                print("calling jiplib stats")
                 statDict.update(self._jim_object._jipjim.getStats(kwargs))
         return statDict
 

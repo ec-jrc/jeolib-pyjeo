@@ -11,6 +11,12 @@ def image2geo(jim_object, i, j):
     :param j: image row number (starting from 0)
     :return: georeferenced coordinates according to the object spatial
         reference system
+
+    Get upper left corner in georeferenced coordinates (in SRS of the Jim object)::
+
+      jim=pj.Jim('/path/to/raster.tif')
+      pj.geometry.image2geo(jim,0,0)
+
     """
     return jim_object._jipjim.image2geo(i, j)
 
@@ -24,6 +30,13 @@ def geo2image(jim_object, x, y):
     :param y: georeferenced coordinate in y according to the object spatial
         reference system
     :return: image coordinates (row and column, starting from 0)
+
+    Get column and row index (0 based) of some georeferenced coordinates x and y (in this case first pixel: 0, 0)::
+
+      jim=pj.Jim('/path/to/raster.tif')
+      x=jim.properties.getUlx()
+      y=jim.properties.getUly()
+      pj.geometry.geo2image(jim,x,y)
     """
     coords = jim_object._jipjim.geo2image(x, y)
     return [int(coords[0]), int(coords[1])]
@@ -62,9 +75,11 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
             if lrx is None:
                 lrx = jim_object.properties.nrOfCol()-1
             if lry is None:
-                lry = 0
+                lry = jim_object.properties.nrOfRow()-1
             if dx is None:
                 dx = 1
+            if dy is None:
+                dy = 1
         else:
             if ulx is None:
                 ulx = jim_object.properties.getUlx()
@@ -160,93 +175,66 @@ def cropBand(jim_object, band):
 
     Example:
 
-    Crop the first three bands from raster dataset jim0::
+    Crop the first three bands from raster dataset jim::
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim0.cropBand(band=[0,1,2])
+        jim=pj.Jim('/path/to/raster.tif')
+        jim3=pj.geometry.cropBand(jim,band=[0,1,2])
 
     """
     return _pj.Jim(jim_object._jipjim.cropBand({'band': band}))
 
 
-def cropBandRange(jim_object, startband, endband):
-    """Subset raster dataset.
+def stackBand(jim_object, jim_other=None, band=None):
+    """Stack bands of Jim objects
 
-    Subset raster dataset in range of spectral/temporal domain.
+    :param jim_object: a Jim or JimList object used for stacking the bands
+    :param jim_other: a Jim object from which to copy bands (optional)
+    :param band: List of band indices to stack (index is 0 based). Default is to stack all bands.
+    :return: Jim object with stacked bands
 
-    :param jim_object: a Jim object
-    :param startband: Start band sequence number (index is 0 based)
-    :param endband: End band sequence number (index is 0 based)
-    :return: Cropped subimage as Jim instance
-
-    Example:
-
-    Crop the first three bands from raster dataset jim0::
-
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim0.cropBandRange(startband=0,startBand=2)
-
-    """
-    return _pj.Jim(jim_object._jipjim.cropBand({'startband': startband,
-                                                'endband': endband}))
-
-
-def stackBand(jim_object, jim_other=None, band=None, **kwargs):
-    """Stack bands from another raster dataset to current raster dataset.
-
-    :param jim_object: a Jim object to stack bands
-    :param jim_other: a Jim object from which to copy bands
-    :param band: List of band indices to stack (index is 0 based)
-    :return: Cropped subimage as Jim instance
-
-    Example:
-
-    Append all the bands of raster dataset jim1 to image jim0::
+    Append all the bands of jim1 to jim0::
 
         jim0=pj.Jim('/path/to/raster0.tif')
         jim1=pj.Jim('/path/to/raster1.tif')
-        pj.geometry.stackBand(jim0,jim1)
+        jim_stacked=pj.geometry.stackBand(jim0,jim1)
+
+    Stack all bands of the JimList, returning a multi-band Jim object::
+
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
+        jimlist=pj.JimList([jim0,jim1])
+        jim_stacked=pj.geometry.stackBand(jimlist)
 
     Append the first three bands of raster dataset jim1 to the image jim0::
 
         jim0=pj.Jim('/path/to/raster0.tif')
         jim1=pj.Jim('/path/to/raster1.tif')
-        pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
+        jim_stacked=pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
+
     """
+    theDict={}
     if isinstance(jim_object, _pj.JimList):
         if band:
-            kwargs.update({'band': band})
-        return _pj.Jim(jim_object._jipjim.stackBand(kwargs))
-    else:
+            retJim=_pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
+        else:
+            retJim=_pj.Jim(jim_object._jipjimlist.stackBand())
+        if isinstance(jim_other, _pj.Jim):
+            if band:
+                return retJim.geometry.stackBand(jim_other, band=band)
+            else:
+                retJim.geometry.stackBand(jim_other)
+                return retJim
+        else:
+            return retJim
+    elif isinstance(jim_other, _pj.Jim):
         if band:
             return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim,
                                                         {'band': band}))
         else:
             return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim))
-
-
-def stackBandRange(jim_object, jim_other, startband, endband):
-    """Subset raster dataset.
-
-    Stack range of bands from another raster dataset to current raster dataset.
-
-    :param jim_object: a Jim object to stack bands
-    :param jim_other: a Jim object from which to copy bands
-    :param startband: Start band sequence number (index is 0 based)
-    :param endband: End band sequence number (index is 0 based)
-    :return: Cropped subimage as Jim instance
-
-    Example:
-
-    Append the first three bands of raster dataset jim1 to image jim0::
-
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        pj.geometry.stackBand(jim0,jim1,startband=0,endband=0)
-    """
-    return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim,
-                                                {'startband': startband,
-                                                 'endband': endband}))
+    else:
+        print("Error: expected a Jim object")
+        raise TypeError('Error: expected a Jim object')
 
 
 def warp(jim_object, t_srs, **kwargs):
@@ -286,7 +274,7 @@ def warp(jim_object, t_srs, **kwargs):
     spatial reference system (epsg:3035)::
 
         jim = pj.Jim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
-        jim.warp('epsg:3035', s_srs='epsg:4326')
+        jim_warped=pj.geometry.warp(jim, 'epsg:3035', s_srs='epsg:4326')
 
     """
     kwargs.update({'t_srs': t_srs})
@@ -416,38 +404,38 @@ def polygonize(jim_object, output, **kwargs):
         pjvect._set(avect)
         return pjvect
     else:
-        raise TypeError('Error: can only intersect with Jim object')
+        raise TypeError('Error: can only polygonize Jim object')
 
 
-def rasterize(jim_object, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
-    """Rasterize Jim object based on GDALRasterizeLayersBuf
+# def rasterize(jim_object, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
+#     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
-    :param jim_object: a template Jim object
-    :param jim_vect: JimVect object that needs to be polygonized
-    :param burnValue: burn value
-    :param eo: option (default is ALL_TOUCHED)
-    :param ln: layer names (optional)
-    :return: rasterized Jim object
+#     :param jim_object: a template Jim object
+#     :param jim_vect: JimVect object that needs to be polygonized
+#     :param burnValue: burn value
+#     :param eo: option (default is ALL_TOUCHED)
+#     :param ln: layer names (optional)
+#     :return: rasterized Jim object
 
-    .. note::
-       Possible values for the key 'eo' are:
+#     .. note::
+#        Possible values for the key 'eo' are:
 
-       ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+#        ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
-       For instance you can use 'eo':'ATTRIBUTE=fieldname'
-    """
-    if not isinstance(jim_object, _pj.Jim):
-        raise TypeError('Error: template must be a Jim object')
-    if not isinstance(jim_vect, _pj.JimVect):
-        raise TypeError('Error: can only rasterize a JimVect')
+#        For instance you can use 'eo':'ATTRIBUTE=fieldname'
+#     """
+#     if not isinstance(jim_object, _pj.Jim):
+#         raise TypeError('Error: template must be a Jim object')
+#     if not isinstance(jim_vect, _pj.JimVect):
+#         raise TypeError('Error: can only rasterize a JimVect')
 
-    ajim=_pj.Jim(jim_object)
-    kwargs={}
-    kwargs.update({'burn':float(burnValue)})
-    kwargs.update({'eo':eo})
-    kwargs.update({'ln':ln})
-    ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
-    return ajim
+#     ajim=_pj.Jim(jim_object)
+#     kwargs={}
+#     kwargs.update({'burn':float(burnValue)})
+#     kwargs.update({'eo':eo})
+#     kwargs.update({'ln':ln})
+#     ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
+#     return ajim
 
 def join(jvec1, jvec2, output, **kwargs):
     """Join JimVect object with another JimVect object. A key field is used to find corresponding features in both objects.
@@ -522,6 +510,14 @@ def intersect(jvec, jim, output, **kwargs):
     +------------------+------------------------------------------------------+
     | co               | Creation option for output vector dataset            |
     +------------------+------------------------------------------------------+
+
+    Example: intersect a sample with a Jim object::
+
+      jim=pj.Jim('/path/to/raster.tif')
+      v=pj.JimVect('/path/to/vector.sqlite')
+      sampleintersect = pj.geometry.intersect(v, jim, output='/vsimem/intersect', oformat='SQLite',co=['OVERWRITE=YES'])
+      sampleintersect.io.write('/path/to/output.sqlite')
+
     """
     kwargs.update({'output': output})
     if isinstance(jim, _pj.Jim):
@@ -715,29 +711,36 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_cropBand({'band': band})
 
-    def cropBandRange(self, startband, endband):
-        """Subset raster dataset.
 
-        Subset raster dataset in range of spectral/temporal domain.
+    """Stack bands of Jim objects
 
-        Modifies the instance on which the method was called.
+    :param jim_object: a Jim or JimList object used for stacking the bands
+    :param jim_other: a Jim object from which to copy bands (optional)
+    :param band: List of band indices to stack (index is 0 based). Default is to stack all bands.
+    :return: Jim object with stacked bands
 
-        :param startband: Start band sequence number (index is 0 based)
-        :param endband: End band sequence number (index is 0 based)
+    Append all the bands of jim1 to jim0::
 
-        Example:
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
+        jim_stacked=pj.geometry.stackBand(jim0,jim1)
 
-        Crop the first three bands from raster dataset jim0::
+    Stack all bands of the JimList, returning a multi-band Jim object::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim0.cropBandRange(startband=0,startBand=2)
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
+        jimlist=pj.JimList([jim0,jim1])
+        jim_stacked=pj.geometry.stackBand(jimlist)
 
-        """
-        self._jim_object._jipjim.d_cropBand({'startband': startband,
-                                             'endband': endband})
+    Append the first three bands of raster dataset jim1 to the image jim0::
 
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
+        jim_stacked=pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
+    """
     def stackBand(self, jim_other, band=None):
-        """Stack bands from another raster dataset to current raster dataset.
+
+        """Stack the bands of another Jim object to the current Jim object.
 
         Modifies the instance on which the method was called.
 
@@ -746,49 +749,23 @@ class _Geometry():
 
         Example:
 
-        Append all the bands of raster dataset jim1 to the current image jim0::
+        Append all the bands of a multiband Jim object jim1 to the current single band Jim object jim0::
 
-            jim0 = pj.Jim('/path/to/raster0.tif')
-            jim1 = pj.Jim('/path/to/raster1.tif')
-            jim0.stackBand(jim1)
+            jim0 = pj.Jim('/path/to/singleband.tif')
+            jim1 = pj.Jim('/path/to/multiband.tif')
+            jim0.geometry.stackBand(jim1)
 
-        Append the first three bands of raster dataset jim1 to the current
-        image jim0::
+        Append the first three bands of raster dataset jim1 to the current Jim object jim0::
 
-            jim0 = pj.Jim('/path/to/raster0.tif')
-            jim1 = pj.Jim('/path/to/raster1.tif')
-            jim0.stackBand(jim1, band=[0, 1, 2])
+            jim0 = pj.Jim('/path/to/singleband.tif')
+            jim1 = pj.Jim('/path/to/multiband.tif')
+            jim0.geometry.stackBand(jim1, band=[0, 1, 2])
         """
         if band:
             self._jim_object._jipjim.d_stackBand(jim_other._jipjim,
                                                  {'band': band})
         else:
             self._jim_object._jipjim.d_stackBand(jim_other._jipjim)
-
-    def stackBandRange(self, jim_other, startband, endband):
-        """Subset raster dataset.
-
-        Stack range of bands from another raster dataset to current raster
-        dataset.
-
-        Modifies the instance on which the method was called.
-
-        :param jim_other: a Jim object from which to copy bands
-        :param startband: Start band sequence number (index is 0 based)
-        :param endband: End band sequence number (index is 0 based)
-
-        Example:
-
-        Append the first three bands of raster dataset jim1 to the current
-        image jim0::
-
-            jim0 = pj.Jim('/path/to/raster0.tif')
-            jim1 = pj.Jim('/path/to/raster1.tif')
-            jim0.stackBandRange(jim1, startband=0, endband=2)
-        """
-        self._jim_object._jipjim.d_stackBand(jim_other._jipjim,
-                                             {'startband': startband,
-                                              'endband': endband})
 
     def extractOgr(self, jim_ref, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
@@ -913,7 +890,7 @@ class _Geometry():
 
         Example:
 
-        Extract the mean value of the pixels within the polygon of the provided reference vector. Exclude the pixels within a buffer of 10m of the polygon boundary. Use a temporary vector in memory for the calculation. Write the result to the final destination on disk::
+        Extract the mean value of the pixels within the polygon of the provided reference vector. Exclude the pixels within a buffer of 10m of the polygon boundary. Use a temporary vector in memory for the calculation. Then write the result to the final destination on disk::
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
@@ -1246,6 +1223,12 @@ class _Geometry():
         :param j: image row number (starting from 0)
         :return: georeferenced coordinates according to the object spatial
             reference system
+
+        Get upper left corner in georeferenced coordinates (in SRS of the Jim object)::
+
+          jim=pj.Jim('/path/to/raster.tif')
+          jim.geometry.image2geo(0,0)
+
         """
         return self._jim_object._jipjim.image2geo(i, j)
 
@@ -1258,6 +1241,13 @@ class _Geometry():
         :param y: georeferenced coordinate in y according to the object spatial
             reference system
         :return: image coordinates (row and column, starting from 0)
+
+        Get column and row index (0 based) of some georeferenced coordinates x and y (in this case first pixel: 0, 0)::
+
+          jim=pj.Jim('/path/to/raster.tif')
+          x=jim.properties.getUlx()
+          y=jim.properties.getUly()
+          jim.geometry.geo2image(x,y)
         """
         coord = self._jim_object._jipjim.geo2image(x, y)
         return [int(coord[0]), int(coord[1])]
@@ -1283,6 +1273,14 @@ class _Geometry():
         +------------------+------------------------------------------------------+
         | nodata           | Disgard this nodata value when creating polygons     |
         +------------------+------------------------------------------------------+
+
+        Example: create a polygon vector file from a Sentinel-2 classification raster dataset, where clouds are represented by the pixel value 9::
+          sclfn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L2A/2018/07/01/065/S2A_MSIL2A_20180701T102021_N0208_R065_T33UUT_20180701T141038.SAFE/GRANULE/L2A_T33UUT_A015792_20180701T102404/IMG_DATA/R20m/T33UUT_20180701T102021_SCL_20m.jp2'
+          sclJim=pj.Jim(sclfn)
+          sclJim[sclJim!=9]=0
+          sclJim[sclJim==9]=1
+          vcloud=sclJim.geometry.polygonize('/vsimem/cloud.sqlite',name='cloud',nodata=0)
+          vcloud.io.write('/path/to/cloud.sqlite')
         """
         kwargs.update({'output': output})
         avect=self._jim_object._jipjim.polygonize(kwargs)
@@ -1290,36 +1288,35 @@ class _Geometry():
         pjvect._set(avect)
         return pjvect
 
-    def rasterize(self, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
-        """Rasterize Jim object based on GDALRasterizeLayersBuf
+    #todo: to be tested (we can also use jim[jimVect] instead...)
+    # def rasterize(self, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
+    #     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
-    CPLErr Jim::rasterizeBuf(VectorOgr& ogrReader, double burnValue, const std::vector<std::string>& eoption, const std::vector<std::string>& layernames ){
+    # CPLErr Jim::rasterizeBuf(VectorOgr& ogrReader, double burnValue, const std::vector<std::string>& eoption, const std::vector<std::string>& layernames ){
 
-        :param jim_vect: JimVect object that needs to be polygonized
-        :param burnValue: burn value
-        :param eo: option (default is ALL_TOUCHED)
-        :param ln: layer names (optional)
+    #     :param jim_vect: JimVect object that needs to be polygonized
+    #     :param burnValue: burn value
+    #     :param eo: option (default is ALL_TOUCHED)
+    #     :param ln: layer names (optional)
 
-        .. note::
-          Possible values for the key 'eo' are:
+    #     .. note::
+    #       Possible values for the key 'eo' are:
 
-          ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+    #       ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
-          For instance you can use 'eo':'ATTRIBUTE=fieldname'
-        """
+    #       For instance you can use 'eo':'ATTRIBUTE=fieldname'
+    #     """
 
-        print(jim_vect)
-        print("type of jim_vect: {}".format(type(jim_vect)))
-        if not isinstance(jim_vect, _pj.JimVect):
-            raise TypeError('Error: can only rasterize JimVect')
+    #     print(jim_vect)
+    #     print("type of jim_vect: {}".format(type(jim_vect)))
+    #     if not isinstance(jim_vect, _pj.JimVect):
+    #         raise TypeError('Error: can only rasterize JimVect')
 
-        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,float(burnValue))
-        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,float(burnValue),eo,ln)
-        kwargs={}
-        kwargs.update({'burn':float(burnValue)})
-        kwargs.update({'eo':eo})
-        kwargs.update({'ln':ln})
-        self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
+    #     kwargs={}
+    #     kwargs.update({'burn':float(burnValue)})
+    #     kwargs.update({'eo':eo})
+    #     kwargs.update({'ln':ln})
+    #     self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
 
 class _GeometryList():
     """Define all Geometry methods for JimLists."""
@@ -1331,8 +1328,32 @@ class _GeometryList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
-    def stackBand(self, **kwargs):
-        return _pj.Jim(self._jim_list._jipjimlist.stackBand(kwargs))
+    def stackBand(self, band=None):
+        """Stack bands from another raster dataset to current raster dataset.
+
+        :param jim_object: a Jim object to stack bands
+        :param jim_other: a Jim object from which to copy bands
+        :param band: List of band indices to stack (index is 0 based)
+        :return: multiband Jim object
+
+        Create a multiband Jim object from a list of two Jim objects::
+
+            jim0=pj.Jim('/path/to/raster0.tif')
+            jim1=pj.Jim('/path/to/raster1.tif')
+            jim_stacked=pj.JimList([jim0,jim1]).geometry.stackBand()
+
+        Create a multiband Jim object from a JimList object, selecting the first and third band::
+
+            jim0=pj.Jim('/path/to/raster0.tif')
+            jim1=pj.Jim('/path/to/raster1.tif')
+            jim2=pj.Jim('/path/to/raster2.tif')
+            jimlist=pj.JimList([jim0,jim1,jim2])
+            jim_stacked=jimlist.geometry.stackBand([0,2])
+        """
+        if band:
+            return _pj.Jim(self._jim_list._jipjimlist.stackBand({'band':band}))
+        else:
+            return _pj.Jim(self._jim_list._jipjimlist.stackBand())
 
     def extractOgr(self, sample, rule, output, **kwargs):
         if isinstance(sample, _pj.JimVect):
@@ -1350,6 +1371,7 @@ class _GeometryList():
             # return _pj.JimVect(self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,kwargs))
         else:
             raise TypeError('Error: extractOgr must operate on vector sample of type JimVect')
+
 
 class _GeometryVect():
     """Define all Geometry methods for JimVects."""

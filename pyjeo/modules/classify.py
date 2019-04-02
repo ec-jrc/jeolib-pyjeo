@@ -85,11 +85,11 @@ class _Classify():
     def _set_caller(self, caller):
         self._jim_object = caller
 
-    def trainSML(self, jimlist, output, **kwargs):
+    def trainSML(self, reference, output=None, **kwargs):
         """Train a supervised symbolic machine learning (SML) classifier based on a reference :py:class:`JimList` object
 
-        :param jimlist: list of Jim objects (can be a list of a single Jim object) containing reference raster datasets
-        :param output: output filepath where model will be written
+        :param reference: (list of) Jim objects containing reference raster dataset(s)
+        :param output: output filepath where trained model will be written (leave empty to return as a string)
         :param kwargs: See below
 
         keyword arguments:
@@ -100,9 +100,10 @@ class _Classify():
         srcnodata  No data value in source (do not consider for training)
         =========  =====================================================================================================================
 
-        Example: train a Jim object (jim) with four Sentinel-2 bands using a reference image (jim_ref).
+        Example: train a Jim object (jim) with four Sentinel-2 bands using a single reference image (e.g., corine land cover)::
 
-          jim.classify.trainSML(reflist,output='/path/to/model.txt',classes=sorted(classDict.values()))
+          corine=pj.Jim('/path/to/corine.tif')
+          jim.classify.trainSML(corine,output='/path/to/model.txt',classes=[12, 40])
 
         Use :py:meth:`~_Classify.sml` to perform the classification
 
@@ -121,10 +122,14 @@ class _Classify():
         #convert list of Jim to JimList
         if not isinstance(jimlist, _pj.JimList):
             jimlist=_pj.JimList(jimlist)
-        kwargs.update({'method': "sml", 'model': output})
+        kwargs.update({'method': "sml"})
         if 'classes' in kwargs:
             kwargs.update({'class': kwargs.pop('classes')})
-        self._jim_object._jipjim.train(jimlist._jipjimlist,kwargs)
+        if output:
+            kwargs.update({'model': output})
+            self._jim_object._jipjim.train(jimlist._jipjimlist,kwargs)
+        else:
+            self._jim_object._jipjim.trainSML(jimlist._jipjimlist,kwargs)
 
     def classify(self, method, model, **kwargs):
         """Supervised classification of a raster dataset.

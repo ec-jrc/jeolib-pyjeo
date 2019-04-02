@@ -144,7 +144,11 @@ Creating a JimVect data object
 
 :param filename:        Path to a vector dataset
 :param ln:              Layer name to read (default is to read all layers)
-:param attributeFilter: Set an attribute filter
+:param attributeFilter: Set an attribute filter in restricted SQL WHERE format
+:ulx:                   Upper left x value bounding box
+:uly:                   Upper left y value bounding box
+:lrx:                   Lower right x value bounding box
+:lry:                   Lower right y value bounding box
 :param noread:          Set this flag to True to not read data when opening
 :return: a JimVect object
 
@@ -152,11 +156,15 @@ Example:
 
 Open a vector and read all layers::
 
-  v0=pj.JimVect('/path/to/vector.sqlite')
+  v=pj.JimVect('/path/to/vector.sqlite')
 
 Open a vector and read layer named lodi::
 
-  v0=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
+  v=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
+
+Open a vector and use an attribute filter (the field intern_id must be between 10000 and 10500)::
+
+  v=pj.JimVect('/path/to/vector.sqlite', attributeFilter='(intern_id>10000) AND (intern_id<10500)')
 
 
 .. _indexing:
