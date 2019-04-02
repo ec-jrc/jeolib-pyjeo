@@ -66,6 +66,8 @@ def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=8):
     """Label each alpha-omega connected components with a unique label using graph-connectivity
 
     :param jim_object: a Jim object holding a grey level image
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
     :return: labeled Jim object
     """
@@ -90,6 +92,8 @@ def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph
     """Label each alpha-omega connected component with a unique label using graph-connectivity :cite:`soille2008pami`
 
     :param jim_object: a Jim object holding a multi-band image
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
     :return: labeled Jim object
     """
@@ -112,6 +116,70 @@ def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph
         raise ValueError('graph must be equal to 4 or 8')
 
     return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, localRange, globalRange))
+
+
+def labelStronglyCCsMultibandGraph(jim_object, localRange, graph=8):
+    """Label each strongly alpha-connected component with a unique label using graph-connectivity :cite:`soille2008pami`
+
+    :param jim_object: a Jim object holding a multi-band image
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :return: labeled Jim object
+    """
+    # if jim_object.properties.nrOfBand() < 2:
+    #     print("Jim image must be a multi-band image")
+    #     raise ValueError('Jim image must be a multi-band image')
+
+    if (graph==4):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0,1]=1
+        ngb[1,0]=1
+        ngb[1,2]=1
+        ngb[2,1]=1
+    elif (graph==8):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb.pixops.setData(1)
+        ngb[1,1]=0
+    else:
+        print("graph must be equal to 4 or 8")
+        raise ValueError('graph must be equal to 4 or 8')
+
+    return _pj.Jim(jim_object._jipjim.labelStronglyCCsMultiband(ngb._jipjim, 1, 1, 0, localRange))
+
+
+def segmentImageMultiband(jim_object, localRange, regionSize, contrast=0, version=0, graph=8, dataFileNamePrefix=""):
+    """Multiband image segmentation based on the method described in :cite:`brunner-soille2007`
+
+The contrast threshold value is used for merging the regions with similar contrast as follows: < 0 (do not perform region merge), 0 (determine best contrast value automatically), and > 0 (use this value as threshold value).  Authorised version values are: 0 (compare to whole region), 1 (compare to original seeds), and 2 (compare to pixel neighbours).  If the optional string dataFileNamePrefix is given, data files to use with gnuplot are stored in dataFileNamePrefix_xxx.dat, otherwise data files are not generated (default).
+
+    :param jim_object: a Jim object holding a multi-band image
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+    :param regionSize: integer value for minimum size of iso-intensity region in output image (must be >= 2 pixels)
+    :param contrast: (default is 0)
+    :param version:  (default is 0)
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :param dataFileName:  
+    :return: labeled Jim object
+    """
+    # if jim_object.properties.nrOfBand() < 2:
+    #     print("Jim image must be a multi-band image")
+    #     raise ValueError('Jim image must be a multi-band image')
+
+    if (graph==4):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0,1]=1
+        ngb[1,0]=1
+        ngb[1,2]=1
+        ngb[2,1]=1
+    elif (graph==8):
+        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb.pixops.setData(1)
+        ngb[1,1]=0
+    else:
+        print("graph must be equal to 4 or 8")
+        raise ValueError('graph must be equal to 4 or 8')
+
+    return _pj.Jim(jim_object._jipjim.segmentImageMultiband(graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
 
 
 def distance2dEuclideanSquared(jim_object, band=0):
