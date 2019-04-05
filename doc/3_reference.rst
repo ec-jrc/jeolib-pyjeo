@@ -39,6 +39,7 @@ Create Jim object from file
     resample Resample algorithm used for reading pixel data
     extent   filename of a vector dataset from which to get boundary constraint
     nodata   Nodata value to put in image
+    nogeo    Use image coordinates (index starts from 0,0 for upper left pixel)
     noread   Set this flag to True to not read data when opening
     ======== ===================================================
 
@@ -67,11 +68,17 @@ Create Jim object from file
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
         jim0=pj.Jim(ifn,'noread'=True)
-        ULX=jim0.getUlx()
-        ULY=jim0.getUly()
-        LRX=jim0.getUlx()+100*jim0.getDeltaX()
-        LRY=jim0.getUly()-100*jim0.getDeltaY()
+        ULX=jim0.properties.getUlx()
+        ULY=jim0.properties.getUly()
+        LRX=jim0.properties.getUlx()+100*jim0.properties.getDeltaX()
+        LRY=jim0.properties.getUly()-100*jim0.properties.getDeltaY()
         jim=pj.Jim(ifn,ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,dx=5,dy=5,resample='GRIORA_Cubic')
+        #do stuff with jim ...
+
+   Create Jim image object by opening an existing file, reading 10 columns and row, starting from the sixth (index=5) row and column::
+
+        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        jim=pj.Jim(ifn,ulx=5,uly=5,lrx=14,lry=14)
         #do stuff with jim ...
 
 .. _create_Jim_new:
