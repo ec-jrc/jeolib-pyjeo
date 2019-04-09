@@ -879,12 +879,17 @@ class _ParentVect(_jl.VectorOgr):
 
         :param vector: path to a vector or another JimVect object as a basis for
             the JimVect object
+        :param output: path to an output vector in case another JimVect object was provided (copy constructor)
         """
         # super(_ParentVect, self).__init__(vector, *args)
         if kwargs:
             if vector:
                 if isinstance(vector, JimVect):
-                    super(_ParentVect, self).__init__(vector._jipjimvect,kwargs)
+                    if 'output' in kwargs.keys():
+                        kwargs.update({'filename':kwargs.pop('output',None)})
+                        super(_ParentVect, self).__init__(vector._jipjimvect,kwargs)
+                    else:
+                        print("Error: output required for copy constructor")
                 else:
                     kwargs.update({'filename': vector})
                     super(_ParentVect, self).__init__(kwargs)

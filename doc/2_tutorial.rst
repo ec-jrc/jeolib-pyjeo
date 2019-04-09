@@ -13,21 +13,21 @@ How to create basic data structures (Jim) and (JimVect)
 Creating a Jim raster data object
 =================================
 
-To create a new Jim raster data object, use the constructor :py:meth:`Jim`. A Jim object can be created by opening an existing raster data :ref:`from file <create_Jim_from_file>`. Alternatively, a :ref:`new Jim <create_Jim_new>` object can be created by defining image attributes.
+To create a new Jim object, use the constructor :py:meth:`Jim`. A Jim object can be created by opening an existing raster data :ref:`from file <create_Jim_from_file>`. Alternatively, a :ref:`new Jim <create_Jim_new>` object can be created by defining image attributes.
 
 Creating a Jim raster data object from file
 ===========================================
 
    Examples:
 
-   Create Jim image object by opening an existing file (file content will
+   Create Jim object by opening an existing file (file content will
    automatically be read in memory)::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
         jim=pj.Jim(ifn)
         #do stuff with jim ...
 
-   Create Jim image object by opening an existing file for specific region of
+   Create Jim object by opening an existing file for specific region of
    interest and spatial resolution using cubic convolution resampling::
 
         ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
@@ -37,6 +37,12 @@ Creating a Jim raster data object from file
         LRX=jim0.properties.getUlx()+100*jim0.properties.getDeltaX()
         LRY=jim0.properties.getUly()-100*jim0.properties.getDeltaY()
         jim=pj.Jim(ifn,ulx=ULX,uly=ULY,lrx=LRX,lry=LRY,dx=5,dy=5,resample='GRIORA_Cubic')
+        #do stuff with jim ...
+
+   Create Jim object by opening an existing file, reading 10 columns and row, starting from the sixth (index=5) row and column. Here we use  pixel coordinates instead of georeferenced coordinates to define the bounding box (nogeo=True)::
+
+        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        jim=pj.Jim(ifn,ulx=5,uly=5,lrx=14,lry=14,nogeo=True)
         #do stuff with jim ...
 
 
