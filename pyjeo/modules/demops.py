@@ -195,7 +195,7 @@ def flowDirectionDInf(jim_object):
 
 
 def flowDirectionFlat(jim_object, dem_jim, graph):
-    """See publication (Soille, 2002).
+    """See publication :cite:`soille2002dgci`)
 
     Flat regions (i.e., no flow direction) must be of type USHORT (with flat
     regions set to 65533) or INT32 (with flat regions set to INT32 MAX-2).
@@ -237,7 +237,7 @@ def flowNew(jim_object, drain_image, graph=8):
 
 
 def pitRemovalCarve(labeled_jim, grey_jim, graph, maxfl):
-    """Use for carving, algorithm description in Soille et al. 2003.
+    """Use for carving, algorithm description in  :cite:`soille-vogt-colombo2003wrr` and :cite:`soille2004prl`
 
     :param labeled_jim: an image node with labelled relevant minima
     :param grey_jim: an image node with grey tone image
@@ -250,7 +250,7 @@ def pitRemovalCarve(labeled_jim, grey_jim, graph, maxfl):
 
 
 def pitRemovalOptimal(labeled_jim, grey_jim, graph, maxfl, flag):
-    """Optimal removal of spurious pits in grid digital elevation models.
+    """Optimal removal of spurious pits in grid digital elevation models :cite:`soille2004wrr`.
 
     Note that irrelevant minima must have all an intensity greater than that
     of the lowest minimum! The actual carved image is stored in imr.
