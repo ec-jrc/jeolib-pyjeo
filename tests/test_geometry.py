@@ -41,11 +41,25 @@ class BadGeometry(unittest.TestCase):
     def test_warp(self):
         """Test the warp method."""
         jim0 = pj.Jim(rasterfn)
-        jim_warped=pj.geometry.warp(jim0,'epsg:4326')
+        jim_warped = pj.geometry.warp(jim0,'epsg:4326')
+
+        assert jim_warped.properties.getProjection()[-7:-3] == '4326', \
+            'Error in geometry.warp(): EPSG not changed'
+
         jim_warped.geometry.warp('epsg:3035')
-        jim_warped.geometry.crop(ulx=jim0.properties.getUlx(),uly=jim0.properties.getUly(),lrx=jim0.properties.getLrx(),lry=jim0.properties.getLry(),dx=jim0.properties.getDeltaX(),dy=jim0.properties.getDeltaY())
-        # jim_warped.geometry.crop(ulx=jim0.properties.getUlx(),uly=jim0.properties.getUly(),lrx=jim0.properties.getLrx(),lry=jim0.properties.getLry(),dx=500,dy=500)
-        # jim_warped.geometry.crop(dx=500,dy=500)
+
+        jim_warped.geometry.crop(ulx=jim0.properties.getUlx(),
+                                 uly=jim0.properties.getUly(),
+                                 lrx=jim0.properties.getLrx(),
+                                 lry=jim0.properties.getLry(),
+                                 dx=jim0.properties.getDeltaX(),
+                                 dy=jim0.properties.getDeltaY())
+        jim0.geometry.crop(ulx=jim0.properties.getUlx(),
+                           uly=jim0.properties.getUly(),
+                           lrx=jim0.properties.getLrx(),
+                           lry=jim0.properties.getLry(),
+                           dx=jim0.properties.getDeltaX(),
+                           dy=jim0.properties.getDeltaY())
         jim_warped.io.write(warpedfn)
         assert jim0.properties.getBBox() == jim_warped.properties.getBBox(), \
             'Error in geometry.warp(): BBox'
@@ -53,18 +67,21 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.warp(): nrOfCol'
         assert jim0.properties.nrOfRow() == jim_warped.properties.nrOfRow(), \
             'Error in geometry.warp(): nrOfRow'
-        assert jim0.properties.nrOfBand() == jim_warped.properties.nrOfBand(), \
+        assert jim0.properties.nrOfBand() == jim_warped.properties.nrOfBand(),\
             'Error in geometry.warp(): nrOfBand'
 
     def test_extractOgr(self):
         """Test the extractOgr method."""
         jim0 = pj.Jim(rasterfn)
-        sample=pj.JimVect(vectorfn)
-        for band in range(0,12):
-            jl0=pj.JimList([pj.geometry.cropBand(jim0,band)])
-            bandname='B'+str(band)
+        sample = pj.JimVect(vectorfn)
+        for band in range(0, 12):
+            jl0 = pj.JimList([pj.geometry.cropBand(jim0, band)])
+            bandname = 'B' + str(band)
             if not band:
-                v=jl0.geometry.extractOgr(sample,rule='mean',output=outputfn,oformat='SQLite',co=['OVERWRITE=YES'],bandname=bandname,fid='fid')
+                v = jl0.geometry.extractOgr(sample, rule='mean',
+                                            output=outputfn, oformat='SQLite',
+                                            co=['OVERWRITE=YES'],
+                                            bandname=bandname, fid='fid')
                 v.io.write()
                 assert v.properties.getFeatureCount() == 11, \
                     'Error in geometry.extractOgr() feature count (1)'
@@ -72,7 +89,7 @@ class BadGeometry(unittest.TestCase):
                     'Error in geometry.extractOgr() field names (1)'
                 v.io.close()
             else:
-                v1=pj.JimVect(outputfn)
+                v1 = pj.JimVect(outputfn)
                 v2=jl0.geometry.extractOgr(sample,rule='mean',output='/vsimem/v2.sqlite',oformat='SQLite',co=['OVERWRITE=YES'],bandname=bandname,fid='fid')
                 v=pj.geometry.join(v1, v2,output=outputfn,oformat='SQLite',co=['OVERWRITE=YES'],key=['fid']);
                 assert v.properties.getFeatureCount() == 11, \
