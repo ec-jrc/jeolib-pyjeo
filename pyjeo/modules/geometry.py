@@ -115,6 +115,23 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
             uly = upperLeft[1]
             lrx = lowerRight[0]+jim_object.properties.getDeltaX()/2.0
             lry = lowerRight[1]-jim_object.properties.getDeltaY()/2.0
+            if dx is None:
+                dx = 1
+            if dy is None:
+                dy = 1
+        else:
+            if ulx is None:
+                ulx = jim_object.properties.getUlx()
+            if uly is None:
+                uly = jim_object.properties.getUly()
+            if lrx is None:
+                lrx = jim_object.properties.getLrx()
+            if lry is None:
+                lry = jim_object.properties.getLry()
+            if dx is None:
+                dx = jim_object.properties.getDeltaX()
+            if dy is None:
+                dy = jim_object.properties.getDeltaY()
         kwargs.update({'ulx': ulx})
         kwargs.update({'uly': uly})
         kwargs.update({'lrx': lrx})
@@ -265,7 +282,7 @@ def warp(jim_object, t_srs, **kwargs):
     system::
 
         jim = pj.Jim('/path/to/file.tif')
-        jim.warp('epsg:3035')
+        jim_warped=pj.geometry.warp(jim, 'epsg:3035')
 
     Read a raster dataset from disk that is in lat lon (epsg:4326), select
     a bounding box in a different spatial reference system (epsg:3035).
@@ -607,6 +624,8 @@ class _Geometry():
                     lry = 0
                 if dx is None:
                     dx = 1
+                if dy is None:
+                    dy = 1
             else:
                 if ulx is None:
                     ulx = self._jim_object.properties.getUlx()
@@ -642,10 +661,29 @@ class _Geometry():
                 uly = upperLeft[1]
                 lrx = lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
                 lry = lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
+                if dx is None:
+                    dx = 1
+                if dy is None:
+                    dy = 1
+            else:
+                if ulx is None:
+                    ulx = self._jim_object.properties.getUlx()
+                if uly is None:
+                    uly = self._jim_object.properties.getUly()
+                if lrx is None:
+                    lrx = self._jim_object.properties.getLrx()
+                if lry is None:
+                    lry = self._jim_object.properties.getLry()
+                if dx is None:
+                    dx = self._jim_object.properties.getDeltaX()
+                if dy is None:
+                    dy = self._jim_object.properties.getDeltaY()
             kwargs.update({'ulx': ulx})
             kwargs.update({'uly': uly})
             kwargs.update({'lrx': lrx})
             kwargs.update({'lry': lry})
+            kwargs.update({'dx': dx})
+            kwargs.update({'dy': dy})
             self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
             # return _pj.Jim(self._jim_object.crop(kwargs))
 
