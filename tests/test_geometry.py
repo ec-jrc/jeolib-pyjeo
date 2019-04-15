@@ -63,7 +63,6 @@ class BadGeometry(unittest.TestCase):
         for band in range(0,12):
             jl0=pj.JimList([pj.geometry.cropBand(jim0,band)])
             bandname='B'+str(band)
-            print("bandname: ",bandname)
             if not band:
                 v=jl0.geometry.extractOgr(sample,rule='mean',output=outputfn,oformat='SQLite',co=['OVERWRITE=YES'],bandname=bandname,fid='fid')
                 v.io.write()
