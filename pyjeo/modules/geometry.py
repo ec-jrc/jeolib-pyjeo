@@ -672,12 +672,24 @@ class _Geometry():
             nr_of_cols = self._jim_object.properties.nrOfCol()
             nr_of_rows = self._jim_object.properties.nrOfRow()
             if nogeo:
+                if ulx is None:
+                    ulx = 0
+                if uly is None:
+                    uly = 0
+                if lrx is None:
+                    lrx = self._jim_object.properties.nrOfCol()
+                if lry is None:
+                    lry = self._jim_object.properties.nrOfRow()
+                if dx is None:
+                    dx = 1
+                if dy is None:
+                    dy = 1
                 uli = ulx
                 ulj = uly
                 lri = lrx
                 lrj = lry
-                upperLeft = self._jim_object.geometry.image2geo(ulx, uly)
-                lowerRight = self._jim_object.geometry.image2geo(lrx, lry)
+                upperLeft = self._jim_object.geometry.image2geo(float(ulx), float(uly))
+                lowerRight = self._jim_object.geometry.image2geo(float(lrx), float(lry))
                 ulx = upperLeft[0]
                 uly = upperLeft[1]
                 # lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
@@ -706,9 +718,9 @@ class _Geometry():
                 if uly is None:
                     uly = 0
                 if lrx is None:
-                    lrx = self._jim_object.properties.nrOfCol()-1
+                    lrx = self._jim_object.properties.nrOfCol()
                 if lry is None:
-                    lry = 0
+                    lry = self._jim_object.properties.nrOfRow()
                 if dx is None:
                     dx = 1
                 if dy is None:
