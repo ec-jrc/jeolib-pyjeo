@@ -23,7 +23,6 @@ class BadDEMOps(unittest.TestCase):
             'Error: max>90 in demops.slope()'
         assert stats['min'] >= 0, \
             'Error: min<0 in demops.slope()'
-        print('stats for slope: {}'.format(stats))
 
 
     def test_flows(self):
@@ -71,7 +70,7 @@ class BadDEMOps(unittest.TestCase):
         flow = pj.demops.flowDirectionDInf(jim)
         jim.demops.flowDirectionDInf()
         stats = jim.stats.getStats()
-        
+
         assert jim.pixops.isEqual(flow), \
             'Error in demops.demFlowDirectionDInf()'
         assert stats['min'] >= -1, \
@@ -83,8 +82,6 @@ class BadDEMOps(unittest.TestCase):
         destructive_object = pj.Jim(jim)
         destructive_object[25:30, 25:30] = 65533
 
-        print("****type of destructive_object: {}".format(destructive_object.properties.getDataType()))
-        print("****type of jim2: {}".format(jim2.properties.getDataType()))
         # flow = pj.demops.flowDirectionFlat(destructive_object, jim2, 8)
         # destructive_object.demops.flowDirectionFlat(jim2, 8)
         # stats = destructive_object.stats.getStats()
@@ -98,7 +95,7 @@ class BadDEMOps(unittest.TestCase):
 
         # flow = pj.demops.flowDirectionFlatGeodesic(jim, jim2, 8)
         # jim.demops.flowDirectionFlatGeodesic(jim2, 8)
-        
+
         # assert jim.pixops.isEqual(flow), \
         #     'Error in demops.flowDirectionFlatGeodesic()'
         # # TODO: Uncomment after bug in jiplib fixed
@@ -167,9 +164,9 @@ class BadDEMOps(unittest.TestCase):
 
         assert jim.pixops.isEqual(flood_dir), 'Error in demops.floodDir()'
         assert stats['min'] >= 0, 'Error in demops.floodDir()'
-        
+
         assert stats['max'] <= 8, 'Error in demops.floodDir()'
-        
+
         #assert stats['max'] <= jim.properties.nrOfRow() * \
         #       jim.properties.nrOfCol(), 'Error in demops.floodDir()'
 
@@ -181,7 +178,7 @@ class BadDEMOps(unittest.TestCase):
 
         # outlet = pj.demops.catchmentBasinOutlet(jim, d8)
         # jim.demops.catchmentBasinOutlet(d8)
-        
+
         # assert jim.pixops.isEqual(outlet), \
         #     'Error in demops.catchmentBasinOutlet()'
         # # TODO: Uncomment after bug in jiplib fixed

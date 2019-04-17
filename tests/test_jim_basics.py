@@ -52,42 +52,31 @@ class BadBasicMethods(unittest.TestCase):
 
     def test_getters_setters(self):
         """Test getters and setters."""
-        print('file: {}'.format(tiles[0]))
         jim1 = pj.Jim(tiles[0])
         stats1 = jim1.stats.getStats()
 
         jim1[0, 0] = stats1['mean']
         first = jim1[0, 0]
         #test
-        print("jim1: {}".format(jim1.np()))
         stats = first.stats.getStats()
-        print("stats: {}".format(stats))
-        print("stats1: {}".format(stats1))
         assert stats['max'] == stats['min'] == int(stats1['mean']), \
             'Error in jim[int, int] (either get or set item)'
 
         jim1[-1, -1] = stats1['max'] + 1
         stats = jim1.stats.getStats()
         #test
-        print("jim1: {}".format(jim1.np()))
         assert stats['max'] == stats1['max'] + 1, \
             'Error in jim[int, int] (either get or set item)'
 
         last = jim1[-1, -1]
         #test
-        print("last: {}".format(last.np()))
         stats = last.stats.getStats()
-        print("stats: {}".format(stats))
-        print("stats1['max']+1: {}".format(stats1['max']+1))
         assert stats['max'] == stats['min'] == stats1['max'] + 1, \
             'Error in jim[-int, -int] (either get or set item)'
 
         last = jim1[-5::2, -5::2]
         #test
-        print("last: {}".format(last.np()))
         stats = last.stats.getStats()
-        print("stats: {}".format(stats))
-        print("stats1['max']+1: {}".format(stats1['max']+1))
         assert stats['max'] == stats1['max'] + 1, \
             'Error in jim[-int:-int:stride, -int:-int:stride] or jim[slice] ' \
             '(either get or set item)'
@@ -110,18 +99,12 @@ class BadBasicMethods(unittest.TestCase):
 
         jim1 = pj.Jim(ncol=256, nrow=256, nband=2, nplane=2)
         jim1.geometry.cropBand(0)
-        print("jim1: {}".format(jim1.np()))
-        print("jim1.properties.nrOfCol(): {}".format(jim1.properties.nrOfCol()))
-        print("jim1.properties.nrOfRow(): {}".format(jim1.properties.nrOfRow()))
-        print("jim1.properties.nrOfBand(): {}".format(jim1.properties.nrOfBand()))
-        print("jim1.properties.nrOfPlane(): {}".format(jim1.properties.nrOfPlane()))
         jim1.pixops.setData(5)
         stats1 = jim1.stats.getStats()
 
         # first = jim1[0, 0, 0, 0]
         first = jim1[0, 0, 0]
         #test
-        print("first: {}".format(first.np()))
         stats = first.stats.getStats()
         assert stats['max'] == stats['min'] == stats1['mean'] == 5, \
             'Error in jim[int, int, int, int] (either get or set item)'
@@ -135,9 +118,7 @@ class BadBasicMethods(unittest.TestCase):
         # last = jim1[-1, -1, -2, -2]
         last = jim1[-2, -1, -1]
         #test
-        print("last: {}".format(last.np()))
         stats = last.stats.getStats()
-        print("stats: {}".format(stats))
         assert stats['max'] == stats['min'] == stats['mean'] == 5, \
             'Error in jim[-int, -int, -int, -int] (either get or set item)'
         assert last.properties.nrOfBand() == 1, \
@@ -182,20 +163,14 @@ class BadBasicMethods(unittest.TestCase):
         """Test basic operators (+, -, *, /, =)."""
         jim1 = pj.Jim(tiles[0])
         #test
-        print("jim1: {}".format(jim1.np()))
         stats1 = jim1.stats.getStats()
-        print("stats1: {}".format(stats1))
         jim2 = pj.Jim(tiles[1])
         #test
-        print("jim2: {}".format(jim2.np()))
         stats2 = jim2.stats.getStats()
-        print("stats2: {}".format(stats2))
 
         jim3 = jim1 + jim2
         #test
-        print("jim3: {}".format(jim3.np()))
         stats3 = jim3.stats.getStats()
-        print("stats3: {}".format(stats3))
         max = stats3['max']
         min = stats3['min']
 

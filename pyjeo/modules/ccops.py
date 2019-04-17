@@ -63,7 +63,7 @@ def labelFlatZonesGraph(jim_object, graph=8):
 
 
 def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=8):
-    """Label each alpha-omega connected components with a unique label using graph-connectivity
+    """Label each alpha-omega connected components with a unique label using graph-connectivity :cite:`soille2008pami`
 
     :param jim_object: a Jim object holding a grey level image
     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
@@ -241,8 +241,7 @@ def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask, grap
 
 
 def morphoRemoveBorder(ajim, graph):
-    """
-    Remove the connected components of an image that are connected to the image border using graph connectivity
+    """Remove the connected components of an image that are connected to the image border using graph connectivity
     :param ajim: input Jim object
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
 
@@ -261,8 +260,7 @@ def morphoRemoveBorder(ajim, graph):
 
 
 def morphoFillHoles(ajim, graph, borderFlag=1):
-    """
-    Remove the regional minima of the image that are not connected to the image border using graph connectivity
+    """Remove the regional minima of the image that are not connected to the image border using graph connectivity (originally proposed for removing pits in digital elevation models, see :cite:`soille-ansoult90`)
     :param ajim: input Jim object
     :param borderFlag:
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
