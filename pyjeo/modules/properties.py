@@ -115,6 +115,8 @@ class _Properties():
             return 'Int64'
         elif otype == 15:
             return 'UInt64'
+        elif otype == 16:
+            return 'JDT_Word'
         else:
             raise TypeError("Unknown data format ".format(otype))
 
