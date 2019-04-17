@@ -59,7 +59,8 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
     :param lrz: Lower right y value of bounding box to crop
     :param dx: spatial resolution in x to crop (stride if nogeo is True)
     :param dy: spatial resolution in y to crop (stride if nogeo is True)
-    :param nogeo: use image coordinates if True, default is spatial reference system coordinates
+    :param nogeo: use image coordinates if True, default is spatial reference
+        system coordinates
 
     see :py:meth:`~_Geometry.crop` for an example how to use this function
     """
@@ -1357,30 +1358,33 @@ class _Geometry():
         """Polygonize Jim object based on GDALPolygonize
 
 
-        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+        :param output: output filename of JimVect object that is returned.
+            Use /vsimem for in memory vectors
         :param kwargs: See table below
         :return: JimVect object with polygons
 
-        +------------------+------------------------------------------------------+
-        | key              | value                                                |
-        +==================+======================================================+
-        | ln               | Output layer name                                    |
-        +------------------+------------------------------------------------------+
-        | oformat          | Output vector dataset format                         |
-        +------------------+------------------------------------------------------+
-        | co               | Creation option for output vector dataset            |
-        +------------------+------------------------------------------------------+
-        | name             | Field name of the output layer (default is DN)       |
-        +------------------+------------------------------------------------------+
-        | nodata           | Disgard this nodata value when creating polygons     |
-        +------------------+------------------------------------------------------+
+        +------------------+-------------------------------------------------+
+        | key              | value                                           |
+        +==================+=================================================+
+        | ln               | Output layer name                               |
+        +------------------+-------------------------------------------------+
+        | oformat          | Output vector dataset format                    |
+        +------------------+-------------------------------------------------+
+        | co               | Creation option for output vector dataset       |
+        +------------------+-------------------------------------------------+
+        | name             | Field name of the output layer (default is DN)  |
+        +------------------+-------------------------------------------------+
+        | nodata           | Discard this nodata value when creating polygons|
+        +------------------+-------------------------------------------------+
 
-        Example: create a polygon vector file from a Sentinel-2 classification raster dataset, where clouds are represented by the pixel value 9::
-          sclfn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L2A/2018/07/01/065/S2A_MSIL2A_20180701T102021_N0208_R065_T33UUT_20180701T141038.SAFE/GRANULE/L2A_T33UUT_A015792_20180701T102404/IMG_DATA/R20m/T33UUT_20180701T102021_SCL_20m.jp2'
-          sclJim=pj.Jim(sclfn)
-          sclJim[sclJim!=9]=0
-          sclJim[sclJim==9]=1
-          vcloud=sclJim.geometry.polygonize('/vsimem/cloud.sqlite',name='cloud',nodata=0)
+        Example: create a polygon vector file from a Sentinel-2 classification
+        raster dataset, where clouds are represented by the pixel value 9::
+
+          sclfn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L2A/2018/07/01/065/S2A_MSIL2A_20180701T102021_N0208_R065_T33UUT_20180701T141038.SAFE/GRANULE/L2A_T33UUT_A015792_20180701T102404/IMG_DATA/R20m/T33UUT_20180701T102021_SCL_20m.jp2'
+          sclJim = pj.Jim(sclfn)
+          sclJim[sclJim != 9] = 0
+          sclJim[sclJim == 9] = 1
+          vcloud = sclJim.geometry.polygonize('/vsimem/cloud.sqlite', name='cloud', nodata=0)
           vcloud.io.write('/path/to/cloud.sqlite')
         """
         kwargs.update({'output': output})
