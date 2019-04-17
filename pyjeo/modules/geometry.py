@@ -7,6 +7,7 @@ def image2geo(jim_object, i, j):
     """Convert image coordinates (column and row) to georeferenced
     coordinates (x and y)
 
+    :param jim_object: a Jim object
     :param i: image column number (starting from 0)
     :param j: image row number (starting from 0)
     :return: georeferenced coordinates according to the object spatial
@@ -25,6 +26,7 @@ def geo2image(jim_object, x, y):
     """ Convert georeferenced coordinates (column and row) to image
     coordinates (x and y).
 
+    :param jim_object: a Jim object
     :param x: georeferenced coordinate in x according to the object spatial
         reference system
     :param y: georeferenced coordinate in y according to the object spatial
@@ -48,6 +50,7 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
 
     Subset raster dataset according in spatial (subset region) domain
 
+    :param jim_object: a Jim object
     :param ulx: Upper left x value of bounding box to crop
     :param uly: Upper left y value of bounding box to crop
     :param ulz: Upper left z value of bounding box to crop
@@ -56,8 +59,9 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
     :param lrz: Lower right y value of bounding box to crop
     :param dx: spatial resolution in x to crop (stride if nogeo is True)
     :param dy: spatial resolution in y to crop (stride if nogeo is True)
-    :param nogeo: use image coordinates if True, default is spatial reference
-        system coordinates
+    :param nogeo: use image coordinates if True, default is spatial reference system coordinates
+
+    see :py:meth:`~_Geometry.crop` for an example how to use this function
     """
     if ulz is not None or lrz is not None:
         assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
@@ -144,6 +148,7 @@ def cropOgr(jim_object, extent, **kwargs):
 
     Subset raster dataset in spatial domain defined by a vector dataset.
 
+    :param jim_object: a Jim object
     :param extent: Get boundary from extent from polygons in vector file
     :param kwargs: See table below
 
@@ -555,8 +560,66 @@ class _Geometry():
     def _set_caller(self, caller):
         self._jim_object = caller
 
+    def image2geo(self, i, j):
+        """Convert image coordinates (column and row) to georeferenced
+        coordinates (x and y)
+
+        :param i: image column number (starting from 0)
+        :param j: image row number (starting from 0)
+        :return: georeferenced coordinates according to the object spatial
+            reference system
+
+        Get upper left corner in georeferenced coordinates (in SRS of the Jim object)::
+
+          jim=pj.Jim('/path/to/raster.tif')
+          jim.geometry.image2geo(0,0)
+
+        """
+        return self._jim_object._jipjim.image2geo(i, j)
+
+    def geo2image(self, x, y):
+        """Convert georeferenced coordinates (x and y) to image
+        coordinates (column and row).
+
+        :param x: georeferenced coordinate in x according to the object spatial
+            reference system
+        :param y: georeferenced coordinate in y according to the object spatial
+            reference system
+        :return: image coordinates (row and column, starting from 0)
+
+        Get column and row index (0 based) of some georeferenced coordinates x and y (in this case first pixel: 0, 0)::
+
+          jim=pj.Jim('/path/to/raster.tif')
+          x=jim.properties.getUlx()
+          y=jim.properties.getUly()
+          jim.geometry.geo2image(x,y)
+        """
+        coord = self._jim_object._jipjim.geo2image(x, y)
+        return [int(coord[0]), int(coord[1])]
+
     def band2plane(self):
-        """Convert 2-dimensional multi-band image to 3-dimensional single band multi-plane image)
+        """Convert 2-dimensional multi-band object to a 3-dimensional single band multi-plane object)
+
+        Example: convert a multi-band object with 12 bands to a 3-dimensional single band object with 12 planes::
+
+           jim=pj.Jim('/path/to/multi/band/image.tif')
+           jim.properties.nrOfBand()
+           12
+           jim.properties.nrOfPlane()
+           1
+           jim.geometry.band2plane()
+           jim.properties.nrOfPlane()
+           12
+           jim.properties.nrOfBand()
+           1
+
+        Notice that a multi-band image can also be read directly as a multi-plane object::
+
+           jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+           jim.properties.nrOfBand()
+           1
+           jim.properties.nrOfPlane()
+           12
 
         """
         self._jim_object._jipjim.band2plane()
@@ -573,10 +636,32 @@ class _Geometry():
         :param lrx: Lower right x value of bounding box to crop
         :param lry: Lower right y value of bounding box to crop
         :param lrz: Lower right y value of bounding box to crop
-        :param dx: spatial resolution in x to crop (stride if geo is False)
-        :param dy: spatial resolution in y to crop (stride if geo is False)
+        :param dx: spatial resolution in x to crop (stride if nogeo is True)
+        :param dy: spatial resolution in y to crop (stride if nogeo is True)
         :param nogeo: use image coordinates if True, default is spatial
             reference system coordinates
+        :param nodata: set no data in case the specified bounding box is not within the object boundaries (default is 0)
+
+        Example:
+
+        Crop bounding box in georeferenced coordinates::
+
+            jim=pj.Jim('/path/to/raster.tif')
+            jim.crop(ulx=1000000,uly=5000000,lrx=2000000,lry=4000000,dx=1000,dy=1000)
+
+        Crop bounding box in image coordinates (starting from upper left pixel coordinate 0, 0). For instance, get first 10 columns in first 10 rows::
+            jim=pj.Jim('/path/to/raster.tif')
+            jim.crop(ulx=0,uly=0,lrx=10,lry=10)
+
+        Notice that for this case, a more pythonic way to is available via :ref:`indexing`::
+
+            jim0[0:10,0:10]
+
+        However, crop can also be used to enlarge a Jim object. For instance, to add a border of one pixel use::
+
+            jim=pj.Jim('/path/to/raster.tif')
+            jim.geometry.crop(ulx=-1,uly=-1,lrx=jim.properties.nrOfCol()+1,lry=jim.properties.nrOfRow()+1,nogeo=True)
+
         """
         if ulz is not None or lrz is not None:
             assert len(kwargs) == 0, \
@@ -612,7 +697,8 @@ class _Geometry():
             gt[0] = ulx
             gt[3] = uly
             self._jim_object.properties.setGeoTransform(gt)
-        elif len(kwargs) == 0:
+        # elif len(kwargs) == 0:
+        else:
             if nogeo:
                 if ulx is None:
                     ulx = 0
@@ -649,43 +735,44 @@ class _Geometry():
             self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
             # self._jim_object._set(self._jim_object.crop(ulx, uly, lrx, lry,
             #                                             dx, dy, geo))
-        else:
-            if nogeo:
-                uli = ulx
-                ulj = uly
-                lri = lrx
-                lrj = lry
-                upperLeft = self._jim_object.geometry.image2geo(ulx, uly)
-                lowerRight = self._jim_object.geometry.image2geo(lrx, lry)
-                ulx = upperLeft[0]
-                uly = upperLeft[1]
-                lrx = lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
-                lry = lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
-                if dx is None:
-                    dx = 1
-                if dy is None:
-                    dy = 1
-            else:
-                if ulx is None:
-                    ulx = self._jim_object.properties.getUlx()
-                if uly is None:
-                    uly = self._jim_object.properties.getUly()
-                if lrx is None:
-                    lrx = self._jim_object.properties.getLrx()
-                if lry is None:
-                    lry = self._jim_object.properties.getLry()
-                if dx is None:
-                    dx = self._jim_object.properties.getDeltaX()
-                if dy is None:
-                    dy = self._jim_object.properties.getDeltaY()
-            kwargs.update({'ulx': ulx})
-            kwargs.update({'uly': uly})
-            kwargs.update({'lrx': lrx})
-            kwargs.update({'lry': lry})
-            kwargs.update({'dx': dx})
-            kwargs.update({'dy': dy})
-            self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
-            # return _pj.Jim(self._jim_object.crop(kwargs))
+        # else:
+        #     if nogeo:
+        #         uli = ulx
+        #         ulj = uly
+        #         lri = lrx
+        #         lrj = lry
+        #         upperLeft = self._jim_object.geometry.image2geo(ulx, uly)
+        #         lowerRight = self._jim_object.geometry.image2geo(lrx, lry)
+        #         ulx = upperLeft[0]
+        #         uly = upperLeft[1]
+        #         lrx = lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
+        #         lry = lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
+        #         if dx is None:
+        #             dx = 1
+        #         if dy is None:
+        #             dy = 1
+        #     else:
+        #         if ulx is None:
+        #             ulx = self._jim_object.properties.getUlx()
+        #         if uly is None:
+        #             uly = self._jim_object.properties.getUly()
+        #         if lrx is None:
+        #             lrx = self._jim_object.properties.getLrx()
+        #         if lry is None:
+        #             lry = self._jim_object.properties.getLry()
+        #         if dx is None:
+        #             dx = self._jim_object.properties.getDeltaX()
+        #         if dy is None:
+        #             dy = self._jim_object.properties.getDeltaY()
+        #     kwargs.update({'ulx': ulx})
+        #     kwargs.update({'uly': uly})
+        #     kwargs.update({'lrx': lrx})
+        #     kwargs.update({'lry': lry})
+        #     kwargs.update({'dx': dx})
+        #     kwargs.update({'dy': dy})
+        #     kwargs.update({'nogeo': nogeo})
+        #     self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
+        #     # return _pj.Jim(self._jim_object.crop(kwargs))
 
     def cropOgr(self, extent, **kwargs):
         """Subset raster dataset.
@@ -1252,43 +1339,6 @@ class _Geometry():
         :param y2: an integer for y-coordinate of 2nd point
         """
         self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
-
-    def image2geo(self, i, j):
-        """Convert image coordinates (column and row) to georeferenced
-        coordinates (x and y)
-
-        :param i: image column number (starting from 0)
-        :param j: image row number (starting from 0)
-        :return: georeferenced coordinates according to the object spatial
-            reference system
-
-        Get upper left corner in georeferenced coordinates (in SRS of the Jim object)::
-
-          jim=pj.Jim('/path/to/raster.tif')
-          jim.geometry.image2geo(0,0)
-
-        """
-        return self._jim_object._jipjim.image2geo(i, j)
-
-    def geo2image(self, x, y):
-        """Convert georeferenced coordinates (x and y) to image
-        coordinates (column and row).
-
-        :param x: georeferenced coordinate in x according to the object spatial
-            reference system
-        :param y: georeferenced coordinate in y according to the object spatial
-            reference system
-        :return: image coordinates (row and column, starting from 0)
-
-        Get column and row index (0 based) of some georeferenced coordinates x and y (in this case first pixel: 0, 0)::
-
-          jim=pj.Jim('/path/to/raster.tif')
-          x=jim.properties.getUlx()
-          y=jim.properties.getUly()
-          jim.geometry.geo2image(x,y)
-        """
-        coord = self._jim_object._jipjim.geo2image(x, y)
-        return [int(coord[0]), int(coord[1])]
 
     def polygonize(self, output, **kwargs):
         """Polygonize Jim object based on GDALPolygonize
