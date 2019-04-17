@@ -650,8 +650,9 @@ class _Geometry():
             jim.crop(ulx=1000000,uly=5000000,lrx=2000000,lry=4000000,dx=1000,dy=1000)
 
         Crop bounding box in image coordinates (starting from upper left pixel coordinate 0, 0). For instance, get first 10 columns in first 10 rows::
+
             jim=pj.Jim('/path/to/raster.tif')
-            jim.crop(ulx=0,uly=0,lrx=10,lry=10)
+            jim.crop(ulx=0,uly=0,lrx=10,lry=10, nogeo=True)
 
         Notice that for this case, a more pythonic way to is available via :ref:`indexing`::
 
