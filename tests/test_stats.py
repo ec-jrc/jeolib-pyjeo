@@ -112,6 +112,7 @@ class BadStats(unittest.TestCase):
         min = stats['min']
         max = stats['max']
 
+        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
         min_profile = pj.stats.getStatProfile(jim, 'min')
         jim.stats.statProfile('max')
 
@@ -131,7 +132,7 @@ class BadStatsLists(unittest.TestCase):
         jim2 = pj.Jim(tiles[1])
         jiml = pj.JimList([jim1, jim2])
 
-        stats1 = jiml.stats.getStats()
+        stats1 = jiml.stats.getStats(['min', 'max'])
         stats2 = jim2.stats.getStats()
 
         min = stats1['min']
@@ -142,6 +143,7 @@ class BadStatsLists(unittest.TestCase):
         if stats2['max'] > max:
             max = stats2['max']
 
+        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
         min_profile = jiml.stats.getStatProfile('min')
         max_profile = jiml.stats.getStatProfile('max')
 

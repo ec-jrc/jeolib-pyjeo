@@ -134,7 +134,7 @@ class BadBasicMethods(unittest.TestCase):
             'wrong nrOfPlane)'
         assert last.properties.getProjection() == \
                jim1.properties.getProjection(), \
-            'Error in jim[int, int, int] (either get or set item, ' \
+            'Error in jim[-int, -int, -int] (either get or set item, ' \
             'projection not transmitted)'
 
         # last = jim1[-1, -1, -2:-1:1, -2]

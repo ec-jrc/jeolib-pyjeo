@@ -127,8 +127,10 @@ class BadDEMOps(unittest.TestCase):
 
         inf = pj.demops.flowDirectionDInf(jim)
 
+        # TODO: Suppress output originating in mialib (flag `quiet`, please?)
         cda_inf = pj.demops.contribDrainAreaInf(inf)
         inf.demops.contribDrainAreaInf()
+
         assert inf.pixops.isEqual(cda_inf), \
             'Error in demops.contribDrainAreaInf()'
         assert abs(inf.stats.getStats()['min']) == 1, \
@@ -210,6 +212,7 @@ class BadDEMOps(unittest.TestCase):
         assert unpit.pixops.isEqual(pit_label), \
             'Error in demops.pitRemovalCarve()'
 
+        # TODO: Suppress output originating in mialib (flag `quiet`, please?)
         unpit = pj.demops.pitRemovalOptimal(label, jim, 8, 212, 0)
         label.demops.pitRemovalOptimal(jim, 8, 212, 0)
 
