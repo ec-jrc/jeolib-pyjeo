@@ -8,6 +8,7 @@ __pycache__/
 *.egg-info
 dist
 build
+doc/_build
 
 ### Coverage info ###
 .coverage
