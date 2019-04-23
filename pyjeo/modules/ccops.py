@@ -14,11 +14,11 @@ def labelImagePixels(jim_object):
     return _pj.Jim(jim_object._jipjim.labelPix())
 
 
-def labelGraph(jim_object, graph=8):
+def labelGraph(jim_object, graph=4):
     """Label each non-zero connected component with a unique label using graph-connectivity
 
     :param jim_object: a Jim object holding a binary image
-    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
     if (graph==4):
@@ -38,11 +38,11 @@ def labelGraph(jim_object, graph=8):
     return _pj.Jim(jim_object._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
 
 
-def labelFlatZonesGraph(jim_object, graph=8):
+def labelFlatZonesGraph(jim_object, graph=4):
     """Label each image flat zone with a unique label using graph-connectivity
 
     :param jim_object: a Jim object holding a grey level image
-    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
     if (graph==4):
@@ -62,13 +62,13 @@ def labelFlatZonesGraph(jim_object, graph=8):
     return _pj.Jim(jim_object._jipjim.labelFlatZones(ngb._jipjim, 1, 1, 0))
 
 
-def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=8):
+def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=4):
     """Label each alpha-omega connected components with a unique label using graph-connectivity :cite:`soille2008pami`
 
     :param jim_object: a Jim object holding a grey level image
     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
     :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
     if (graph==4):
@@ -88,13 +88,13 @@ def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=8):
     return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
-def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph=8):
+def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph=4):
     """Label each alpha-omega connected component with a unique label using graph-connectivity :cite:`soille2008pami`
 
     :param jim_object: a Jim object holding a multi-band image
     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
     :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
     # if jim_object.properties.nrOfBand() < 2:
@@ -118,12 +118,12 @@ def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph
     return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
-def labelStronglyCCsMultibandGraph(jim_object, localRange, graph=8):
+def labelStronglyCCsMultibandGraph(jim_object, localRange, graph=4):
     """Label each strongly alpha-connected component with a unique label using graph-connectivity :cite:`soille2008pami`
 
     :param jim_object: a Jim object holding a multi-band image
     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
-    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
     # if jim_object.properties.nrOfBand() < 2:
@@ -147,7 +147,7 @@ def labelStronglyCCsMultibandGraph(jim_object, localRange, graph=8):
     return _pj.Jim(jim_object._jipjim.labelStronglyCCsMultiband(ngb._jipjim, 1, 1, 0, localRange))
 
 
-def segmentImageMultiband(jim_object, localRange, regionSize, contrast=0, version=0, graph=8, dataFileNamePrefix=""):
+def segmentImageMultiband(jim_object, localRange, regionSize, contrast=0, version=0, graph=4, dataFileNamePrefix=""):
     """Multiband image segmentation based on the method described in :cite:`brunner-soille2007`
 
 The contrast threshold value is used for merging the regions with similar contrast as follows: < 0 (do not perform region merge), 0 (determine best contrast value automatically), and > 0 (use this value as threshold value).  Authorised version values are: 0 (compare to whole region), 1 (compare to original seeds), and 2 (compare to pixel neighbours).  If the optional string dataFileNamePrefix is given, data files to use with gnuplot are stored in dataFileNamePrefix_xxx.dat, otherwise data files are not generated (default).
@@ -157,7 +157,7 @@ The contrast threshold value is used for merging the regions with similar contra
     :param regionSize: integer value for minimum size of iso-intensity region in output image (must be >= 2 pixels)
     :param contrast: (default is 0)
     :param version:  (default is 0)
-    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 8)
+    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
     :param dataFileName:  
     :return: labeled Jim object
     """
@@ -260,7 +260,7 @@ def morphoRemoveBorder(ajim, graph):
 
 
 def morphoFillHoles(ajim, graph, borderFlag=1):
-    """Remove the regional minima of the image that are not connected to the image border using graph connectivity (originally proposed for removing pits in digital elevation models, see :cite:`soille-ansoult90`)
+    """Remove the regional minima of the image that are not connected to the image border using graph connectivity (originally proposed for removing pits in digital elevation models, see :cite:`soille-ansoult90` and  :cite:`soille-gratin94` for a fast implementation)
     :param ajim: input Jim object
     :param borderFlag:
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images)
@@ -276,6 +276,79 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
     marker.pixops.supremum(ajim)
     marker.ccops.morphoGeodesicReconstructionByErosion(ajim, graph, borderFlag)
     return marker
+
+
+
+# (defun *labelccdissim_ismm2011 (im omega alpha &key (diamondwidth 2))
+# ; \lspfunction{*}{labelccdissim_ismm2011}{im omega alpha &key (diamondwidth 2)}
+# ; \param{im}{}
+# ; \param{omega}{}
+# ; \param{alpha}{}
+# ; \param{(diamondwidth}{}
+# ; \return{}
+# ; \desc{see \cite{soille2011ismm}}
+# ; \myseealso{}
+# ; \lspfile{\crtlspfile}
+# ; \example{}{}
+#   (let* (
+# 	 (mingraderograddil
+# 	  (@inf (*graderographframe im diamondwidth 4)
+# 		(*graddilgraphframe im diamondwidth 4)
+# 		)
+# 	  )
+# 	 (DIR-HORI 0)
+# 	 (DIR-VERT 1)
+# 	 (ABS-DIFF_op 0)
+# 	 (MAX_op 1)
+# 	 (MIN_op 2)
+# 	 ; (h_dissim) (v_dissim)
+# 	 )
+#     (setq h_dissim (*edgeweight mingraderograddil DIR-HORI MAX_op))
+#     (setq v_dissim (*edgeweight mingraderograddil DIR-VERT MAX_op))
+#     (*imfree mingraderograddil)
+#     (@sup h_dissim
+# 	  (*edgeweight im DIR-HORI ABS-DIFF_op)
+# 	  )
+#     (@sup v_dissim
+# 	  (*edgeweight im DIR-VERT ABS-DIFF_op))
+
+#     (@subframebox
+#      (*labelccdissim (*addframebox im 1 1 1 1 0 0 255)
+# 		     (*addframebox h_dissim 1 1 1 1 0 0 255)
+# 		     (*addframebox v_dissim 1 1 1 1 0 0 255)
+# 		     omega
+# 		     alpha)
+#      1 1 1 1 0 0)
+#     )
+#   )
+
+
+
+def labelConstrainedCCsGraphDissim(jim_object, localRange, globalRange):
+    """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
+
+    :param jim_object: a Jim object holding a grey level image
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
+    :return: labeled Jim object
+    """
+
+    # Graph is 4 for all dissimilarity based on edge weights
+    ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+    ngb[0,1]=1
+    ngb[1,0]=1
+    ngb[1,2]=1
+    ngb[2,1]=1
+
+    mingraderograddil = _pj.pixops.INF(_pj.ngb.morphoErode
+
+    return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
+
+
+
+
+#    ajim.ngb.edgeWeight()
+#    out=_pj.ngb.edgeWeight(ajim)
 
 class _CCOps():
     """Define all CCOps methods."""
