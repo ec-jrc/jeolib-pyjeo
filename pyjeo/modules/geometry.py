@@ -1488,32 +1488,6 @@ class _GeometryVect():
     def _set_caller(self, caller):
         self._jim_vect = caller
 
-    def intersect(self, jim, output, **kwargs):
-        """Intersect JimVect object with Jim object and return only those features with an intersect
-
-        :param jim: Jim object to intersect
-        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
-        :param kwargs: See table below
-
-        +------------------+------------------------------------------------------+
-        | key              | value                                                |
-        +==================+======================================================+
-        | oformat          | Output vector dataset format                         |
-        +------------------+------------------------------------------------------+
-        | co               | Creation option for output vector dataset            |
-        +------------------+------------------------------------------------------+
-        """
-        kwargs.update({'output': output})
-        if isinstance(jim, _pj.Jim):
-            avect=self._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs)
-            pjvect=_pj.JimVect()
-            pjvect._set(avect)
-            #todo: do not return but overwrite self
-            return pjvect
-            # return _pj.JimVect(self._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs))
-        else:
-            raise TypeError('Error: can only intersect with Jim object')
-
     # def append(self, jvec):
     #     """Append JimVect object with another JimVect object.
 

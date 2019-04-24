@@ -118,7 +118,7 @@ def NDVI(jim_object, redBand, nirBand):
 
 
 def NDVISeparateBands(redJim, nirJim):
-    """Compute NDVI from two Jim objects.
+    """Compute NDVI from two Jim objects. Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
     :param redJim: Jim object with values of red
     :param nirJim: Jim object with values of NIR
@@ -439,7 +439,7 @@ class _PixOps():
         self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
 
     def NDVISeparateBands(self, nirJim):
-        """Compute NDVI from two Jims (call on red band, use NIR as param).
+        """Compute NDVI from two Jims (call on red band, use NIR as param). Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
         Modifies the instance on which the method was called.
 

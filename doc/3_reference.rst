@@ -695,3 +695,27 @@ Digital elevation methods on Jim
 
 .. autoclass:: _DEMOps
    :members:
+
+**************
+Statistics
+**************
+
+========================
+Statistical functions
+========================
+
+.. automodule:: stats
+   :members:
+
+=============================
+Statistical methods on Jim
+=============================
+
+.. autoclass:: _Stats
+   :members:
+=============================
+Statistical methods on JimList
+=============================
+
+.. autoclass:: _StatsList
+   :members:
