@@ -184,7 +184,7 @@ def edgeWeight(jim_object, dir=0, type=0):
         :param dir:  integer for coding edge direction (horizontal if 0, vertical otherwise).
         :param type: integer determining how the edge weights are computed: 0 for absolute value of difference (default), 1 for maximum value, 2 for minimum value.
         """
-        out = _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
+        return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
 
 class _NgbOps():
