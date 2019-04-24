@@ -1348,6 +1348,22 @@ class _Geometry():
         :param band: List of band indices to crop (index is 0 based)
         """
         self._jim_object._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val, band)
+        
+    def imageFrameSubtract(self, l, r, t, b, u, d, band=0):
+        """Subtract an image frame.
+
+        Modifies the instance on which the method was called.
+
+        :param l: width of left frame
+        :param r: width of right frame
+        :param t: width of top frame
+        :param b: width of bottom frame
+        :param u: width of upper frame
+        :param d: width of lower frame
+        :param band: List of band indices to crop (index is 0 based)
+        """
+        self._jim_object._jipjim.d_imageFrameSubtract([l, r, t, b, u, d], band)
+
 
     def magnify(self, n):
         """Magnify the image.
