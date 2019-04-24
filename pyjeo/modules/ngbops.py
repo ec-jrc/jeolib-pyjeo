@@ -149,8 +149,6 @@ def morphoGradientByErosionDiamond(jim_object):
 
 
 
-
-
 # (defun @graderographframe (im k graph)
 #   "(*graderograph im k graph) graph-connected morphological gradient by erosion"
 # ; \lspfunction{*}{graderograph}{im k graph}
@@ -170,12 +168,31 @@ def morphoGradientByErosionDiamond(jim_object):
 # 	)
 #   )
 
-# def morphoGradientByErosionDiamondFrame(jim_object):
-#         """Output the gradient by erosion of im using the elementary diamond shaped SE
-#         """
-#         jim0 = jim_object.geom.
-#         return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
+
+def morphoGradientByErosionDiamondFrame(jim_object):
+    """Output the gradient by erosion of im using the elementary diamond shaped SE
+    """
+    jim0 = _pj.Jim(jim_object)
+    pixmax = jim0.stats.getStats('max')['max']
+    jim0.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, pixmax)
+    jim0.ngbops.morphoErodeDiamond()
+    jim0.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
+    jim0.pixops.simpleArithOp(jim_object, 16) # 16 for SUBSWAP_op
+    return jim0
+
+
+
+def morphoGradientByDilationDiamondFrame(jim_object):
+    """Output the gradient by erosion of im using the elementary diamond shaped SE
+    """
+    jim0 = _pj.Jim(jim_object)
+    pixmin = jim0.stats.getStats('min')['min']
+    jim0.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, pixmin)
+    jim0.ngbops.morphoDilateDiamond()
+    jim0.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
+    jim0.pixops.simpleArithOp(jim_object, 1) #  for SUB_op
+    return jim0
 
 
 def edgeWeight(jim_object, dir=0, type=0):

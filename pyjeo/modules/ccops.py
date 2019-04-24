@@ -118,6 +118,7 @@ def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph
     return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
+
 def labelStronglyCCsMultibandGraph(jim_object, localRange, graph=4):
     """Label each strongly alpha-connected component with a unique label using graph-connectivity :cite:`soille2008pami`
 
@@ -324,25 +325,25 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
 
 
 
-def labelConstrainedCCsGraphDissim(jim_object, localRange, globalRange):
-    """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
+# def labelConstrainedCCsGraphDissim(jim_object, localRange, globalRange):
+#     """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
 
-    :param jim_object: a Jim object holding a grey level image
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
-    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-    :return: labeled Jim object
-    """
+#     :param jim_object: a Jim object holding a grey level image
+#     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+#     :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
+#     :return: labeled Jim object
+#     """
 
-    # Graph is 4 for all dissimilarity based on edge weights
-    ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-    ngb[0,1]=1
-    ngb[1,0]=1
-    ngb[1,2]=1
-    ngb[2,1]=1
+#     # Graph is 4 for all dissimilarity based on edge weights
+#     ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+#     ngb[0,1]=1
+#     ngb[1,0]=1
+#     ngb[1,2]=1
+#     ngb[2,1]=1
 
-    mingraderograddil = _pj.pixops.INF(_pj.ngb.morphoErode
+#     mingraderograddil = _pj.pixops.INF(_pj.ngb.morphoErode
 
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
+#     return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 
 
 
