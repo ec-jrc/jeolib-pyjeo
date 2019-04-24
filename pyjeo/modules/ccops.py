@@ -85,7 +85,7 @@ def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=4):
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
+    return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 
 def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph=4):
@@ -115,7 +115,7 @@ def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, localRange, globalRange))
+    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 
 
@@ -325,31 +325,34 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
 
 
 
-# def labelConstrainedCCsGraphDissim(jim_object, localRange, globalRange):
-#     """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
+def labelConstrainedCCsDissim(jim_object, localRange, globalRange):
+    """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
 
-#     :param jim_object: a Jim object holding a grey level image
-#     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
-#     :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-#     :return: labeled Jim object
-#     """
+    :param jim_object: a Jim object holding a grey level image
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
+    :return: labeled Jim object
+    """
 
-#     # Graph is 4 for all dissimilarity based on edge weights
-#     ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-#     ngb[0,1]=1
-#     ngb[1,0]=1
-#     ngb[1,2]=1
-#     ngb[2,1]=1
+    DIR_HORI=0
+    DIR_VERT=1
+    ABS_DIFF_op=0
+    MAX_op=0
+    MIN_op=2
 
-#     mingraderograddil = _pj.pixops.INF(_pj.ngb.morphoErode
+    mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(jim_object),  _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object))
 
-#     return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
+    h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
+    v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
+
+    mingraderograddil = 0
+
+    h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_HORI, ABS_DIFF_op))
+    v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_VERT, ABS_DIFF_op))
+
+    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsDissim(h_dissim, v_dissim, globalRange, localRange))
 
 
-
-
-#    ajim.ngb.edgeWeight()
-#    out=_pj.ngb.edgeWeight(ajim)
 
 class _CCOps():
     """Define all CCOps methods."""

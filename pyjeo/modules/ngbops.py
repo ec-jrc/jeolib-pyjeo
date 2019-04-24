@@ -148,28 +148,6 @@ def morphoGradientByErosionDiamond(jim_object):
     return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
 
-
-# (defun @graderographframe (im k graph)
-#   "(*graderograph im k graph) graph-connected morphological gradient by erosion"
-# ; \lspfunction{*}{graderograph}{im k graph}
-# ; \param{im}{an image node}
-# ; \param{k}{integer for width of SE}
-# ; \param{graph}{connectivity (either 4, 8, 'octagon, or 'octagonprime)}
-# ; \return{im}
-# ; \desc{performs the graph-connected morphological gradient by erosion of im using a diamond (graph=4), square (graph=8), octagon (graph='octagon), or octagonprime (graph='octagonprime) SE of width equal to k pixels.}
-# ; \lspfile{\crtlspfile}
-#   (@sub im
-# 	(@subframebox
-# 	 (*erodegraph
-# 	  (*addframebox im 1 1 1 1 0 0 (*getpixmax im))
-# 	  k
-# 	  graph)
-# 	 1 1 1 1 0 0)
-# 	)
-#   )
-
-
-
 def morphoGradientByErosionDiamondFrame(jim_object):
     """Output the gradient by erosion of im using the elementary diamond shaped SE
     """
@@ -181,8 +159,6 @@ def morphoGradientByErosionDiamondFrame(jim_object):
     jim0.pixops.simpleArithOp(jim_object, 16) # 16 for SUBSWAP_op
     return jim0
 
-
-
 def morphoGradientByDilationDiamondFrame(jim_object):
     """Output the gradient by erosion of im using the elementary diamond shaped SE
     """
@@ -193,7 +169,6 @@ def morphoGradientByDilationDiamondFrame(jim_object):
     jim0.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
     jim0.pixops.simpleArithOp(jim_object, 1) #  for SUB_op
     return jim0
-
 
 def edgeWeight(jim_object, dir=0, type=0):
     """Computes the weights of the horizontal or vertical edges linking any pair of horizontally or vertically adjacent pixels.
