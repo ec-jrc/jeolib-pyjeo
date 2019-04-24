@@ -585,7 +585,7 @@ class _PixOps():
         for jim in jims:
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, op)
 
-    def simpleBitwiseOp(self, op, *args):
+    def simpleBitwiseOp(self, jim, op, *args):
         """Change values of Jim using an bitwise operation (coded by op) from provided Jim objects.
 
         Modifies the instance on which the method was called.
