@@ -1,10 +1,16 @@
 import pyjeo as pj
 import unittest
 
+import random
+import string
+import os
+
 rasterfn = 'tests/data/modis_ndvi_2010.tif'
 vectorfn = 'tests/data/modis_ndvi_training.sqlite'
-outputfn = 'tests/data/modis_ndvi_features.sqlite'
-warpedfn = 'tests/data/modis_ndvi_warped.tif'
+outputfn = os.path.join('/tmp',
+                        ''.join(random.sample(string.ascii_letters, 5)))
+warpedfn = os.path.join('/tmp',
+                        ''.join(random.sample(string.ascii_letters, 5)))
 
 
 class BadGeometry(unittest.TestCase):

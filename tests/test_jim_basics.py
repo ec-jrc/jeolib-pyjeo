@@ -98,6 +98,7 @@ class BadBasicMethods(unittest.TestCase):
             'Error in catching wrong indices in jim[index, index]'
 
         jim1 = pj.Jim(ncol=256, nrow=256, nband=2, nplane=2)
+        jim1.properties.setProjection('epsg:5514')
         jim1.geometry.cropBand(0)
         jim1.pixops.setData(5)
         stats1 = jim1.stats.getStats()
@@ -114,6 +115,10 @@ class BadBasicMethods(unittest.TestCase):
         assert first.properties.nrOfPlane() == 1, \
             'Error in jim[int, int, int, int] (either get or set item, ' \
             'wrong nrOfPlane)'
+        assert first.properties.getProjection() == \
+               jim1.properties.getProjection(), \
+            'Error in jim[int, int, int] (either get or set item, ' \
+            'projection not transmitted)'
 
         # last = jim1[-1, -1, -2, -2]
         last = jim1[-2, -1, -1]
@@ -127,6 +132,10 @@ class BadBasicMethods(unittest.TestCase):
         assert last.properties.nrOfPlane() == 1, \
             'Error in jim[-int, -int, -int, -int] (either get or set item, ' \
             'wrong nrOfPlane)'
+        assert last.properties.getProjection() == \
+               jim1.properties.getProjection(), \
+            'Error in jim[-int, -int, -int] (either get or set item, ' \
+            'projection not transmitted)'
 
         # last = jim1[-1, -1, -2:-1:1, -2]
         # last = jim1[-2,-1, -1, -2:-1:1, -2]

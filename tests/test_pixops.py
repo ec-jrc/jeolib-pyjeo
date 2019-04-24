@@ -39,6 +39,7 @@ class BadPixOps(unittest.TestCase):
         jim_red = pj.geometry.cropBand(jim, 0)
         jim_nir = pj.geometry.cropBand(jim, 1)
 
+        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
         ndvi = pj.pixops.NDVI(jim, 0, 1)
         jim.pixops.NDVI(0, 1)
 
@@ -273,6 +274,7 @@ class BadPixOpsLists(unittest.TestCase):
         jiml1 = pj.JimList([jim1, jim2])
         jiml2 = pj.JimList([jim1, jim3])
 
+        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
         comp1 = pj.pixops.composite(jiml1)
         comp2 = jiml1.pixops.composite()
         comp3 = jiml2.pixops.composite()

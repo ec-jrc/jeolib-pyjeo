@@ -81,7 +81,7 @@ def morphoErodeDiamond(jim_object, ox=1, oy=1):
 
 
 def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
-        """Output the erosion of im using the line SE with slope dy/dx, length k, origin o, and line type
+        """Output the erosion of im using the line SE with slope dy/dx, length k, origin o, and line type (see details at  :cite:`soille-breen-jones96`)
 
         :param jim_object: image on which to perform the erosion
         :param dx: integer for displacement along x-axis to set slope
@@ -94,7 +94,7 @@ def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
 
 
 def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
-        """Output the dilation of im using the line SE with slope dy/dx, length k, origin o, and line type
+        """Output the dilation of im using the line SE with slope dy/dx, length k, origin o, and line type (see details at  :cite:`soille-breen-jones96`)
 
         :param jim_object: image on which to perform the dilation
         :param dx: integer for displacement along x-axis to set slope
@@ -140,6 +140,51 @@ def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
         """
         _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
                                                ox, oy, oz, trFlag))
+
+
+def morphoGradientByErosionDiamond(jim_object):
+        """Output the gradient by erosion of im using the elementary diamond shaped SE
+        """
+        return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
+
+
+
+
+
+# (defun @graderographframe (im k graph)
+#   "(*graderograph im k graph) graph-connected morphological gradient by erosion"
+# ; \lspfunction{*}{graderograph}{im k graph}
+# ; \param{im}{an image node}
+# ; \param{k}{integer for width of SE}
+# ; \param{graph}{connectivity (either 4, 8, 'octagon, or 'octagonprime)}
+# ; \return{im}
+# ; \desc{performs the graph-connected morphological gradient by erosion of im using a diamond (graph=4), square (graph=8), octagon (graph='octagon), or octagonprime (graph='octagonprime) SE of width equal to k pixels.}
+# ; \lspfile{\crtlspfile}
+#   (@sub im
+# 	(@subframebox
+# 	 (*erodegraph
+# 	  (*addframebox im 1 1 1 1 0 0 (*getpixmax im))
+# 	  k
+# 	  graph)
+# 	 1 1 1 1 0 0)
+# 	)
+#   )
+
+# def morphoGradientByErosionDiamondFrame(jim_object):
+#         """Output the gradient by erosion of im using the elementary diamond shaped SE
+#         """
+#         jim0 = jim_object.geom.
+#         return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
+
+
+
+def edgeWeight(jim_object, dir=0, type=0):
+        """Computes the weights of the horizontal or vertical edges linking any pair of horizontally or vertically adjacent pixels.
+
+        :param dir:  integer for coding edge direction (horizontal if 0, vertical otherwise).
+        :param type: integer determining how the edge weights are computed: 0 for absolute value of difference (default), 1 for maximum value, 2 for minimum value.
+        """
+        out = _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
 
 class _NgbOps():
