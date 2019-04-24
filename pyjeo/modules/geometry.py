@@ -357,7 +357,7 @@ def imageFrameSet(jim_object, l, r, t, b, u, d, val, band=0):
 
 
 def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
-    """Set the values of the image frame to value val.
+    """Add an image frame and set its values to value val.
 
     :param jim_object: a Jim object
     :param l: width of left frame
@@ -372,6 +372,22 @@ def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
     """
     return _pj.Jim(jim_object._jipjim.imageFrameAdd([l, r, t, b, u, d], val,
                                                     band))
+
+
+def imageFrameSubtract(jim_object, l, r, t, b, u, d, band=0):
+    """Subtract an image frame.
+
+    :param jim_object: a Jim object
+    :param l: width of left frame
+    :param r: width of right frame
+    :param t: width of top frame
+    :param b: width of bottom frame
+    :param u: width of upper frame
+    :param d: width of lower frame
+    :param band: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object._jipjim.imageFrameSubtract([l, r, t, b, u, d], band))
 
 
 def magnify(jim_object, n):
