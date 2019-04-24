@@ -572,7 +572,7 @@ class _PixOps():
         self._jim_object._set(self._jim_object._jipjim.setThreshold(kwargs))
 
 
-    def simpleArithOp(self, op, *args):
+    def simpleArithOp(self, jim, op, *args):
         """Change values of Jim using an arithmetic operation (coded by op) from provided Jim objects.
 
         Modifies the instance on which the method was called.
@@ -580,7 +580,9 @@ class _PixOps():
         :param op: integer coding operation type (see table below)
         :param args: Jim objects
         """
-        for jim in args:
+        jims = [jim]
+        jims.extend(args)
+        for jim in jims:
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, op)
 
     def simpleBitwiseOp(self, op, *args):
@@ -591,7 +593,9 @@ class _PixOps():
         :param op: integer coding operation type (see table below)
         :param args: Jim objects
         """
-        for jim in args:
+        jims = [jim]
+        jims.extend(args)
+        for jim in jims:
             self._jim_object._jipjim.d_pointOpBitwise(jim._jipjim, op)
 
     def supremum(self, *args):
