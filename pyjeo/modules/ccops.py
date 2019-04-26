@@ -280,6 +280,7 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
 
 
 
+
 # (defun *labelccdissim_ismm2011 (im omega alpha &key (diamondwidth 2))
 # ; \lspfunction{*}{labelccdissim_ismm2011}{im omega alpha &key (diamondwidth 2)}
 # ; \param{im}{}
@@ -325,32 +326,53 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
 
 
 
-def labelConstrainedCCsDissim(jim_object, localRange, globalRange):
+def labelConstrainedCCsDissim(jim_object_list, localRange, globalRange, dissimType=0):
     """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
 
     :param jim_object: a Jim object holding a grey level image
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels along alpha-connected paths
     :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
+    :param dissimType: integer value indicating the type of dissimilarity measure
+                       0 (default) for absolute difference
+                       1 for dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
     :return: labeled Jim object
     """
+    # DIR_HORI    = 0
+    # DIR_VERT    = 1
+    # ABS_DIFF_op = 0
+    # MAX_op      = 1
+    # MIN_op      = 2
+    
+    # mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(jim_object), _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object))
 
-    DIR_HORI=0
-    DIR_VERT=1
-    ABS_DIFF_op=0
-    MAX_op=0
-    MIN_op=2
+    # h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
+    # v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
 
-    mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(jim_object),  _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object))
+    # mingraderograddil = 0
 
-    h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
-    v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
+    # h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_HORI, ABS_DIFF_op))
+    # v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_VERT, ABS_DIFF_op))
 
-    mingraderograddil = 0
+    # return _pj.Jim(jim_object._jipjim.labelConstrainedCCsDissim(h_dissim._jipjim, v_dissim._jipjim, globalRange, localRange))
 
-    h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_HORI, ABS_DIFF_op))
-    v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_VERT, ABS_DIFF_op))
+    print("coucou000")
 
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsDissim(h_dissim, v_dissim, globalRange, localRange))
+    dissim=_pj.ngbops.getDissim(jim_object_list, dissimType)
+    
+    print("coucou00")
+
+    imMb=jim_object_list[0]
+    for im in jim_object_list[1:]:
+        imMb.geometry.stackBand(im)
+
+    print("coucou0")
+
+    dissim=_pj.ngbops.getDissim(jim_object_list, dissimType)
+
+    print("coucou1")
+
+    return _pj.Jim(imMb._jipjim.labelConstrainedCCsDissim(dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+
 
 
 

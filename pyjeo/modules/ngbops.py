@@ -120,9 +120,8 @@ def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     :param oz: z coordinate
     :param trFlag: optional parameter (0 or 1)
     """
-    _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
+    return _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
                                            ox, oy, oz, trFlag))
-
 
 def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     """Output the dilation of im using the SE defined by imse.
@@ -138,9 +137,8 @@ def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     :param oz: z coordinate
     :param trFlag: optional parameter (0 or 1)
     """
-    _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
+    return _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
                                            ox, oy, oz, trFlag))
-
 
 def morphoGradientByErosionDiamond(jim_object):
     """Output the gradient by erosion of im using the elementary diamond shaped SE
@@ -174,10 +172,59 @@ def edgeWeight(jim_object, dir=0, type=0):
     """Computes the weights of the horizontal or vertical edges linking any pair of horizontally or vertically adjacent pixels.
 
     :param dir:  integer for coding edge direction (horizontal if 0, vertical otherwise).
-    :param type: integer determining how the edge weights are computed: 0 for absolute value of difference (default), 1 for maximum value, 2 for minimum value.
+    :param type: integer determining how the edge weights are computed: 0 for absolute difference (default), 1 for maximum value, 2 for minimum value.
     """
     return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
+def getDissim(jim_object_list, dissimType=0):
+    """Compute the dissimilarities between horizontal and vertical pairs of adjacent pixels.
+
+    :param jim_object_list: a list of grey level Jim objects with the same definition domain.  The dissimilarities are calculated for each image separately and composed using the point-wise maximum rule.
+    :param dissimType: integer value indicating the type of dissimilarity measure
+                       0 (default) for absolute difference
+                       1 for dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
+    :return: a list of 2 Jim objects holding the horizontal and vertical dissimilarities respectively
+    """
+    DIR_HORI    = 0
+    DIR_VERT    = 1
+    ABS_DIFF_op = 0
+    MAX_op      = 1
+    MIN_op      = 2
+
+    if dissimType==0:
+        h_dissim=_pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI, ABS_DIFF_op)
+        v_dissim=_pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT, ABS_DIFF_op)
+
+        for im in jim_object_list[1:]:
+            h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI, ABS_DIFF_op))
+            v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT, ABS_DIFF_op))
+            
+    elif dissimType==1:
+        print("toto1")
+        mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(jim_object_list[0]), _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object_list[0]))
+        print("toto2")
+        h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
+        print("toto3")
+        v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
+        print("toto4")
+        mingraderograddil = 0
+        h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI, ABS_DIFF_op))
+        v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT, ABS_DIFF_op))
+        print("toto5")
+
+        for im in jim_object_list[1:]:
+            mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(im), _pj.ngbops.morphoGradientByErosionDiamondFrame(im))
+            h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
+            v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
+            mingraderograddil = 0
+            h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI, ABS_DIFF_op))
+            v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT, ABS_DIFF_op))
+           
+            h_dissim.pixops.supremum(h_dissim_crt)
+            v_dissim.pixops.supremum(v_dissim_crt)
+
+    return [h_dissim, v_dissim]
+        
 
 class _NgbOps():
     """Define all NgbOps methods."""
