@@ -62,36 +62,10 @@ def labelFlatZonesGraph(jim_object, graph=4):
     return _pj.Jim(jim_object._jipjim.labelFlatZones(ngb._jipjim, 1, 1, 0))
 
 
-def labelConstrainedCCsGraph(jim_object, localRange, globalRange, graph=4):
-    """Label each alpha-omega connected components with a unique label using graph-connectivity :cite:`soille2008pami`
-
-    :param jim_object: a Jim object holding a grey level image
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
-    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-    :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
-    :return: labeled Jim object
-    """
-    if (graph==4):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0,1]=1
-        ngb[1,0]=1
-        ngb[1,2]=1
-        ngb[2,1]=1
-    elif (graph==8):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1,1]=0
-    else:
-        print("graph must be equal to 4 or 8")
-        raise ValueError('graph must be equal to 4 or 8')
-
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, globalRange, localRange))
-
-
-def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph=4):
+def labelConstrainedCCs(jimo, localRange, globalRange, graph=4):
     """Label each alpha-omega connected component with a unique label using graph-connectivity :cite:`soille2008pami`
 
-    :param jim_object: a Jim object holding a multi-band image
+    :param jimo: a Jim or Jim list of grey level images having all the same definition domain and data type.
     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
     :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
@@ -115,14 +89,35 @@ def labelConstrainedCCsMultibandGraph(jim_object, localRange, globalRange, graph
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    return _pj.Jim(jim_object._jipjim.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, globalRange, localRange))
+    if isinstance(jimo, _pj.Jim):
+        return _pj.Jim(jimo._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, globalRange, localRange))
+    else:
+        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 
+def labelConstrainedCCsDissim(jimo, localRange, globalRange, dissimType=0):
+    """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
 
-def labelStronglyCCsMultibandGraph(jim_object, localRange, graph=4):
+    :param jimo: a Jim or a Jim list of grey level images having all the same definition domain and data type.
+    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels along alpha-connected paths
+    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
+    :param dissimType: integer value indicating the type of dissimilarity measure
+                       0 (default) for absolute difference
+                       1 for dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
+    :return: labeled Jim object
+    """
+    dissim=_pj.ngbops.getDissim(jimo, dissimType)
+
+    if isinstance(jimo, _pj.Jim):
+        return _pj.Jim(jimo._jipjim.labelConstrainedCCsDissim(dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+    else:
+        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultibandDissim(dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+        
+
+def labelStronglyCCs(jimo, localRange, graph=4):
     """Label each strongly alpha-connected component with a unique label using graph-connectivity :cite:`soille2008pami`
 
-    :param jim_object: a Jim object holding a multi-band image
+    :param jimo: a Jim or a Jim list of grey level images having all the same definition domain and data type.
     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
     :param graph: an integer holding for the graph connecvity (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
@@ -145,15 +140,17 @@ def labelStronglyCCsMultibandGraph(jim_object, localRange, graph=4):
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    return _pj.Jim(jim_object._jipjim.labelStronglyCCsMultiband(ngb._jipjim, 1, 1, 0, localRange))
+    if isinstance(jimo, _pj.Jim):
+        return _pj.Jim(jimo._jipjim.labelConstrainedCCsCi(ngb._jipjim, 1, 1, 0, localRange))
+    else:
+        return _pj.Jim(jimo._jipjimlist.labelStronglyCCsMultiband(ngb._jipjim, 1, 1, 0, localRange))
 
-
-def segmentImageMultiband(jim_object, localRange, regionSize, contrast=0, version=0, graph=4, dataFileNamePrefix=""):
+def segmentImageMultiband(jimList, localRange, regionSize, contrast=0, version=0, graph=4, dataFileNamePrefix=""):
     """Multiband image segmentation based on the method described in :cite:`brunner-soille2007`
 
 The contrast threshold value is used for merging the regions with similar contrast as follows: < 0 (do not perform region merge), 0 (determine best contrast value automatically), and > 0 (use this value as threshold value).  Authorised version values are: 0 (compare to whole region), 1 (compare to original seeds), and 2 (compare to pixel neighbours).  If the optional string dataFileNamePrefix is given, data files to use with gnuplot are stored in dataFileNamePrefix_xxx.dat, otherwise data files are not generated (default).
 
-    :param jim_object: a Jim object holding a multi-band image
+    :param jimList: a Jim list of grey level images having all the same definition domain and data type.
     :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
     :param regionSize: integer value for minimum size of iso-intensity region in output image (must be >= 2 pixels)
     :param contrast: (default is 0)
@@ -180,7 +177,7 @@ The contrast threshold value is used for merging the regions with similar contra
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    return _pj.Jim(jim_object._jipjim.segmentImageMultiband(graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
+    return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
 
 
 def distance2dEuclideanSquared(jim_object, band=0):
@@ -278,100 +275,6 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
     marker.ccops.morphoGeodesicReconstructionByErosion(ajim, graph, borderFlag)
     return marker
 
-
-
-
-# (defun *labelccdissim_ismm2011 (im omega alpha &key (diamondwidth 2))
-# ; \lspfunction{*}{labelccdissim_ismm2011}{im omega alpha &key (diamondwidth 2)}
-# ; \param{im}{}
-# ; \param{omega}{}
-# ; \param{alpha}{}
-# ; \param{(diamondwidth}{}
-# ; \return{}
-# ; \desc{see \cite{soille2011ismm}}
-# ; \myseealso{}
-# ; \lspfile{\crtlspfile}
-# ; \example{}{}
-#   (let* (
-# 	 (mingraderograddil
-# 	  (@inf (*graderographframe im diamondwidth 4)
-# 		(*graddilgraphframe im diamondwidth 4)
-# 		)
-# 	  )
-# 	 (DIR-HORI 0)
-# 	 (DIR-VERT 1)
-# 	 (ABS-DIFF_op 0)
-# 	 (MAX_op 1)
-# 	 (MIN_op 2)
-# 	 ; (h_dissim) (v_dissim)
-# 	 )
-#     (setq h_dissim (*edgeweight mingraderograddil DIR-HORI MAX_op))
-#     (setq v_dissim (*edgeweight mingraderograddil DIR-VERT MAX_op))
-#     (*imfree mingraderograddil)
-#     (@sup h_dissim
-# 	  (*edgeweight im DIR-HORI ABS-DIFF_op)
-# 	  )
-#     (@sup v_dissim
-# 	  (*edgeweight im DIR-VERT ABS-DIFF_op))
-
-#     (@subframebox
-#      (*labelccdissim (*addframebox im 1 1 1 1 0 0 255)
-# 		     (*addframebox h_dissim 1 1 1 1 0 0 255)
-# 		     (*addframebox v_dissim 1 1 1 1 0 0 255)
-# 		     omega
-# 		     alpha)
-#      1 1 1 1 0 0)
-#     )
-#   )
-
-
-
-def labelConstrainedCCsDissim(jim_object_list, localRange, globalRange, dissimType=0):
-    """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
-
-    :param jim_object: a Jim object holding a grey level image
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels along alpha-connected paths
-    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-    :param dissimType: integer value indicating the type of dissimilarity measure
-                       0 (default) for absolute difference
-                       1 for dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
-    :return: labeled Jim object
-    """
-    # DIR_HORI    = 0
-    # DIR_VERT    = 1
-    # ABS_DIFF_op = 0
-    # MAX_op      = 1
-    # MIN_op      = 2
-    
-    # mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(jim_object), _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object))
-
-    # h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
-    # v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
-
-    # mingraderograddil = 0
-
-    # h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_HORI, ABS_DIFF_op))
-    # v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object, DIR_VERT, ABS_DIFF_op))
-
-    # return _pj.Jim(jim_object._jipjim.labelConstrainedCCsDissim(h_dissim._jipjim, v_dissim._jipjim, globalRange, localRange))
-
-    print("coucou000")
-
-    dissim=_pj.ngbops.getDissim(jim_object_list, dissimType)
-    
-    print("coucou00")
-
-    imMb=jim_object_list[0]
-    for im in jim_object_list[1:]:
-        imMb.geometry.stackBand(im)
-
-    print("coucou0")
-
-    dissim=_pj.ngbops.getDissim(jim_object_list, dissimType)
-
-    print("coucou1")
-
-    return _pj.Jim(imMb._jipjim.labelConstrainedCCsDissim(dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
 
 
 

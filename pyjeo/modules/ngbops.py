@@ -176,7 +176,7 @@ def edgeWeight(jim_object, dir=0, type=0):
     """
     return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
-def getDissim(jim_object_list, dissimType=0):
+def getDissim(jimo, dissimType=0):
     """Compute the dissimilarities between horizontal and vertical pairs of adjacent pixels.
 
     :param jim_object_list: a list of grey level Jim objects with the same definition domain.  The dissimilarities are calculated for each image separately and composed using the point-wise maximum rule.
@@ -190,6 +190,11 @@ def getDissim(jim_object_list, dissimType=0):
     ABS_DIFF_op = 0
     MAX_op      = 1
     MIN_op      = 2
+
+    if isinstance(jimo, _pj.Jim):
+        jim_object_list=_pj.JimList([jimo])
+    else:
+        jim_object_list=jimo
 
     if dissimType==0:
         h_dissim=_pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI, ABS_DIFF_op)
