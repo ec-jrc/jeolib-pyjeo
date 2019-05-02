@@ -544,7 +544,8 @@ def intersect(jvec, jim, output, **kwargs):
     """
     kwargs.update({'output': output})
     if isinstance(jim, _pj.Jim):
-        avect=jvec._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs)
+        # avect=jvec._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs)
+        avect=jvec._jipjimvect.intersect(jim._jipjim,kwargs)
         pjvect=_pj.JimVect()
         pjvect._set(avect)
         return pjvect

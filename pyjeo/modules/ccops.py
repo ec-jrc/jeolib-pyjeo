@@ -340,7 +340,7 @@ def labelConstrainedCCsGraphDissim(jim_object, localRange, globalRange):
     ngb[1,2]=1
     ngb[2,1]=1
 
-    mingraderograddil = _pj.pixops.INF(_pj.ngb.morphoErode
+    mingraderograddil = _pj.pixops.INF(_pj.ngb.morphoErode)
 
     return _pj.Jim(jim_object._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, localRange, globalRange))
 

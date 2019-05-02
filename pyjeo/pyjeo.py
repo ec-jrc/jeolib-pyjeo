@@ -584,6 +584,15 @@ class Jim():
             self.np()[:]%=right
         return self
 
+    def __pow__(self, right):
+        result=Jim(self)
+        result.np()[:]**=right
+        return result
+
+    def __ipow__(self, right):
+        result.np()[:]**=right
+        return self
+
     def __lshift__(self, right):
         if isinstance(right, int):
             jim = Jim(self)
