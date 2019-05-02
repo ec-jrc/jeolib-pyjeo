@@ -211,7 +211,8 @@ def stackBand(jim_object, jim_other=None, band=None):
     """Stack bands of Jim objects
 
     :param jim_object: a Jim or JimList object used for stacking the bands
-    :param jim_other: a Jim object from which to copy bands (optional)
+    :param jim_other: a Jim object or jimlist from which to copy bands
+        (optional)
     :param band: List of band indices to stack (index is 0 based). Default is to stack all bands.
     :return: Jim object with stacked bands
 
@@ -235,7 +236,6 @@ def stackBand(jim_object, jim_other=None, band=None):
         jim_stacked=pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
 
     """
-    theDict={}
     if isinstance(jim_object, _pj.JimList):
         if band:
             retJim=_pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
@@ -249,12 +249,19 @@ def stackBand(jim_object, jim_other=None, band=None):
                 return retJim
         else:
             return retJim
-    elif isinstance(jim_other, _pj.Jim):
-        if band:
-            return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim,
-                                                        {'band': band}))
-        else:
-            return _pj.Jim(jim_object._jipjim.stackBand(jim_other._jipjim))
+    elif isinstance(jim_object, _pj.Jim):
+        if not isinstance(jim_other, list):
+            jim_other = [jim_other]
+
+        for jim in jim_other:
+            if band:
+                jim_object = _pj.Jim(jim_object._jipjim.stackBand(
+                    jim._jipjim, {'band': band}))
+            else:
+                jim_object =  _pj.Jim(jim_object._jipjim.stackBand(
+                    jim._jipjim))
+
+        return jim_object
     else:
         print("Error: expected a Jim object")
         raise TypeError('Error: expected a Jim object')
@@ -357,7 +364,7 @@ def imageFrameSet(jim_object, l, r, t, b, u, d, val, band=0):
 
 
 def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
-    """Set the values of the image frame to value val.
+    """Add an image frame and set its values to value val.
 
     :param jim_object: a Jim object
     :param l: width of left frame
@@ -372,6 +379,22 @@ def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
     """
     return _pj.Jim(jim_object._jipjim.imageFrameAdd([l, r, t, b, u, d], val,
                                                     band))
+
+
+def imageFrameSubtract(jim_object, l, r, t, b, u, d, band=0):
+    """Subtract an image frame.
+
+    :param jim_object: a Jim object
+    :param l: width of left frame
+    :param r: width of right frame
+    :param t: width of top frame
+    :param b: width of bottom frame
+    :param u: width of upper frame
+    :param d: width of lower frame
+    :param band: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_object._jipjim.imageFrameSubtract([l, r, t, b, u, d], band))
 
 
 def magnify(jim_object, n):
@@ -884,7 +907,7 @@ class _Geometry():
 
         Modifies the instance on which the method was called.
 
-        :param jim_other: a Jim object from which to copy bands
+        :param jim_other: a Jim object or jimlist from which to copy bands
         :param band: List of band indices to stack (index is 0 based)
 
         Example:
@@ -901,11 +924,15 @@ class _Geometry():
             jim1 = pj.Jim('/path/to/multiband.tif')
             jim0.geometry.stackBand(jim1, band=[0, 1, 2])
         """
-        if band:
-            self._jim_object._jipjim.d_stackBand(jim_other._jipjim,
-                                                 {'band': band})
-        else:
-            self._jim_object._jipjim.d_stackBand(jim_other._jipjim)
+        if not isinstance(jim_other, list):
+            jim_other = [jim_other]
+
+        for jim in jim_other:
+            if band:
+                self._jim_object._jipjim.d_stackBand(jim._jipjim,
+                                                     {'band': band})
+            else:
+                self._jim_object._jipjim.d_stackBand(jim._jipjim)
 
     def extractOgr(self, jim_ref, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
@@ -1333,6 +1360,22 @@ class _Geometry():
         :param band: List of band indices to crop (index is 0 based)
         """
         self._jim_object._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val, band)
+
+    def imageFrameSubtract(self, l, r, t, b, u, d, band=0):
+        """Subtract an image frame.
+
+        Modifies the instance on which the method was called.
+
+        :param l: width of left frame
+        :param r: width of right frame
+        :param t: width of top frame
+        :param b: width of bottom frame
+        :param u: width of upper frame
+        :param d: width of lower frame
+        :param band: List of band indices to crop (index is 0 based)
+        """
+        self._jim_object._jipjim.d_imageFrameSubtract([l, r, t, b, u, d], band)
+
 
     def magnify(self, n):
         """Magnify the image.
