@@ -95,7 +95,22 @@ In your local environment, import the pyjeo module::
 
   import pyjeo as pj
 
-Usage in the execute function in the interactive processing JEO-lab
+Usage in the JEOdesk
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The pyjeo module is can be imported as::
+
+  import pyjeo as pj
+
+An environment variable has been automatically set for all users::
+
+  PYTHONPATH=/eos/jeodpp/shared/prod/lib/python/jeodesk-16
+
+In case you should change this environment variable (e.g., /foo/bar), please make sure to append it as follows::
+
+
+  PYTHONPATH=${PYTHONPATH}:/foo/bar
+
+Usage in the execute function in the interactive processing JEOlab
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The pyjeo module is automatically imported as pj
 
