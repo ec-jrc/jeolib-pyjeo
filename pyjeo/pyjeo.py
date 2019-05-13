@@ -233,7 +233,7 @@ class Jim():
             mask = item > 0
             return Jim(self * mask)
         else:
-            npresult=numpy.array(self.np()[item], copy=True)
+            npresult = numpy.array(self.np()[item], copy=True)
             # npresult=numpy.array(self.np()[item])
             if len(npresult.shape) == 3:
                 nplane = npresult.shape[0]
@@ -254,7 +254,7 @@ class Jim():
             else:
                 raise IndexError('Error: index in __getitem__ out of range')
 
-            #[gs]item only supports single band image (use plane instead)
+            # [gs]item only supports single band image (use plane instead)
             nband = 1
             if self.properties.nrOfPlane() > 1:
                 dim = 3
@@ -268,7 +268,7 @@ class Jim():
             cropulj = 0
             # croplrj=self.properties.nrOfRow()
             if isinstance(item, tuple):
-                #cols
+                # cols
                 if len(item) > dim-1:
                     if isinstance(item[dim-1], slice):
                         if item[dim-1].start:
@@ -291,9 +291,9 @@ class Jim():
                         cropulj = item[dim-2]
                         # croplrj=item[dim-2]+1
 
-            upperLeft = self.geometry.image2geo(cropuli,cropulj)
+            upperLeft = self.geometry.image2geo(cropuli, cropulj)
             result = Jim(ncol=ncol, nrow=nrow, nband=nband, nplane=nplane,
-                        otype=self.properties.getDataType())
+                         otype=self.properties.getDataType())
             result.properties.setProjection(self.properties.getProjection())
             gt = self.properties.getGeoTransform()
 
@@ -320,8 +320,6 @@ class Jim():
             #       is not defined as in S2 cloud masks
 
             # template=Jim(self)
-            # print(item)
-            # print("type of item: {}".format(type(item)))
             # template.geometry.rasterize(item,1.0)
             # self[template>0]=value
             if type(value) in (float, int):
@@ -382,7 +380,7 @@ class Jim():
         :return: Negation of Jim raster dataset (-dataset)
         """
         jim = Jim(self)
-        jim.np()[:]=-(jim.np())
+        jim.np()[:] = -(jim.np())
         return jim
 
     def __invert__(self):
@@ -391,7 +389,7 @@ class Jim():
         :return: The complement of Jim raster dataset (~dataset)
         """
         jim = Jim(self)
-        jim.np()[:] =~ (jim.np())
+        jim.np()[:] = ~(jim.np())
         return jim
 
     # *** binary operators *** #
@@ -434,9 +432,9 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:]=(self.np()<right.np())
+            jim.np()[:] = (self.np() < right.np())
         else:
-            jim.np()[:]=(self.np()<right)
+            jim.np()[:] = (self.np() < right)
         return jim
 
     def __le__(self, right):
@@ -446,9 +444,9 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:]=(self.np()<=right.np())
+            jim.np()[:] = (self.np() <= right.np())
         else:
-            jim.np()[:]=(self.np()<=right)
+            jim.np()[:] = (self.np() <= right)
         return jim
 
     def __gt__(self, right):
@@ -458,9 +456,9 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:]=(self.np()>right.np())
+            jim.np()[:] = (self.np() > right.np())
         else:
-            jim.np()[:]=(self.np()>right)
+            jim.np()[:] = (self.np() > right)
         return jim
 
     def __ge__(self, right):
@@ -476,7 +474,7 @@ class Jim():
         return jim
 
     def __add__(self, right):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] += right.np()
         else:
@@ -484,7 +482,7 @@ class Jim():
         return result
 
     def __radd__(self, left):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(left, Jim):
             result.np()[:] += left.np()
         else:
@@ -499,7 +497,7 @@ class Jim():
         return self
 
     def __sub__(self, right):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] -= right.np()
         else:
@@ -507,7 +505,7 @@ class Jim():
         return result
 
     def __rsub__(self, left):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(left, Jim):
             result.np()[:] -= left.np()
         else:
@@ -522,7 +520,7 @@ class Jim():
         return self
 
     def __mul__(self, right):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] *= right.np()
         else:
@@ -545,7 +543,7 @@ class Jim():
         # return self
 
     def __rmul__(self, left):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(left, Jim):
             result.np()[:] *= left.np()
         else:
@@ -560,7 +558,7 @@ class Jim():
         return self
 
     def _trueDiv(self, right):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] /= right.np()
         else:
@@ -575,7 +573,7 @@ class Jim():
         return self
 
     def __div__(self, right):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] /= right.np()
         else:
@@ -590,7 +588,7 @@ class Jim():
         return self
 
     def __mod__(self, right):
-        result=Jim(self)
+        result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] %= right.np()
         else:
@@ -605,7 +603,7 @@ class Jim():
         return self
 
     def __pow__(self, right):
-        result=Jim(self)
+        result = Jim(self)
         result.np()[:] **= right
         return result
 
@@ -906,17 +904,19 @@ class _ParentVect(_jl.VectorOgr):
     def __init__(self, vector, kwargs):
         """Initialize the JimVect object and modules for methods.
 
-        :param vector: path to a vector or another JimVect object as a basis for
-            the JimVect object
-        :param output: path to an output vector in case another JimVect object was provided (copy constructor)
+        :param vector: path to a vector or another JimVect object as a basis
+            for the JimVect object
+        :param output: path to an output vector in case another JimVect object
+            was provided (copy constructor)
         """
         # super(_ParentVect, self).__init__(vector, *args)
         if kwargs:
             if vector:
                 if isinstance(vector, JimVect):
                     if 'output' in kwargs.keys():
-                        kwargs.update({'filename':kwargs.pop('output',None)})
-                        super(_ParentVect, self).__init__(vector._jipjimvect,kwargs)
+                        kwargs.update({'filename': kwargs.pop('output', None)})
+                        super(_ParentVect, self).__init__(vector._jipjimvect,
+                                                          kwargs)
                     else:
                         print("Error: output required for copy constructor")
                 else:
@@ -926,7 +926,7 @@ class _ParentVect(_jl.VectorOgr):
                 super(_ParentVect, self).__init__(kwargs)
         else:
             if isinstance(vector, JimVect):
-                super(_ParentVect, self).__init__(vector._jipjimvect,kwargs)
+                super(_ParentVect, self).__init__(vector._jipjimvect, kwargs)
             else:
                 if vector:
                     super(_ParentVect, self).__init__(vector)
