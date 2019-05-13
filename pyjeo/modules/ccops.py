@@ -24,13 +24,13 @@ def labelGraph(jim_object, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph == 4):
+    if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif (graph == 8):
+    elif graph == 8:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
@@ -49,13 +49,13 @@ def labelFlatZonesGraph(jim_object, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph == 4):
+    if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif (graph == 8):
+    elif graph == 8:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
@@ -87,13 +87,13 @@ def seededRegionGrowing(jimo, seeds, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph == 4):
+    if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif (graph == 8):
+    elif graph == 8:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
@@ -127,13 +127,13 @@ def labelConstrainedCCs(jimo, localRange, globalRange, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph == 4):
+    if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif (graph == 8):
+    elif graph == 8:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
@@ -191,13 +191,13 @@ def labelStronglyCCs(jimo, localRange, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph == 4):
+    if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif (graph == 8):
+    elif graph == 8:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
@@ -241,13 +241,13 @@ def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
     :param dataFileName:
     :return: labeled Jim object
     """
-    if (graph == 4):
+    if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif (graph == 8):
+    elif graph == 8:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
@@ -424,13 +424,13 @@ class _CCOps():
             (4 or 8 for 2-D images, default is 8)
         :return: labeled Jim object
         """
-        if (graph == 4):
+        if graph == 4:
             ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
             ngb[0, 1] = 1
             ngb[1, 0] = 1
             ngb[1, 2] = 1
             ngb[2, 1] = 1
-        elif (graph == 8):
+        elif graph == 8:
             ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
             ngb.pixops.setData(1)
             ngb[1, 1] = 0
