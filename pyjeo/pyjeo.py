@@ -15,6 +15,7 @@ from modules import pjio as io, properties, pixops, ngbops, geometry, \
 
 del _jl.Jim.__del__
 
+
 def np(aJim):
     return _jl.np(aJim._jipjim)
 
@@ -70,33 +71,36 @@ class Jim():
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
-        #remove stdev and uniform from kwargs
-        stdev=kwargs.pop('stdev',None)
-        uniform=kwargs.pop('uniform',None)
-        seed=kwargs.pop('seed',None)
+        # remove stdev and uniform from kwargs
+        stdev = kwargs.pop('stdev', None)
+        uniform = kwargs.pop('uniform', None)
+        seed = kwargs.pop('seed', None)
         self._jipjim = _ParentJim(image, kwargs)
 
         if stdev or uniform or seed:
-            mean=kwargs.pop('mean',None)
+            mean = kwargs.pop('mean', None)
             if seed:
                 numpy.random.seed(seed)
-            scale=1
-            offset=0
+            scale = 1
+            offset = 0
             if uniform:
                 if len(uniform) == 2:
-                    min=uniform[0]
-                    max=uniform[1]
-                    scale=max-min
-                    offset=min
-                    self.np()[:]=scale*numpy.random.rand(*(self.np().shape))+offset
+                    min = uniform[0]
+                    max = uniform[1]
+                    scale = max-min
+                    offset = min
+                    self.np()[:] = scale * \
+                                   numpy.random.rand(*(self.np().shape)) + \
+                                   offset
             else:
                 if not stdev:
-                    stdev=1
+                    stdev = 1
                 if not mean:
-                    mean=0
-                scale=stdev
-                offset=mean
-                self.np()[:]=scale*numpy.random.rand(*(self.np().shape))+offset
+                    mean = 0
+                scale = stdev
+                offset = mean
+                self.np()[:] = scale * numpy.random.rand(*(self.np().shape)) \
+                               + offset
 
         self._all = all._All()
         self._ccops = ccops._CCOps()
@@ -195,12 +199,12 @@ class Jim():
 
         print('\n'.join(methods))
 
-    def np(self,band=0):
+    def np(self, band=0):
         """Return numpy array from Jim object
         :band: band index (starting from 0)
         :return: numpy array representation
         """
-        return _jl.np(self._jipjim,band)
+        return _jl.np(self._jipjim, band)
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
@@ -221,101 +225,106 @@ class Jim():
                 nodata = nodata[0]
             else:
                 nodata = 0
-            return geometry.cropOgr(self, item._jipjimvect, crop_to_cutline=True, nodata=nodata, align=True)
+            return geometry.cropOgr(self, item._jipjimvect,
+                                    crop_to_cutline=True, nodata=nodata,
+                                    align=True)
 
         elif isinstance(item, Jim):
-            mask = item>0
-            return Jim(self*mask)
+            mask = item > 0
+            return Jim(self * mask)
         else:
-            npresult=numpy.array(self.np()[item],copy=True)
+            npresult=numpy.array(self.np()[item], copy=True)
             # npresult=numpy.array(self.np()[item])
-            if len(npresult.shape)==3:
-                nplane=npresult.shape[0]
-                nrow=npresult.shape[1]
-                ncol=npresult.shape[2]
-            elif len(npresult.shape)==2:
-                nplane=1
-                nrow=npresult.shape[0]
-                ncol=npresult.shape[1]
-            elif len(npresult.shape)==1:
-                nplane=1
-                nrow=1
-                ncol=npresult.shape[0]
-            elif len(npresult.shape)==0:
-                nplane=1
-                nrow=1
-                ncol=1
+            if len(npresult.shape) == 3:
+                nplane = npresult.shape[0]
+                nrow = npresult.shape[1]
+                ncol = npresult.shape[2]
+            elif len(npresult.shape) == 2:
+                nplane = 1
+                nrow = npresult.shape[0]
+                ncol = npresult.shape[1]
+            elif len(npresult.shape) == 1:
+                nplane = 1
+                nrow = 1
+                ncol = npresult.shape[0]
+            elif len(npresult.shape) == 0:
+                nplane = 1
+                nrow = 1
+                ncol = 1
             else:
                 raise IndexError('Error: index in __getitem__ out of range')
 
             #[gs]item only supports single band image (use plane instead)
-            nband=1
-            if self.properties.nrOfPlane()>1:
-                dim=3
+            nband = 1
+            if self.properties.nrOfPlane() > 1:
+                dim = 3
             else:
-                dim=2
-            dx=self.properties.getDeltaX()
-            dy=self.properties.getDeltaY()
+                dim = 2
+            dx = self.properties.getDeltaX()
+            dy = self.properties.getDeltaY()
 
-            cropuli=0
+            cropuli = 0
             # croplri=self.properties.nrOfCol()
-            cropulj=0
+            cropulj = 0
             # croplrj=self.properties.nrOfRow()
             if isinstance(item, tuple):
                 #cols
-                if len(item)>dim-1:
+                if len(item) > dim-1:
                     if isinstance(item[dim-1], slice):
                         if item[dim-1].start:
-                            cropuli=item[dim-1].start
+                            cropuli = item[dim-1].start
                         if item[dim-1].step:
-                            dx*=item[dim-1].step
+                            dx *= item[dim-1].step
                         # croplri=item[dim-1].stop
                     else:
-                        cropuli=item[dim-1]
+                        cropuli = item[dim-1]
                         # croplri=item[dim-1]+1
                 else:
                     #test
                     print('we should not end up here for cols?')
                 #rows
-                if len(item)>dim-2:
+                if len(item) > dim-2:
                     if isinstance(item[dim-2], slice):
                         if item[dim-2].start:
-                            cropulj=item[dim-2].start
+                            cropulj = item[dim-2].start
                         if item[dim-2].step:
-                            dy*=item[dim-2].step
+                            dy *= item[dim-2].step
                         # croplrj=item[dim-2].stop
                     else:
-                        cropulj=item[dim-2]
+                        cropulj = item[dim-2]
                         # croplrj=item[dim-2]+1
                 else:
                     #test
                     print('we should not end up here for rows?')
 
-            upperLeft=self.geometry.image2geo(cropuli,cropulj);
-            result=Jim(ncol=ncol,nrow=nrow,nband=nband,nplane=nplane,otype=self.properties.getDataType())
+            upperLeft = self.geometry.image2geo(cropuli,cropulj)
+            result = Jim(ncol=ncol, nrow=nrow, nband=nband, nplane=nplane,
+                        otype=self.properties.getDataType())
             result.properties.setProjection(self.properties.getProjection())
-            gt=self.properties.getGeoTransform()
+            gt = self.properties.getGeoTransform()
 
-            cropulx=upperLeft[0]-self.properties.getDeltaX()/2;
-            cropuly=upperLeft[1]+self.properties.getDeltaY()/2;
+            cropulx = upperLeft[0]-self.properties.getDeltaX()/2
+            cropuly = upperLeft[1]+self.properties.getDeltaY()/2
 
-            gt[0]=cropulx;
-            gt[1]=dx;
-            gt[2]=0;
-            gt[3]=cropuly;
-            gt[4]=0;
-            gt[5]=-dy;
+            gt[0] = cropulx
+            gt[1] = dx
+            gt[2] = 0
+            gt[3] = cropuly
+            gt[4] = 0
+            gt[5] = -dy
             result.properties.setGeoTransform(gt)
-            result.np()[:]=npresult
+            result.np()[:] = npresult
             return result
 
     def __setitem__(self, item, value):
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError('Error: __setitem__ with JimVect not implemented for 3d '
-                                 'Jim objects')
+                raise ValueError('Error: __setitem__ with JimVect not '
+                                 'implemented for 3d Jim objects')
             # TODO: decide on default behaviour of ALL_TOUCHED=TRUE
-            # TODO: next lines should work, but problem with GML files when SRS is not defined as in S2 cloud masks
+            # TODO: next lines should work, but problem with GML files when SRS
+            #       is not defined as in S2 cloud masks
+
             # template=Jim(self)
             # print(item)
             # print("type of item: {}".format(type(item)))
@@ -323,11 +332,15 @@ class Jim():
             # self[template>0]=value
             if type(value) in (float, int):
                 templateJim = Jim(self, copyData=False)
-                templateJim = Jim(templateJim._jipjim.setMask(item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
-                self[templateJim>0]=value
+                templateJim = Jim(templateJim._jipjim.setMask(
+                    item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
+                                       'nodata': 1}))
+                self[templateJim > 0] = value
             elif isinstance(value, Jim):
                 templateJim = Jim(self, copyData=False)
-                templateJim = Jim(templateJim._jipjim.setMask(item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'], 'nodata': 1}))
+                templateJim = Jim(templateJim._jipjim.setMask(
+                    item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
+                                       'nodata': 1}))
                 self[templateJim > 0] = value
         elif isinstance(item, Jim):  # or isinstance(value, Jim):
             if value is None:
@@ -339,11 +352,12 @@ class Jim():
                     self._jipjim.d_setMask(item._jipjim, value)
         elif isinstance(item, tuple):
             if isinstance(value, Jim):
-                self.np()[item]=value.np()
+                self.np()[item] = value.np()
             else:
-                self.np()[item]=value
+                self.np()[item] = value
         else:
-            raise ValueError('Error: __setitem__ only implemented for Vector, Jim or tuples')
+            raise ValueError('Error: __setitem__ only implemented for Vector, '
+                             'Jim or tuples')
 
     def __nonzero__(self):
         """Check if Jim contains data
@@ -365,7 +379,7 @@ class Jim():
         :return: Absolute value of Jim raster dataset
         """
         jim = Jim(self)
-        jim.np()[:]=abs(jim.np())
+        jim.np()[:] = abs(jim.np())
         return jim
 
     def __neg__(self):
@@ -383,7 +397,7 @@ class Jim():
         :return: The complement of Jim raster dataset (~dataset)
         """
         jim = Jim(self)
-        jim.np()[:]=~(jim.np())
+        jim.np()[:] =~ (jim.np())
         return jim
 
     # *** binary operators *** #
@@ -392,13 +406,15 @@ class Jim():
 
         :return: Jim object with pixels 1 if equal values, 0 otherwise
         """
-        jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
+        jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
+                          self.properties.nrOfBand(),
+                          self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:]=(self.np()==right.np())
+            jim.np()[:] = (self.np() == right.np())
         else:
-            jim.np()[:]=(self.np()==right)
+            jim.np()[:] = (self.np() == right)
         return jim
 
     def __ne__(self, right):
@@ -406,17 +422,21 @@ class Jim():
 
         :return: False if equal values, True otherwise
         """
-        jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
+        jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
+                          self.properties.nrOfBand(),
+                          self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:]=(self.np()!=right.np())
+            jim.np()[:] = (self.np() != right.np())
         else:
-            jim.np()[:]=(self.np()!=right)
+            jim.np()[:] = (self.np() != right)
         return jim
 
     def __lt__(self, right):
-        jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
+        jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
+                          self.properties.nrOfBand(),
+                          self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
@@ -426,7 +446,9 @@ class Jim():
         return jim
 
     def __le__(self, right):
-        jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
+        jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
+                          self.properties.nrOfBand(),
+                          self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
@@ -436,7 +458,9 @@ class Jim():
         return jim
 
     def __gt__(self, right):
-        jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
+        jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
+                          self.properties.nrOfBand(),
+                          self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
@@ -446,67 +470,69 @@ class Jim():
         return jim
 
     def __ge__(self, right):
-        jim = Jim(_jl.Jim(self.properties.nrOfCol(),self.properties.nrOfRow(),self.properties.nrOfBand(),self.properties.nrOfPlane(),_jl.GDT_Byte))
+        jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
+                          self.properties.nrOfBand(),
+                          self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:]=(self.np()>=right.np())
+            jim.np()[:] = (self.np() >= right.np())
         else:
-            jim.np()[:]=(self.np()>=right)
+            jim.np()[:] = (self.np() >= right)
         return jim
 
     def __add__(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
-            result.np()[:]+=right.np()
+            result.np()[:] += right.np()
         else:
-            result.np()[:]+=right
+            result.np()[:] += right
         return result
 
     def __radd__(self, left):
         result=Jim(self)
         if isinstance(left, Jim):
-            result.np()[:]+=left.np()
+            result.np()[:] += left.np()
         else:
-            result.np()[:]+=left
+            result.np()[:] += left
         return result
 
     def __iadd__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]+=right.np()
+            self.np()[:] += right.np()
         else:
-            self.np()[:]+=right
+            self.np()[:] += right
         return self
 
     def __sub__(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
-            result.np()[:]-=right.np()
+            result.np()[:] -= right.np()
         else:
-            result.np()[:]-=right
+            result.np()[:] -= right
         return result
 
     def __rsub__(self, left):
         result=Jim(self)
         if isinstance(left, Jim):
-            result.np()[:]-=left.np()
+            result.np()[:] -= left.np()
         else:
-            result.np()[:]-=left
+            result.np()[:] -= left
         return result
 
     def __isub__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]-=right.np()
+            self.np()[:] -= right.np()
         else:
-            self.np()[:]-=right
+            self.np()[:] -= right
         return self
 
     def __mul__(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
-            result.np()[:]*=right.np()
+            result.np()[:] *= right.np()
         else:
-            result.np()[:]*=right
+            result.np()[:] *= right
         return result
         # if isinstance(right, Jim):
         #     if right.properties.getDataType() == _jl.GDT_Float32 or \
@@ -527,76 +553,76 @@ class Jim():
     def __rmul__(self, left):
         result=Jim(self)
         if isinstance(left, Jim):
-            result.np()[:]*=left.np()
+            result.np()[:] *= left.np()
         else:
-            result.np()[:]*=left
+            result.np()[:] *= left
         return result
 
     def __imul__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]*=right.np()
+            self.np()[:] *= right.np()
         else:
-            self.np()[:]*=right
+            self.np()[:] *= right
         return self
 
     def _trueDiv(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
-            result.np()[:]/=right.np()
+            result.np()[:] /= right.np()
         else:
-            result.np()[:]/=right
+            result.np()[:] /= right
         return result
 
     def _itrueDiv(self, right):
         if isinstance(right, Jim):
-            self.np()[:]/=right.np()
+            self.np()[:] /= right.np()
         else:
-            self.np()[:]/=right
+            self.np()[:] /= right
         return self
 
     def __div__(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
-            result.np()[:]/=right.np()
+            result.np()[:] /= right.np()
         else:
-            result.np()[:]/=right
+            result.np()[:] /= right
         return result
 
     def __idiv__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]/=right.np()
+            self.np()[:] /= right.np()
         else:
-            self.np()[:]/=right
+            self.np()[:] /= right
         return self
 
     def __mod__(self, right):
         result=Jim(self)
         if isinstance(right, Jim):
-            result.np()[:]%=right.np()
+            result.np()[:] %= right.np()
         else:
-            result.np()[:]%=right
+            result.np()[:] %= right
         return result
 
     def __imod__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]%=right.np()
+            self.np()[:] %= right.np()
         else:
-            self.np()[:]%=right
+            self.np()[:] %= right
         return self
 
     def __pow__(self, right):
         result=Jim(self)
-        result.np()[:]**=right
+        result.np()[:] **= right
         return result
 
     def __ipow__(self, right):
-        result.np()[:]**=right
+        result.np()[:] **= right
         return self
 
     def __lshift__(self, right):
         if isinstance(right, int):
             jim = Jim(self)
-            jim.np()[:]<<=right
+            jim.np()[:] <<= right
             return jim
         else:
             raise TypeError('unsupported operand type for << : {}'.format(
@@ -604,7 +630,7 @@ class Jim():
 
     def __ilshift__(self, right):
         if isinstance(right, int):
-            self.np()[:]<<=right
+            self.np()[:] <<= right
         else:
             raise TypeError('unsupported operand type for << : {}'.format(
                 type(right)))
@@ -613,7 +639,7 @@ class Jim():
     def __rshift__(self, right):
         if isinstance(right, int):
             jim = Jim(self)
-            jim.np()[:]>>=right
+            jim.np()[:] >>= right
             return jim
         else:
             raise TypeError('unsupported operand type for >> : {}'.format(
@@ -621,7 +647,7 @@ class Jim():
 
     def __irshift__(self, right):
         if isinstance(right, int):
-            self.np()[:]>>=right
+            self.np()[:] >>= right
         else:
             raise TypeError('unsupported operand type for >> : {}'.format(
                 type(right)))
@@ -630,7 +656,7 @@ class Jim():
     def __or__(self, right):
         if isinstance(right, Jim):
             jim = Jim(self)
-            jim.np()[:]|=right.np()
+            jim.np()[:] |= right.np()
             return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
@@ -638,7 +664,7 @@ class Jim():
 
     def __ior__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]|=right.np()
+            self.np()[:] |= right.np()
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
                 type(right)))
@@ -647,7 +673,7 @@ class Jim():
     def __ror__(self, left):
         if isinstance(left, Jim):
             jim = Jim(self)
-            jim.np()[:]|=left.np()
+            jim.np()[:] |= left.np()
             return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
@@ -656,7 +682,7 @@ class Jim():
     def __xor__(self, right):
         if isinstance(right, Jim):
             jim = Jim(self)
-            jim.np()[:]^=right.np()
+            jim.np()[:] ^= right.np()
             return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
@@ -664,7 +690,7 @@ class Jim():
 
     def __ixor__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]^=right.np()
+            self.np()[:] ^= right.np()
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
                 type(right)))
@@ -673,7 +699,7 @@ class Jim():
     def __rxor__(self, left):
         if isinstance(left, Jim):
             jim = Jim(self)
-            jim.np()[:]^=left.np()
+            jim.np()[:] ^= left.np()
             return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
@@ -682,7 +708,7 @@ class Jim():
     def __and__(self, right):
         if isinstance(right, Jim):
             jim = Jim(self)
-            jim.np()[:]&=right.np()
+            jim.np()[:] &= right.np()
             return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(
@@ -690,7 +716,7 @@ class Jim():
 
     def __iand__(self, right):
         if isinstance(right, Jim):
-            self.np()[:]&=right.np()
+            self.np()[:] &= right.np()
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
                 type(right)))
@@ -699,7 +725,7 @@ class Jim():
     def __rand__(self, left):
         if isinstance(left, Jim):
             jim = Jim(self)
-            jim.np()[:]&=left.np()
+            jim.np()[:] &= left.np()
             return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(
