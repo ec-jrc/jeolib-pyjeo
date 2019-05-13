@@ -1105,7 +1105,7 @@ class JimVect():
         print('\n'.join(methods))
 
     def _set(self, modified_object):
-        """Apply changes done in modified_object to the parent VectorOgr instance.
+        """Apply changes done in modified_object to parent VectorOgr instance.
 
         :param modified_object: modified VectorOgr instance
         """
