@@ -991,7 +991,6 @@ class JimList(list):
 
 class _ParentVect(_jl.VectorOgr):
 
-    # def __init__(self, vector, *args):
     def __init__(self, vector, kwargs):
         """Initialize the JimVect object and modules for methods.
 
@@ -1000,7 +999,6 @@ class _ParentVect(_jl.VectorOgr):
         :param output: path to an output vector in case another JimVect object
             was provided (copy constructor)
         """
-        # super(_ParentVect, self).__init__(vector, *args)
         if kwargs:
             if vector:
                 if isinstance(vector, JimVect):
@@ -1009,7 +1007,7 @@ class _ParentVect(_jl.VectorOgr):
                         super(_ParentVect, self).__init__(vector._jipjimvect,
                                                           kwargs)
                     else:
-                        print("Error: output required for copy constructor")
+                        raise Exception("Output required for copy constructor")
                 else:
                     kwargs.update({'filename': vector})
                     super(_ParentVect, self).__init__(kwargs)
