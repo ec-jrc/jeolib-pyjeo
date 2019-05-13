@@ -15,22 +15,25 @@ def labelImagePixels(jim):
 
 
 def labelGraph(jim, graph=4):
-    """Label each non-zero connected component with a unique label using graph-connectivity
+    """Label each non-zero connected component with a unique label.
+
+    Label using graph-connectivity.
 
     :param jim: a Jim object holding a binary image
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images, default is 4)
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph==4):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0,1]=1
-        ngb[1,0]=1
-        ngb[1,2]=1
-        ngb[2,1]=1
-    elif (graph==8):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+    if graph == 4:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+    elif graph == 8:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
-        ngb[1,1]=0
+        ngb[1, 1] = 0
     else:
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
@@ -39,22 +42,23 @@ def labelGraph(jim, graph=4):
 
 
 def labelFlatZonesGraph(jim, graph=4):
-    """Label each image flat zone with a unique label using graph-connectivity
+    """Label each image flat zone with a unique label using graph-connectivity.
 
     :param jim: a Jim object holding a grey level image
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images, default is 4)
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph==4):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0,1]=1
-        ngb[1,0]=1
-        ngb[1,2]=1
-        ngb[2,1]=1
-    elif (graph==8):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+    if graph == 4:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+    elif graph == 8:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
-        ngb[1,1]=0
+        ngb[1, 1] = 0
     else:
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
@@ -63,153 +67,196 @@ def labelFlatZonesGraph(jim, graph=4):
 
 
 def seededRegionGrowing(jimo, seeds, graph=4):
-    """Seeded region growing :cite:`adams-bischof94` including adaptations presented in :cite:`mehnert-jackway97`.
+    """Calculate the seeded region growing.
 
-A seeded region algorithm whereby labelled seeds (seeds) are grown in a multi-channel image using graph-connectivity.  The growth is driven by the spectral distances (L2 norm) are calculated between pixels along the external boundary of the already grown regions and the corresponding pixels along the internal boundary of the seeds. Both jimo and seeds are modified by this function. The image of seeds is modified by expanding the corresponding initial values of the seeds.
+    Seeded region growing :cite:`adams-bischof94` including adaptations
+    presented in :cite:`mehnert-jackway97`.
 
-    :param jimo: a Jim or Jim list of grey level images having all the same definition domain and data type.
+    A seeded region algorithm whereby labelled seeds (seeds) are grown in
+    a multi-channel image using graph-connectivity. The growth is driven by
+    the spectral distances (L2 norm) are calculated between pixels along
+    the external boundary of the already grown regions and the corresponding
+    pixels along the internal boundary of the seeds. Both jimo and seeds are
+    modified by this function. The image of seeds is modified by expanding
+    the corresponding initial values of the seeds.
+
+    :param jimo: a Jim or Jim list of grey level images having all the same
+        definition domain and data type.
     :param seeds: a Jim image for labelled seeds (UINT32 type)
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images, default is 4)
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    if (graph==4):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0,1]=1
-        ngb[1,0]=1
-        ngb[1,2]=1
-        ngb[2,1]=1
-    elif (graph==8):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+    if graph == 4:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+    elif graph == 8:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
-        ngb[1,1]=0
+        ngb[1, 1] = 0
     else:
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    if isinstance(jimo, _pj.Jim):        
-        jim_list=_pj.JimList([jimo])
-    else:      
-        jim_list=jimo
+    if isinstance(jimo, _pj.Jim):
+        jim_object_list = _pj.JimList([jimo])
+    else:
+        jim_object_list = jimo
 
-    return _pj.Jim(jim_list._jipjimlist.segmentationSeededRegionGrowingMultiband(seeds._jipjim, ngb._jipjim, 1, 1, 0))
+    return _pj.Jim(
+        jim_object_list._jipjimlist.segmentationSeededRegionGrowingMultiband(
+            seeds._jipjim, ngb._jipjim, 1, 1, 0))
 
 
 def labelConstrainedCCs(jimo, localRange, globalRange, graph=4):
-    """Label each alpha-omega connected component with a unique label using graph-connectivity :cite:`soille2008pami`
+    """Label each alpha-omega connected component.
 
-    :param jimo: a Jim or Jim list of grey level images having all the same definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
-    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images, default is 4)
+    Label with a unique label using graph-connectivity :cite:`soille2008pami`
+
+    :param jimo: a Jim or Jim list of grey level images having all the same
+        definition domain and data type.
+    :param localRange: integer value indicating maximum absolute local
+        difference between 2 adjacent pixels
+    :param globalRange: integer value indicating maximum global difference
+        (difference between the maximum and minimum values of each resulting
+        connected component)
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    # if jim.properties.nrOfBand() < 2:
-    #     print("Jim image must be a multi-band image")
-    #     raise ValueError('Jim image must be a multi-band image')
-
-    if (graph==4):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0,1]=1
-        ngb[1,0]=1
-        ngb[1,2]=1
-        ngb[2,1]=1
-    elif (graph==8):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+    if graph == 4:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+    elif graph == 8:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
-        ngb[1,1]=0
+        ngb[1, 1] = 0
     else:
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
     if isinstance(jimo, _pj.Jim):
-        return _pj.Jim(jimo._jipjim.labelConstrainedCCs(ngb._jipjim, 1, 1, 0, globalRange, localRange))
+        return _pj.Jim(jimo._jipjim.labelConstrainedCCs(
+            ngb._jipjim, 1, 1, 0, globalRange, localRange))
     else:
-        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultiband(ngb._jipjim, 1, 1, 0, globalRange, localRange))
+        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultiband(
+            ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 
 def labelConstrainedCCsDissim(jimo, localRange, globalRange, dissimType=0):
-    """Label each alpha-omega connected components with a unique label using graph-connectivity and the dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
+    """Label each alpha-omega connected components with a unique label.
 
-    :param jimo: a Jim or a Jim list of grey level images having all the same definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels along alpha-connected paths
-    :param globalRange: integer value indicating maximum global difference (difference between the maximum and minimum values of each resulting connected component)
-    :param dissimType: integer value indicating the type of dissimilarity measure
+     Label using graph-connectivity and the dissimilarity measure countering
+     the chaining effect as described in :cite:`soille2011ismm`
+
+    :param jimo: a Jim or a Jim list of grey level images having all the same
+        definition domain and data type.
+    :param localRange: integer value indicating maximum absolute local
+        difference between 2 adjacent pixels along alpha-connected paths
+    :param globalRange: integer value indicating maximum global difference
+        (difference between the maximum and minimum values of each resulting
+        connected component)
+    :param dissimType: integer value indicating type of dissimilarity measure
                        0 (default) for absolute difference
-                       1 for dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
+                       1 for dissimilarity measure countering the chaining
+                         effect as described in :cite:`soille2011ismm`
     :return: labeled Jim object
     """
-    dissim=_pj.ngbops.getDissim(jimo, dissimType)
+    dissim = _pj.ngbops.getDissim(jimo, dissimType)
 
     if isinstance(jimo, _pj.Jim):
-        return _pj.Jim(jimo._jipjim.labelConstrainedCCsDissim(dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+        return _pj.Jim(jimo._jipjim.labelConstrainedCCsDissim(
+            dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
     else:
-        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultibandDissim(dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
-        
+        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultibandDissim(
+            dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+
 
 def labelStronglyCCs(jimo, localRange, graph=4):
-    """Label each strongly alpha-connected component with a unique label using graph-connectivity :cite:`soille2008pami`
+    """Label each strongly alpha-connected component.
 
-    :param jimo: a Jim or a Jim list of grey level images having all the same definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images, default is 4)
+    Label with a unique label using graph-connectivity :cite:`soille2008pami`
+
+    :param jimo: a Jim or a Jim list of grey level images having all the same
+        definition domain and data type.
+    :param localRange: integer value indicating maximum absolute local
+        difference between 2 adjacent pixels
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
-    # if jim.properties.nrOfBand() < 2:
-    #     print("Jim image must be a multi-band image")
-    #     raise ValueError('Jim image must be a multi-band image')
-
-    if (graph==4):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0,1]=1
-        ngb[1,0]=1
-        ngb[1,2]=1
-        ngb[2,1]=1
-    elif (graph==8):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+    if graph == 4:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+    elif graph == 8:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
-        ngb[1,1]=0
+        ngb[1, 1] = 0
     else:
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
     if isinstance(jimo, _pj.Jim):
-        return _pj.Jim(jimo._jipjim.labelConstrainedCCsCi(ngb._jipjim, 1, 1, 0, localRange))
+        return _pj.Jim(jimo._jipjim.labelConstrainedCCsCi(
+            ngb._jipjim, 1, 1, 0, localRange))
     else:
-        return _pj.Jim(jimo._jipjimlist.labelStronglyCCsMultiband(ngb._jipjim, 1, 1, 0, localRange))
+        return _pj.Jim(jimo._jipjimlist.labelStronglyCCsMultiband(
+            ngb._jipjim, 1, 1, 0, localRange))
 
-def segmentImageMultiband(jimList, localRange, regionSize, contrast=0, version=0, graph=4, dataFileNamePrefix=""):
-    """Multiband image segmentation based on the method described in :cite:`brunner-soille2007`
 
-The contrast threshold value is used for merging the regions with similar contrast as follows: < 0 (do not perform region merge), 0 (determine best contrast value automatically), and > 0 (use this value as threshold value).  Authorised version values are: 0 (compare to whole region), 1 (compare to original seeds), and 2 (compare to pixel neighbours).  If the optional string dataFileNamePrefix is given, data files to use with gnuplot are stored in dataFileNamePrefix_xxx.dat, otherwise data files are not generated (default).
+def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
+                          version=0, graph=4, dataFileNamePrefix=""):
+    """Do multiband image segmentation.
 
-    :param jimList: a Jim list of grey level images having all the same definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local difference between 2 adjacent pixels
-    :param regionSize: integer value for minimum size of iso-intensity region in output image (must be >= 2 pixels)
+    Based on the method described in :cite:`brunner-soille2007`
+
+    The contrast threshold value is used for merging the regions with similar
+    contrast as follows: < 0 (do not perform region merge), 0 (determine best
+    contrast value automatically), and > 0 (use this value as threshold value).
+    Authorised version values are: 0 (compare to whole region), 1 (compare to
+    original seeds), and 2 (compare to pixel neighbours).  If the optional
+    string dataFileNamePrefix is given, data files to use with gnuplot are
+    stored in dataFileNamePrefix_xxx.dat, otherwise data files are not
+    generated (default).
+
+    :param jimList: a Jim list of grey level images having all the same
+        definition domain and data type.
+    :param localRange: integer value indicating maximum absolute local
+        difference between 2 adjacent pixels
+    :param regionSize: integer value for minimum size of iso-intensity region
+        in output image (must be >= 2 pixels)
     :param contrast: (default is 0)
     :param version:  (default is 0)
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images, default is 4)
-    :param dataFileName:  
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images, default is 4)
+    :param dataFileName:
     :return: labeled Jim object
     """
-    # if jim.properties.nrOfBand() < 2:
-    #     print("Jim image must be a multi-band image")
-    #     raise ValueError('Jim image must be a multi-band image')
-
-    if (graph==4):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0,1]=1
-        ngb[1,0]=1
-        ngb[1,2]=1
-        ngb[2,1]=1
-    elif (graph==8):
-        ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+    if graph == 4:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+    elif graph == 8:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
-        ngb[1,1]=0
+        ngb[1, 1] = 0
     else:
         print("graph must be equal to 4 or 8")
         raise ValueError('graph must be equal to 4 or 8')
 
-    return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
+    return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(
+        graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
 
 
 def distance2dEuclideanSquared(jim, band=0):
@@ -231,74 +278,100 @@ def distance2dEuclideanSquared(jim, band=0):
 
 
 def getRegionalMinima(jim, graph):
-    """Compute the regional minima of the input image.  The pixels belonging to a regional minimum are set to 1, all other pixels are set to 0.
+    """Compute the regional minima of the input image.
+
+    The pixels belonging to a regional minimum are set to 1, all other pixels
+    are set to 0.
 
     :param jim: a Jim object
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-    :return: a new Jim object of type unsigned char containing the regional minima of the input Jim object 
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :return: a new Jim object of type unsigned char containing the regional
+        minima of the input Jim object
     """
     return _pj.Jim(jim._jipjim.getRegionalMinima(graph))
 
 
-def morphoGeodesicReconstructionByDilation(jim_mark, jim_mask, graph, borderFlag=1):
-    """Compute the morphological reconstruction by dilation of mask image from mark image using graph connectivity.
+def morphoGeodesicReconstructionByDilation(jim_object_mark, jim_object_mask,
+                                           graph, borderFlag=1):
+    """Compute the morphological reconstruction by dilation of mask image.
 
-    :param jim_mark: a Jim object for marker image
-    :param jim_mask: a Jim object for mask image
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-    :param borderFlag: integer (border values are set to PIX MIN in BOTH images if flag equals
-                 0, otherwise the image are internally processed by adding a border
-                 which is then removed at the end of the processing). Default value is 1.
-    :return: jim_mark containing the result of the morphological reconstruction by dilation
+    Mask image is from mark image using graph connectivity.
+
+    :param jim_object_mark: a Jim object for marker image
+    :param jim_object_mask: a Jim object for mask image
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :param borderFlag: integer (border values are set to PIX MIN in BOTH
+        images if flag equals 0, otherwise the image are internally processed
+        by adding a border which is then removed at the end of the
+        processing). Default value is 1.
+    :return: jim_object_mark containing the result of the morphological
+        reconstruction by dilation
     """
+    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByDilation(
+        jim_object_mask._jipjim, graph, borderFlag))
 
-    return _pj.Jim(jim_mark._jipjim.geodesicReconstructionByDilation(jim_mask._jipjim, graph, borderFlag))
 
+def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask,
+                                          graph, borderFlag=1):
+    """Compute the morphological reconstruction by erosion of mask image.
 
-def morphoGeodesicReconstructionByErosion(jim_mark, jim_mask, graph, borderFlag=1):
-    """Compute the morphological reconstruction by erosion of mask image from mark image using graph connectivity.
+    Mask image is from mark image using graph connectivity.
 
-    :param jim_mark: a Jim object for marker image
-    :param jim_mask: a Jim object for mask image
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-    :param borderFlag: integer (border values are set to PIX MIN in BOTH images if flag equals
-                 0, otherwise the image are internally processed by adding a border
-                 which is then removed at the end of the processing). Default value is 1.
-    :return: jim_mark containing the result of the morphological reconstruction by erosion
+    :param jim_object_mark: a Jim object for marker image
+    :param jim_object_mask: a Jim object for mask image
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :param borderFlag: integer (border values are set to PIX MIN in BOTH
+        images if flag equals 0, otherwise the image are internally processed
+        by adding a border which is then removed at the end of the processing).
+        Default value is 1.
+    :return: jim_object_mark containing the result of the morphological
+        reconstruction by erosion
     """
-
-    return _pj.Jim(jim_mark._jipjim.geodesicReconstructionByErosion(jim_mask._jipjim, graph, borderFlag))
+    return _pj.Jim(jim_object_mark._jipjim.geodesicReconstructionByErosion(
+        jim_object_mask._jipjim, graph, borderFlag))
 
 
 def morphoRemoveBorder(ajim, graph):
-    """Remove the connected components of an image that are connected to the image border using graph connectivity
-    :param ajim: input Jim object
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
+    """Remove the border-connected components of an image.
 
-    :return: a new Jim object with the connected component of the imput object removed
+    Uses graph connectivity.
+
+    :param ajim: input Jim object
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :return: a new Jim object with the connected component of the input
+        object removed
     """
-    minmax=ajim.stats.getStats(function=['min','max'])
-    minval=minmax['min']
-    maxval=minmax['max']
-    # marker=_pj.pixops.blank(ajim, minval)
-    marker=_pj.pixops.setData(ajim, minval)
+    minmax = ajim.stats.getStats(function=['min', 'max'])
+    minval = minmax['min']
+    maxval = minmax['max']
+    marker = _pj.pixops.setData(ajim, minval)
     marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
     marker.pixops.infimum(ajim)
     marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
-    marker.pixops.simpleArithOp(17, ajim) # 17 for SUBSWAP_op_ovf
+    marker.pixops.simpleArithOp(17, ajim)  # 17 for SUBSWAP_op_ovf
     return marker
 
 
 def morphoFillHoles(ajim, graph, borderFlag=1):
-    """Remove the regional minima of the image that are not connected to the image border using graph connectivity (originally proposed for removing pits in digital elevation models, see :cite:`soille-ansoult90` and  :cite:`soille-gratin94` for a fast implementation)
+    """Remove the not border-connected regional minima of the image.
+
+    Uses graph connectivity (originally proposed for removing pits in
+    digital elevation models. See :cite:`soille-ansoult90` and
+    :cite:`soille-gratin94` for a fast implementation)
+
     :param ajim: input Jim object
     :param borderFlag:
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-
-    :return: a new Jim object with the connected component of the imput object removed
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :return: a new Jim object with the connected component of the input
+        object removed
     """
-    maxval=ajim.stats.getStats('max')['max']
-    marker=_pj.pixops.setData(ajim, maxval)
+    maxval = ajim.stats.getStats('max')['max']
+    marker = _pj.pixops.setData(ajim, maxval)
     if borderFlag:
         marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 0)
     else:
@@ -309,12 +382,15 @@ def morphoFillHoles(ajim, graph, borderFlag=1):
 
 
 def watershed(ajim, graph=8):
-    """Watershed segmentation based on immersion simulation as described in :cite:`soille-vincent90`, see also :cite:`vincent-soille91`
+    """Watershed segmentation based on immersion simulation.
+
+    Described in :cite:`soille-vincent90`, see also :cite:`vincent-soille91`
 
     :param ajim: input Jim object
-    :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-
-    :return: a new Jim object with the connected component of the imput object removed
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :return: a new Jim object with the connected component of the input
+        object removed
     """
     return _pj.Jim(ajim._jipjim.segmentationWatershed(ajim._jipjim, graph))
 
@@ -339,22 +415,25 @@ class _CCOps():
         self._jim._jipjim.d_labelPix()
 
     def labelGraph(self, graph=8):
-        """Label each non-zero connected component with a unique label using graph-connectivity
+        """Label each non-zero connected component with a unique label.
 
-           :param jim: a Jim object holding a binary image
-           :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images, default is 8)
-           :return: labeled Jim object
-         """
-        if (graph==4):
-            ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
-            ngb[0,1]=1
-            ngb[1,0]=1
-            ngb[1,2]=1
-            ngb[2,1]=1
-        elif (graph==8):
-            ngb=_pj.Jim(ncol=3, nrow=3, otype='Byte')
+        Uses graph-connectivity
+
+        :param jim_object: a Jim object holding a binary image
+        :param graph: an integer holding for the graph connectivity
+            (4 or 8 for 2-D images, default is 8)
+        :return: labeled Jim object
+        """
+        if graph == 4:
+            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+            ngb[0, 1] = 1
+            ngb[1, 0] = 1
+            ngb[1, 2] = 1
+            ngb[2, 1] = 1
+        elif graph == 8:
+            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
             ngb.pixops.setData(1)
-            ngb[1,1]=0
+            ngb[1, 1] = 0
         else:
             print("graph must be equal to 4 or 8")
             raise ValueError('graph must be equal to 4 or 8')
@@ -362,7 +441,7 @@ class _CCOps():
         self._jim._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
 
     def distance2dEuclideanSquared(self, band=0):
-        """Compute the squared Euclidean distance transform
+        """Compute the squared Euclidean distance transform.
 
         im must be a 2-D binary image. Original algorihtm proposed by Saito
         and Toriwaki (1994) and then optimised independently by (Hirata,
@@ -377,69 +456,87 @@ class _CCOps():
         self._jim._set(
             self._jim._jipjim.distance2dEuclideanSquared(band))
 
-    def morphoGeodesicReconstructionByDilation(self, jim_mask, graph, flag=1):
-        """Compute the morphological reconstruction by dilation of the current object from mark image using graph connectivity.
+    def morphoGeodesicReconstructionByDilation(self, jim_object_mask, graph,
+                                               flag=1):
+        """Compute the morphological reconstruction by dilation.
 
-        :param jim_mask: a Jim object for mask image
-        :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-        :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
-                 0, otherwise the image are internally processed by adding a border
-                 which is then removed at the end of the processing). Default value is 1.
-        :return: jim_mark containing the result of the morphological reconstruction by dilation
+        Dilation of the current object is from mark image using graph
+        connectivity.
+
+        :param jim_object_mask: a Jim object for mask image
+        :param graph: an integer holding for the graph connectivity
+            (4 or 8 for 2-D images)
+        :param flag: integer (border values are set to PIX MIN in BOTH images
+            if flag equals 0, otherwise the image are internally processed by
+            adding a border which is then removed at the end of
+            the processing). Default value is 1.
+        :return: jim_object_mark containing the result of the morphological
+            reconstruction by dilation
         """
-        self._jim._jipjim.d_geodesicReconstructionByDilation(jim_mask._jipjim, graph, flag)
+        self._jim_object._jipjim.d_geodesicReconstructionByDilation(
+            jim_object_mask._jipjim, graph, flag)
 
-    def morphoGeodesicReconstructionByErosion(self, jim_mask, graph, flag=1):
-        """Compute the morphological reconstruction by erosion of the current object from mark image using graph connectivity.
+    def morphoGeodesicReconstructionByErosion(self, jim_object_mask, graph,
+                                              flag=1):
+        """Compute the morphological reconstruction by erosion.
 
-        :param jim_mask: a Jim object for mask image
-        :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-        :param flag: integer (border values are set to PIX MIN in BOTH images if flag equals
-                 0, otherwise the image are internally processed by adding a border
-                 which is then removed at the end of the processing). Default value is 1.
-        :return: jim_mark containing the result of the morphological reconstruction by erosion
+        Erosion of the current object is from mark image using graph
+        connectivity.
+
+        :param jim_object_mask: a Jim object for mask image
+        :param graph: an integer holding for the graph connectivity
+            (4 or 8 for 2-D images)
+        :param flag: integer (border values are set to PIX MIN in BOTH images
+            if flag equals 0, otherwise the image are internally processed by
+            adding a border which is then removed at the end of the
+            processing). Default value is 1.
+        :return: jim_object_mark containing the result of the morphological
+            reconstruction by erosion
         """
-        self._jim._jipjim.d_geodesicReconstructionByErosion(jim_mask._jipjim, graph, flag)
+        self._jim_object._jipjim.d_geodesicReconstructionByErosion(
+            jim_object_mask._jipjim, graph, flag)
 
     def morphoRemoveBorder(self, graph):
-        """
-        Remove the connected components that are connected to the image border using graph connectivity
+        """Remove the border-connected components using graph connectivity.
 
-        :param graph: an integer holding for the graph connectivity (4 or 8 for 2-D images)
-
+        :param graph: an integer holding for the graph connectivity
+            (4 or 8 for 2-D images)
         """
-        ajim=self._jim._jipjim
-        minmax=ajim.stats.getStats(function=['min','max'])
-        minval=minmax['min']
-        maxval=minmax['max']
-        # marker=_pj.pixops.blank(ajim, minval)
-        marker=_pj.pixops.setData(ajim, minval)
+        ajim = self._jim_object._jipjim
+        minmax = ajim.stats.getStats(function=['min', 'max'])
+        minval = minmax['min']
+        maxval = minmax['max']
+        marker = _pj.pixops.setData(ajim, minval)
         marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
         marker.pixops.infimum(ajim)
         marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
-        marker.pixops.simpleArithOp(17, ajim) # 17 for SUBSWAP_op_ovf
-        self._jim._set(marker)
+        marker.pixops.simpleArithOp(17, ajim)  # 17 for SUBSWAP_op_ovf
+        self._jim_object._set(marker)
 
         #todo: not working (self is not modified)
     def morphoFillHoles(self, graph, borderFlag=1):
-        """
-        Remove the regional minima of the image that are not connected to the image border using graph connectivity
-        :param borderFlag:
-        :param graph: an integer holding for the graph connectivity< (4 or 8 for 2-D images)
+        """Remove the image-border-connected regional minima.
 
-        :return: a new Jim object with the connected component of the imput object removed
+        Uses graph connectivity.
+
+        :param borderFlag:
+        :param graph: an integer holding for the graph connectivity<
+            (4 or 8 for 2-D images)
+        :return: a new Jim object with the connected component of the input
+            object removed
         """
-        # ajim=_pj.Jim(self._jim._jipjim)
-        maxval=self._jim.stats.getStats('max')['max']
-        marker=_pj.pixops.setData(self._jim, maxval)
+        # ajim=_pj.Jim(self._jim_object._jipjim)
+        maxval = self._jim_object.stats.getStats('max')['max']
+        marker = _pj.pixops.setData(self._jim_object, maxval)
         if borderFlag:
             marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 0)
         else:
             marker.geometry.imageFrameSet(2, 2, 2, 2, 0, 0, 0)
         marker.pixops.supremum(self._jim)
 
-        marker.ccops.morphoGeodesicReconstructionByErosion(self._jim, graph, borderFlag)
-        self._jim._set(marker._jipjim)
+        marker.ccops.morphoGeodesicReconstructionByErosion(self._jim_object,
+                                                           graph, borderFlag)
+        self._jim_object._set(marker._jipjim)
 
 
 class _CCOpsList():
