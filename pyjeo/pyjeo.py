@@ -17,14 +17,34 @@ del _jl.Jim.__del__
 
 
 def np(aJim):
+    """Return a pointer to numpy representation of values in a Jim object.
+
+    The created pointer does not consume new memory.
+
+    :param aJim: Jim object with values to which will the pointer point
+    :return: a numpy representation of the Jim object
+    """
     return _jl.np(aJim._jipjim)
 
 
 def jim2np(aJim, band=0, copyData=True):
+    """Return a numpy representation of a Jim object.
+
+    :param aJim: Jim object to be converted
+    :param band: band of Jim object to be converted
+    :param copyData: Set to False if reference image is used as a template
+        only, without copying actual pixel dat
+    :return: a numpy representation of the Jim object
+    """
     return _jl.jim2np(aJim._jipjim, band, copyData)
 
 
 def np2jim(aNp):
+    """Return a Jim representation of a numpy array.
+
+    :param aNp: a numpy array
+    :return: a Jim representation of a numpy array
+    """
     return Jim(_jl.np2jim(aNp))
 
 
@@ -115,60 +135,70 @@ class Jim():
 
     @property
     def all(self):
+        """Set up a caller and garbage cleaner for the module all."""
         self._all._set_caller(self)
         _gc.collect()
         return self._all
 
     @property
     def ccops(self):
+        """Set up a caller and garbage cleaner for the module ccops."""
         self._ccops._set_caller(self)
         _gc.collect()
         return self._ccops
 
     @property
     def classify(self):
+        """Set up a caller and garbage cleaner for the module classify."""
         self._classify._set_caller(self)
         _gc.collect()
         return self._classify
 
     @property
     def demops(self):
+        """Set up a caller and garbage cleaner for the module demops."""
         self._demops._set_caller(self)
         _gc.collect()
         return self._demops
 
     @property
     def geometry(self):
+        """Set up a caller and garbage cleaner for the module geometry."""
         self._geometry._set_caller(self)
         _gc.collect()
         return self._geometry
 
     @property
     def io(self):
+        """Set up a caller and garbage cleaner for the module io."""
         self._io._set_caller(self)
         _gc.collect()
         return self._io
 
     @property
     def ngbops(self):
+        """Set up a caller and garbage cleaner for the module ngbops."""
         self._ngbops._set_caller(self)
         _gc.collect()
         return self._ngbops
 
     @property
     def pixops(self):
+        """Set up a caller and garbage cleaner for the module pixops."""
         self._pixops._set_caller(self)
         _gc.collect()
         return self._pixops
 
     @property
     def properties(self):
+        """Set up a caller and garbage cleaner for the module properties."""
         self._properties._set_caller(self)
         _gc.collect()
         return self._properties
 
     @property
     def stats(self):
+        """Set up a caller and garbage cleaner for the module stats."""
         self._stats._set_caller(self)
         _gc.collect()
         return self._stats
@@ -200,8 +230,9 @@ class Jim():
         print('\n'.join(methods))
 
     def np(self, band=0):
-        """Return numpy array from Jim object
-        :band: band index (starting from 0)
+        """Return numpy array from Jim object.
+
+        :param band: band index (starting from 0)
         :return: numpy array representation
         """
         return _jl.np(self._jipjim, band)
@@ -216,6 +247,10 @@ class Jim():
     # *** unary operators *** #
 
     def __getitem__(self, item):
+        """Evaluate operation of type self[key].
+
+        :param item: key/index
+        """
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
                 raise ValueError('Error: __getitem__ not implemented for 3d '
@@ -311,6 +346,11 @@ class Jim():
             return result
 
     def __setitem__(self, item, value):
+        """Evaluate operation of type self[key] = value.
+
+        :param item: key/index
+        :param value: value to save
+        """
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
                 raise ValueError('Error: __setitem__ with JimVect not '
@@ -352,21 +392,21 @@ class Jim():
                              'Jim or tuples')
 
     def __nonzero__(self):
-        """Check if Jim contains data
+        """Check if Jim contains data.
 
         :return: True if image contains data, False if image is empty
         """
         return self._jipjim.isInit()
 
     def __bool__(self):
-        """Check if Jim contains data
+        """Check if Jim contains data.
 
         :return: True if image contains data, False if image is empty
         """
         return self._jipjim.isInit()
 
     def __abs__(self):
-        """Calculate the absolute value of Jim raster dataset
+        """Calculate the absolute value of Jim raster dataset.
 
         :return: Absolute value of Jim raster dataset
         """
@@ -375,7 +415,7 @@ class Jim():
         return jim
 
     def __neg__(self):
-        """Calculate the negation of Jim raster dataset
+        """Calculate the negation of Jim raster dataset.
 
         :return: Negation of Jim raster dataset (-dataset)
         """
@@ -384,7 +424,7 @@ class Jim():
         return jim
 
     def __invert__(self):
-        """Calculate the complement of Jim raster dataset
+        """Calculate the complement of Jim raster dataset.
 
         :return: The complement of Jim raster dataset (~dataset)
         """
@@ -394,7 +434,7 @@ class Jim():
 
     # *** binary operators *** #
     def __eq__(self, right):
-        """Pixel wise check for equality
+        """Pixel wise check for equality.
 
         :return: Jim object with pixels 1 if equal values, 0 otherwise
         """
@@ -410,7 +450,7 @@ class Jim():
         return jim
 
     def __ne__(self, right):
-        """Pixel wise check for non-equality
+        """Pixel wise check for non-equality.
 
         :return: False if equal values, True otherwise
         """
@@ -426,6 +466,10 @@ class Jim():
         return jim
 
     def __lt__(self, right):
+        """Pixel wise check for lesser than.
+
+        :return: False if equal values, True otherwise
+        """
         jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
                           self.properties.nrOfBand(),
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
@@ -438,6 +482,10 @@ class Jim():
         return jim
 
     def __le__(self, right):
+        """Pixel wise check for lesser or equal.
+
+        :return: False if equal values, True otherwise
+        """
         jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
                           self.properties.nrOfBand(),
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
@@ -450,6 +498,10 @@ class Jim():
         return jim
 
     def __gt__(self, right):
+        """Pixel wise check for greater than.
+
+        :return: False if equal values, True otherwise
+        """
         jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
                           self.properties.nrOfBand(),
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
@@ -462,6 +514,10 @@ class Jim():
         return jim
 
     def __ge__(self, right):
+        """Pixel wise check for greater or equal.
+
+        :return: False if equal values, True otherwise
+        """
         jim = Jim(_jl.Jim(self.properties.nrOfCol(), self.properties.nrOfRow(),
                           self.properties.nrOfBand(),
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
@@ -474,6 +530,7 @@ class Jim():
         return jim
 
     def __add__(self, right):
+        """Pixel wise operation +."""
         result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] += right.np()
@@ -482,6 +539,7 @@ class Jim():
         return result
 
     def __radd__(self, left):
+        """Pixel wise operation + where self is the added value."""
         result = Jim(self)
         if isinstance(left, Jim):
             result.np()[:] += left.np()
@@ -490,6 +548,7 @@ class Jim():
         return result
 
     def __iadd__(self, right):
+        """Pixel wise operation +=."""
         if isinstance(right, Jim):
             self.np()[:] += right.np()
         else:
@@ -497,6 +556,7 @@ class Jim():
         return self
 
     def __sub__(self, right):
+        """Pixel wise operation -."""
         result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] -= right.np()
@@ -505,6 +565,7 @@ class Jim():
         return result
 
     def __rsub__(self, left):
+        """Pixel wise operation - where self is the one used to subtract."""
         result = Jim(self)
         if isinstance(left, Jim):
             result.np()[:] -= left.np()
@@ -513,6 +574,7 @@ class Jim():
         return result
 
     def __isub__(self, right):
+        """Pixel wise operation -=."""
         if isinstance(right, Jim):
             self.np()[:] -= right.np()
         else:
@@ -520,6 +582,7 @@ class Jim():
         return self
 
     def __mul__(self, right):
+        """Pixel wise operation *."""
         result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] *= right.np()
@@ -543,6 +606,7 @@ class Jim():
         # return self
 
     def __rmul__(self, left):
+        """Pixel wise operation * where self is the multiplier."""
         result = Jim(self)
         if isinstance(left, Jim):
             result.np()[:] *= left.np()
@@ -551,6 +615,7 @@ class Jim():
         return result
 
     def __imul__(self, right):
+        """Pixel wise operation *=."""
         if isinstance(right, Jim):
             self.np()[:] *= right.np()
         else:
@@ -558,6 +623,7 @@ class Jim():
         return self
 
     def _trueDiv(self, right):
+        """Pixel wise operation for true division."""
         result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] /= right.np()
@@ -566,6 +632,7 @@ class Jim():
         return result
 
     def _itrueDiv(self, right):
+        """Pixel wise operation for true division with /=."""
         if isinstance(right, Jim):
             self.np()[:] /= right.np()
         else:
@@ -573,6 +640,7 @@ class Jim():
         return self
 
     def __div__(self, right):
+        """Pixel wise operation /."""
         result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] /= right.np()
@@ -581,6 +649,7 @@ class Jim():
         return result
 
     def __idiv__(self, right):
+        """Pixel wise operation /=."""
         if isinstance(right, Jim):
             self.np()[:] /= right.np()
         else:
@@ -588,6 +657,7 @@ class Jim():
         return self
 
     def __mod__(self, right):
+        """Pixel wise operation modulo."""
         result = Jim(self)
         if isinstance(right, Jim):
             result.np()[:] %= right.np()
@@ -596,6 +666,7 @@ class Jim():
         return result
 
     def __imod__(self, right):
+        """Pixel wise operation modulo with %=."""
         if isinstance(right, Jim):
             self.np()[:] %= right.np()
         else:
@@ -603,15 +674,18 @@ class Jim():
         return self
 
     def __pow__(self, right):
+        """Pixel wise operation **."""
         result = Jim(self)
         result.np()[:] **= right
         return result
 
     def __ipow__(self, right):
+        """Pixel wise operation **=."""
         result.np()[:] **= right
         return self
 
     def __lshift__(self, right):
+        """Pixel wise operation <<."""
         if isinstance(right, int):
             jim = Jim(self)
             jim.np()[:] <<= right
@@ -621,6 +695,7 @@ class Jim():
                 type(right)))
 
     def __ilshift__(self, right):
+        """Pixel wise operation <<=."""
         if isinstance(right, int):
             self.np()[:] <<= right
         else:
@@ -629,6 +704,7 @@ class Jim():
         return self
 
     def __rshift__(self, right):
+        """Pixel wise operation >>."""
         if isinstance(right, int):
             jim = Jim(self)
             jim.np()[:] >>= right
@@ -638,6 +714,7 @@ class Jim():
                 type(right)))
 
     def __irshift__(self, right):
+        """Pixel wise operation >>=."""
         if isinstance(right, int):
             self.np()[:] >>= right
         else:
@@ -646,6 +723,7 @@ class Jim():
         return self
 
     def __or__(self, right):
+        """Pixel wise operation |."""
         if isinstance(right, Jim):
             jim = Jim(self)
             jim.np()[:] |= right.np()
@@ -655,6 +733,7 @@ class Jim():
                 type(right)))
 
     def __ior__(self, right):
+        """Pixel wise operation |=."""
         if isinstance(right, Jim):
             self.np()[:] |= right.np()
         else:
@@ -663,6 +742,7 @@ class Jim():
         return self
 
     def __ror__(self, left):
+        """Pixel wise operation | where self is the right object."""
         if isinstance(left, Jim):
             jim = Jim(self)
             jim.np()[:] |= left.np()
@@ -672,6 +752,7 @@ class Jim():
                 type(left)))
 
     def __xor__(self, right):
+        """Pixel wise operation ^."""
         if isinstance(right, Jim):
             jim = Jim(self)
             jim.np()[:] ^= right.np()
@@ -681,6 +762,7 @@ class Jim():
                 type(right)))
 
     def __ixor__(self, right):
+        """Pixel wise operation ^=."""
         if isinstance(right, Jim):
             self.np()[:] ^= right.np()
         else:
@@ -689,6 +771,7 @@ class Jim():
         return self
 
     def __rxor__(self, left):
+        """Pixel wise operation ^ where self is the right object."""
         if isinstance(left, Jim):
             jim = Jim(self)
             jim.np()[:] ^= left.np()
@@ -698,6 +781,7 @@ class Jim():
                 type(left)))
 
     def __and__(self, right):
+        """Pixel wise operation &."""
         if isinstance(right, Jim):
             jim = Jim(self)
             jim.np()[:] &= right.np()
@@ -707,6 +791,7 @@ class Jim():
                 type(right)))
 
     def __iand__(self, right):
+        """Pixel wise operation &=."""
         if isinstance(right, Jim):
             self.np()[:] &= right.np()
         else:
@@ -715,6 +800,7 @@ class Jim():
         return self
 
     def __rand__(self, left):
+        """Pixel wise operation & where self is the right object."""
         if isinstance(left, Jim):
             jim = Jim(self)
             jim.np()[:] &= left.np()
@@ -761,30 +847,35 @@ class JimList(list):
 
     @property
     def geometry(self):
+        """Set up a caller and garbage cleaner for the module geometry."""
         self._geometry._set_caller(self)
         _gc.collect()
         return self._geometry
 
     @property
     def io(self):
+        """Set up a caller and garbage cleaner for the module io."""
         self._io._set_caller(self)
         _gc.collect()
         return self._io
 
     @property
     def pixops(self):
+        """Set up a caller and garbage cleaner for the module pixops."""
         self._pixops._set_caller(self)
         _gc.collect()
         return self._pixops
 
     @property
     def properties(self):
+        """Set up a caller and garbage cleaner for the module properties."""
         self._properties._set_caller(self)
         _gc.collect()
         return self._properties
 
     @property
     def stats(self):
+        """Set up a caller and garbage cleaner for the module stats."""
         self._stats._set_caller(self)
         _gc.collect()
         return self._stats
@@ -939,7 +1030,6 @@ class JimVect():
 
     # def __init__(self, vector, *args):
     def __init__(self, vector=None, **kwargs):
-
         """Create an empty VectorOgr object.
 
         Created object is an instance of the basis vector class of the pyJEO
@@ -963,24 +1053,28 @@ class JimVect():
 
     @property
     def classify(self):
+        """Set up a caller and garbage cleaner for the module classify."""
         self._classify._set_caller(self)
         _gc.collect()
         return self._classify
 
     @property
     def io(self):
+        """Set up a caller and garbage cleaner for the module io."""
         self._io._set_caller(self)
         _gc.collect()
         return self._io
 
     @property
     def properties(self):
+        """Set up a caller and garbage cleaner for the module properties."""
         self._properties._set_caller(self)
         _gc.collect()
         return self._properties
 
     @property
     def geometry(self):
+        """Set up a caller and garbage cleaner for the module geometry."""
         self._geometry._set_caller(self)
         _gc.collect()
         return self._geometry
