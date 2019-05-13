@@ -279,10 +279,7 @@ class Jim():
                     else:
                         cropuli = item[dim-1]
                         # croplri=item[dim-1]+1
-                else:
-                    #test
-                    print('we should not end up here for cols?')
-                #rows
+                # rows
                 if len(item) > dim-2:
                     if isinstance(item[dim-2], slice):
                         if item[dim-2].start:
@@ -293,9 +290,6 @@ class Jim():
                     else:
                         cropulj = item[dim-2]
                         # croplrj=item[dim-2]+1
-                else:
-                    #test
-                    print('we should not end up here for rows?')
 
             upperLeft = self.geometry.image2geo(cropuli,cropulj)
             result = Jim(ncol=ncol, nrow=nrow, nband=nband, nplane=nplane,
