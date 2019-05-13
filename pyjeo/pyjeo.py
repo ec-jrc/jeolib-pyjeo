@@ -797,18 +797,19 @@ class JimList(list):
 
         print('\n'.join(methods))
 
-    def append(self, jim_object):
+    def append(self, jim):
         """Add single element to the JimList."""
-        assert isinstance(jim_object, Jim), \
+        assert isinstance(jim, Jim), \
             'Only Jim instances can be appended'
-        super(JimList, self).append(jim_object)
+        super(JimList, self).append(jim)
         self._set(self, from_list=True)
 
-    def count(self, jim_object):
+    def count(self, jim):
         """Count the occurrences of element in the JimList.."""
+        print("we are in pyjeo count")
         i = 0
-        for jim in self:
-            if jim.pixops.isEqual(jim_object):
+        for jimobject in self:
+            if jim.pixops.isEqual(jimobject):
                 i += 1
 
         return i
@@ -820,17 +821,17 @@ class JimList(list):
         super(JimList, self).extend(jim_list)
         self._set(self, from_list=True)
 
-    def index(self, jim_object):
+    def index(self, jim):
         """Return smallest index of element in the JimList."""
         for i in range(len(self)):
-            if self[i].pixops.isEqual(jim_object):
+            if self[i].pixops.isEqual(jim):
                 return i
 
-    def insert(self, index, jim_object):
+    def insert(self, index, jim):
         """Insert elements to the JimList."""
-        assert isinstance(jim_object, Jim), \
+        assert isinstance(jim, Jim), \
             'Only Jim instances can be inserted'
-        super(JimList, self).insert(index, jim_object)
+        super(JimList, self).insert(index, jim)
         self._set(self, from_list=True)
 
     def pop(self, index):
@@ -839,10 +840,10 @@ class JimList(list):
         self._set(self, from_list=True)
         return popped
 
-    def remove(self, jim_object):
+    def remove(self, jim):
         """Remove the first occurence of an element from the JimList."""
         for i in range(len(self)):
-            if self[i].pixops.isEqual(jim_object):
+            if self[i].pixops.isEqual(jim):
                 del self[i]
                 break
         self._set(self, from_list=True)
