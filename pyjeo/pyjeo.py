@@ -642,6 +642,8 @@ class Jim():
     def __div__(self, right):
         """Pixel wise operation /."""
         result = Jim(self)
+        if 'int' in str(self.np().dtype):
+            raise TypeError('You cannot divide a Jim object of int type')
         if isinstance(right, Jim):
             result.np()[:] /= right.np()
         else:
