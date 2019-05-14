@@ -10,7 +10,7 @@ vector = 'tests/data/nuts_italy.sqlite'
 
 
 class BadDEMOps(unittest.TestCase):
-    """Test functions and methods from pixops modules."""
+    """Test functions and methods from DEMOps module."""
 
     def test_slope(self):
         """Test DEM flow functions and methods."""
@@ -24,9 +24,8 @@ class BadDEMOps(unittest.TestCase):
         assert stats['min'] >= 0, \
             'Error: min<0 in demops.slope()'
 
-
+    #todo: data type of flowDirectionFlat should be UInt16
     def test_flows(self):
-        #todo: data type of flowDirectionFlat should be UInt16
         """Test DEM flow functions and methods."""
         jim = pj.Jim(tiles[0])
 
@@ -100,7 +99,6 @@ class BadDEMOps(unittest.TestCase):
         #     'Error in demops.flowDirectionFlatGeodesic()'
         # # TODO: Uncomment after bug in jiplib fixed
 
-
     def test_drainage_areas(self):
         """Test drainage area functions and methods."""
         jim = pj.Jim(tiles[0])
@@ -169,7 +167,7 @@ class BadDEMOps(unittest.TestCase):
 
         assert stats['max'] <= 8, 'Error in demops.floodDir()'
 
-        #assert stats['max'] <= jim.properties.nrOfRow() * \
+        # assert stats['max'] <= jim.properties.nrOfRow() * \
         #       jim.properties.nrOfCol(), 'Error in demops.floodDir()'
 
     def test_catchments(self):

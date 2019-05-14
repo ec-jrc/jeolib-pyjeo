@@ -57,25 +57,25 @@ class BadBasicMethods(unittest.TestCase):
 
         jim1[0, 0] = stats1['mean']
         first = jim1[0, 0]
-        #test
+        # test
         stats = first.stats.getStats()
         assert stats['max'] == stats['min'] == int(stats1['mean']), \
             'Error in jim[int, int] (either get or set item)'
 
         jim1[-1, -1] = stats1['max'] + 1
         stats = jim1.stats.getStats()
-        #test
+        # test
         assert stats['max'] == stats1['max'] + 1, \
             'Error in jim[int, int] (either get or set item)'
 
         last = jim1[-1, -1]
-        #test
+        # test
         stats = last.stats.getStats()
         assert stats['max'] == stats['min'] == stats1['max'] + 1, \
             'Error in jim[-int, -int] (either get or set item)'
 
         last = jim1[-5::2, -5::2]
-        #test
+        # test
         stats = last.stats.getStats()
         assert stats['max'] == stats1['max'] + 1, \
             'Error in jim[-int:-int:stride, -int:-int:stride] or jim[slice] ' \
@@ -105,7 +105,7 @@ class BadBasicMethods(unittest.TestCase):
 
         # first = jim1[0, 0, 0, 0]
         first = jim1[0, 0, 0]
-        #test
+        # test
         stats = first.stats.getStats()
         assert stats['max'] == stats['min'] == stats1['mean'] == 5, \
             'Error in jim[int, int, int, int] (either get or set item)'
@@ -122,7 +122,7 @@ class BadBasicMethods(unittest.TestCase):
 
         # last = jim1[-1, -1, -2, -2]
         last = jim1[-2, -1, -1]
-        #test
+        # test
         stats = last.stats.getStats()
         assert stats['max'] == stats['min'] == stats['mean'] == 5, \
             'Error in jim[-int, -int, -int, -int] (either get or set item)'
@@ -171,14 +171,14 @@ class BadBasicMethods(unittest.TestCase):
     def test_operators(self):
         """Test basic operators (+, -, *, /, =)."""
         jim1 = pj.Jim(tiles[0])
-        #test
+        # test
         stats1 = jim1.stats.getStats()
         jim2 = pj.Jim(tiles[1])
-        #test
+        # test
         stats2 = jim2.stats.getStats()
 
         jim3 = jim1 + jim2
-        #test
+        # test
         stats3 = jim3.stats.getStats()
         max = stats3['max']
         min = stats3['min']

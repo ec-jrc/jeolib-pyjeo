@@ -50,7 +50,7 @@ class BadBasicMethodLists(unittest.TestCase):
         assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
-        #TODO: the following line results in segmentation fault...
+        # TODO: the following line results in segmentation fault...
         # assert jiml1.count(jim3) == 2, 'Error in JimList.insert(Jim)'
         assert jiml1[1].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
             'Error in JimList.insert()'
@@ -75,9 +75,8 @@ class BadBasicMethodLists(unittest.TestCase):
         jiml2.reverse()
 
         assert jiml2.index(jim1) == 2, 'Error in JimList.reverse()'
-        assert jiml1[1].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))), \
+        assert jiml1[1].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
             'Error in JimList.reverse()'
-
 
 
 def load_tests(loader=None, tests=None, pattern=None):

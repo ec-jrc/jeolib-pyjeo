@@ -1,3 +1,5 @@
+"""Test suite for module pyjeo.geometry."""
+
 import pyjeo as pj
 import unittest
 
@@ -14,40 +16,42 @@ warpedfn = os.path.join('/tmp',
 
 
 class BadGeometry(unittest.TestCase):
+    """Test functions and methods from geometry module."""
 
     def test_stack(self):
         """Test the stack method."""
         jim0 = pj.Jim(rasterfn, band=0)
         jim1 = pj.Jim(rasterfn, band=1)
         jim2 = pj.Jim(rasterfn, band=2)
-        jimlist = pj.JimList([jim0,jim1,jim2])
+        jimlist = pj.JimList([jim0, jim1, jim2])
         jimliststack = pj.geometry.stackBand(jimlist)
-        jimstack = pj.geometry.stackBand(pj.geometry.stackBand(jim0,jim1),jim2)
+        jimstack = pj.geometry.stackBand(pj.geometry.stackBand(jim0, jim1),
+                                         jim2)
         assert jimliststack.pixops.isEqual(jimstack), \
             'Error in geometry.stackBand(): jimliststack not equal to jimstack'
         jimliststack = pj.geometry.stackBand(jimlist, jim0)
-        jimliststack.geometry.cropBand([0,1,2])
+        jimliststack.geometry.cropBand([0, 1, 2])
         assert jimliststack.pixops.isEqual(jimstack), \
-            'Error in geometry.stackBand(): jimliststack not equal to jimstack after crop'
-        jim3=pj.JimList([jim0,jim1,jim2]).geometry.stackBand()
-        jim3.geometry.cropBand([0,1])
-        assert pj.geometry.cropBand(jim3,0).pixops.isEqual(jim0), \
+            'Error in geometry.stackBand(): jimliststack not equal to ' \
+            'jimstack after crop'
+        jim3 = pj.JimList([jim0, jim1, jim2]).geometry.stackBand()
+        jim3.geometry.cropBand([0, 1])
+        assert pj.geometry.cropBand(jim3, 0).pixops.isEqual(jim0), \
             'Error jim3 not equal to jim0'
-        jim4=pj.JimList([jim0,jim1,jim2]).geometry.stackBand()
-        jim4.geometry.cropBand([1,2])
-        assert pj.geometry.cropBand(jim4,0).pixops.isEqual(jim1), \
+        jim4 = pj.JimList([jim0, jim1, jim2]).geometry.stackBand()
+        jim4.geometry.cropBand([1, 2])
+        assert pj.geometry.cropBand(jim4, 0).pixops.isEqual(jim1), \
             'Error jim3 not equal to jim1'
-        jim=pj.JimList([jim3,jim4]).geometry.stackBand([0,1])
-        jim.geometry.cropBand([1,2])
+        jim = pj.JimList([jim3, jim4]).geometry.stackBand([0, 1])
+        jim.geometry.cropBand([1, 2])
         jim.geometry.cropBand(0)
         assert jim.pixops.isEqual(jim1), \
             'Error jim not equal to jim1'
 
-
     def test_warp(self):
         """Test the warp method."""
         jim0 = pj.Jim(rasterfn)
-        jim_warped = pj.geometry.warp(jim0,'epsg:4326')
+        jim_warped = pj.geometry.warp(jim0, 'epsg:4326')
 
         assert jim_warped.properties.getProjection()[-7:-3] == '4326', \
             'Error in geometry.warp(): EPSG not changed'
@@ -96,8 +100,12 @@ class BadGeometry(unittest.TestCase):
                 v.io.close()
             else:
                 v1 = pj.JimVect(outputfn)
-                v2=jl0.geometry.extractOgr(sample,rule='mean',output='/vsimem/v2.sqlite',oformat='SQLite',co=['OVERWRITE=YES'],bandname=bandname,fid='fid')
-                v=pj.geometry.join(v1, v2,output=outputfn,oformat='SQLite',co=['OVERWRITE=YES'],key=['fid']);
+                v2 = jl0.geometry.extractOgr(
+                    sample, rule='mean', output='/vsimem/v2.sqlite',
+                    oformat='SQLite', co=['OVERWRITE=YES'],
+                    bandname=bandname, fid='fid')
+                v = pj.geometry.join(v1, v2, output=outputfn, oformat='SQLite',
+                                     co=['OVERWRITE=YES'], key=['fid'])
                 assert v.properties.getFeatureCount() == 11, \
                     'Error in geometry.extractOgr() feature count (2)'
                 assert 'fid' in v.properties.getFieldNames(), \
@@ -111,6 +119,7 @@ class BadGeometry(unittest.TestCase):
                 v.io.close()
             jl0.io.close()
         sample.io.close()
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""

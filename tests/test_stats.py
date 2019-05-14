@@ -78,8 +78,8 @@ class BadStats(unittest.TestCase):
                            'stats.getHistoCumulative()'
 
         # histo_cumul = pj.pixops.convert(jim1, 4).stats.getHistoCumulative()
-        jim2=pj.pixops.convert(jim1, 'Int32')
-        histo_cumul=jim2.stats.getHistoCumulative()
+        jim2 = pj.pixops.convert(jim1, 'Int32')
+        histo_cumul = jim2.stats.getHistoCumulative()
 
         assert histo_cumul.properties.nrOfCol() == jim1_rows * jim1_cols + 1, \
             'Error in stats.getHistoCumulative() ' \

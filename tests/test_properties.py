@@ -75,7 +75,7 @@ class BadProps(unittest.TestCase):
     def test_bbox(self):
         """Test getBBox() method."""
         assert self.jim.properties.getBBox() == [self.ulx, self.uly,
-                                                        self.lrx, self.lry], \
+                                                 self.lrx, self.lry], \
             'Error in properties.getBBox()'
 
     def test_geo_transform(self):
@@ -200,7 +200,7 @@ class BadPropsVects(unittest.TestCase):
             'Error in properties.getBBox() or properties.getLry() for JimVects'
 
     def test_feature_layer_counts(self):
-        """Test JimVect methods getLayerCount() and getFeatureType()"""
+        """Test JimVect methods getLayerCount() and getFeatureType()."""
         assert self.jimv.properties.getLayerCount() == \
                self.jimv.properties.getFeatureCount() == 2, \
             'Error in properties.getLayerCount or getFeatureCount for JimVects'
@@ -211,6 +211,6 @@ def load_tests(loader=None, tests=None, pattern=None):
     if not loader:
         loader = unittest.TestLoader()
     suite_list = [loader.loadTestsFromTestCase(BadProps),
-                  #loader.loadTestsFromTestCase(BadPropsLists),
+                  # loader.loadTestsFromTestCase(BadPropsLists),
                   loader.loadTestsFromTestCase(BadPropsVects)]
     return unittest.TestSuite(suite_list)
