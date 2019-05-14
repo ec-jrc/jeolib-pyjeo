@@ -917,7 +917,6 @@ class JimList(list):
 
     def count(self, jim):
         """Count the occurrences of element in the JimList.."""
-        print("we are in pyjeo count")
         i = 0
         for jimobject in self:
             if jim.pixops.isEqual(jimobject):
