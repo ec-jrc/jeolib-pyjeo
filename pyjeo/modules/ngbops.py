@@ -5,6 +5,7 @@ import numpy
 from scipy import signal
 from scipy import ndimage
 
+
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     """Subset raster dataset in spectral/temporal domain.
 
@@ -53,17 +54,17 @@ def filter2d(jim_object, filter, **kwargs):
 
     see the corresponding method :py:meth:`.filter2d` for more information
     """
-    if isinstance(filter,numpy.ndarray ):
+    if isinstance(filter, numpy.ndarray):
         kwargs.update({'dy': filter.shape[0]})
         kwargs.update({'dx': filter.shape[1]})
-        kwargs.update({'tap':filter.flatten().tolist()})
+        kwargs.update({'tap': filter.flatten().tolist()})
     else:
         kwargs.update({'filter': filter})
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
 def morphoDilateDiamond(jim_object, ox=1, oy=1):
-    """Output the dilation of im using the elementary diamond shaped SE
+    """Output the dilation of im using the elementary diamond shaped SE.
 
     :param ox: integer for origin along x-axis of SE (default is 1 for centred)
     :param oy: integer for origin along y-axis of SE (default is 1 for centred)
@@ -72,7 +73,7 @@ def morphoDilateDiamond(jim_object, ox=1, oy=1):
 
 
 def morphoErodeDiamond(jim_object, ox=1, oy=1):
-    """Output the erosion of im using the elementary diamond shaped SE
+    """Output the erosion of im using the elementary diamond shaped SE.
 
     :param ox: integer for origin along x-axis of SE (default is 1 for centred)
     :param oy: integer for origin along y-axis of SE (default is 1 for centred)
@@ -81,27 +82,35 @@ def morphoErodeDiamond(jim_object, ox=1, oy=1):
 
 
 def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
-    """Output the erosion of im using the line SE with slope dy/dx, length k, origin o, and line type (see details at  :cite:`soille-breen-jones96`)
+    """Output the erosion of im using.
+
+    Usesthe line SE with slope dy/dx, length k, origin o, and line type (see
+    details at  :cite:`soille-breen-jones96`)
 
     :param jim_object: image on which to perform the erosion
     :param dx: integer for displacement along x-axis to set slope
     :param dy: integer for displacement along y-axis to set slope
     :param k: integer for number of pixels of line SE
     :param o: integer for origin of SE
-    :param type: integer for line type (0 for plain and 1 for periodic).  0 is the default value
+    :param type: integer for line type (0 for plain and 1 for periodic).
+        0 is the default value
     """
     return _pj.Jim(jim_object._jipjim.morphoErodeLine(dx, dy, k, o, type))
 
 
 def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
-    """Output the dilation of im using the line SE with slope dy/dx, length k, origin o, and line type (see details at  :cite:`soille-breen-jones96`)
+    """Output the dilation of im.
+
+    Uses the line SE with slope dy/dx, length k, origin o, and line type
+    (see details at  :cite:`soille-breen-jones96`)
 
     :param jim_object: image on which to perform the dilation
     :param dx: integer for displacement along x-axis to set slope
     :param dy: integer for displacement along y-axis to set slope
     :param k: integer for number of pixels of line SE
     :param o: integer for origin of SE
-    :param type: integer for line type (0 for plain and 1 for periodic).  0 is the default value
+    :param type: integer for line type (0 for plain and 1 for periodic).
+        0 is the default value
     """
     return _pj.Jim(jim_object._jipjim.morphoDilateLine(dx, dy, k, o, type))
 
@@ -121,7 +130,8 @@ def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     :param trFlag: optional parameter (0 or 1)
     """
     return _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
-                                           ox, oy, oz, trFlag))
+                                                  ox, oy, oz, trFlag))
+
 
 def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     """Output the dilation of im using the SE defined by imse.
@@ -138,98 +148,132 @@ def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     :param trFlag: optional parameter (0 or 1)
     """
     return _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
-                                           ox, oy, oz, trFlag))
+                                                   ox, oy, oz, trFlag))
+
 
 def morphoGradientByErosionDiamond(jim_object):
-    """Output the gradient by erosion of im using the elementary diamond shaped SE
+    """Output the gradient by erosion of im.
+
+    Uses the elementary diamond shaped SE
     """
     return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
 
 def morphoGradientByErosionDiamondFrame(jim_object):
-    """Output the gradient by erosion of im using the elementary diamond shaped SE
+    """Output the gradient by erosion of im.
+
+    Uses the elementary diamond shaped SE
     """
     jim0 = _pj.Jim(jim_object)
     pixmax = jim0.stats.getStats('max')['max']
     jim0.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, pixmax)
     jim0.ngbops.morphoErodeDiamond()
     jim0.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
-    jim0.pixops.simpleArithOp(jim_object, 16) # 16 for SUBSWAP_op
+    jim0.pixops.simpleArithOp(jim_object, 16)  # 16 for SUBSWAP_op
     return jim0
 
+
 def morphoGradientByDilationDiamondFrame(jim_object):
-    """Output the gradient by erosion of im using the elementary diamond shaped SE
+    """Output the gradient by erosion of im.
+
+    Uses the elementary diamond shaped SE
     """
     jim0 = _pj.Jim(jim_object)
     pixmin = jim0.stats.getStats('min')['min']
     jim0.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, pixmin)
     jim0.ngbops.morphoDilateDiamond()
     jim0.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
-    jim0.pixops.simpleArithOp(jim_object, 1) #  for SUB_op
+    jim0.pixops.simpleArithOp(jim_object, 1)  # for SUB_op
     return jim0
 
-def edgeWeight(jim_object, dir=0, type=0):
-    """Computes the weights of the horizontal or vertical edges linking any pair of horizontally or vertically adjacent pixels.
 
-    :param dir:  integer for coding edge direction (horizontal if 0, vertical otherwise).
-    :param type: integer determining how the edge weights are computed: 0 for absolute difference (default), 1 for maximum value, 2 for minimum value.
+def edgeWeight(jim_object, dir=0, type=0):
+    """Compute the weights of the horizontal or vertical edges.
+
+     Linking any pair of horizontally or vertically adjacent pixels.
+
+    :param dir:  integer for coding edge direction
+        (horizontal if 0, vertical otherwise).
+    :param type: integer determining how the edge weights are computed:
+        0 for absolute difference (default),
+        1 for maximum value,
+        2 for minimum value.
     """
     return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
-def getDissim(jimo, dissimType=0):
-    """Compute the dissimilarities between horizontal and vertical pairs of adjacent pixels.
 
-    :param jim_object_list: a list of grey level Jim objects with the same definition domain.  The dissimilarities are calculated for each image separately and composed using the point-wise maximum rule.
-    :param dissimType: integer value indicating the type of dissimilarity measure
+def getDissim(jimo, dissimType=0):
+    """Compute the dissimilarities.
+
+    Compute the dissimilarities between horizontal and vertical pairs of
+    adjacent pixels.
+
+    :param jim_object_list: a list of grey level Jim objects with the same
+        definition domain. The dissimilarities are calculated for each image
+        separately and composed using the point-wise maximum rule.
+    :param dissimType: integer value indicating the type of dissimilarity
+                          measure
                        0 (default) for absolute difference
-                       1 for dissimilarity measure countering the chaining effect as described in :cite:`soille2011ismm`
-    :return: a list of 2 Jim objects holding the horizontal and vertical dissimilarities respectively
+                       1 for dissimilarity measure countering the chaining
+                          effect as described in :cite:`soille2011ismm`
+    :return: a list of 2 Jim objects holding the horizontal and vertical
+        dissimilarities respectively
     """
-    DIR_HORI    = 0
-    DIR_VERT    = 1
+    DIR_HORI = 0
+    DIR_VERT = 1
     ABS_DIFF_op = 0
-    MAX_op      = 1
-    MIN_op      = 2
+    MAX_op = 1
+    MIN_op = 2
 
     if isinstance(jimo, _pj.Jim):
-        jim_object_list=_pj.JimList([jimo])
+        jim_object_list = _pj.JimList([jimo])
     else:
-        jim_object_list=jimo
+        jim_object_list = jimo
 
-    if dissimType==0:
-        h_dissim=_pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI, ABS_DIFF_op)
-        v_dissim=_pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT, ABS_DIFF_op)
+    if dissimType == 0:
+        h_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI,
+                                         ABS_DIFF_op)
+        v_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT,
+                                         ABS_DIFF_op)
 
         for im in jim_object_list[1:]:
-            h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI, ABS_DIFF_op))
-            v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT, ABS_DIFF_op))
-            
-    elif dissimType==1:
-        print("toto1")
-        mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(jim_object_list[0]), _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object_list[0]))
-        print("toto2")
+            h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
+                                                           ABS_DIFF_op))
+            v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
+                                                           ABS_DIFF_op))
+
+    elif dissimType == 1:
+        mingraderograddil = _pj.pixops.infimum(
+            _pj.ngbops.morphoGradientByDilationDiamondFrame(
+                jim_object_list[0]),
+            _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object_list[0]))
         h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
-        print("toto3")
         v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
-        print("toto4")
         mingraderograddil = 0
-        h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI, ABS_DIFF_op))
-        v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT, ABS_DIFF_op))
-        print("toto5")
+        h_dissim.pixops.supremum(
+            _pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI, ABS_DIFF_op))
+        v_dissim.pixops.supremum(
+            _pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT, ABS_DIFF_op))
 
         for im in jim_object_list[1:]:
-            mingraderograddil = _pj.pixops.infimum(_pj.ngbops.morphoGradientByDilationDiamondFrame(im), _pj.ngbops.morphoGradientByErosionDiamondFrame(im))
-            h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
-            v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
+            mingraderograddil = _pj.pixops.infimum(
+                _pj.ngbops.morphoGradientByDilationDiamondFrame(im),
+                _pj.ngbops.morphoGradientByErosionDiamondFrame(im))
+            h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI,
+                                                 MAX_op)
+            v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT,
+                                                 MAX_op)
             mingraderograddil = 0
-            h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI, ABS_DIFF_op))
-            v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT, ABS_DIFF_op))
-           
+            h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
+                                                               ABS_DIFF_op))
+            v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
+                                                               ABS_DIFF_op))
+
             h_dissim.pixops.supremum(h_dissim_crt)
             v_dissim.pixops.supremum(v_dissim_crt)
 
     return [h_dissim, v_dissim]
-        
+
 
 class _NgbOps():
     """Define all NgbOps methods."""
@@ -537,8 +581,9 @@ class _NgbOps():
 
 
         .. note::
-            For a more comprehensive list of morphological operators, please refer
-            to the corresponding methods, e.g., :py:meth:`~._NgbOps.morphoDilate`
+            For a more comprehensive list of morphological operators, please
+            refer to the corresponding methods, e.g.,
+            :py:meth:`~._NgbOps.morphoDilate`
 
         **Statistical filters**
 
@@ -638,16 +683,16 @@ class _NgbOps():
             jim_multitemp[(jim_multitemp<0) | (jim_multitemp>255)]=0
             jim_multitemp.convert(otype='Byte')
         """
-        if isinstance(filter,numpy.ndarray ):
+        if isinstance(filter, numpy.ndarray):
             kwargs.update({'dy': filter.shape[0]})
             kwargs.update({'dx': filter.shape[1]})
-            kwargs.update({'tap':filter.flatten().tolist()})
+            kwargs.update({'tap': filter.flatten().tolist()})
         else:
             kwargs.update({'filter': filter})
         self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
     def morphoErodeDiamond(self, ox=1, oy=1):
-        """Output the erosion of im using the elementary diamond shaped SE
+        """Output the erosion of im using the elementary diamond shaped SE.
 
         Its origin is set at coordinates (x,y).
 
@@ -657,7 +702,7 @@ class _NgbOps():
         self._jim_object._jipjim.d_morphoErodeNgb4(ox, oy)
 
     def morphoDilateDiamond(self, ox=1, oy=1):
-        """Output the dilation of im using the elementary diamond shaped SE
+        """Output the dilation of im using the elementary diamond shaped SE.
 
         Its origin is set at coordinates (x,y).
 
@@ -696,7 +741,7 @@ class _NgbOps():
         :param trFlag: optional parameter (0 or 1)
         """
         self._jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
-                                             ox, oy, oz, trFlag)
+                                              ox, oy, oz, trFlag)
 
 
 class _NgbOpsList():
