@@ -4,8 +4,7 @@ import pyjeo as _pj
 
 
 def image2geo(jim_object, i, j):
-    """Convert image coordinates (column and row) to georeferenced
-    coordinates (x and y)
+    """Convert image coordinates (col and row) to georeferenced coordinates.
 
     :param jim_object: a Jim object
     :param i: image column number (starting from 0)
@@ -13,7 +12,8 @@ def image2geo(jim_object, i, j):
     :return: georeferenced coordinates according to the object spatial
         reference system
 
-    Get upper left corner in georeferenced coordinates (in SRS of the Jim object)::
+    Get upper left corner in georeferenced coordinates
+    (in SRS of the Jim object)::
 
       jim=pj.Jim('/path/to/raster.tif')
       pj.geometry.image2geo(jim,0,0)
@@ -23,8 +23,7 @@ def image2geo(jim_object, i, j):
 
 
 def geo2image(jim_object, x, y):
-    """ Convert georeferenced coordinates (column and row) to image
-    coordinates (x and y).
+    """Convert georeferenced coordinates (column and row) to image coordinates.
 
     :param jim_object: a Jim object
     :param x: georeferenced coordinate in x according to the object spatial
@@ -33,7 +32,8 @@ def geo2image(jim_object, x, y):
         reference system
     :return: image coordinates (row and column, starting from 0)
 
-    Get column and row index (0 based) of some georeferenced coordinates x and y (in this case first pixel: 0, 0)::
+    Get column and row index (0 based) of some georeferenced coordinates
+    x and y (in this case first pixel: 0, 0)::
 
       jim=pj.Jim('/path/to/raster.tif')
       x=jim.properties.getUlx()
@@ -208,12 +208,13 @@ def cropBand(jim_object, band):
 
 
 def stackBand(jim_object, jim_other=None, band=None):
-    """Stack bands of Jim objects
+    """Stack bands of Jim objects.
 
     :param jim_object: a Jim or JimList object used for stacking the bands
     :param jim_other: a Jim object or jimlist from which to copy bands
         (optional)
-    :param band: List of band indices to stack (index is 0 based). Default is to stack all bands.
+    :param band: List of band indices to stack (index is 0 based).
+        Default is to stack all bands.
     :return: Jim object with stacked bands
 
     Append all the bands of jim1 to jim0::
@@ -238,9 +239,9 @@ def stackBand(jim_object, jim_other=None, band=None):
     """
     if isinstance(jim_object, _pj.JimList):
         if band:
-            retJim=_pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
+            retJim = _pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
         else:
-            retJim=_pj.Jim(jim_object._jipjimlist.stackBand())
+            retJim = _pj.Jim(jim_object._jipjimlist.stackBand())
         if isinstance(jim_other, _pj.Jim):
             if band:
                 return retJim.geometry.stackBand(jim_other, band=band)
@@ -258,7 +259,7 @@ def stackBand(jim_object, jim_other=None, band=None):
                 jim_object = _pj.Jim(jim_object._jipjim.stackBand(
                     jim._jipjim, {'band': band}))
             else:
-                jim_object =  _pj.Jim(jim_object._jipjim.stackBand(
+                jim_object = _pj.Jim(jim_object._jipjim.stackBand(
                     jim._jipjim))
 
         return jim_object
@@ -268,26 +269,27 @@ def stackBand(jim_object, jim_other=None, band=None):
 
 
 def warp(jim_object, t_srs, **kwargs):
-    """
-    Warp a raster dataset to a target spatial reference system
+    """Warp a raster dataset to a target spatial reference system.
 
     :param jim_object: a Jim object
     :param t_srs: Target spatial reference system
     :param kwargs: See table below
     :return: Cropped subimage as Jim instance
 
-    +------------------+---------------------------------------------------------------------------------+
-    | key              | value                                                                           |
-    +==================+=================================================================================+
-    | s_srs            | Source spatial reference system (default is to read from input)                 |
-    +------------------+---------------------------------------------------------------------------------+
-    | resample         | Resample algorithm used for reading pixel data in case of interpolation         |
-    |                  | (default: GRIORA_NearestNeighbour).                                             |
-    |                  | Check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a         |
-    |                  | or available options.                                                           |
-    +------------------+---------------------------------------------------------------------------------+
-    | nodata           | Nodata value to put in image if out of bounds                                   |
-    +------------------+---------------------------------------------------------------------------------+
+    +------------------+-------------------------------------------------------------------+
+    | key              | value                                                             |
+    +==================+===================================================================+
+    | s_srs            | Source spatial reference system (default is to read from input)   |
+    | s_srs            | Source spatial reference system (default is to read from input)   |
+    +------------------+-------------------------------------------------------------------+
+    | resample         | Resample algorithm used for reading pixel data in                 |
+    |                  | case of interpolation                                             |
+    |                  | (default: GRIORA_NearestNeighbour). Check                         |
+    |                  | http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a |
+    |                  | or available options.                                             |
+    +------------------+-------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                     |
+    +------------------+-------------------------------------------------------------------+
 
     Example:
 
@@ -308,7 +310,6 @@ def warp(jim_object, t_srs, **kwargs):
 
     """
     kwargs.update({'t_srs': t_srs})
-    # return _pj.Jim(jim_object._set(self._jim_object._jipjim.warp(kwargs)))
     return _pj.Jim(jim_object._jipjim.warp(kwargs))
 
 
@@ -394,7 +395,8 @@ def imageFrameSubtract(jim_object, l, r, t, b, u, d, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageFrameSubtract([l, r, t, b, u, d], band))
+    return _pj.Jim(jim_object._jipjim.imageFrameSubtract([l, r, t, b, u, d],
+                                                         band))
 
 
 def magnify(jim_object, n):
@@ -408,7 +410,7 @@ def magnify(jim_object, n):
 
 
 def plotLine(jim_object, x1, y1, x2, y2, val):
-    """Draw a line from [x1, y1] to [x2, y2] by setting pixels of Jim to val
+    """Draw a line from [x1, y1] to [x2, y2] by setting pixels of Jim to val.
 
     :param jim_object: a Jim object
     :param x1: an integer for x-coordinate of 1st point
@@ -421,11 +423,11 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
 
 
 def polygonize(jim_object, output, **kwargs):
-    """Polygonize Jim object based on GDALPolygonize
-
+    """Polygonize Jim object based on GDALPolygonize.
 
     :param jim_object: a Jim object
-    :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
     :param kwargs: See table below
     :return: JimVect object with polygons
 
@@ -445,8 +447,8 @@ def polygonize(jim_object, output, **kwargs):
     """
     kwargs.update({'output': output})
     if isinstance(jim_object, _pj.Jim):
-        avect=jim_object._jipjim.polygonize(kwargs)
-        pjvect=_pj.JimVect()
+        avect = jim_object._jipjim.polygonize(kwargs)
+        pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
     else:
@@ -484,11 +486,14 @@ def polygonize(jim_object, output, **kwargs):
 #     return ajim
 
 def join(jvec1, jvec2, output, **kwargs):
-    """Join JimVect object with another JimVect object. A key field is used to find corresponding features in both objects.
+    """Join JimVect object with another JimVect object.
+
+    A key field is used to find corresponding features in both objects.
 
     :param jvec: first JimVect object to join
     :param jvec: second JimVect object to join
-    :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
     :param kwargs: See table below
     :return: joined JimVect object
 
@@ -524,7 +529,8 @@ def join(jvec1, jvec2, output, **kwargs):
 
     OUTER_FULL |outer_full|: join two JimVect objects, keeping all features from both objects
 
-    Example: join two vectors, based on the key 'id', which is a common field shared between v1 and v2. Use OUTER_FULL as the join method::
+    Example: join two vectors, based on the key 'id', which is a common field
+    shared between v1 and v2. Use OUTER_FULL as the join method::
 
       v1=pj.JimVect('/path/to/vector1.sqlite')
       v2=pj.JimVect('/path/to/vector2.sqlite')
@@ -532,20 +538,23 @@ def join(jvec1, jvec2, output, **kwargs):
     """
     kwargs.update({'output': output})
     if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
-        avect=jvec1._jipjimvect.join(jvec2._jipjimvect,kwargs)
-        pjvect=_pj.JimVect()
+        avect = jvec1._jipjimvect.join(jvec2._jipjimvect, kwargs)
+        pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
-        # return _pj.JimVect(self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
     else:
         raise TypeError('Error: can only join two JimVect objects')
 
+
 def intersect(jvec, jim, output, **kwargs):
-    """Intersect JimVect object with Jim object and return only those features with an intersect
+    """Intersect JimVect object with Jim object.
+
+    Return only those features with an intersect
 
     :param jvec: JimVect object to intersect
     :param jim: Jim object with which to intersect
-    :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
     :param kwargs: See table below
     :return: intersected JimVect object
 
@@ -567,13 +576,13 @@ def intersect(jvec, jim, output, **kwargs):
     """
     kwargs.update({'output': output})
     if isinstance(jim, _pj.Jim):
-        # avect=jvec._jim_vect._jipjimvect.intersect(jim._jipjim,kwargs)
-        avect=jvec._jipjimvect.intersect(jim._jipjim,kwargs)
-        pjvect=_pj.JimVect()
+        avect = jvec._jipjimvect.intersect(jim._jipjim, kwargs)
+        pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
     else:
         raise TypeError('Error: can only intersect with Jim object')
+
 
 class _Geometry():
     """Define all Geometry methods."""
@@ -586,15 +595,15 @@ class _Geometry():
         self._jim_object = caller
 
     def image2geo(self, i, j):
-        """Convert image coordinates (column and row) to georeferenced
-        coordinates (x and y)
+        """Convert image coordinates (col and row) to georeferenced coordinates.
 
         :param i: image column number (starting from 0)
         :param j: image row number (starting from 0)
         :return: georeferenced coordinates according to the object spatial
             reference system
 
-        Get upper left corner in georeferenced coordinates (in SRS of the Jim object)::
+        Get upper left corner in georeferenced coordinates
+        (in SRS of the Jim object)::
 
           jim=pj.Jim('/path/to/raster.tif')
           jim.geometry.image2geo(0,0)
@@ -603,8 +612,7 @@ class _Geometry():
         return self._jim_object._jipjim.image2geo(i, j)
 
     def geo2image(self, x, y):
-        """Convert georeferenced coordinates (x and y) to image
-        coordinates (column and row).
+        """Convert georeferenced coordinates to image coordinates (col and row).
 
         :param x: georeferenced coordinate in x according to the object spatial
             reference system
@@ -612,7 +620,8 @@ class _Geometry():
             reference system
         :return: image coordinates (row and column, starting from 0)
 
-        Get column and row index (0 based) of some georeferenced coordinates x and y (in this case first pixel: 0, 0)::
+        Get column and row index (0 based) of some georeferenced coordinates
+        x and y (in this case first pixel: 0, 0)::
 
           jim=pj.Jim('/path/to/raster.tif')
           x=jim.properties.getUlx()
@@ -623,9 +632,12 @@ class _Geometry():
         return [int(coord[0]), int(coord[1])]
 
     def band2plane(self):
-        """Convert 2-dimensional multi-band object to a 3-dimensional single band multi-plane object)
+        """Convert 2-dimensional multi-band object to a 3-dimensional.
 
-        Example: convert a multi-band object with 12 bands to a 3-dimensional single band object with 12 planes::
+        The result will be a single band multi-plane object
+
+        Example: convert a multi-band object with 12 bands to a 3-dimensional
+        single band object with 12 planes::
 
            jim=pj.Jim('/path/to/multi/band/image.tif')
            jim.properties.nrOfBand()
@@ -638,7 +650,8 @@ class _Geometry():
            jim.properties.nrOfBand()
            1
 
-        Notice that a multi-band image can also be read directly as a multi-plane object::
+        Notice that a multi-band image can also be read directly as
+        a multi-plane object::
 
            jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
            jim.properties.nrOfBand()
@@ -665,7 +678,8 @@ class _Geometry():
         :param dy: spatial resolution in y to crop (stride if nogeo is True)
         :param nogeo: use image coordinates if True, default is spatial
             reference system coordinates
-        :param nodata: set no data in case the specified bounding box is not within the object boundaries (default is 0)
+        :param nodata: set no data in case the specified bounding box is not
+            within the object boundaries (default is 0)
 
         Example:
 
@@ -674,16 +688,19 @@ class _Geometry():
             jim=pj.Jim('/path/to/raster.tif')
             jim.crop(ulx=1000000,uly=5000000,lrx=2000000,lry=4000000,dx=1000,dy=1000)
 
-        Crop bounding box in image coordinates (starting from upper left pixel coordinate 0, 0). For instance, get first 10 columns in first 10 rows::
+        Crop bounding box in image coordinates (starting from upper left pixel
+        coordinate 0, 0). For instance, get first 10 columns in first 10 rows::
 
             jim=pj.Jim('/path/to/raster.tif')
             jim.crop(ulx=0,uly=0,lrx=10,lry=10, nogeo=True)
 
-        Notice that for this case, a more pythonic way to is available via :ref:`indexing`::
+        Notice that for this case, a more pythonic way to is available
+        via :ref:`indexing`::
 
             jim0[0:10,0:10]
 
-        However, crop can also be used to enlarge a Jim object. For instance, to add a border of one pixel use::
+        However, crop can also be used to enlarge a Jim object. For instance,
+        to add a border of one pixel use::
 
             jim=pj.Jim('/path/to/raster.tif')
             jim.geometry.crop(ulx=-1,uly=-1,lrx=jim.properties.nrOfCol()+1,lry=jim.properties.nrOfRow()+1,nogeo=True)
@@ -713,12 +730,12 @@ class _Geometry():
                 ulj = uly
                 lri = lrx
                 lrj = lry
-                upperLeft = self._jim_object.geometry.image2geo(float(ulx), float(uly))
-                lowerRight = self._jim_object.geometry.image2geo(float(lrx), float(lry))
+                upperLeft = self._jim_object.geometry.image2geo(float(ulx),
+                                                                float(uly))
+                lowerRight = self._jim_object.geometry.image2geo(float(lrx),
+                                                                 float(lry))
                 ulx = upperLeft[0]
                 uly = upperLeft[1]
-                # lrx=lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
-                # lry=lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
             else:
                 upperLeftImage = self._jim_object.geometry.geo2image(ulx, uly)
                 uli = upperLeftImage[0]
@@ -735,7 +752,6 @@ class _Geometry():
             gt[0] = ulx
             gt[3] = uly
             self._jim_object.properties.setGeoTransform(gt)
-        # elif len(kwargs) == 0:
         else:
             if nogeo:
                 if ulx is None:
@@ -771,8 +787,6 @@ class _Geometry():
             kwargs.update({'dy': dy})
             kwargs.update({'nogeo': nogeo})
             self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
-            # self._jim_object._set(self._jim_object.crop(ulx, uly, lrx, lry,
-            #                                             dx, dy, geo))
         # else:
         #     if nogeo:
         #         uli = ulx
@@ -853,7 +867,8 @@ class _Geometry():
 
            For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        self._jim_object._set(self._jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
+        self._jim_object._set(
+            self._jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
 
     def cropBand(self, band):
         """Subset raster dataset.
@@ -874,12 +889,12 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_cropBand({'band': band})
 
-
     """Stack bands of Jim objects
 
     :param jim_object: a Jim or JimList object used for stacking the bands
     :param jim_other: a Jim object from which to copy bands (optional)
-    :param band: List of band indices to stack (index is 0 based). Default is to stack all bands.
+    :param band: List of band indices to stack (index is 0 based).
+        Default is to stack all bands.
     :return: Jim object with stacked bands
 
     Append all the bands of jim1 to jim0::
@@ -901,8 +916,8 @@ class _Geometry():
         jim1=pj.Jim('/path/to/raster1.tif')
         jim_stacked=pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
     """
-    def stackBand(self, jim_other, band=None):
 
+    def stackBand(self, jim_other, band=None):
         """Stack the bands of another Jim object to the current Jim object.
 
         Modifies the instance on which the method was called.
@@ -912,13 +927,15 @@ class _Geometry():
 
         Example:
 
-        Append all the bands of a multiband Jim object jim1 to the current single band Jim object jim0::
+        Append all the bands of a multiband Jim object jim1 to the current
+        single band Jim object jim0::
 
             jim0 = pj.Jim('/path/to/singleband.tif')
             jim1 = pj.Jim('/path/to/multiband.tif')
             jim0.geometry.stackBand(jim1)
 
-        Append the first three bands of raster dataset jim1 to the current Jim object jim0::
+        Append the first three bands of raster dataset jim1 to the current
+        Jim object jim0::
 
             jim0 = pj.Jim('/path/to/singleband.tif')
             jim1 = pj.Jim('/path/to/multiband.tif')
@@ -938,8 +955,9 @@ class _Geometry():
         """Extract pixel values from raster image based on a vector dataset.
 
         :param jim_ref: reference JimVect instance
-        :rule: Rule how to calculate zonal statistics per feature (see list of :ref:`supported rules <extract_rules>`)
-        :output: Name of the output vector dataset in which the zonal
+        :param rule: Rule how to calculate zonal statistics per feature
+            (see list of :ref:`supported rules <extract_rules>`)
+        :param output: Name of the output vector dataset in which the zonal
             statistics will be saved
         :param kwargs: See table below
         :return: A VectorOgr with the same geometry as the sample vector
@@ -1057,7 +1075,11 @@ class _Geometry():
 
         Example:
 
-        Extract the mean value of the pixels within the polygon of the provided reference vector. Exclude the pixels within a buffer of 10m of the polygon boundary. Use a temporary vector in memory for the calculation. Then write the result to the final destination on disk::
+        Extract the mean value of the pixels within the polygon of the provided
+        reference vector. Exclude the pixels within a buffer of 10m of
+        the polygon boundary. Use a temporary vector in memory for
+        the calculation. Then write the result to the final destination
+        on disk::
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
@@ -1065,7 +1087,6 @@ class _Geometry():
             v.write('/path/to/output.sqlite)
 
         """
-
         kwargs.update({'output': output})
         kwargs.update({'rule': rule})
         if 'threshold' in kwargs:
@@ -1074,8 +1095,9 @@ class _Geometry():
             else:
                 kwargs['threshold'] = -kwargs['threshold']
 
-        avect=self._jim_object._jipjim.extractOgr(jim_ref._jipjimvect, kwargs)
-        pjvect=_pj.JimVect()
+        avect = self._jim_object._jipjim.extractOgr(jim_ref._jipjimvect,
+                                                    kwargs)
+        pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
 
@@ -1258,24 +1280,25 @@ class _Geometry():
         return self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
 
     def warp(self, t_srs, **kwargs):
-        """
-        Warp a raster dataset to a target spatial reference system
+        """Warp a raster dataset to a target spatial reference system.
 
         :param t_srs: Target spatial reference system
         :param kwargs: See table below
 
-        +------------------+---------------------------------------------------------------------------------+
-        | key              | value                                                                           |
-        +==================+=================================================================================+
-        | s_srs            | Source spatial reference system (default is to read from input)                 |
-        +------------------+---------------------------------------------------------------------------------+
-        | resample         | Resample algorithm used for reading pixel data in case of interpolation         |
-        |                  | (default: GRIORA_NearestNeighbour).                                             |
-        |                  | Check http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a         |
-        |                  | or available options.                                                           |
-        +------------------+---------------------------------------------------------------------------------+
-        | nodata           | Nodata value to put in image if out of bounds                                   |
-        +------------------+---------------------------------------------------------------------------------+
+        +------------------+-------------------------------------------------------------------+
+        | key              | value                                                             |
+        +==================+===================================================================+
+        | s_srs            | Source spatial reference system                                   |
+        |                  | (default is to read from input)                                   |
+        +------------------+-------------------------------------------------------------------+
+        | resample         | Resample algorithm used for reading pixel data in                 |
+        |                  | case of interpolation                                             |
+        |                  | (default: GRIORA_NearestNeighbour). Check                         |
+        |                  | http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a |
+        |                  | or available options.                                             |
+        +------------------+-------------------------------------------------------------------+
+        | nodata           | Nodata value to put in image if out of bounds                     |
+        +------------------+-------------------------------------------------------------------+
 
         Example:
 
@@ -1376,7 +1399,6 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_imageFrameSubtract([l, r, t, b, u, d], band)
 
-
     def magnify(self, n):
         """Magnify the image.
 
@@ -1387,7 +1409,7 @@ class _Geometry():
         self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
 
     def plotLine(self, x1, y1, x2, y2, val):
-        """Draw a line from [x1, y1] to [x2, y2] by setting pixels to value val
+        """Draw a line from [x1, y1] to [x2, y2] by setting pixels to value val.
 
         Modifies the instance on which the method was called.
 
@@ -1399,8 +1421,7 @@ class _Geometry():
         self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
 
     def polygonize(self, output, **kwargs):
-        """Polygonize Jim object based on GDALPolygonize
-
+        """Polygonize Jim object based on GDALPolygonize.
 
         :param output: output filename of JimVect object that is returned.
             Use /vsimem for in memory vectors
@@ -1432,8 +1453,8 @@ class _Geometry():
           vcloud.io.write('/path/to/cloud.sqlite')
         """
         kwargs.update({'output': output})
-        avect=self._jim_object._jipjim.polygonize(kwargs)
-        pjvect=_pj.JimVect()
+        avect = self._jim_object._jipjim.polygonize(kwargs)
+        pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
 
@@ -1467,6 +1488,7 @@ class _Geometry():
     #     kwargs.update({'ln':ln})
     #     self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
 
+
 class _GeometryList():
     """Define all Geometry methods for JimLists."""
 
@@ -1491,7 +1513,8 @@ class _GeometryList():
             jim1=pj.Jim('/path/to/raster1.tif')
             jim_stacked=pj.JimList([jim0,jim1]).geometry.stackBand()
 
-        Create a multiband Jim object from a JimList object, selecting the first and third band::
+        Create a multiband Jim object from a JimList object, selecting
+        the first and third band::
 
             jim0=pj.Jim('/path/to/raster0.tif')
             jim1=pj.Jim('/path/to/raster1.tif')
@@ -1500,7 +1523,8 @@ class _GeometryList():
             jim_stacked=jimlist.geometry.stackBand([0,2])
         """
         if band:
-            return _pj.Jim(self._jim_list._jipjimlist.stackBand({'band':band}))
+            return _pj.Jim(
+                self._jim_list._jipjimlist.stackBand({'band': band}))
         else:
             return _pj.Jim(self._jim_list._jipjimlist.stackBand())
 
@@ -1513,13 +1537,14 @@ class _GeometryList():
                     kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
                 else:
                     kwargs['threshold'] = -kwargs['threshold']
-            avect=self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,kwargs)
-            pjvect=_pj.JimVect()
+            avect = self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,
+                                                          kwargs)
+            pjvect = _pj.JimVect()
             pjvect._set(avect)
             return pjvect
-            # return _pj.JimVect(self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,kwargs))
         else:
-            raise TypeError('Error: extractOgr must operate on vector sample of type JimVect')
+            raise TypeError('Error: extractOgr must operate on vector sample'
+                            'of type JimVect')
 
 
 class _GeometryVect():
@@ -1540,14 +1565,16 @@ class _GeometryVect():
     #     if isinstance(jvec, _pj.JimVect):
     #         self._jim_vect._jipjimvect.append(jvec._jipjimvect)
     #         # return pjvect
-    #         # return _pj.JimVect(self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
+    #         # return _pj.JimVect(
+    #               # self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
     #     else:
     #         raise TypeError('Error: can only join with JimVect object')
 
     def convexHull(self, output, **kwargs):
         """Create the convex hull on a JimVect object.
 
-        :param output: output filename of JimVect object that is returned. Use  /vsimem for in memory vectors
+        :param output: output filename of JimVect object that is returned.
+            Use /vsimem for in memory vectors
         :param kwargs: See table below
 
         +------------------+--------------------------------------------------+
@@ -1559,9 +1586,8 @@ class _GeometryVect():
         +------------------+--------------------------------------------------+
         """
         kwargs.update({'output': output})
-        print("kwargs: {}".format(kwargs))
-        avect=self._jim_vect._jipjimvect.convexHull(kwargs)
-        pjvect=_pj.JimVect()
+        avect = self._jim_vect._jipjimvect.convexHull(kwargs)
+        pjvect = _pj.JimVect()
         pjvect._set(avect)
         #todo: do not return but overwrite self
         return pjvect
