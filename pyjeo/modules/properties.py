@@ -2,9 +2,6 @@
 
 import pyjeo as _pj
 
-
-
-
 # def imageInfo(jim_object):
 #     """Return image information (number of lines, columns, etc.)
 
@@ -23,8 +20,7 @@ class _Properties():
         self._jim_object = caller
 
     def imageInfo(self):
-        """Return image information (number of lines, columns, etc.)
-        """
+        """Return image information (number of lines, columns, etc.)."""
         self._jim_object._jipjim.imageInfo()
 
     def nrOfCol(self):
@@ -130,7 +126,7 @@ class _Properties():
 
         :Using a point coordinates:
 
-        * ``x`` (float): x coordinate in spatial reference system of the raster dataset
+        * ``x`` (float): x coordinate in spatial reference system of the rasterdataset
         * ``y`` (float): y coordinate in spatial reference system of the raster dataset
 
         .. _covers2:
@@ -379,7 +375,7 @@ class _PropertiesVect():
         self._jim_vect = caller
 
     def isEmpty(self):
-        """Check if object contains features (non-emtpy)
+        """Check if object contains features (non-emtpy).
 
         :return: True if empty, False if not
         """
@@ -444,9 +440,10 @@ class _PropertiesVect():
         return self._jim_vect._jipjimvect.getLry()
 
     def getFieldNames(self, layer=0):
-        """Get the list of field names for this dataset
+        """Get the list of field names for this dataset.
 
-        :layer: The layer to get the field names, index starting from 0 (default is 0: first layer)
+        :param layer: The layer to get the field names, index starting from 0
+            (default is 0: first layer)
         :return: The list of field names
             dataset
         """
@@ -455,7 +452,9 @@ class _PropertiesVect():
     def getProjection(self, layer=0):
         """Get the projection for this dataset in well known text (wkt) format.
 
-        :layer: The layer to get the projection from, index starting from 0 (default is 0: first layer)
+        :param layer: The layer to get the projection from, index starting
+        from 0
+            (default is 0: first layer)
         :return: The projection string in well known text format.
         """
         return self._jim_vect._jipjimvect.getProjection(layer)
