@@ -827,7 +827,7 @@ class _ParentList(_jl.JimList):
 class JimList(list):
     """Definition of JimList object."""
 
-    def __init__(self, images_list, *args):
+    def __init__(self, images_list=list(), *args):
         """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
