@@ -91,36 +91,12 @@ class Jim():
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
-        # remove stdev and uniform from kwargs
+        # remove stdev and uniform from kwargs to use them in feed
         stdev = kwargs.pop('stdev', None)
         uniform = kwargs.pop('uniform', None)
         seed = kwargs.pop('seed', None)
-        self._jipjim = _ParentJim(image, kwargs)
 
-        if stdev or uniform or seed:
-            mean = kwargs.pop('mean', None)
-            if seed:
-                numpy.random.seed(seed)
-            scale = 1
-            offset = 0
-            if uniform:
-                if len(uniform) == 2:
-                    min = uniform[0]
-                    max = uniform[1]
-                    scale = max-min
-                    offset = min
-                    self.np()[:] = scale * \
-                                   numpy.random.rand(*(self.np().shape)) + \
-                                   offset
-            else:
-                if not stdev:
-                    stdev = 1
-                if not mean:
-                    mean = 0
-                scale = stdev
-                offset = mean
-                self.np()[:] = scale * numpy.random.rand(*(self.np().shape)) \
-                               + offset
+        self._jipjim = _ParentJim(image, kwargs)
 
         self._all = all._All()
         self._ccops = ccops._CCOps()
@@ -132,6 +108,8 @@ class Jim():
         self._pixops = pixops._PixOps()
         self._properties = properties._Properties()
         self._stats = stats._Stats()
+
+        self._feed(stdev, uniform, seed)
 
     @property
     def all(self):
@@ -241,6 +219,32 @@ class Jim():
             raise ValueError(
                 'Jim has to have a data type and dimensions to use Jim.np()')
         return _jl.np(self._jipjim, band)
+
+    def _feed(self, stdev, uniform, seed):
+        if stdev or uniform or seed:
+            mean = kwargs.pop('mean', None)
+            if seed:
+                numpy.random.seed(seed)
+            scale = 1
+            offset = 0
+            if uniform:
+                if len(uniform) == 2:
+                    min = uniform[0]
+                    max = uniform[1]
+                    scale = max-min
+                    offset = min
+                    self.np()[:] = scale * \
+                                   numpy.random.rand(*(self.np().shape)) + \
+                                   offset
+            else:
+                if not stdev:
+                    stdev = 1
+                if not mean:
+                    mean = 0
+                scale = stdev
+                offset = mean
+                self.np()[:] = scale * numpy.random.rand(*(self.np().shape)) \
+                               + offset
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
