@@ -47,32 +47,43 @@ from scipy import signal
 #     return jimdx
 
 def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
-    tapsdx=np.array([[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]])
-    tapsdy=np.array([[-1.0,-2.0,-1.0],[0.0,0.0,0.0],[1.0,2.0,1.0]])
-    tapsdx*=zscale
-    tapsdy*=zscale
-    jimdx=_pj.Jim(jim_object)
-    jimdy=_pj.Jim(jim_object)
+    """Compute the slope of a Jim object.
+
+    :param jim_object: Jim
+    :param scale: horizontal scale
+    :param zscale: vertical scale
+    :param percent: if True, return value in percents, degrees otherwise
+    :return: a Jim object representing the slope
+    """
+    tapsdx = np.array([[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]])
+    tapsdy = np.array([[-1.0, -2.0, -1.0], [0.0, 0.0, 0.0], [1.0, 2.0, 1.0]])
+    tapsdx *= zscale
+    tapsdy *= zscale
+    jimdx = _pj.Jim(jim_object)
+    jimdy = _pj.Jim(jim_object)
     if jim_object.properties.getDataType() != 'Float32' and \
        jim_object.properties.getDataType() != 'Float64':
         jimdx.pixops.convert(otype="Float32")
         jimdy.pixops.convert(otype="Float32")
-    jimdx.ngbops.filter2d(tapsdx,nodata=jim_object.properties.getNoDataVals(),abs=True,norm=True)
-    jimdx/=jimdx.properties.getDeltaX()*scale
-    jimdx*=jimdx
-    jimdy.ngbops.filter2d(tapsdy,nodata=jim_object.properties.getNoDataVals(),abs=True,norm=True)
-    jimdy/=jimdy.properties.getDeltaX()*scale
-    jimdy*=jimdy
-    rad2deg=180.0/np.pi
-    jimdx+=jimdy
-    jimdx.np()[:]=np.sqrt(jimdx.np())
+    jimdx.ngbops.filter2d(tapsdx, nodata=jim_object.properties.getNoDataVals(),
+                          abs=True, norm=True)
+    jimdx /= jimdx.properties.getDeltaX() * scale
+    jimdx *= jimdx
+    jimdy.ngbops.filter2d(tapsdy, nodata=jim_object.properties.getNoDataVals(),
+                          abs=True, norm=True)
+    jimdy /= jimdy.properties.getDeltaX()*scale
+    jimdy *= jimdy
+    rad2deg = 180.0 / np.pi
+    jimdx += jimdy
+    jimdx.np()[:] = np.sqrt(jimdx.np())
     if percent:
-        jimdx*=100
+        jimdx *= 100
     else:
-        jimdx.np()[:]=np.arctan(jimdx.np())
-        jimdx*=rad2deg
-        jimdx=jimdx
+        jimdx.np()[:] = np.arctan(jimdx.np())
+        jimdx *= rad2deg
+        jimdx = jimdx
     return jimdx
+
 
 def catchmentBasinConfluence(jim_object, d8):
     """Compute the catchment basin confluence.
@@ -196,7 +207,7 @@ def flowDirectionDInf(jim_object):
 
 
 def flowDirectionFlat(jim_object, dem_jim, graph):
-    """See publication :cite:`soille2002dgci`)
+    """See publication :cite:`soille2002dgci`).
 
     Flat regions (i.e., no flow direction) must be of type USHORT (with flat
     regions set to 65533) or INT32 (with flat regions set to INT32 MAX-2).
@@ -579,8 +590,7 @@ class _DEMOps():
         self._jim_object._set(self._jim_object._jipjim.demSlopeD8())
 
     def slopeDInf(self):
-        """Output the slope along the dinf drainage directions.
-        """
+        """Output the slope along the dinf drainage directions."""
         self._jim_object._set(self._jim_object._jipjim.demSlopeDInf())
 
     def strahler(self):
