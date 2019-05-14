@@ -71,7 +71,7 @@ class _IO():
         self._jim_object = caller
 
     def write(self, filename, **kwargs):
-        """ Write the raster dataset to file in a GDAL supported format
+        """Write the raster dataset to file in a GDAL supported format.
 
         : param filename: output filename to write to
 
@@ -79,17 +79,21 @@ class _IO():
 
         ======== ===================================================
         oformat  (default: GTiff) Output image (GDAL supported) format
-        co       Creation option for output file. Multiple options can be specified as a list
+        co       Creation option for output file. Multiple options can be
+                 specified as a list
         nodata   Nodata value to put in image
         ======== ===================================================
 
         .. note::
 
-           Supported GDAL output formats are restricted to those that support `creation <http://www.gdal.org/formats_list.html#footnote1>`_.
+           Supported GDAL output formats are restricted to those that support
+           `creation <http://www.gdal.org/formats_list.html#footnote1>`_.
 
         Example:
 
-        Create Jim image object by opening an existing file in jp2 format. Then write to a compressed and tiled file in the default GeoTIFF format::
+        Create Jim image object by opening an existing file in jp2 format.
+        Then write to a compressed and tiled file in the default GeoTIFF
+        format::
 
            ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
            jim=pj.Jim({'filename':ifn})
@@ -99,7 +103,7 @@ class _IO():
         self._jim_object._jipjim.write(kwargs)
 
     def dumpImg(self, **kwargs):
-        """ Dump the raster dataset to output (standard output or ASCII file).
+        """Dump the raster dataset to output (standard output or ASCII file).
 
         Supported keys as arguments:
 
@@ -120,8 +124,9 @@ class _IO():
 
     def dumpImg3D(self, x, y, z, nx, ny):
         """
-        Dump on screen a dx*dy window with the image values around
-        coordinates (x,y) and within the plane z.
+        Dump on screen a dx*dy window with the image values around coordinates.
+
+        Dumped within the plane z.
 
         :param x: x coordinate
         :param y: y coordinate
@@ -132,11 +137,9 @@ class _IO():
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
     def close(self):
-        """
-        Close Jim object
-
-        """
+        """Close Jim object."""
         self._jim_object._jipjim.close()
+
 
 class _IOList():
     """Define all IO methods for JimLists."""
@@ -149,10 +152,9 @@ class _IOList():
         self._jim_list = caller
 
     def close(self):
-        """
-        Close all Jim object in the JimList object
-        """
+        """Close all Jim object in the JimList object."""
         self._jim_list._jipjimlist.close()
+
 
 class _IOVect():
     """Define all IO methods for JimVects."""
@@ -165,8 +167,10 @@ class _IOVect():
         self._jim_vect = caller
 
     def write(self, filename=None):
-        """
-        Write JimVect object to file. If no filename is provided, the original filename with which the JimVect object was created will be used.
+        """Write JimVect object to file.
+
+        If no filename is provided, the original filename with which
+        the JimVect object was created will be used.
 
         :param filename: path to a raster dataset or another Jim object
         """
@@ -176,21 +180,20 @@ class _IOVect():
             self._jim_vect._jipjimvect.write()
 
     def close(self):
-        """
-        Close JimVect object.
-
-        """
+        """Close JimVect object."""
         self._jim_vect._jipjimvect.close()
 
     def dumpVect(self, name=None, **kwargs):
         """
-        Dump vector content to screen or file (if output argument is provided)
+        Dump vector content to screen or file (if output argument is provided).
 
-        :param name: the list of field name(s) to dump (default is empty: dump all fields)
-        :param output: output ascii file (default is empty: dump to standard output)
+        :param name: the list of field name(s) to dump
+            (default is empty: dump all fields)
+        :param output: output ascii file
+            (default is empty: dump to standard output)
         """
         if name:
             kwargs.update({'name': name})
         if not kwargs:
-            kwargs={}
+            kwargs = {}
         self._jim_vect._jipjimvect.dumpOgr(kwargs)
