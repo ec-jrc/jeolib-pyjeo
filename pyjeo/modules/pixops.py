@@ -8,6 +8,7 @@ except ImportError:
 
 import numpy
 
+
 def convert(jim_object, otype, **kwargs):
     """Convert Jim image with respect to data type.
 
@@ -46,8 +47,7 @@ def convert(jim_object, otype, **kwargs):
         jim1.setThreshold(min=0,max=255,nodata=0)
         jim1.convert('Byte')
     """
-
-    #commented out for now
+    # commented out for now
     # if len(kwargs) == 0:
     #     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
     #         return _pj.Jim(jim_object._jipjim.convertToUchar8())
@@ -55,12 +55,15 @@ def convert(jim_object, otype, **kwargs):
     #         return _pj.Jim(jim_object._jipjim.convertToUint16())
     #     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
     #         return _pj.Jim(jim_object._jipjim.convertToUint32())
-    #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
+    #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
+    #                    _jl.GDT_Float32]:
     #         return _pj.Jim(jim_object._jipjim.convertToFloat32())
-    #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
+    #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
+    #                   _jl.GDT_Float64]:
     #         return _pj.Jim(jim_object._jipjim.convertToDouble64())
 
-    if otype in [1, 'int8', 'uint8', 'UInt8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
+    if otype in [1, 'int8', 'uint8', 'UInt8', 'Byte', 'GDT_Byte',
+                 _jl.GDT_Byte]:
         kwargs.update({'otype': 'GDT_Byte'})
     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
         kwargs.update({'otype': 'GDT_UInt16'})
@@ -82,9 +85,14 @@ def convert(jim_object, otype, **kwargs):
 
 
 def isEqual(first_jim, second_jim):
+    """Check if the values of one Jim object are the same as in another one.
+
+    :param first_jim: a Jim object
+    :param second_jim: a Jim object
+    :return: True if the values are equal, zero otherwise
+    """
     if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
-        return numpy.array_equal(first_jim.np(),second_jim.np())
-        # return first_jim._jipjim.isEqual(second_jim._jipjim)
+        return numpy.array_equal(first_jim.np(), second_jim.np())
     else:
         return False
 
@@ -118,7 +126,9 @@ def NDVI(jim_object, redBand, nirBand):
 
 
 def NDVISeparateBands(redJim, nirJim):
-    """Compute NDVI from two Jim objects. Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
+    """Compute NDVI from two Jim objects.
+
+    Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
     :param redJim: Jim object with values of red
     :param nirJim: Jim object with values of NIR
@@ -128,7 +138,7 @@ def NDVISeparateBands(redJim, nirJim):
 
 
 # def modulo(jim_object, val):
-#     """Set all pixels to their value modulo val
+#     """Set all pixels to their value modulo val.
 
 #     :param val:  modulo value (integer)
 
@@ -139,7 +149,7 @@ def NDVISeparateBands(redJim, nirJim):
 
 
 # def blank(jim_object, val):
-#     """Set all pixels to val
+#     """Set all pixels to val.
 
 #     :param val:  All pixels within [min,max] are set to val
 
@@ -150,7 +160,7 @@ def NDVISeparateBands(redJim, nirJim):
 
 
 def setLevel(jim_object, min, max, val):
-    """Set all pixels within min and max values to val
+    """Set all pixels within min and max values to val.
 
     :param min:  Minimum threshold value
     :param max:  Maximum threshold value
@@ -163,7 +173,7 @@ def setLevel(jim_object, min, max, val):
 
 
 def simpleThreshold(jim_object, min, max, bg_val, fg_val):
-    """Set all pixels within min and max values to val
+    """Set all pixels within min and max values to val.
 
     :param min:  Minimum threshold value
     :param max:  Maximum threshold value
@@ -244,19 +254,19 @@ def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
         if True
     :return: a Jim object
     """
-
     jout = _pj.Jim(jim)
     jout.pixops.setData(value)
     return _pj.Jim(jout)
 
 
 def simpleArithOp(jim, op, *args):
-    """Create Jim composed using a simple arithmetic operation (coded with op) from provided Jim objects.
+    """Create Jim composed using a simple arithmetic operation (coded with op).
 
     :param jim: Jim object (to be sure that at least one is provided)
     :param op: integer for operation type
     :param args: Jim objects
-    :return: Jim holding specified arithmetic operation with from provided Jim objects
+    :return: Jim holding specified arithmetic operation with from provided
+        Jim objects
     """
     jout = _pj.Jim(jim)
     for newJim in args:
@@ -266,12 +276,13 @@ def simpleArithOp(jim, op, *args):
 
 
 def simpleBitwiseOp(jim, op, *args):
-    """Create Jim composed using a simple bitwise operation (coded with op) from provided Jim objects.
+    """Create Jim composed using a simple bitwise operation (coded with op).
 
     :param jim: Jim object (to be sure that at least one is provided)
     :param op: integer for operation type
     :param args: Jim objects
-    :return: Jim holding specified bitwise operation with from provided Jim objects
+    :return: Jim holding specified bitwise operation with from provided
+        Jim objects
     """
     jout = _pj.Jim(jim)
     for newJim in args:
@@ -309,6 +320,7 @@ def infimum(jim, *args):
 
 
 def composite(jim_list, crule='overwrite', **kwargs):
+    """Composite Jims in a JimList using a composite rule."""
     kwargs.update({'crule': crule})
     return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
 
@@ -361,25 +373,29 @@ class _PixOps():
             jim1.setThreshold(min=0,max=255,nodata=0)
             jim1.convert(Byte)
         """
-
-        #commented out for now
+        # commented out for now
         # if len(kwargs) == 0:
-        #     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
+        #     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte',
+        #                 _jl.GDT_Byte]:
         #         self._jim_object._jipjim.d_convertToUchar8()
         #         return None
-        #     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+        #     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16',
+        #                    _jl.GDT_UInt16]:
         #         self._jim_object._set(
         #             self._jim_object._jipjim.convertToUint16())
         #         return None
-        #     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+        #     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32',
+        #                    _jl.GDT_UInt32]:
         #         self._jim_object._set(
         #             self._jim_object._jipjim.convertToUint32())
         #         return None
-        #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
+        #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
+        #                    _jl.GDT_Float32]:
         #         self._jim_object._set(
         #             self._jim_object._jipjim.convertToFloat32())
         #         return None
-        #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
+        #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
+        #                    _jl.GDT_Float64]:
         #         self._jim_object._set(
         #             self._jim_object._jipjim.convertToDouble64())
         #         return None
@@ -394,9 +410,11 @@ class _PixOps():
             kwargs.update({'otype': 'GDT_UInt32'})
         elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
             kwargs.update({'otype': 'GDT_Int32'})
-        elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
+        elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
+                       _jl.GDT_Float32]:
             kwargs.update({'otype': 'GDT_Float32'})
-        elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
+        elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
+                       _jl.GDT_Float64]:
             kwargs.update({'otype': 'GDT_Float64'})
         else:
             raise TypeError("Output type {} not supported".format(otype))
@@ -419,9 +437,13 @@ class _PixOps():
             self._jim_object._jipjim.d_histoCompress()
 
     def isEqual(self, other):
+        """Check if the values of one Jim object are the same as in another one.
+
+        :param other: a Jim object
+        :return: True if the values are equal, zero otherwise
+        """
         if isinstance(other, _pj.Jim):
-            # return self._jim_object._jipjim.isEqual(other._jipjim)
-            return numpy.array_equal(self._jim_object.np(),other.np())
+            return numpy.array_equal(self._jim_object.np(), other.np())
         else:
             return False
 
@@ -439,7 +461,9 @@ class _PixOps():
         self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
 
     def NDVISeparateBands(self, nirJim):
-        """Compute NDVI from two Jims (call on red band, use NIR as param). Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
+        """Compute NDVI from two Jims (call on red band, use NIR as param).
+
+        Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
         Modifies the instance on which the method was called.
 
@@ -447,7 +471,6 @@ class _PixOps():
         """
         self._jim_object._set(
             nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
-
 
     # def modulo(self, val):
     #     """Set all pixels to their value modulo val
@@ -458,7 +481,6 @@ class _PixOps():
 
     #     """
     #     self._jim_object._jipjim.d_pointOpModulo(val)
-
 
     # def blank(self, val):
     #     """Set all pixels to val
@@ -491,8 +513,8 @@ class _PixOps():
             if True
         :return: a Jim object
         """
-        if all(v is None for v in [ulx, uly, lrx, lry]) and dx==0 and dy==0 \
-                and not nogeo:
+        if all(v is None for v in [ulx, uly, lrx, lry]) and dx == 0 and \
+                dy == 0 and not nogeo:
             for band in bands:
                 self._jim_object._jipjim.setData(value, band)
         else:
@@ -508,22 +530,17 @@ class _PixOps():
                 self._jim_object._jipjim.setData(value, ulx, uly, lrx, lry,
                                                  band, dx, dy, nogeo)
 
-
-
     def simpleThreshold(self, min, max, bg_val, fg_val):
-        """Set all pixels within min and max values to val
+        """Set all pixels within min and max values to val.
+
+        Modifies the instance on which the method was called.
 
         :param min:  Minimum threshold value
         :param max:  Maximum threshold value
         :param bg_val:  All pixels outside [min,max] are set to bg_val
         :param fg_val:  All pixels within [min,max] are set to fg_val
-
-        Modifies the instance on which the method was called.
-
         """
         self._jim_object._jipjim.d_pointOpThresh(min, max, bg_val, fg_val)
-
-
 
     def setThreshold(self, **kwargs):
         """Apply min and max threshold to pixel values in raster dataset.
@@ -571,9 +588,8 @@ class _PixOps():
         """
         self._jim_object._set(self._jim_object._jipjim.setThreshold(kwargs))
 
-
     def simpleArithOp(self, jim, op, *args):
-        """Change values of Jim using an arithmetic operation (coded by op) from provided Jim objects.
+        """Change values of Jim using an arithmetic operation (coded by op).
 
         Modifies the instance on which the method was called.
 
@@ -586,7 +602,7 @@ class _PixOps():
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, op)
 
     def simpleBitwiseOp(self, jim, op, *args):
-        """Change values of Jim using an bitwise operation (coded by op) from provided Jim objects.
+        """Change values of Jim using an bitwise operation (coded by op).
 
         Modifies the instance on which the method was called.
 
@@ -599,7 +615,7 @@ class _PixOps():
             self._jim_object._jipjim.d_pointOpBitwise(jim._jipjim, op)
 
     def supremum(self, *args):
-        """Change values of Jim using maximum composition rule from provided Jim objects.
+        """Change values of Jim using maximum composition rule.
 
         Modifies the instance on which the method was called.
 
@@ -609,7 +625,7 @@ class _PixOps():
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
 
     def infimum(self, *args):
-        """Change values of Jim using mimimum composition rule from provided Jim objects.
+        """Change values of Jim using mimimum composition rule.
 
         Modifies the instance on which the method was called.
 
@@ -631,6 +647,7 @@ class _PixOpsList():
 
     #todo: write Python function
     def composite(self, crule='overwrite', **kwargs):
+        """Composite Jims in a JimList using a composite rule."""
         kwargs.update({'crule': crule})
         return _pj.Jim(self._jim_list._jipjimlist.composite(kwargs))
 
