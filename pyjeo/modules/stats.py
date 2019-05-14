@@ -5,6 +5,17 @@ import numpy
 
 
 def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
+    """Compute basic statistics on a JimList object.
+
+    Similar to the :py:meth:`~._Stats.getStats` method from Jim.
+    For functions requiring two datasets (e.g., regression), use
+    the objects in the list instead of bands
+
+    :param jim_object: a Jim object
+    :param function: (list of) statistical function(s) to calculate
+        (default is ['min', 'max', 'mean'])
+    :return: a dictionary with requested statistics
+    """
     if not isinstance(function, list):
         function = function.split(',')
 
@@ -127,14 +138,20 @@ class _Stats():
 
         :return: a Jim object
         """
-        if self._jim_object.properties.getDataType() not in ['UInt32', 'Int32']:
+        if self._jim_object.properties.getDataType() not in ['UInt32',
+                                                             'Int32']:
             raise TypeError('Object must be of type UInt32 or Int32')
         return _pj.Jim(self._jim_object._jipjim.histo1dCumulative())
 
     def getStats(self, function=['min', 'max', 'mean'], **kwargs):
-        """Compute basic statistics on a Jim object. For functions requiring two datasets (e.g., regression), use a multi-band Jim object (or use the :py:meth:`~_StatsList.getStats` method from JimList.
+        """Compute basic statistics on a Jim object.
 
-        :param function: (list of) statistical function(s) to calculate (default is ['min', 'max', 'mean'])
+        For functions requiring two datasets (e.g., regression), use
+        a multi-band Jim object (or use the :py:meth:`~_StatsList.getStats`
+        method from JimList.
+
+        :param function: (list of) statistical function(s) to calculate
+            (default is ['min', 'max', 'mean'])
         :return: a dictionary with requested statistics
 
         .. _statFunctions:
@@ -186,12 +203,14 @@ class _Stats():
             print('max value is: {}".format(statDict['max']))
             print('min value is: {}".format(statDict['min']))
 
-        Calculate the histogram (returning a dictionary with keys 'bin' and 'histogram')::
+        Calculate the histogram
+        (returning a dictionary with keys 'bin' and 'histogram')::
 
             jim=pj.Jim('/path/to/raster.tif')
             histDict=jim.stats.getStats('histogram')
 
-        Calculate the histogram, using 10 bins. Start reading from value 0 and stop reading up to value 100. Do not consider values equal to 0::
+        Calculate the histogram, using 10 bins. Start reading from value 0 and
+        stop reading up to value 100. Do not consider values equal to 0::
 
             jim=pj.Jim('/path/to/raster.tif')
             histDict=jim.stats.getStats('histogram', nbnin=10, src_min=0, src_max=100, nodata=0)
@@ -258,10 +277,15 @@ class _StatsList():
         kwargs.update({'function': function})
         return _pj.Jim(self._jim_list._jipjimlist.statProfile(kwargs))
 
-    def getStats(self, function=['min','max','mean'], **kwargs):
-        """Compute basic statistics on a JimList object. Similar to the :py:meth:`~._Stats.getStats` method from Jim. For functions requiring two datasets (e.g., regression), use the objects in the list instead of bands
+    def getStats(self, function=['min', 'max', 'mean'], **kwargs):
+        """Compute basic statistics on a JimList object.
 
-        :param function: (list of) statistical function(s) to calculate (default is ['min', 'max', 'mean'])
+        Similar to the :py:meth:`~._Stats.getStats` method from Jim.
+        For functions requiring two datasets (e.g., regression), use
+        the objects in the list instead of bands
+
+        :param function: (list of) statistical function(s) to calculate
+            (default is ['min', 'max', 'mean'])
         :return: a dictionary with requested statistics
 
         .. _statFunctions:
