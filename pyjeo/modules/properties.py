@@ -82,7 +82,7 @@ class _Properties():
 
         :return: The datatype id of this Jim object
         """
-        otype=self._jim_object._jipjim.getDataType()
+        otype = self._jim_object._jipjim.getDataType()
         if otype == 1:
             return 'Byte'
         elif otype == 2:
@@ -114,7 +114,7 @@ class _Properties():
         elif otype == 16:
             return 'JDT_Word'
         else:
-            raise TypeError("Unknown data format ".format(otype))
+            raise TypeError("Unknown data format".format(otype))
 
     def covers(self, *args):
         """Check if a geolocation is covered by this dataset.
