@@ -71,7 +71,6 @@ class _ParentJim(_jl.Jim):
                         super(_ParentJim, self).__init__(image._jipjim)
                 else:
                     kwargs.update({'filename': image})
-                    # kwargs.update({'band2plane':True})
                     super(_ParentJim, self).__init__(kwargs)
             else:
                 super(_ParentJim, self).__init__(kwargs)
@@ -91,6 +90,8 @@ class Jim():
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
+        self._checkInitParamsSense(image, kwargs)
+
         # remove stdev and uniform from kwargs to use them in feed
         stdev = kwargs.pop('stdev', None)
         uniform = kwargs.pop('uniform', None)
@@ -109,7 +110,8 @@ class Jim():
         self._properties = properties._Properties()
         self._stats = stats._Stats()
 
-        self._feed(stdev, uniform, seed)
+        if stdev or uniform or seed:
+            self._feed(stdev, uniform, seed, kwargs)
 
     @property
     def all(self):
@@ -220,31 +222,53 @@ class Jim():
                 'Jim has to have a data type and dimensions to use Jim.np()')
         return _jl.np(self._jipjim, band)
 
-    def _feed(self, stdev, uniform, seed):
-        if stdev or uniform or seed:
-            mean = kwargs.pop('mean', None)
-            if seed:
-                numpy.random.seed(seed)
-            scale = 1
-            offset = 0
-            if uniform:
-                if len(uniform) == 2:
-                    min = uniform[0]
-                    max = uniform[1]
-                    scale = max-min
-                    offset = min
-                    self.np()[:] = scale * \
-                                   numpy.random.rand(*(self.np().shape)) + \
-                                   offset
-            else:
-                if not stdev:
-                    stdev = 1
-                if not mean:
-                    mean = 0
-                scale = stdev
-                offset = mean
-                self.np()[:] = scale * numpy.random.rand(*(self.np().shape)) \
-                               + offset
+    def _checkInitParamsSense(self, image, kwargs):
+        """Check if the combination of args + kwargs for Jim init makes sense.
+
+        :param image: path to a raster or another Jim object as a basis for
+            the Jim object
+        """
+        keys = kwargs.keys()
+
+        if not image:
+            if keys:
+                if ('seed' in keys or 'uniform' in keys or 'stdev' in keys) \
+                        and ('ncol' not in keys and 'nrow' not in keys and
+                             'dataType' not in keys):
+                    raise AttributeError(
+                        'You cannot use any of parameters [seed, uniform, '
+                        'stdev] without pecifying the geomtery of Jim.')
+
+    def _feed(self, stdev, uniform, seed, kwargs):
+        """Feed the Jim object with either uniform or random seed of values.
+
+        :param stdev: standard deviation
+        :param uniform: if uniform seed, here are defined values [min, max]
+        :param seed: numpy random seed
+        """
+        mean = kwargs.pop('mean', None)
+
+        if seed:
+            numpy.random.seed(seed)
+
+        if uniform:
+            if len(uniform) == 2:
+                min = uniform[0]
+                max = uniform[1]
+                scale = max - min
+                offset = min
+                self.np()[:] = scale * \
+                               numpy.random.rand(*(self.np().shape)) + \
+                               offset
+        else:
+            if not stdev:
+                stdev = 1
+            if not mean:
+                mean = 0
+            scale = stdev
+            offset = mean
+            self.np()[:] = scale * numpy.random.rand(*(self.np().shape)) + \
+                           offset
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
