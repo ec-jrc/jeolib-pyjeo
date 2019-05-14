@@ -81,7 +81,6 @@ def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
     else:
         jimdx.np()[:] = np.arctan(jimdx.np())
         jimdx *= rad2deg
-        jimdx = jimdx
     return jimdx
 
 
