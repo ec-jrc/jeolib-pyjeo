@@ -46,6 +46,10 @@ class BadBasicMethods(unittest.TestCase):
         jim = pj.Jim(tiles[0])
 
         jim_np = pj.jim2np(jim)
+        jim_np2 = pj.np(jim)
+
+        assert (jim_np == jim_np2).all(), 'Error in jim2np() or np()'
+
         new_jim = pj.np2jim(jim_np)
 
         assert jim.pixops.isEqual(new_jim), 'Error in jim2np() or np2jim()'
