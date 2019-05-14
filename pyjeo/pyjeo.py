@@ -235,6 +235,11 @@ class Jim():
         :param band: band index (starting from 0)
         :return: numpy array representation
         """
+        try:
+            self.properties.getDataType()
+        except TypeError:
+            raise ValueError(
+                'Jim has to have a data type and dimensions to use Jim.np()')
         return _jl.np(self._jipjim, band)
 
     def _set(self, modified_object):
