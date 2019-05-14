@@ -264,7 +264,6 @@ def stackBand(jim_object, jim_other=None, band=None):
 
         return jim_object
     else:
-        print("Error: expected a Jim object")
         raise TypeError('Error: expected a Jim object')
 
 
