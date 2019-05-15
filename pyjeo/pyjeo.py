@@ -261,7 +261,7 @@ class Jim():
                                numpy.random.rand(*(self.np().shape)) + \
                                offset
         else:
-            if not stdev:
+            if stdev is not None:
                 stdev = 1
             if not mean:
                 mean = 0
