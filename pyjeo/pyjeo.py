@@ -293,7 +293,7 @@ class Jim():
                 nodata = nodata[0]
             else:
                 nodata = 0
-            return geometry.cropOgr(self, item._jipjimvect,
+            return geometry.cropOgr(self, item,
                                     crop_to_cutline=True, nodata=nodata,
                                     align=True)
 
