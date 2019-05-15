@@ -60,6 +60,16 @@ class BadBasicMethods(unittest.TestCase):
 
         assert jim.pixops.isEqual(new_jim), 'Error in jim2np() or np2jim()'
 
+        try:
+            jim_empty = pj.Jim()
+            _ = jim_empty.np()
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of Jim.np() for non-dimensional Jims'
+
     def test_getters_setters(self):
         """Test getters and setters."""
         jim1 = pj.Jim(tiles[0])
