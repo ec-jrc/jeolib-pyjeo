@@ -47,6 +47,15 @@ class BadBasicMethods(unittest.TestCase):
         assert stats7['max'] < 2 and stats7['min'] > 0, \
             'Error in creating Jim with uniform distribution'
 
+        try:
+            _ = pj.Jim(seed=5)
+            failed = True
+        except AttributeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of Jim creation with nonsense (kw)args'
+
     def test_numpy_conversions(self):
         """Test conversions to numpy and back."""
         jim = pj.Jim(tiles[0])
