@@ -286,8 +286,8 @@ class Jim():
         """
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError('Error: __getitem__ not implemented for 3d '
-                                 'Jim objects')
+                raise ValueError('Using a JimVect as an index not implemented '
+                                 'for 3d Jim objects')
             nodata = self.properties.getNoDataVals()
             if nodata:
                 nodata = nodata[0]
