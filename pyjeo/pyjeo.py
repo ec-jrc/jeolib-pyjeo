@@ -243,7 +243,7 @@ class Jim():
         """Feed the Jim object with either uniform or random seed of values.
 
         :param stdev: standard deviation
-        :param uniform: if uniform seed, here are defined values [min, max]
+        :param uniform: if uniform distr, here are defined values [min, max]
         :param seed: numpy random seed
         """
         mean = kwargs.pop('mean', None)

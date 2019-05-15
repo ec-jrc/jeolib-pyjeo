@@ -41,6 +41,12 @@ class BadBasicMethods(unittest.TestCase):
         assert jim6.all.nrOfCol() == 5, \
             'Error in creating Jim with Jim(kwargs)'
 
+        jim7 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2])
+        stats7 = jim7.stats.getStats(['min', 'max'])
+
+        assert stats7['max'] < 2 and stats7['min'] > 0, \
+            'Error in creating Jim with uniform distribution'
+
     def test_numpy_conversions(self):
         """Test conversions to numpy and back."""
         jim = pj.Jim(tiles[0])
