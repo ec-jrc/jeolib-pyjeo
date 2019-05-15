@@ -248,7 +248,7 @@ class Jim():
         """
         mean = kwargs.pop('mean', None)
 
-        if seed:
+        if seed is not None:
             numpy.random.seed(seed)
 
         if uniform:
