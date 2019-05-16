@@ -206,6 +206,8 @@ class BadBasicMethods(unittest.TestCase):
         #     'Error in jim[int, int, int, int] (either get or set item, ' \
         #     'wrong nrOfPlane)'
 
+        # Test JimVect usage in getters and setters as an argument
+
         try:
             _ = jim1[vect]
             failed = True
@@ -240,6 +242,22 @@ class BadBasicMethods(unittest.TestCase):
                modis_clipped2.properties.getNoDataVals() == [0], \
             'Error in clipping a Jim by JimVect (Jim[JimVect]) (noData not ' \
             'correctly transferred)'
+
+        # Test Jim usage in getters and setters as an argument
+
+        rand_jim = pj.Jim(nrow=50, ncol=50, uniform=[0, 2])
+        rand_jim[0, 0] = 0
+        rand_jim[0, 1] = 1
+        stats = rand_jim.stats.getStats()
+        twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2])
+
+        twos_masked = twos[rand_jim]
+        stats_masked = twos_masked.stats.getStats()
+
+        assert stats_masked['max'] == stats['max'] * 2 and \
+               stats_masked['mean'] == stats['mean'] * 2 and \
+               stats_masked['min'] == stats['min'] == 0, \
+            'Error in masking a Jim by Jim (Jim1[Jim2])'
 
     def test_operators(self):
         """Test basic operators (+, -, *, /, =)."""

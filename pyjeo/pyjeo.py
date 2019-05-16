@@ -296,7 +296,6 @@ class Jim():
             return geometry.cropOgr(self, item,
                                     crop_to_cutline=True, nodata=nodata,
                                     align=True)
-
         elif isinstance(item, Jim):
             mask = item > 0
             return Jim(self * mask)
