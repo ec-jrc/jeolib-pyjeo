@@ -6,7 +6,7 @@ import unittest
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
-vector = 'tests/data/nuts_italy.sqlite'
+vector = 'tests/data/modis_ndvi_training.sqlite'
 
 
 class BadBasicMethods(unittest.TestCase):
@@ -89,6 +89,8 @@ class BadBasicMethods(unittest.TestCase):
     def test_getters_setters(self):
         """Test getters and setters."""
         jim1 = pj.Jim(tiles[0])
+        vect = pj.JimVect(vector)
+
         stats1 = jim1.stats.getStats()
 
         jim1[0, 0] = stats1['mean']
@@ -203,6 +205,41 @@ class BadBasicMethods(unittest.TestCase):
         # assert last.properties.nrOfPlane() == 2, \
         #     'Error in jim[int, int, int, int] (either get or set item, ' \
         #     'wrong nrOfPlane)'
+
+        try:
+            _ = jim1[vect]
+            failed = True
+        except ValueError:
+            failed = False
+        assert not failed, 'Error in catching a JimVect used as an index ' \
+                           'for a multiplanar Jim'
+
+        modis = pj.Jim(testFile)
+        modis.properties.clearNoData()
+        modis_clipped = modis[vect]
+        modis.properties.setNoDataVals(0)
+        modis_clipped2 = modis[vect]
+
+        bbox_vect = vect.properties.getBBox()
+        bbox_clipped = modis_clipped.properties.getBBox()
+
+        failed = False
+        for i in range(len(bbox_vect)):
+            if i % 2 == 0:
+                delta = modis_clipped.properties.getDeltaX()
+            else:
+                delta = modis_clipped.properties.getDeltaY()
+
+            if abs(bbox_vect[i] - bbox_clipped[i]) > delta:
+                failed = True
+                break
+
+        assert not failed, 'Error in clipping a Jim by JimVect (Jim[JimVect])'
+
+        assert modis_clipped.properties.getNoDataVals() == \
+               modis_clipped2.properties.getNoDataVals() == [0], \
+            'Error in clipping a Jim by JimVect (Jim[JimVect]) (noData not ' \
+            'correctly transferred)'
 
     def test_operators(self):
         """Test basic operators (+, -, *, /, =)."""
