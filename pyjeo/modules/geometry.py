@@ -278,8 +278,8 @@ def warp(jim_object, t_srs, **kwargs):
     +------------------+-------------------------------------------------------------------+
     | key              | value                                                             |
     +==================+===================================================================+
-    | s_srs            | Source spatial reference system (default is to read from input)   |
-    | s_srs            | Source spatial reference system (default is to read from input)   |
+    | s_srs            | Source spatial reference system (default is to read               |
+    |                  | from input)                                                       |
     +------------------+-------------------------------------------------------------------+
     | resample         | Resample algorithm used for reading pixel data in                 |
     |                  | case of interpolation                                             |
