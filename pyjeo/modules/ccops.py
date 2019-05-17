@@ -403,7 +403,7 @@ class _CCOps():
         pass
 
     def _set_caller(self, caller):
-        self._jim = caller
+        self._jim_object = caller
 
     def labelImagePixels(self):
         """Label each non-zero pixel of im with a unique label.
@@ -412,7 +412,7 @@ class _CCOps():
 
         Modifies the instance on which the method was called.
         """
-        self._jim._jipjim.d_labelPix()
+        self._jim_object._jipjim.d_labelPix()
 
     def labelGraph(self, graph=8):
         """Label each non-zero connected component with a unique label.
@@ -438,7 +438,7 @@ class _CCOps():
             print("graph must be equal to 4 or 8")
             raise ValueError('graph must be equal to 4 or 8')
 
-        self._jim._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
+        self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
 
     def distance2dEuclideanSquared(self, band=0):
         """Compute the squared Euclidean distance transform.
@@ -453,8 +453,8 @@ class _CCOps():
 
         Modifies the instance on which the method was called.
         """
-        self._jim._set(
-            self._jim._jipjim.distance2dEuclideanSquared(band))
+        self._jim_object._set(
+            self._jim_object._jipjim.distance2dEuclideanSquared(band))
 
     def morphoGeodesicReconstructionByDilation(self, jim_object_mask, graph,
                                                flag=1):
@@ -473,7 +473,7 @@ class _CCOps():
         :return: jim_object_mark containing the result of the morphological
             reconstruction by dilation
         """
-        self._jim._jipjim.d_geodesicReconstructionByDilation(
+        self._jim_object._jipjim.d_geodesicReconstructionByDilation(
             jim_object_mask._jipjim, graph, flag)
 
     def morphoGeodesicReconstructionByErosion(self, jim_object_mask, graph,
@@ -493,7 +493,7 @@ class _CCOps():
         :return: jim_object_mark containing the result of the morphological
             reconstruction by erosion
         """
-        self._jim._jipjim.d_geodesicReconstructionByErosion(
+        self._jim_object._jipjim.d_geodesicReconstructionByErosion(
             jim_object_mask._jipjim, graph, flag)
 
     def morphoRemoveBorder(self, graph):
@@ -502,7 +502,7 @@ class _CCOps():
         :param graph: an integer holding for the graph connectivity
             (4 or 8 for 2-D images)
         """
-        ajim = self._jim._jipjim
+        ajim = self._jim_object._jipjim
         minmax = ajim.stats.getStats(function=['min', 'max'])
         minval = minmax['min']
         maxval = minmax['max']
@@ -511,7 +511,7 @@ class _CCOps():
         marker.pixops.infimum(ajim)
         marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
         marker.pixops.simpleArithOp(17, ajim)  # 17 for SUBSWAP_op_ovf
-        self._jim._set(marker)
+        self._jim_object._set(marker)
 
         #todo: not working (self is not modified)
     def morphoFillHoles(self, graph, borderFlag=1):
@@ -525,18 +525,18 @@ class _CCOps():
         :return: a new Jim object with the connected component of the input
             object removed
         """
-        # ajim=_pj.Jim(self._jim._jipjim)
-        maxval = self._jim.stats.getStats('max')['max']
-        marker = _pj.pixops.setData(self._jim, maxval)
+        # ajim=_pj.Jim(self._jim_object._jipjim)
+        maxval = self._jim_object.stats.getStats('max')['max']
+        marker = _pj.pixops.setData(self._jim_object, maxval)
         if borderFlag:
             marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 0)
         else:
             marker.geometry.imageFrameSet(2, 2, 2, 2, 0, 0, 0)
-        marker.pixops.supremum(self._jim)
+        marker.pixops.supremum(self._jim_object)
 
-        marker.ccops.morphoGeodesicReconstructionByErosion(self._jim,
+        marker.ccops.morphoGeodesicReconstructionByErosion(self._jim_object,
                                                            graph, borderFlag)
-        self._jim._set(marker._jipjim)
+        self._jim_object._set(marker._jipjim)
 
 
 class _CCOpsList():
