@@ -192,6 +192,13 @@ class BadBasicMethods(unittest.TestCase):
         #     'Error in jim[int, int, int, int] (either get or set item, ' \
         #     'wrong nrOfPlane)'
 
+        jim1[0, 0] += 1
+        stats = jim1.stats.getStats()
+
+        assert stats['max'] == stats['min'] + 1, \
+            'Error in jim[int, int] when jim[int, int] returns a 1-D array' \
+            '(either get or set item)'
+
         try:
             _ = jim1[0, 0, 'a']
             failed = True
