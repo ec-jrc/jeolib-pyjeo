@@ -141,6 +141,11 @@ class BadBasicMethods(unittest.TestCase):
         jim1.pixops.setData(5)
         stats1 = jim1.stats.getStats()
 
+        jim_same = jim1[:]
+
+        assert jim1.pixops.isEqual(jim_same), \
+            'Error in Jim[:] (get all items)'
+
         # first = jim1[0, 0, 0, 0]
         first = jim1[0, 0, 0]
         # test
