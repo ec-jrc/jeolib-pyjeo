@@ -445,8 +445,13 @@ def polygonize(jim_object, output, **kwargs):
     +------------------+------------------------------------------------------+
     """
     kwargs.update({'output': output})
+
     if isinstance(jim_object, _pj.Jim):
-        avect = jim_object._jipjim.polygonize(kwargs)
+        mask = kwargs.pop('mask', None)
+        if isinstance(mask, _pj.Jim):
+            avect = jim_object._jipjim.polygonize(kwargs,mask._jipjim)
+        else:
+            avect = jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
@@ -1452,7 +1457,11 @@ class _Geometry():
           vcloud.io.write('/path/to/cloud.sqlite')
         """
         kwargs.update({'output': output})
-        avect = self._jim_object._jipjim.polygonize(kwargs)
+        mask = kwargs.pop('mask', None)
+        if isinstance(mask, _pj.Jim):
+            avect = self._jim_object._jipjim.polygonize(kwargs,mask._jipjim)
+        else:
+            avect = self._jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
