@@ -23,8 +23,10 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
 
     forceJiplib=False
     constraints=('nodata','src_min','src_max')
-    if all(key in kwargs for key in constraints):
-        forceJiplib=True
+    for key in constraints:
+        if key in kwargs.keys():
+            forceJiplib=True
+            break
     if not forceJiplib:
         if 'min' in function or 'max' in function:
             min_max = jim_object._jipjim.getMiaMinMax()
@@ -38,9 +40,11 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
         if 'median' in function:
             statDict['median'] = numpy.median(jim_object.np()).item()
 
-    for f in function:
-        if forceJiplib or f not in ['min', 'max', 'mean', 'median']:
-            kwargs.update({'function': f})
+        for f in function:
+            if f not in ['min', 'max', 'mean', 'median']:
+                kwargs.update({'function': f})
+    else:
+        kwargs.update({'function': function})
 
     if kwargs:
         statDict.update(jim_object.getStats(kwargs))
@@ -239,8 +243,10 @@ class _Stats():
 
         forceJiplib=False
         constraints=('nodata','src_min','src_max')
-        if all(key in kwargs for key in constraints):
-            forceJiplib=True
+        for key in constraints:
+            if key in kwargs.keys():
+                forceJiplib=True
+                break
         if not forceJiplib:
             if 'min' in function or 'max' in function:
                 min_max = self._jim_object._jipjim.getMiaMinMax()
@@ -253,10 +259,11 @@ class _Stats():
                 statDict['mean'] = numpy.mean(self._jim_object.np()).item()
             if 'median' in function:
                 statDict['median'] = numpy.median(self._jim_object.np()).item()
-
-        for f in function:
-            if forceJiplib or f not in ['min', 'max', 'mean', 'median']:
-                kwargs.update({'function': f})
+            for f in function:
+                if f not in ['min', 'max', 'mean', 'median']:
+                    kwargs.update({'function': f})
+        else:
+            kwargs.update({'function': function})
 
         if kwargs:
             statDict.update(self._jim_object._jipjim.getStats(kwargs))
