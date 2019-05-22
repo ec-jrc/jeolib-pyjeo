@@ -21,21 +21,25 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
 
     statDict = dict()
 
-    if 'min' in function or 'max' in function:
-        min_max = jim_object._jipjim.getMiaMinMax()
+    forceJiplib=False
+    constraints=('nodata','src_min','src_max')
+    if all(key in kwargs for key in constraints):
+        forceJiplib=True
+    if not forceJiplib:
+        if 'min' in function or 'max' in function:
+            min_max = jim_object._jipjim.getMiaMinMax()
 
-        if 'min' in function:
-            statDict['min'] = min_max[1]
-        if 'max' in function:
-            statDict['max'] = min_max[2]
-
-    if 'mean' in function:
-        statDict['mean'] = numpy.mean(jim_object.np()).item()
-    if 'median' in function:
-        statDict['median'] = numpy.median(jim_object.np()).item()
+            if 'min' in function:
+                statDict['min'] = min_max[1]
+            if 'max' in function:
+                statDict['max'] = min_max[2]
+        if 'mean' in function:
+            statDict['mean'] = numpy.mean(jim_object.np()).item()
+        if 'median' in function:
+            statDict['median'] = numpy.median(jim_object.np()).item()
 
     for f in function:
-        if f not in ['min', 'max', 'mean', 'median']:
+        if forceJiplib or f not in ['min', 'max', 'mean', 'median']:
             kwargs.update({'function': f})
 
     if kwargs:
@@ -233,21 +237,25 @@ class _Stats():
 
         statDict = dict()
 
-        if 'min' in function or 'max' in function:
-            min_max = self._jim_object._jipjim.getMiaMinMax()
+        forceJiplib=False
+        constraints=('nodata','src_min','src_max')
+        if all(key in kwargs for key in constraints):
+            forceJiplib=True
+        if not forceJiplib:
+            if 'min' in function or 'max' in function:
+                min_max = self._jim_object._jipjim.getMiaMinMax()
 
-            if 'min' in function:
-                statDict['min'] = min_max[1]
-            if 'max' in function:
-                statDict['max'] = min_max[2]
-
-        if 'mean' in function:
-            statDict['mean'] = numpy.mean(self._jim_object.np()).item()
-        if 'median' in function:
-            statDict['median'] = numpy.median(self._jim_object.np()).item()
+                if 'min' in function:
+                    statDict['min'] = min_max[1]
+                if 'max' in function:
+                    statDict['max'] = min_max[2]
+            if 'mean' in function:
+                statDict['mean'] = numpy.mean(self._jim_object.np()).item()
+            if 'median' in function:
+                statDict['median'] = numpy.median(self._jim_object.np()).item()
 
         for f in function:
-            if f not in ['min', 'max', 'mean', 'median']:
+            if forceJiplib or f not in ['min', 'max', 'mean', 'median']:
                 kwargs.update({'function': f})
 
         if kwargs:
