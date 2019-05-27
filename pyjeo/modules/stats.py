@@ -21,11 +21,11 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
 
     statDict = dict()
 
-    forceJiplib=False
-    constraints=('nodata','src_min','src_max')
+    forceJiplib = False
+    constraints = ('nodata', 'src_min', 'src_max')
     for key in constraints:
         if key in kwargs.keys():
-            forceJiplib=True
+            forceJiplib = True
             break
     if not forceJiplib:
         if 'min' in function or 'max' in function:
@@ -241,11 +241,11 @@ class _Stats():
 
         statDict = dict()
 
-        forceJiplib=False
-        constraints=('nodata','src_min','src_max')
+        forceJiplib = False
+        constraints = ('nodata', 'src_min', 'src_max')
         for key in constraints:
             if key in kwargs.keys():
-                forceJiplib=True
+                forceJiplib = True
                 break
         if not forceJiplib:
             if 'min' in function or 'max' in function:

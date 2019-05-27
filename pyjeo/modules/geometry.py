@@ -449,7 +449,7 @@ def polygonize(jim_object, output, **kwargs):
     if isinstance(jim_object, _pj.Jim):
         mask = kwargs.pop('mask', None)
         if isinstance(mask, _pj.Jim):
-            avect = jim_object._jipjim.polygonize(kwargs,mask._jipjim)
+            avect = jim_object._jipjim.polygonize(kwargs, mask._jipjim)
         else:
             avect = jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
@@ -1459,7 +1459,7 @@ class _Geometry():
         kwargs.update({'output': output})
         mask = kwargs.pop('mask', None)
         if isinstance(mask, _pj.Jim):
-            avect = self._jim_object._jipjim.polygonize(kwargs,mask._jipjim)
+            avect = self._jim_object._jipjim.polygonize(kwargs, mask._jipjim)
         else:
             avect = self._jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
