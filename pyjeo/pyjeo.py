@@ -319,8 +319,6 @@ class Jim():
                 nplane = 1
                 nrow = 1
                 ncol = 1
-            else:
-                raise IndexError('Error: index in __getitem__ out of range')
 
             # [gs]item only supports single band image (use plane instead)
             nband = 1
