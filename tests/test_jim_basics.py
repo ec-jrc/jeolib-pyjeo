@@ -323,6 +323,14 @@ class BadBasicMethods(unittest.TestCase):
         assert stats3['min'] == (min + 1) * 2, \
             'Error in operation type Jim += Jim'
 
+        zeros = jim3 + -jim3
+        empty = pj.Jim(nrow=jim3.properties.nrOfRow(),
+                       ncol=jim3.properties.nrOfCol(),
+                       otype=jim3.properties.getDataType())
+
+        assert zeros.pixops.isEqual(empty), \
+            'Error in -Jim (not returning negative values)'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
