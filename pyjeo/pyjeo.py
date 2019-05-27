@@ -237,7 +237,7 @@ class Jim():
                              'dataType' not in keys):
                     raise AttributeError(
                         'You cannot use any of parameters [seed, uniform, '
-                        'stdev] without pecifying the geomtery of Jim.')
+                        'stdev] without specifying the geomtery of Jim.')
 
     def _feed(self, stdev, uniform, seed, kwargs):
         """Feed the Jim object with either uniform or random seed of values.
