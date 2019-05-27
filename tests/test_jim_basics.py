@@ -226,7 +226,15 @@ class BadBasicMethods(unittest.TestCase):
         except ValueError:
             failed = False
         assert not failed, 'Error in catching a JimVect used as an index ' \
-                           'for a multiplanar Jim'
+                           'for a multiplanar Jim (get item)'
+
+        try:
+            jim1[vect] = 5
+            failed = True
+        except ValueError:
+            failed = False
+        assert not failed, 'Error in catching a JimVect used as an index ' \
+                           'for a multiplanar Jim (set item)'
 
         modis = pj.Jim(testFile)
         modis.properties.clearNoData()
@@ -254,6 +262,19 @@ class BadBasicMethods(unittest.TestCase):
                modis_clipped2.properties.getNoDataVals() == [0], \
             'Error in clipping a Jim by JimVect (Jim[JimVect]) (noData not ' \
             'correctly transferred)'
+
+        modis[vect] = 5
+        fives = modis[vect]
+        fives_stats = fives.stats.getStats()
+
+        assert fives_stats['max'] == 5 and fives_stats['min'] in [0, 5], \
+            'Error in using JimVect as an argument in Jim[JimVect] = number'
+
+        modis[vect] = modis + 5
+
+        assert modis[vect].pixops.isEqual(fives * 2) and \
+               not modis[0, 0].pixops.isEqual(fives[0, 0]), \
+            'Error in using JimVect as an argument in Jim[JimVect] = Jim'
 
         # Test Jim usage in getters and setters as an argument
 
