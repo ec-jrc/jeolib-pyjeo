@@ -233,8 +233,8 @@ class Jim():
         if not image:
             if keys:
                 if ('seed' in keys or 'uniform' in keys or 'stdev' in keys) \
-                        and ('ncol' not in keys and 'nrow' not in keys and
-                             'dataType' not in keys):
+                        and ('ncol' not in keys or 'nrow' not in keys or
+                             'otype' not in keys):
                     raise AttributeError(
                         'You cannot use any of parameters [seed, uniform, '
                         'stdev] without specifying the geomtery of Jim.')

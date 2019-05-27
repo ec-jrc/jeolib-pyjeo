@@ -257,11 +257,11 @@ class BadBasicMethods(unittest.TestCase):
 
         # Test Jim usage in getters and setters as an argument
 
-        rand_jim = pj.Jim(nrow=50, ncol=50, uniform=[0, 2])
+        rand_jim = pj.Jim(nrow=50, ncol=50, uniform=[0, 2], otype='int8')
         rand_jim[0, 0] = 0
         rand_jim[0, 1] = 1
         stats = rand_jim.stats.getStats()
-        twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2])
+        twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2], otype='int8')
 
         twos_masked = twos[rand_jim]
         stats_masked = twos_masked.stats.getStats()
