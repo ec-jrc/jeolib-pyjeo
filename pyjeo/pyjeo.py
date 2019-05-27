@@ -393,6 +393,7 @@ class Jim():
             # template=Jim(self)
             # template.geometry.rasterize(item,1.0)
             # self[template>0]=value
+
             if type(value) in (float, int):
                 templateJim = Jim(self, copyData=False)
                 templateJim = Jim(templateJim._jipjim.setMask(
@@ -405,10 +406,8 @@ class Jim():
                     item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
                                        'nodata': 1}))
                 self[templateJim > 0] = value
-        elif isinstance(item, Jim):  # or isinstance(value, Jim):
-            if value is None:
-                self._set(Jim(self, copyData=False))
-            else:
+        elif isinstance(item, Jim):
+            if value is not None:
                 if isinstance(value, Jim):
                     self._jipjim.d_setMask(item._jipjim, value._jipjim)
                 else:
