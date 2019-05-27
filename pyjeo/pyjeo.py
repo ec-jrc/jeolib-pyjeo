@@ -235,9 +235,10 @@ class Jim():
                 if ('seed' in keys or 'uniform' in keys or 'stdev' in keys) \
                         and ('ncol' not in keys or 'nrow' not in keys or
                              'otype' not in keys):
-                    raise AttributeError(
-                        'You cannot use any of parameters [seed, uniform, '
-                        'stdev] without specifying the geomtery of Jim.')
+                    raise AttributeError('You cannot use any of parameters '
+                                         '[seed, uniform, stdev] without '
+                                         'specifying the geometry and otype '
+                                         'of Jim.')
 
     def _feed(self, stdev, uniform, seed, kwargs):
         """Feed the Jim object with either uniform or random seed of values.
