@@ -420,7 +420,8 @@ class Jim():
                 self.np()[item] = value
         else:
             raise ValueError('Error: __setitem__ only implemented for Vector, '
-                             'Jim or tuples')
+                             'Jim or tuples (dims of __getitem__ must '
+                             'correspond with those of the tuple)')
 
     def __nonzero__(self):
         """Check if Jim contains data.
