@@ -521,6 +521,97 @@ class BadBasicMethods(unittest.TestCase):
         assert not failed, \
             'Error in catching wrong right side of >>= operation'
 
+        # Test |
+        ones.pixops.convert('int32')
+
+        assert (seventy_twos | 1).pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim | number'
+
+        assert (1 | seventy_twos).pixops.isEqual(73 * ones), \
+            'Error in operation of type number | Jim'
+
+        test |= 1
+
+        assert test.pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim |= number'
+
+        assert (seventy_twos | ones).pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim | Jim'
+
+        test |= 9 * ones
+
+        assert test.pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim |= Jim'
+
+        try:
+            _ = ones | 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of | operation'
+
+        try:
+            ones |= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of |= operation'
+
+        try:
+            _ = 'a' | ones
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong left side of | operation'
+
+        # Test ^
+
+        assert (seventy_twos ^ 9).pixops.isEqual(65 * ones), \
+            'Error in operation of type Jim ^ number'
+
+        assert (9 ^ seventy_twos).pixops.isEqual(65 * ones), \
+            'Error in operation of type number ^ Jim'
+
+        test ^= 10
+
+        assert test.pixops.isEqual(67 * ones), \
+            'Error in operation of type Jim ^= number'
+
+        assert (seventy_twos ^ (9 * ones)).pixops.isEqual(65 * ones), \
+            'Error in operation of type Jim ^ Jim'
+
+        test ^= (68 * ones)
+
+        assert test.pixops.isEqual(7 * ones), \
+            'Error in operation of type Jim ^= Jim'
+
+        try:
+            _ = ones ^ 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of ^ operation'
+
+        try:
+            ones ^= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of ^= operation'
+
+        try:
+            _ = 'a' ^ ones
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong left side of ^ operation'
+
     def test_pixel_wise_conditions(self):
         """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
         jim1 = pj.Jim(tiles[0])
