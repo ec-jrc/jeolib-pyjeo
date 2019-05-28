@@ -355,6 +355,9 @@ class BadBasicMethods(unittest.TestCase):
         assert jim3_plus_one.pixops.isEqual(1 + jim3), \
             'Error in Jim.__radd__() (number + Jim)'
 
+        assert (-jim3 - jim3).pixops.isEqual(-2 * jim3), \
+            'Error in operation of type Jim - Jim or number * Jim '
+
     def test_pixel_wise_conditions(self):
         """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
         jim1 = pj.Jim(tiles[0])
