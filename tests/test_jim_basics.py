@@ -319,6 +319,8 @@ class BadBasicMethods(unittest.TestCase):
         assert max <= stats1['max'] + stats2['max'], \
             'Error in operation type Jim + Jim'
 
+        # Test +=
+
         jim3 += 1
         stats3 = jim3.stats.getStats()
 
@@ -331,6 +333,8 @@ class BadBasicMethods(unittest.TestCase):
             'Error in operation type Jim += Jim'
         assert stats3['min'] == (min + 1) * 2, \
             'Error in operation type Jim += Jim'
+
+        # Test specialities like __neg__, abs(), ~, ...
 
         zeros = jim3 + -jim3
         empty = pj.Jim(nrow=jim3.properties.nrOfRow(),
@@ -352,11 +356,17 @@ class BadBasicMethods(unittest.TestCase):
         assert (~jim3).pixops.isEqual(-1 - jim3), \
             'Error in a bit-wise inversion (~Jim)'
 
+        # Test __radd__
+
         assert jim3_plus_one.pixops.isEqual(1 + jim3), \
             'Error in Jim.__radd__() (number + Jim)'
 
+        # Test __rmul__ and __rsub__
+
         assert (-jim3 - jim3).pixops.isEqual(-2 * jim3), \
             'Error in operation of type Jim - Jim or number * Jim '
+
+        # Test -=
 
         jim3_plus_one -= 1
 
