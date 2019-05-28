@@ -292,6 +292,15 @@ class BadBasicMethods(unittest.TestCase):
                stats_masked['min'] == stats['min'] == 0, \
             'Error in masking a Jim by Jim (Jim1[Jim2])'
 
+        # Test a nonsense argument in [gs]etters
+        try:
+            rand_jim['a'] = 5
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong indices like Jim["string"]'
+
     def test_operators(self):
         """Test basic operators (+, -, *, /, =)."""
         jim1 = pj.Jim(tiles[0])
