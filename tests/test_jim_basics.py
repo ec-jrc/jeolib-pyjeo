@@ -352,6 +352,158 @@ class BadBasicMethods(unittest.TestCase):
         assert (~jim3).pixops.isEqual(-1 - jim3), \
             'Error in a bit-wise inversion (~Jim)'
 
+    def test_pixel_wise_conditions(self):
+        """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(jim1)
+
+        jim_equality = jim1 == jim2
+        stats = jim_equality.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim == Jim'
+
+        jim_not_equality = jim1 != jim2
+        stats = jim_not_equality.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0, \
+            'Error in Jim != Jim'
+
+        jim_greater = jim1 > jim2
+        stats = jim_greater.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0, \
+            'Error in Jim > Jim'
+
+        jim_greatere = jim1 >= jim2
+        stats = jim_greatere.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim >= Jim'
+
+        jim_lesser = jim1 < jim2
+        stats = jim_lesser.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0, \
+            'Error in Jim < Jim'
+
+        jim_lessere = jim1 <= jim2
+        stats = jim_lessere.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim <= Jim'
+
+        jim_equality_int = jim_equality == 1
+        stats = jim_equality_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim == number'
+
+        jim_not_equality_int = jim_not_equality != 1
+        stats = jim_not_equality_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim != number'
+
+        jim_greater_int = jim_greater > -1
+        stats = jim_greater_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim > number'
+
+        jim_greatere_int = jim_greatere >= 1
+        stats = jim_greatere_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim >= number'
+
+        jim_lesser_int = jim_lesser < 1
+        stats = jim_lesser_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim < number'
+
+        jim_lessere_int = jim_lessere <= 1
+        stats = jim_lessere_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim <= number'
+
+        # Now check it also when just some of the values are equal
+        jim2[0:10, 0:10] += 1
+
+        jim_equality = jim1 == jim2
+        stats = jim_equality.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim == Jim'
+
+        jim_not_equality = jim1 != jim2
+        stats = jim_not_equality.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim != Jim'
+
+        jim_greater = jim2 > jim1
+        stats = jim_greater.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim > Jim'
+
+        jim_greatere = jim1 >= jim2
+        stats = jim_greatere.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim >= Jim'
+
+        jim_lesser = jim1 < jim2
+        stats = jim_lesser.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim < Jim'
+
+        jim_lessere = jim2 <= jim1
+        stats = jim_lessere.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim <= Jim'
+
+        jim_equality_int = jim_equality == 1
+        stats = jim_equality_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim == number'
+
+        jim_not_equality_int = jim_not_equality != 1
+        stats = jim_not_equality_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim != number'
+
+        jim_greater_int = jim_greater > 0
+        stats = jim_greater_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim > number'
+
+        jim_greatere_int = jim_greatere >= 1
+        stats = jim_greatere_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim >= number'
+
+        jim_lesser_int = jim_lesser < 1
+        stats = jim_lesser_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim < number'
+
+        jim_lessere_int = jim_lessere <= 0
+        stats = jim_lessere_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim <= number'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
