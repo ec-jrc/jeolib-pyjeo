@@ -302,7 +302,7 @@ class BadBasicMethods(unittest.TestCase):
         assert not failed, 'Error in catching wrong indices like Jim["string"]'
 
     def test_operators(self):
-        """Test basic operators (+, -, *, /, =)."""
+        """Test basic operators (+, -, *, /, =, abs(), ~)."""
         jim1 = pj.Jim(tiles[0])
         # test
         stats1 = jim1.stats.getStats()
@@ -335,19 +335,22 @@ class BadBasicMethods(unittest.TestCase):
         zeros = jim3 + -jim3
         empty = pj.Jim(nrow=jim3.properties.nrOfRow(),
                        ncol=jim3.properties.nrOfCol(),
-                       otype='float32')
+                       otype='int32')
 
         assert zeros.pixops.isEqual(empty), \
             'Error in -Jim (not returning negative values)'
 
         minus_ones = empty - 1
 
-        jim3.pixops.convert('float32')
+        jim3.pixops.convert('int32')
 
         jim3_plus_one = jim3 + abs(minus_ones)
 
         assert jim3_plus_one.pixops.isEqual(jim3 + 1), \
             'Error in abs(Jim)'
+
+        assert (~jim3).pixops.isEqual(-1 - jim3), \
+            'Error in a bit-wise inversion (~Jim)'
 
 
 def load_tests(loader=None, tests=None, pattern=None):
