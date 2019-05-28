@@ -368,6 +368,44 @@ class BadBasicMethods(unittest.TestCase):
         assert jim3_plus_one.pixops.isEqual(empty), \
             'Error in operation of type Jim -= Jim'
 
+        # Test divisions
+
+        try:
+            _ = jim1 / 2
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching the error from dividing an int Jim'
+
+        minus_ones.pixops.convert('float32')
+
+        halves = minus_ones / 2
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == -0.5, \
+            'Error in Jim / number'
+
+        halves /= minus_ones
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0.5, \
+            'Error in Jim /= Jim'
+
+        halves /= -1
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == -0.5, \
+            'Error in Jim /= number'
+
+        halves = halves / minus_ones
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0.5, \
+            'Error in Jim / Jim'
+
+
     def test_pixel_wise_conditions(self):
         """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
         jim1 = pj.Jim(tiles[0])
