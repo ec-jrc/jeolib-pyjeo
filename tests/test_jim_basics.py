@@ -612,6 +612,52 @@ class BadBasicMethods(unittest.TestCase):
 
         assert not failed, 'Error in catching wrong left side of ^ operation'
 
+        # Test &
+
+        assert (seventy_twos & 9).pixops.isEqual(8 * ones), \
+            'Error in operation of type Jim & number'
+
+        assert (9 & seventy_twos).pixops.isEqual(8 * ones), \
+            'Error in operation of type number & Jim'
+
+        test &= 9
+
+        assert test.pixops.isEqual(ones), \
+            'Error in operation of type Jim &= number'
+
+        assert (seventy_twos & (9 * ones)).pixops.isEqual(8 * ones), \
+            'Error in operation of type Jim & Jim'
+
+        test += 10
+        test &= (5 * ones)
+
+        assert test.pixops.isEqual(ones), \
+            'Error in operation of type Jim &= Jim'
+
+        try:
+            _ = ones & 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of & operation'
+
+        try:
+            ones &= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of &= operation'
+
+        try:
+            _ = 'a' & ones
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong left side of & operation'
+
     def test_pixel_wise_conditions(self):
         """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
         jim1 = pj.Jim(tiles[0])
