@@ -752,6 +752,10 @@ class Jim():
             jim = Jim(self)
             jim.np()[:] |= right.np()
             return jim
+        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+            jim = Jim(self)
+            jim.np()[:] |= right
+            return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
                 type(right)))
@@ -760,16 +764,18 @@ class Jim():
         """Pixel wise operation |=."""
         if isinstance(right, Jim):
             self.np()[:] |= right.np()
+        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+            self.np()[:] |= right
         else:
-            raise TypeError('unsupported operand type for | : {}'.format(
+            raise TypeError('unsupported operand type for |= : {}'.format(
                 type(right)))
         return self
 
     def __ror__(self, left):
         """Pixel wise operation | where self is the right object."""
-        if isinstance(left, Jim):
+        if isinstance(left, int) or isinstance(left, numpy.ndarray):
             jim = Jim(self)
-            jim.np()[:] |= left.np()
+            jim.np()[:] |= left
             return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
@@ -781,6 +787,10 @@ class Jim():
             jim = Jim(self)
             jim.np()[:] ^= right.np()
             return jim
+        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+            jim = Jim(self)
+            jim.np()[:] ^= right
+            return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
                 type(right)))
@@ -789,16 +799,18 @@ class Jim():
         """Pixel wise operation ^=."""
         if isinstance(right, Jim):
             self.np()[:] ^= right.np()
+        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+            self.np()[:] ^= right
         else:
-            raise TypeError('unsupported operand type for ^ : {}'.format(
+            raise TypeError('unsupported operand type for ^= : {}'.format(
                 type(right)))
         return self
 
     def __rxor__(self, left):
         """Pixel wise operation ^ where self is the right object."""
-        if isinstance(left, Jim):
+        if isinstance(left, int) or isinstance(left, numpy.ndarray):
             jim = Jim(self)
-            jim.np()[:] ^= left.np()
+            jim.np()[:] ^= left
             return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
