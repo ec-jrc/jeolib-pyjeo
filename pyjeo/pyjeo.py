@@ -595,10 +595,7 @@ class Jim():
     def __rsub__(self, left):
         """Pixel wise operation - where self is the one used to subtract."""
         result = -Jim(self)
-        if isinstance(left, Jim):
-            result.np()[:] += left.np()
-        else:
-            result.np()[:] += left
+        result.np()[:] += left
         return result
 
     def __isub__(self, right):
