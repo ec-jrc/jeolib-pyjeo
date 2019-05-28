@@ -723,7 +723,7 @@ class Jim():
         if isinstance(right, int):
             self.np()[:] <<= right
         else:
-            raise TypeError('unsupported operand type for << : {}'.format(
+            raise TypeError('unsupported operand type for <<= : {}'.format(
                 type(right)))
         return self
 
@@ -742,7 +742,7 @@ class Jim():
         if isinstance(right, int):
             self.np()[:] >>= right
         else:
-            raise TypeError('unsupported operand type for >> : {}'.format(
+            raise TypeError('unsupported operand type for >>= : {}'.format(
                 type(right)))
         return self
 
