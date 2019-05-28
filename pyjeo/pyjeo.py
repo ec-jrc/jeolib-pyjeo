@@ -572,10 +572,7 @@ class Jim():
     def __radd__(self, left):
         """Pixel wise operation + where self is the added value."""
         result = Jim(self)
-        if isinstance(left, Jim):
-            result.np()[:] += left.np()
-        else:
-            result.np()[:] += left
+        result.np()[:] += left
         return result
 
     def __iadd__(self, right):
