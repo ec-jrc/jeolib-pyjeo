@@ -415,7 +415,7 @@ class BadBasicMethods(unittest.TestCase):
         assert stats['max'] == stats['min'] == stats['mean'] == 0.5, \
             'Error in Jim / Jim'
 
-        # Test modulos
+        # Test modulo
 
         fifteens = pj.Jim(nrow=jim3.properties.nrOfRow(),
                           ncol=jim3.properties.nrOfCol(),
@@ -447,6 +447,18 @@ class BadBasicMethods(unittest.TestCase):
 
         assert stats['max'] == stats['min'] == stats['mean'] == 1, \
             'Error in Jim %= Jim'
+
+        # Test powering
+
+        nines = test ** 2
+        stats = nines.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 9, \
+            'Error in Jim ** number'
+
+        test **= 2
+
+        assert test.pixops.isEqual(nines), 'Error in Jim **= number'
 
     def test_pixel_wise_conditions(self):
         """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
