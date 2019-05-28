@@ -352,6 +352,9 @@ class BadBasicMethods(unittest.TestCase):
         assert (~jim3).pixops.isEqual(-1 - jim3), \
             'Error in a bit-wise inversion (~Jim)'
 
+        assert jim3_plus_one.pixops.isEqual(1 + jim3), \
+            'Error in Jim.__radd__() (number + Jim)'
+
     def test_pixel_wise_conditions(self):
         """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
         jim1 = pj.Jim(tiles[0])
