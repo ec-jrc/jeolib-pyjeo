@@ -644,7 +644,7 @@ class Jim():
             self.np()[:] *= right
         return self
 
-    def _trueDiv(self, right):
+    def __truediv__(self, right):
         """Pixel wise operation for true division."""
         result = Jim(self)
         if isinstance(right, Jim):
@@ -653,7 +653,7 @@ class Jim():
             result.np()[:] /= right
         return result
 
-    def _itrueDiv(self, right):
+    def __itruediv__(self, right):
         """Pixel wise operation for true division with /=."""
         if isinstance(right, Jim):
             self.np()[:] /= right.np()
