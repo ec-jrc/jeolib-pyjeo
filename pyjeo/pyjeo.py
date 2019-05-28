@@ -705,7 +705,7 @@ class Jim():
 
     def __ipow__(self, right):
         """Pixel wise operation **=."""
-        result.np()[:] **= right
+        self.np()[:] **= right
         return self
 
     def __lshift__(self, right):
