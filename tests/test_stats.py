@@ -16,6 +16,10 @@ class BadStats(unittest.TestCase):
         """Test if values from getStats are not suspicious."""
         jim = pj.Jim(tiles[0])
         stats = jim.stats.getStats()
+        stats2 = pj.stats.getStats(jim)
+
+        assert stats == stats2, 'Inconsistency in getStats() (method returns' \
+                                ' different result than function)'
 
         max = stats['max']
         min = stats['min']
@@ -30,8 +34,18 @@ class BadStats(unittest.TestCase):
         assert min < mean < max, \
             'Error in getting statistics with stats.getStats()'
 
-        assert jim_min_dict == pj.stats.getStats(jim, function='min'), \
-            'Error in getting statistics with stats.getStats()'
+        stats = jim.stats.getStats(['max', 'median', 'invalid'], nodata=max)
+        stats2 = pj.stats.getStats(jim, ['max', 'median'], nodata=max)
+
+        assert stats == stats2, 'Inconsistency in getStats() (method returns' \
+                                ' different result than function)'
+
+        assert stats['max'] < max, \
+            'Error in using nodata kwarg for stats.getStats()'
+
+        assert stats['max'] > stats['median'] > min, \
+            'Suspicious value of median with getStats() ' \
+            '(not smaller than max or not bigger than min)'
 
     def test_histograms(self):
         """Test that values of histograms are not suspicious."""
