@@ -51,7 +51,7 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
         kwargs.update({'function': function})
 
     if kwargs:
-        statDict.update(jim_object.getStats(kwargs))
+        statDict.update(jim_object._jipjim.getStats(kwargs))
 
     return statDict
 
