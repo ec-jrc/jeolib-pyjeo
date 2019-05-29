@@ -284,8 +284,8 @@ def warp(jim_object, t_srs, **kwargs):
     | resample         | Resample algorithm used for reading pixel data in                 |
     |                  | case of interpolation                                             |
     |                  | (default: GRIORA_NearestNeighbour). Check                         |
-    |                  | http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a |
-    |                  | or available options.                                             |
+    |                  | https://gdal.org/api/raster_c_api.html?highlight=griora_nearestn#_CPPv418GDALRIOResampleAlg |
+    |                  | for available options.                                            |
     +------------------+-------------------------------------------------------------------+
     | nodata           | Nodata value to put in image if out of bounds                     |
     +------------------+-------------------------------------------------------------------+

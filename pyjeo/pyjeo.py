@@ -3,6 +3,7 @@
 from __future__ import division
 import numpy
 import gc as _gc
+import warnings as _warnings
 
 try:
     import jiplib as _jl
@@ -63,8 +64,7 @@ class _ParentJim(_jl.Jim):
                         super(_ParentJim, self).__init__(image._jipjim,
                                                          kwargs['copyData'])
                     else:
-                        import warnings
-                        warnings.warn(
+                        _warnings.warn(
                             'Not possible to create Jim image based on another'
                             ' one together with other kwargs than copyData. '
                             'kwargs ignored.', SyntaxWarning)
@@ -220,6 +220,9 @@ class Jim():
         except TypeError:
             raise ValueError(
                 'Jim has to have a data type and dimensions to use Jim.np()')
+        if band>=self.properties.nrOfBand():
+            raise ValueError(
+                'Band out of bounds')
         return _jl.np(self._jipjim, band)
 
     def _checkInitParamsSense(self, image, kwargs):
@@ -443,7 +446,8 @@ class Jim():
         :return: Absolute value of Jim raster dataset
         """
         jim = Jim(self)
-        jim.np()[:] = abs(jim.np())
+        for iband in range(0,self.properties.nrOfBand()):
+            jim.np(iband)[:] = abs(jim.np(iband))
         return jim
 
     def __neg__(self):
@@ -452,7 +456,8 @@ class Jim():
         :return: Negation of Jim raster dataset (-dataset)
         """
         jim = Jim(self)
-        jim.np()[:] = -(jim.np())
+        for iband in range(0,self.properties.nrOfBand()):
+            jim.np(iband)[:] = -(jim.np(iband))
         return jim
 
     def __invert__(self):
@@ -461,7 +466,8 @@ class Jim():
         :return: The complement of Jim raster dataset (~dataset)
         """
         jim = Jim(self)
-        jim.np()[:] = ~(jim.np())
+        for iband in range(0,self.properties.nrOfBand()):
+            jim.np(iband)[:] = ~(jim.np(iband))
         return jim
 
     # *** binary operators *** #
@@ -476,9 +482,16 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:] = (self.np() == right.np())
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] = (self.np(iband) == right.np())
+                else:
+                    jim.np(iband)[:] = (self.np(iband) == right.np(iband))
         else:
-            jim.np()[:] = (self.np() == right)
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.np(iband)[:] = (self.np(iband) == right)
         return jim
 
     def __ne__(self, right):
@@ -492,9 +505,16 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:] = (self.np() != right.np())
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] = (self.np(iband) != right.np())
+                else:
+                    jim.np(iband)[:] = (self.np(iband) != right.np(iband))
         else:
-            jim.np()[:] = (self.np() != right)
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.np(iband)[:] = (self.np(iband) != right)
         return jim
 
     def __lt__(self, right):
@@ -524,9 +544,16 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:] = (self.np() <= right.np())
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] = (self.np(iband) <= right.np())
+                else:
+                    jim.np(iband)[:] = (self.np(iband) <= right.np(iband))
         else:
-            jim.np()[:] = (self.np() <= right)
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.np(iband)[:] = (self.np(iband) <= right)
         return jim
 
     def __gt__(self, right):
@@ -540,9 +567,16 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:] = (self.np() > right.np())
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] = (self.np(iband) > right.np())
+                else:
+                    jim.np(iband)[:] = (self.np(iband) > right.np(iband))
         else:
-            jim.np()[:] = (self.np() > right)
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.np(iband)[:] = (self.np(iband) > right)
         return jim
 
     def __ge__(self, right):
@@ -556,34 +590,63 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:] = (self.np() >= right.np())
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] = (self.np(iband) >= right.np())
+                else:
+                    jim.np(iband)[:] = (self.np(iband) >= right.np(iband))
         else:
-            jim.np()[:] = (self.np() >= right)
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.np(iband)[:] = (self.np(iband) >= right)
         return jim
 
     def __add__(self, right):
         """Pixel wise operation +."""
         result = Jim(self)
         if isinstance(right, Jim):
-            result.np()[:] += right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    result.np(iband)[:] += right.np()
+                else:
+                    result.np(iband)[:] += right.np(iband)
         else:
-            result.np()[:] += right
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] += right
         return result
 
     def __radd__(self, left):
         """Pixel wise operation + where self is the added value."""
         result = Jim(self)
         if isinstance(left, Jim):
-            result.np()[:] += left.np()
+            if self.properties.nrOfBand()>left.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    result.np(iband)[:] += left.np()
+                else:
+                    result.np(iband)[:] += left.np(iband)
         else:
-            result.np()[:] += left
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] += left
         return result
 
     def __iadd__(self, right):
         """Pixel wise operation +=."""
         if isinstance(right, Jim):
-            self.np()[:] += right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    self.np(iband)[:] += right.np()
+                else:
+                    self.np(iband)[:] += right.np(iband)
         else:
+            # for iband in range(0,self.properties.nrOfBand()):
+            #     self.np(iband)[:] += right
             self.np()[:] += right
         return self
 
@@ -591,35 +654,63 @@ class Jim():
         """Pixel wise operation -."""
         result = Jim(self)
         if isinstance(right, Jim):
-            result.np()[:] -= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    result.np(iband)[:] -= right.np()
+                else:
+                    result.np(iband)[:] -= right.np(iband)
         else:
-            result.np()[:] -= right
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] -= right
         return result
 
     def __rsub__(self, left):
         """Pixel wise operation - where self is the one used to subtract."""
         result = Jim(self)
         if isinstance(left, Jim):
-            result.np()[:] -= left.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    result.np(iband)[:] -= left.np()
+                else:
+                    result.np(iband)[:] -= left.np(iband)
         else:
-            result.np()[:] -= left
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] -= left
         return result
 
     def __isub__(self, right):
         """Pixel wise operation -=."""
         if isinstance(right, Jim):
-            self.np()[:] -= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    self.np(iband)[:] -= right.np()
+                else:
+                    self.np(iband)[:] -= right.np(iband)
         else:
-            self.np()[:] -= right
+            for iband in range(0,self.properties.nrOfBand()):
+                self.np(iband)[:] -= right
         return self
 
     def __mul__(self, right):
         """Pixel wise operation *."""
         result = Jim(self)
         if isinstance(right, Jim):
-            result.np()[:] *= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    result.np(iband)[:] *= right.np()
+                else:
+                    result.np(iband)[:] *= right.np(iband)
         else:
-            result.np()[:] *= right
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] *= right
         return result
         # if isinstance(right, Jim):
         #     if right.properties.getDataType() == _jl.GDT_Float32 or \
@@ -641,34 +732,62 @@ class Jim():
         """Pixel wise operation * where self is the multiplier."""
         result = Jim(self)
         if isinstance(left, Jim):
-            result.np()[:] *= left.np()
+            if self.properties.nrOfBand()>left.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    result.np(iband)[:] *= left.np()
+                else:
+                    result.np(iband)[:] *= left.np(iband)
         else:
-            result.np()[:] *= left
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] *= left
         return result
 
     def __imul__(self, right):
         """Pixel wise operation *=."""
         if isinstance(right, Jim):
-            self.np()[:] *= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    self.np(iband)[:] *= right.np()
+                else:
+                    self.np(iband)[:] *= right.np(iband)
         else:
-            self.np()[:] *= right
+            for iband in range(0,self.properties.nrOfBand()):
+                self.np(iband)[:] *= right
         return self
 
     def _trueDiv(self, right):
         """Pixel wise operation for true division."""
         result = Jim(self)
         if isinstance(right, Jim):
-            result.np()[:] /= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    result.np(iband)[:] /= right.np()
+                else:
+                    result.np(iband)[:] /= right.np(iband)
         else:
-            result.np()[:] /= right
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] /= right
         return result
 
     def _itrueDiv(self, right):
         """Pixel wise operation for true division with /=."""
         if isinstance(right, Jim):
-            self.np()[:] /= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    self.np(iband)[:] /= right.np()
+                else:
+                    self.np(iband)[:] /= right.np(iband)
         else:
-            self.np()[:] /= right
+            for iband in range(0,self.properties.nrOfBand()):
+                self.np(iband)[:] /= right
         return self
 
     def __div__(self, right):
@@ -677,52 +796,83 @@ class Jim():
         if 'int' in str(self.np().dtype):
             raise TypeError('You cannot divide a Jim object of int type')
         if isinstance(right, Jim):
-            result.np()[:] /= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    result.np(iband)[:] /= right.np()
+                else:
+                    result.np(iband)[:] /= right.np(iband)
         else:
-            result.np()[:] /= right
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] /= right
         return result
 
     def __idiv__(self, right):
         """Pixel wise operation /=."""
         if isinstance(right, Jim):
-            self.np()[:] /= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    self.np(iband)[:] /= right.np()
+                else:
+                    self.np(iband)[:] /= right.np(iband)
         else:
-            self.np()[:] /= right
+            for iband in range(0,self.properties.nrOfBand()):
+                self.np(iband)[:] /= right
         return self
 
     def __mod__(self, right):
         """Pixel wise operation modulo."""
         result = Jim(self)
         if isinstance(right, Jim):
-            result.np()[:] %= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    result.np(iband)[:] %= right.np()
+                else:
+                    result.np(iband)[:] %= right.np(iband)
         else:
-            result.np()[:] %= right
+            for iband in range(0,self.properties.nrOfBand()):
+                result.np(iband)[:] %= right
         return result
 
     def __imod__(self, right):
         """Pixel wise operation modulo with %=."""
         if isinstance(right, Jim):
-            self.np()[:] %= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    self.np(iband)[:] %= right.np()
+                else:
+                    self.np(iband)[:] %= right.np(iband)
         else:
-            self.np()[:] %= right
+            for iband in range(0,self.properties.nrOfBand()):
+                self.np(iband)[:] %= right
         return self
 
     def __pow__(self, right):
         """Pixel wise operation **."""
         result = Jim(self)
-        result.np()[:] **= right
+        for iband in range(0,self.properties.nrOfBand()):
+            result.np(iband)[:] **= right
         return result
 
     def __ipow__(self, right):
         """Pixel wise operation **=."""
-        result.np()[:] **= right
+        for iband in range(0,self.properties.nrOfBand()):
+            result.np(iband)[:] **= right
         return self
 
     def __lshift__(self, right):
         """Pixel wise operation <<."""
         if isinstance(right, int):
             jim = Jim(self)
-            jim.np()[:] <<= right
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.np(iband)[:] <<= right
             return jim
         else:
             raise TypeError('unsupported operand type for << : {}'.format(
@@ -731,7 +881,8 @@ class Jim():
     def __ilshift__(self, right):
         """Pixel wise operation <<=."""
         if isinstance(right, int):
-            self.np()[:] <<= right
+            for iband in range(0,self.properties.nrOfBand()):
+                self.np(iband)[:] <<= right
         else:
             raise TypeError('unsupported operand type for << : {}'.format(
                 type(right)))
@@ -741,7 +892,8 @@ class Jim():
         """Pixel wise operation >>."""
         if isinstance(right, int):
             jim = Jim(self)
-            jim.np()[:] >>= right
+            for iband in range(0,self.properties.nrOfBand()):
+                jim.np(iband)[:] >>= right
             return jim
         else:
             raise TypeError('unsupported operand type for >> : {}'.format(
@@ -750,7 +902,8 @@ class Jim():
     def __irshift__(self, right):
         """Pixel wise operation >>=."""
         if isinstance(right, int):
-            self.np()[:] >>= right
+            for iband in range(0,self.properties.nrOfBand()):
+                self.np(iband)[:] >>= right
         else:
             raise TypeError('unsupported operand type for >> : {}'.format(
                 type(right)))
@@ -760,7 +913,13 @@ class Jim():
         """Pixel wise operation |."""
         if isinstance(right, Jim):
             jim = Jim(self)
-            jim.np()[:] |= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] |= right.np()
+                else:
+                    jim.np(iband)[:] |= right.np(iband)
             return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
@@ -769,7 +928,13 @@ class Jim():
     def __ior__(self, right):
         """Pixel wise operation |=."""
         if isinstance(right, Jim):
-            self.np()[:] |= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    self.np(iband)[:] |= right.np()
+                else:
+                    self.np(iband)[:] |= right.np(iband)
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
                 type(right)))
@@ -779,7 +944,13 @@ class Jim():
         """Pixel wise operation | where self is the right object."""
         if isinstance(left, Jim):
             jim = Jim(self)
-            jim.np()[:] |= left.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] |= left.np()
+                else:
+                    jim.np(iband)[:] |= left.np(iband)
             return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
@@ -789,7 +960,13 @@ class Jim():
         """Pixel wise operation ^."""
         if isinstance(right, Jim):
             jim = Jim(self)
-            jim.np()[:] ^= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] ^= right.np()
+                else:
+                    jim.np(iband)[:] ^= right.np(iband)
             return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
@@ -798,7 +975,13 @@ class Jim():
     def __ixor__(self, right):
         """Pixel wise operation ^=."""
         if isinstance(right, Jim):
-            self.np()[:] ^= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    self.np(iband)[:] ^= right.np()
+                else:
+                    self.np(iband)[:] ^= right.np(iband)
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
                 type(right)))
@@ -808,7 +991,13 @@ class Jim():
         """Pixel wise operation ^ where self is the right object."""
         if isinstance(left, Jim):
             jim = Jim(self)
-            jim.np()[:] ^= left.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] ^= left.np()
+                else:
+                    jim.np(iband)[:] ^= left.np(iband)
             return jim
         else:
             raise TypeError('unsupported operand type for ^ : {}'.format(
@@ -818,7 +1007,13 @@ class Jim():
         """Pixel wise operation &."""
         if isinstance(right, Jim):
             jim = Jim(self)
-            jim.np()[:] &= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    jim.np(iband)[:] &= right.np()
+                else:
+                    jim.np(iband)[:] &= right.np(iband)
             return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(
@@ -827,7 +1022,13 @@ class Jim():
     def __iand__(self, right):
         """Pixel wise operation &=."""
         if isinstance(right, Jim):
-            self.np()[:] &= right.np()
+            if self.properties.nrOfBand()>right.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>right.properties.nrOfBand():
+                    self.np(iband)[:] &= right.np()
+                else:
+                    self.np(iband)[:] &= right.np(iband)
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
                 type(right)))
@@ -837,7 +1038,13 @@ class Jim():
         """Pixel wise operation & where self is the right object."""
         if isinstance(left, Jim):
             jim = Jim(self)
-            jim.np()[:] &= left.np()
+            if self.properties.nrOfBand()>left.properties.nrOfBand():
+                _warnings.warn('Number of bands of arguments do not match', Warning)
+            for iband in range(0,self.properties.nrOfBand()):
+                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                    jim.np(iband)[:] &= left.np()
+                else:
+                    jim.np(iband)[:] &= left.np(iband)
             return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(

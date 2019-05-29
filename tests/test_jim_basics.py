@@ -2,6 +2,7 @@
 
 import pyjeo as pj
 import unittest
+import numpy as np
 
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
@@ -75,6 +76,14 @@ class BadBasicMethods(unittest.TestCase):
         new_jim = pj.np2jim(jim_np)
 
         assert jim.pixops.isEqual(new_jim), 'Error in jim2np() or np2jim()'
+
+        anp = np.arange(2*100*256).reshape((2,100,256)).astype(np.float64)
+        ajim = pj.np2jim(anp)
+
+        assert ajim.properties.nrOfBand() == 1
+        assert ajim.properties.nrOfPlane() == anp.shape[0]
+        assert ajim.properties.nrOfRow() == anp.shape[1]
+        assert ajim.properties.nrOfCol() == anp.shape[2]
 
         try:
             jim_empty = pj.Jim()

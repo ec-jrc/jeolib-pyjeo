@@ -15,10 +15,11 @@ def load_tests(loader=None, tests=None, pattern=None):
                                test_geometry.load_tests(),
                                test_demops.load_tests(),
                                test_jim_basics.load_tests(),
-                               test_pixops.load_tests(),
-                               test_properties.load_tests(),
-                               test_jimlist_basics.load_tests(),
-                               test_stats.load_tests()])
+                                test_pixops.load_tests(),
+                                test_properties.load_tests(),
+                                test_stats.load_tests(),
+                               test_jimlist_basics.load_tests()
+    ])
 
 
 if __name__ == "__main__":
