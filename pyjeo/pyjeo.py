@@ -223,7 +223,7 @@ class Jim():
         return _jl.np(self._jipjim, band)
 
     def _checkInitParamsSense(self, image, kwargs):
-        """Check if the combination of args + kwargs for Jim init makes sense.
+        """Check if the combination of (kw)args for Jim init makes sense.
 
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
