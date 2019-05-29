@@ -3,6 +3,7 @@
 from __future__ import division
 import numpy
 import gc as _gc
+import os as _os
 
 try:
     import jiplib as _jl
@@ -1041,41 +1042,54 @@ class _ParentVect(_jl.VectorOgr):
         :param output: path to an output vector in case another JimVect object
             was provided (copy constructor)
         """
+        self._checkInitParamsSense(vector, kwargs)
+
         if kwargs:
             if vector:
                 if isinstance(vector, JimVect):
-                    if 'output' in kwargs.keys():
-                        kwargs.update({'filename': kwargs.pop('output', None)})
-                        super(_ParentVect, self).__init__(vector._jipjimvect,
-                                                          kwargs)
-                    else:
-                        raise Exception("Output required for copy constructor")
+                    kwargs.update({'filename': kwargs.pop('output', None)})
+                    super(_ParentVect, self).__init__(vector._jipjimvect,
+                                                      kwargs)
                 else:
                     kwargs.update({'filename': vector})
                     super(_ParentVect, self).__init__(kwargs)
             else:
+                kwargs.update({'filename': kwargs.pop('output', None)})
                 super(_ParentVect, self).__init__(kwargs)
         else:
-            if isinstance(vector, JimVect):
-                super(_ParentVect, self).__init__(vector._jipjimvect, kwargs)
+            if vector:
+                super(_ParentVect, self).__init__(vector)
             else:
-                if vector:
-                    super(_ParentVect, self).__init__(vector)
-                else:
-                    super(_ParentVect, self).__init__()
+                super(_ParentVect, self).__init__()
+
+    def _checkInitParamsSense(self, vector, kwargs):
+        """Check if the combination of (kw)args for JimVect init makes sense.
+
+        :param vector: path to a vector or another JimVect object as a basis
+            for the JimVect object
+        """
+        keys = kwargs.keys()
+
+        if isinstance(vector, JimVect):
+            if 'output' not in keys:
+                raise AttributeError(
+                    "Parameter output required for copy constructor")
+        elif not vector:
+            if 'output' in keys and not _os.path.isfile(kwargs['output']):
+                raise AttributeError('Output path does not exist and the '
+                                     'template vector is not specified')
 
 
 class JimVect():
     """Definition of JimVect object."""
 
-    # def __init__(self, vector, *args):
     def __init__(self, vector=None, **kwargs):
         """Create an empty VectorOgr object.
 
         Created object is an instance of the basis vector class of the pyJEO
         library
 
-        :param filename: Path to a vector dataset
+        :param vector: Path to a vector dataset
         :return: a JimVect object
         """
         self._jipjimvect = _ParentVect(vector, kwargs)
