@@ -235,7 +235,15 @@ class BadBasicMethods(unittest.TestCase):
         except ValueError:
             failed = False
         assert not failed, 'Error in catching a JimVect used as an index ' \
-                           'for a multiplanar Jim'
+                           'for a multiplanar Jim (get item)'
+
+        try:
+            jim1[vect] = 5
+            failed = True
+        except ValueError:
+            failed = False
+        assert not failed, 'Error in catching a JimVect used as an index ' \
+                           'for a multiplanar Jim (set item)'
 
         modis = pj.Jim(testFile)
         modis.properties.clearNoData()
@@ -264,13 +272,26 @@ class BadBasicMethods(unittest.TestCase):
             'Error in clipping a Jim by JimVect (Jim[JimVect]) (noData not ' \
             'correctly transferred)'
 
+        modis[vect] = 5
+        fives = modis[vect]
+        fives_stats = fives.stats.getStats()
+
+        assert fives_stats['max'] == 5 and fives_stats['min'] in [0, 5], \
+            'Error in using JimVect as an argument in Jim[JimVect] = number'
+
+        modis[vect] = modis + 5
+
+        assert modis[vect].pixops.isEqual(fives * 2) and \
+               not modis[0, 0].pixops.isEqual(fives[0, 0]), \
+            'Error in using JimVect as an argument in Jim[JimVect] = Jim'
+
         # Test Jim usage in getters and setters as an argument
 
-        rand_jim = pj.Jim(nrow=50, ncol=50, uniform=[0, 2])
+        rand_jim = pj.Jim(nrow=50, ncol=50, uniform=[0, 2], otype='int8')
         rand_jim[0, 0] = 0
         rand_jim[0, 1] = 1
         stats = rand_jim.stats.getStats()
-        twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2])
+        twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2], otype='int8')
 
         twos_masked = twos[rand_jim]
         stats_masked = twos_masked.stats.getStats()
@@ -280,8 +301,17 @@ class BadBasicMethods(unittest.TestCase):
                stats_masked['min'] == stats['min'] == 0, \
             'Error in masking a Jim by Jim (Jim1[Jim2])'
 
+        # Test a nonsense argument in [gs]etters
+        try:
+            rand_jim['a'] = 5
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong indices like Jim["string"]'
+
     def test_operators(self):
-        """Test basic operators (+, -, *, /, =)."""
+        """Test basic operators (+, -, *, /, =, abs(), ~)."""
         jim1 = pj.Jim(tiles[0])
         # test
         stats1 = jim1.stats.getStats()
@@ -298,6 +328,8 @@ class BadBasicMethods(unittest.TestCase):
         assert max <= stats1['max'] + stats2['max'], \
             'Error in operation type Jim + Jim'
 
+        # Test +=
+
         jim3 += 1
         stats3 = jim3.stats.getStats()
 
@@ -310,6 +342,482 @@ class BadBasicMethods(unittest.TestCase):
             'Error in operation type Jim += Jim'
         assert stats3['min'] == (min + 1) * 2, \
             'Error in operation type Jim += Jim'
+
+        # Test specialities like __neg__, abs(), ~, ...
+
+        zeros = jim3 + -jim3
+        empty = pj.Jim(nrow=jim3.properties.nrOfRow(),
+                       ncol=jim3.properties.nrOfCol(),
+                       otype='int32')
+
+        assert zeros.pixops.isEqual(empty), \
+            'Error in -Jim (not returning negative values)'
+
+        minus_ones = empty - 1
+
+        jim3.pixops.convert('int32')
+
+        jim3_plus_one = jim3 + abs(minus_ones)
+
+        assert jim3_plus_one.pixops.isEqual(jim3 + 1), \
+            'Error in abs(Jim)'
+
+        assert (~jim3).pixops.isEqual(-1 - jim3), \
+            'Error in a bit-wise inversion (~Jim)'
+
+        # Test __radd__
+
+        assert jim3_plus_one.pixops.isEqual(1 + jim3), \
+            'Error in Jim.__radd__() (number + Jim)'
+
+        # Test __rmul__ and __rsub__
+
+        assert (-jim3 - jim3).pixops.isEqual(-2 * jim3), \
+            'Error in operation of type Jim - Jim or number * Jim '
+
+        # Test -=
+
+        jim3_plus_one -= 1
+
+        assert jim3.pixops.isEqual(jim3_plus_one), \
+            'Error in operation of type Jim -= number'
+
+        jim3_plus_one -= jim3
+
+        assert jim3_plus_one.pixops.isEqual(empty), \
+            'Error in operation of type Jim -= Jim'
+
+        # Test divisions
+
+        try:
+            _ = jim1 / 2
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching the error from dividing an int Jim'
+
+        minus_ones.pixops.convert('float32')
+
+        halves = minus_ones / 2
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == -0.5, \
+            'Error in Jim / number'
+
+        halves /= minus_ones
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0.5, \
+            'Error in Jim /= Jim'
+
+        halves /= -1
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == -0.5, \
+            'Error in Jim /= number'
+
+        halves = halves / minus_ones
+        stats = halves.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0.5, \
+            'Error in Jim / Jim'
+
+        # Test modulo
+
+        fifteens = pj.Jim(nrow=jim3.properties.nrOfRow(),
+                          ncol=jim3.properties.nrOfCol(),
+                          otype='float32')
+        fifteens.pixops.setData(15)
+
+        sevens = fifteens % 8
+        stats = sevens.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 7, \
+            'Error in Jim % number'
+
+        test = pj.Jim(sevens)
+        test %= 4
+        stats = test.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 3, \
+            'Error in Jim %= number'
+
+        ones = fifteens % sevens
+        stats = ones.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim % Jim'
+
+        test2 = sevens
+        test2 %= test
+        stats = test2.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim %= Jim'
+
+        # Test powering
+
+        nines = test ** 2
+        stats = nines.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 9, \
+            'Error in Jim ** number'
+
+        test **= 2
+
+        assert test.pixops.isEqual(nines), 'Error in Jim **= number'
+
+        # Test shifts
+        test.pixops.convert('int32')
+
+        seventy_twos = test << 3
+        stats = seventy_twos.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 72, \
+            'Error in Jim << number'
+
+        test = seventy_twos >> 3
+
+        assert test.pixops.isEqual(nines), \
+            'Error in Jim >> number'
+
+        test = pj.Jim(seventy_twos)
+        test >>= 3
+
+        assert test.pixops.isEqual(nines), \
+            'Error in Jim >>= number'
+
+        test <<= 3
+
+        assert test.pixops.isEqual(seventy_twos), \
+            'Error in Jim <<= number'
+
+        try:
+            _ = test << 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching wrong right side of << operation'
+
+        try:
+            _ = test >> 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching wrong right side of >> operation'
+
+        try:
+            test <<= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching wrong right side of <<= operation'
+
+        try:
+            test >>= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching wrong right side of >>= operation'
+
+        # Test |
+        ones.pixops.convert('int32')
+
+        assert (seventy_twos | 1).pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim | number'
+
+        assert (1 | seventy_twos).pixops.isEqual(73 * ones), \
+            'Error in operation of type number | Jim'
+
+        test |= 1
+
+        assert test.pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim |= number'
+
+        assert (seventy_twos | ones).pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim | Jim'
+
+        test |= 9 * ones
+
+        assert test.pixops.isEqual(73 * ones), \
+            'Error in operation of type Jim |= Jim'
+
+        try:
+            _ = ones | 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of | operation'
+
+        try:
+            ones |= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of |= operation'
+
+        try:
+            _ = 'a' | ones
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong left side of | operation'
+
+        # Test ^
+
+        assert (seventy_twos ^ 9).pixops.isEqual(65 * ones), \
+            'Error in operation of type Jim ^ number'
+
+        assert (9 ^ seventy_twos).pixops.isEqual(65 * ones), \
+            'Error in operation of type number ^ Jim'
+
+        test ^= 10
+
+        assert test.pixops.isEqual(67 * ones), \
+            'Error in operation of type Jim ^= number'
+
+        assert (seventy_twos ^ (9 * ones)).pixops.isEqual(65 * ones), \
+            'Error in operation of type Jim ^ Jim'
+
+        test ^= (68 * ones)
+
+        assert test.pixops.isEqual(7 * ones), \
+            'Error in operation of type Jim ^= Jim'
+
+        try:
+            _ = ones ^ 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of ^ operation'
+
+        try:
+            ones ^= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of ^= operation'
+
+        try:
+            _ = 'a' ^ ones
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong left side of ^ operation'
+
+        # Test &
+
+        assert (seventy_twos & 9).pixops.isEqual(8 * ones), \
+            'Error in operation of type Jim & number'
+
+        assert (9 & seventy_twos).pixops.isEqual(8 * ones), \
+            'Error in operation of type number & Jim'
+
+        test &= 9
+
+        assert test.pixops.isEqual(ones), \
+            'Error in operation of type Jim &= number'
+
+        assert (seventy_twos & (9 * ones)).pixops.isEqual(8 * ones), \
+            'Error in operation of type Jim & Jim'
+
+        test += 10
+        test &= (5 * ones)
+
+        assert test.pixops.isEqual(ones), \
+            'Error in operation of type Jim &= Jim'
+
+        try:
+            _ = ones & 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of & operation'
+
+        try:
+            ones &= 'a'
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong right side of &= operation'
+
+        try:
+            _ = 'a' & ones
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, 'Error in catching wrong left side of & operation'
+
+    def test_pixel_wise_conditions(self):
+        """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(jim1)
+
+        jim_equality = jim1 == jim2
+        stats = jim_equality.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim == Jim'
+
+        jim_not_equality = jim1 != jim2
+        stats = jim_not_equality.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0, \
+            'Error in Jim != Jim'
+
+        jim_greater = jim1 > jim2
+        stats = jim_greater.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0, \
+            'Error in Jim > Jim'
+
+        jim_greatere = jim1 >= jim2
+        stats = jim_greatere.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim >= Jim'
+
+        jim_lesser = jim1 < jim2
+        stats = jim_lesser.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 0, \
+            'Error in Jim < Jim'
+
+        jim_lessere = jim1 <= jim2
+        stats = jim_lessere.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim <= Jim'
+
+        jim_equality_int = jim_equality == 1
+        stats = jim_equality_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim == number'
+
+        jim_not_equality_int = jim_not_equality != 1
+        stats = jim_not_equality_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim != number'
+
+        jim_greater_int = jim_greater > -1
+        stats = jim_greater_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim > number'
+
+        jim_greatere_int = jim_greatere >= 1
+        stats = jim_greatere_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim >= number'
+
+        jim_lesser_int = jim_lesser < 1
+        stats = jim_lesser_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim < number'
+
+        jim_lessere_int = jim_lessere <= 1
+        stats = jim_lessere_int.stats.getStats()
+
+        assert stats['max'] == stats['min'] == stats['mean'] == 1, \
+            'Error in Jim <= number'
+
+        # Now check it also when just some of the values are equal
+        jim2[0:10, 0:10] += 1
+
+        jim_equality = jim1 == jim2
+        stats = jim_equality.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim == Jim'
+
+        jim_not_equality = jim1 != jim2
+        stats = jim_not_equality.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim != Jim'
+
+        jim_greater = jim2 > jim1
+        stats = jim_greater.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim > Jim'
+
+        jim_greatere = jim1 >= jim2
+        stats = jim_greatere.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim >= Jim'
+
+        jim_lesser = jim1 < jim2
+        stats = jim_lesser.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim < Jim'
+
+        jim_lessere = jim2 <= jim1
+        stats = jim_lessere.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim <= Jim'
+
+        jim_equality_int = jim_equality == 1
+        stats = jim_equality_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim == number'
+
+        jim_not_equality_int = jim_not_equality != 1
+        stats = jim_not_equality_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim != number'
+
+        jim_greater_int = jim_greater > 0
+        stats = jim_greater_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim > number'
+
+        jim_greatere_int = jim_greatere >= 1
+        stats = jim_greatere_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim >= number'
+
+        jim_lesser_int = jim_lesser < 1
+        stats = jim_lesser_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim < number'
+
+        jim_lessere_int = jim_lessere <= 0
+        stats = jim_lessere_int.stats.getStats()
+
+        assert stats['max'] == 1 and stats['min'] == 0, \
+            'Error in Jim <= number'
 
 
 def load_tests(loader=None, tests=None, pattern=None):

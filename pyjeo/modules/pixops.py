@@ -255,8 +255,8 @@ def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
     :return: a Jim object
     """
     jout = _pj.Jim(jim)
-    jout.pixops.setData(value)
-    return _pj.Jim(jout)
+    jout.pixops.setData(value, ulx, uly, lrx, lry, bands, dx, dy, nogeo)
+    return jout
 
 
 def simpleArithOp(jim, op, *args):

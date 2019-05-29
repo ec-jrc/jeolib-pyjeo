@@ -21,11 +21,11 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
 
     statDict = dict()
 
-    forceJiplib=False
-    constraints=('nodata','src_min','src_max')
+    forceJiplib = False
+    constraints = ('nodata', 'src_min', 'src_max')
     for key in constraints:
         if key in kwargs.keys():
-            forceJiplib=True
+            forceJiplib = True
             break
     if not forceJiplib:
         if 'min' in function or 'max' in function:
@@ -40,18 +40,20 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
         if 'median' in function:
             statDict['median'] = numpy.median(jim_object.np()).item()
 
+        function_list = list()
         for f in function:
             if f not in ['min', 'max', 'mean', 'median']:
-                kwargs.update({'function': f})
+                function_list.append(f)
+
+        if len(function_list) > 0:
+            kwargs.update({'function': function_list})
     else:
         kwargs.update({'function': function})
 
     if kwargs:
-        statDict.update(jim_object.getStats(kwargs))
+        statDict.update(jim_object._jipjim.getStats(kwargs))
 
     return statDict
-    # kwargs.update({'function': function})
-    # return jim_object._jipjim.getStats(kwargs)
 
 
 def getStatProfile(jim_object, function, **kwargs):
@@ -241,11 +243,11 @@ class _Stats():
 
         statDict = dict()
 
-        forceJiplib=False
-        constraints=('nodata','src_min','src_max')
+        forceJiplib = False
+        constraints = ('nodata', 'src_min', 'src_max')
         for key in constraints:
             if key in kwargs.keys():
-                forceJiplib=True
+                forceJiplib = True
                 break
         if not forceJiplib:
             if 'min' in function or 'max' in function:
@@ -259,9 +261,14 @@ class _Stats():
                 statDict['mean'] = numpy.mean(self._jim_object.np()).item()
             if 'median' in function:
                 statDict['median'] = numpy.median(self._jim_object.np()).item()
+
+            function_list = list()
             for f in function:
                 if f not in ['min', 'max', 'mean', 'median']:
-                    kwargs.update({'function': f})
+                    function_list.append(f)
+
+            if len(function_list) > 0:
+                kwargs.update({'function': function_list})
         else:
             kwargs.update({'function': function})
 
