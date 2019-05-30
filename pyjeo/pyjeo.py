@@ -621,17 +621,10 @@ class Jim():
     def __radd__(self, left):
         """Pixel wise operation + where self is the added value."""
         result = Jim(self)
-        if isinstance(left, Jim):
-            if self.properties.nrOfBand()>left.properties.nrOfBand():
-                _warnings.warn('Number of bands of arguments do not match', Warning)
-            for iband in range(0,self.properties.nrOfBand()):
-                if self.properties.nrOfBand()>right.properties.nrOfBand():
-                    result.np(iband)[:] += left.np()
-                else:
-                    result.np(iband)[:] += left.np(iband)
-        else:
-            for iband in range(0,self.properties.nrOfBand()):
-                result.np(iband)[:] += left
+
+        for iband in range(0, self.properties.nrOfBand()):
+            result.np(iband)[:] += left
+
         return result
 
     def __iadd__(self, right):
@@ -669,17 +662,10 @@ class Jim():
     def __rsub__(self, left):
         """Pixel wise operation - where self is the one used to subtract."""
         result = -Jim(self)
-        if isinstance(left, Jim):
-            if self.properties.nrOfBand()>right.properties.nrOfBand():
-                _warnings.warn('Number of bands of arguments do not match', Warning)
-            for iband in range(0,self.properties.nrOfBand()):
-                if self.properties.nrOfBand()>right.properties.nrOfBand():
-                    result.np(iband)[:] += left.np()
-                else:
-                    result.np(iband)[:] += left.np(iband)
-        else:
-            for iband in range(0,self.properties.nrOfBand()):
-                result.np(iband)[:] += left
+
+        for iband in range(0,self.properties.nrOfBand()):
+            result.np(iband)[:] += left
+
         return result
 
     def __isub__(self, right):
@@ -731,17 +717,10 @@ class Jim():
     def __rmul__(self, left):
         """Pixel wise operation * where self is the multiplier."""
         result = Jim(self)
-        if isinstance(left, Jim):
-            if self.properties.nrOfBand()>left.properties.nrOfBand():
-                _warnings.warn('Number of bands of arguments do not match', Warning)
-            for iband in range(0,self.properties.nrOfBand()):
-                if self.properties.nrOfBand()>left.properties.nrOfBand():
-                    result.np(iband)[:] *= left.np()
-                else:
-                    result.np(iband)[:] *= left.np(iband)
-        else:
-            for iband in range(0,self.properties.nrOfBand()):
-                result.np(iband)[:] *= left
+
+        for iband in range(0,self.properties.nrOfBand()):
+            result.np(iband)[:] *= left
+
         return result
 
     def __imul__(self, right):
