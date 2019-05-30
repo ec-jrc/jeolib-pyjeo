@@ -156,6 +156,71 @@ class BadStats(unittest.TestCase):
 class BadStatsLists(unittest.TestCase):
     """Test JimList functions and methods for getting statistics."""
 
+    def test_getStats(self):
+        """Test if values from getStats are not suspicious."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(tiles[1])
+        jiml = pj.JimList([jim1, jim2])
+
+        stats = jiml.stats.getStats()
+        stats2 = pj.stats.getStats(jiml)
+
+        assert stats == stats2, \
+            'Inconsistency in JimList.stats.getStats() ' \
+            '(method returns different result than function)'
+
+        max = stats['max']
+        min = stats['min']
+        mean = stats['mean']
+
+        jim_minmax_dict = jiml.stats.getStats(function=['min', 'max'])
+
+        assert jim_minmax_dict['min'] == min, \
+            'Error in getting statistics with JimList.stats.getStats()' \
+            '(min value from getStats() and ' \
+            'getStats(function=["min", "max"]) do not correspond)'
+
+        assert jim_minmax_dict['max'] == max, \
+            'Error in getting statistics with JimList.stats.getStats()' \
+            '(max value from getStats() and ' \
+            'getStats(function=["min", "max"]) do not correspond)'
+
+        assert min < mean < max, \
+            'Error in getting statistics with JimList.stats.getStats()'
+
+        jiml.properties.clearNoData()
+
+        stats = jiml.stats.getStats('median,invalid')
+        stats2 = pj.stats.getStats(jiml, 'median,invalid')
+
+        assert stats == stats2, \
+            'Inconsistency in JimList.stats.getStats() ' \
+            '(method returns different result than function)'
+
+        assert stats['ninvalid'] == 0, \
+            'Error in JimList.properties.clearNoData() or ' \
+            'JimList.stats.getStats(function="invalid") ' \
+            '(nodata detected after clearing)'
+
+        stats = jiml.stats.getStats(['max', 'median', 'invalid'], nodata=max)
+        stats2 = pj.stats.getStats(jiml, ['max', 'median', 'invalid'],
+                                   nodata=max)
+
+        assert stats == stats2, \
+            'Inconsistency in JimList.stats.getStats() ' \
+            '(method returns different result than function)'
+
+        assert stats['max'] < max, \
+            'Error in using nodata kwarg for JimList.stats.getStats()'
+
+        assert stats['max'] > stats['median'] > min, \
+            'Suspicious value of median with JimList.stats.getStats() ' \
+            '(not smaller than max or not bigger than min)'
+
+        assert stats['ninvalid'] > 0, \
+            'Error in JimList.stats.getStats(function="invalid") ' \
+            '(no nodata detected, but should be)'
+
     def test_getStatProfile(self):
         """Test if values from getStatProfile are not wrong."""
         jim1 = pj.Jim(tiles[0])
