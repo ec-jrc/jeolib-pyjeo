@@ -7,53 +7,18 @@ import numpy
 def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
     """Compute basic statistics on a JimList object.
 
-    Similar to the :py:meth:`~._Stats.getStats` method from Jim.
-    For functions requiring two datasets (e.g., regression), use
-    the objects in the list instead of bands
+    Similar to the :py:meth:`~._Stats.getStats` method from Jim when
+    jim_object is an instance of Jim, similar to
+    the :py:meth:`~._StatsList.getStats` method from JimList when
+    jim_object is an instance of JimList. For functions requiring two
+    datasets (e.g., regression), use the objects in the list instead of bands.
 
-    :param jim_object: a Jim object
+    :param jim_object: either a Jim object or a JimList object
     :param function: (list of) statistical function(s) to calculate
         (default is ['min', 'max', 'mean'])
     :return: a dictionary with requested statistics
     """
-    if not isinstance(function, list):
-        function = function.split(',')
-
-    statDict = dict()
-
-    forceJiplib = False
-    constraints = ('nodata', 'src_min', 'src_max')
-    for key in constraints:
-        if key in kwargs.keys():
-            forceJiplib = True
-            break
-    if not forceJiplib:
-        if 'min' in function or 'max' in function:
-            min_max = jim_object._jipjim.getMiaMinMax()
-
-            if 'min' in function:
-                statDict['min'] = min_max[1]
-            if 'max' in function:
-                statDict['max'] = min_max[2]
-        if 'mean' in function:
-            statDict['mean'] = numpy.mean(jim_object.np()).item()
-        if 'median' in function:
-            statDict['median'] = numpy.median(jim_object.np()).item()
-
-        function_list = list()
-        for f in function:
-            if f not in ['min', 'max', 'mean', 'median']:
-                function_list.append(f)
-
-        if len(function_list) > 0:
-            kwargs.update({'function': function_list})
-    else:
-        kwargs.update({'function': function})
-
-    if kwargs:
-        statDict.update(jim_object._jipjim.getStats(kwargs))
-
-    return statDict
+    return jim_object.stats.getStats(function, **kwargs)
 
 
 def getStatProfile(jim_object, function, **kwargs):
