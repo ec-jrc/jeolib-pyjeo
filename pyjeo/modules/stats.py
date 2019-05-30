@@ -331,32 +331,40 @@ class _StatsList():
             pj.JimList([jim0,jim1]).stats.getStats('rmse')
             {'rmse': 10.4638}
 
-
         """
+        keys = kwargs.keys()
+
         if not isinstance(function, list):
             function = function.split(',')
 
-        statDict = {'min': None, 'max': None}
-        for item in self._jim_list:
-            if 'min' in function:
-                min = numpy.min(item.np()).item()
-                if not statDict['min'] or statDict['min'] > min:
-                    statDict['min'] = min
-            if 'max' in function:
-                max = numpy.max(item.np()).item()
-                if max > statDict['max']:
-                    statDict['max'] = max
+        if len(function) > 0:
+            keys.extend(function)
 
-        for f in function:
-            if f not in ['min', 'max']:
-                kwargs.update({'function': f})
+        statDict = {key: None for key in keys}
 
-        if kwargs:
+        forceJiplib = False
+        constraints = ('nodata', 'src_min', 'src_max')
+        for key in constraints:
+            if key in keys:
+                forceJiplib = True
+                break
+
+        if function not in [['min', 'max'], ['max', 'min'], 'min', 'max']:
+            forceJiplib = True
+
+        if not forceJiplib:
+            for item in self._jim_list:
+                new_statDict = item.stats.getStats(function, **kwargs)
+                if 'min' in keys and (new_statDict['min'] < statDict['min']
+                                      or statDict['min'] is None):
+                    statDict['min'] = new_statDict['min']
+                if 'max' in keys and new_statDict['max'] > statDict['max']:
+                    statDict['max'] = new_statDict['max']
+        else:
+            kwargs.update({'function': function})
             statDict.update(self._jim_list._jipjimlist.getStats(kwargs))
 
         return statDict
-        # kwargs.update({'function': function})
-        # return self._jim_list._jipjimlist.getStats(kwargs)
 
 
 class _StatsVect():
