@@ -29,6 +29,8 @@ class BadCCOps(unittest.TestCase):
                jim.properties.nrOfCol()*jim.properties.nrOfRow(), \
             'Error in ccops.distance2dEuclideanSquared()'
 
+        # Test distance2d4
+
         jim = pj.Jim(tiles[0])
 
         distances = pj.ccops.distance2d4(jim)
@@ -43,6 +45,31 @@ class BadCCOps(unittest.TestCase):
             'Error in Jim.ccops.distance2d4() (wrong maximum value)'
         assert stats['min'] == 0, \
             'Error in Jim.ccops.distance2d4() (wrong minimum value)'
+
+        # Test distance2dChamfer
+
+        jim = pj.Jim(tiles[0])[0:10, 0:10]
+
+        chamfer_type = 11
+        distances = pj.ccops.distance2dChamfer(jim, chamfer_type)
+        jim.ccops.distance2dChamfer(chamfer_type)
+        stats = jim.stats.getStats(['max', 'min'])
+
+        assert jim.pixops.isEqual(distances), \
+            'Inconsistency in ccops.distance2dChamfer() ' \
+            '(method returns different result than function)'
+
+        assert 0 < stats['min'] < 10, \
+            'Error in Jim.ccops.distance2dChamfer() (suspicious minimum value)'
+        assert stats['max'] <= chamfer_type, \
+            'Error in Jim.ccops.distance2dChamfer() (wrong maximum value)'
+
+        chamfer_type = 5711
+        jim.ccops.distance2dChamfer(chamfer_type)
+
+        assert not jim.pixops.isEqual(distances), \
+            'Suspicious values for distance2dChamfer() ' \
+            '(same results for different types of distance)'
 
 
 def load_tests(loader=None, tests=None, pattern=None):

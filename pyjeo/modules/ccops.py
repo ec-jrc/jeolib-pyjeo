@@ -262,13 +262,26 @@ def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
 def distance2d4(jim, band=0):
     """Compute the 2-dimensional 4-connected distance function of a Jim.
 
-    Jim must be a 2-D binary image.
-
     :param jim: a Jim object
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
     return _pj.Jim(jim._jipjim.distance2d4(band))
+
+
+def distance2dChamfer(jim, type, band=0):
+    """Compute the chamfer distance function of Jim.
+
+    Note that the type of Jim must be large enough to hold the largest
+    distance otherwise overflow may occur and generate artefacts in the
+    resulting distance function.
+
+    :param jim: a Jim object
+    :param type: Integer for type of chamfer distance {1, 11, 34, 57, 5711}
+    :param band: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim._jipjim.distance2dChamfer(type, band))
 
 
 def distance2dEuclideanSquared(jim, band=0):
@@ -455,13 +468,25 @@ class _CCOps():
     def distance2d4(self, band=0):
         """Compute the 2-dimensional 4-connected distance function of a Jim.
 
-        Jim must be a 2-D binary image.
-
         Modifies the instance on which the method was called.
 
         :param band: List of band indices to crop (index is 0 based)
         """
         return self._jim_object._jipjim.d_distance2d4(band)
+
+    def distance2dChamfer(self, type, band=0):
+        """Compute the chamfer distance function of Jim.
+
+        Note that the type of Jim must be large enough to hold the largest
+        distance otherwise overflow may occur and generate artefacts in the
+        resulting distance function.
+
+        Modifies the instance on which the method was called.
+
+        :param type: Integer for type of chamfer distance {1, 11, 34, 57, 5711}
+        :param band: List of band indices to crop (index is 0 based)
+        """
+        return self._jim_object._jipjim.d_distance2dChamfer(type, band)
 
     def distance2dEuclideanSquared(self, band=0):
         """Compute the squared Euclidean distance transform.
