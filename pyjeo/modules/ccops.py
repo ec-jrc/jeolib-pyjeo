@@ -259,6 +259,18 @@ def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
         graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
 
 
+def distance2d4(jim, band=0):
+    """Compute the 2-dimensional 4-connected distance function of a Jim.
+
+    Jim must be a 2-D binary image.
+
+    :param jim: a Jim object
+    :param band: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(jim._jipjim.distance2d4(band))
+
+
 def distance2dEuclideanSquared(jim, band=0):
     """Compute the squared Euclidean distance transform of im.
 
@@ -439,6 +451,17 @@ class _CCOps():
             raise ValueError('graph must be equal to 4 or 8')
 
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
+
+    def distance2d4(self, band=0):
+        """Compute the 2-dimensional 4-connected distance function of a Jim.
+
+        Jim must be a 2-D binary image.
+
+        Modifies the instance on which the method was called.
+
+        :param band: List of band indices to crop (index is 0 based)
+        """
+        return self._jim_object._jipjim.d_distance2d4(band)
 
     def distance2dEuclideanSquared(self, band=0):
         """Compute the squared Euclidean distance transform.
