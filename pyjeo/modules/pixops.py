@@ -259,18 +259,21 @@ def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
     return jout
 
 
-def simpleArithOp(jim, op, *args):
+def simpleArithOp(jim1, jim2, op, *args):
     """Create Jim composed using a simple arithmetic operation (coded with op).
 
-    :param jim: Jim object (to be sure that at least one is provided)
+    :param jim1: Jim object
+    :param jim2: Jim object (to be sure that at least one is provided)
     :param op: integer for operation type
     :param args: Jim objects
     :return: Jim holding specified arithmetic operation with from provided
         Jim objects
     """
-    jout = _pj.Jim(jim)
-    for newJim in args:
-        jout._jipjim.d_pointOpArith(newJim._jipjim, op)
+    jout = _pj.Jim(jim1)
+    jims = [jim2]
+    jims.extend(args)
+    for jim in jims:
+        jout._jipjim.d_pointOpArith(jim._jipjim, op)
 
     return _pj.Jim(jout)
 

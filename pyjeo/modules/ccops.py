@@ -377,7 +377,7 @@ def morphoRemoveBorder(ajim, graph):
     marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
     marker.pixops.infimum(ajim)
     marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
-    marker.pixops.simpleArithOp(17, ajim)  # 17 for SUBSWAP_op_ovf
+    marker.pixops.simpleArithOp(ajim, 17)  # 17 for SUBSWAP_op_ovf
     return marker
 
 
@@ -558,7 +558,7 @@ class _CCOps():
         marker.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, maxval)
         marker.pixops.infimum(ajim)
         marker.ccops.morphoGeodesicReconstructionByDilation(ajim, graph)
-        marker.pixops.simpleArithOp(17, ajim)  # 17 for SUBSWAP_op_ovf
+        marker.pixops.simpleArithOp(ajim, 17)  # 17 for SUBSWAP_op_ovf
         self._jim_object._set(marker)
 
         #todo: not working (self is not modified)
