@@ -287,7 +287,7 @@ def distance2dChamfer(jim, type, band=0):
 def distance2dEuclideanSquared(jim, band=0):
     """Compute the squared Euclidean distance transform of im.
 
-    im must be a 2-D binary image. Original algorihtm proposed by Saito
+    Jim must be a 2-D binary image. Original algorihtm proposed by Saito
     and Toriwaki (1994) and then optimised independently by (Hirata,
     1996) and (Meijster et al., 2000). See also *edt for the actual
     Euclidean distance transform. Note that a temporary buffer of type
@@ -513,6 +513,8 @@ class _CCOps():
         Dilation of the current object is from mark image using graph
         connectivity.
 
+        Modifies the instance on which the method was called.
+
         :param jim_object_mask: a Jim object for mask image
         :param graph: an integer holding for the graph connectivity
             (4 or 8 for 2-D images)
@@ -533,6 +535,8 @@ class _CCOps():
         Erosion of the current object is from mark image using graph
         connectivity.
 
+        Modifies the instance on which the method was called.
+
         :param jim_object_mask: a Jim object for mask image
         :param graph: an integer holding for the graph connectivity
             (4 or 8 for 2-D images)
@@ -548,6 +552,8 @@ class _CCOps():
 
     def morphoRemoveBorder(self, graph):
         """Remove the border-connected components using graph connectivity.
+
+        Modifies the instance on which the method was called.
 
         :param graph: an integer holding for the graph connectivity
             (4 or 8 for 2-D images)
@@ -569,8 +575,10 @@ class _CCOps():
 
         Uses graph connectivity.
 
+        Modifies the instance on which the method was called.
+
         :param borderFlag:
-        :param graph: an integer holding for the graph connectivity<
+        :param graph: an integer holding for the graph connectivity
             (4 or 8 for 2-D images)
         :return: a new Jim object with the connected component of the input
             object removed
