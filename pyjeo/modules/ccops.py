@@ -500,6 +500,8 @@ class _CCOps():
         pixels along a given line or column.
 
         Modifies the instance on which the method was called.
+
+        :param band: List of band indices to crop (index is 0 based)
         """
         self._jim_object._set(
             self._jim_object._jipjim.distance2dEuclideanSquared(band))
