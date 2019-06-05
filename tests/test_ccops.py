@@ -107,8 +107,8 @@ class BadCCOps(unittest.TestCase):
 
         jim1 = pj.Jim(tiles[0])
         jim1.pixops.convert('Byte')
-        jim2 = pj.Jim(tiles[1])
-        jim2.pixops.convert('Byte')
+        jim2 = pj.Jim(jim1)
+        # jim2.pixops.convert('Byte')
 
         jim1.pixops.simpleThreshold(127, 250, 0, 1)
         jim2.pixops.simpleThreshold(127, 200, 0, 1)
