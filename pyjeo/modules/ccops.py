@@ -302,6 +302,20 @@ def distance2dEuclideanSquared(jim, band=0):
     return _pj.Jim(jim._jipjim.distance2dEuclideanSquared(band))
 
 
+def distanceGeodesic(mask, marker, graph, band=0):
+    """Compute geodesic distance function from marker within mask.
+
+    Using graph connectivity.
+
+    :param mask: an image node for geodesic mask
+    :param marker: an image node for marker image
+    :param graph: integer for connectivity
+    :param band: List of band indices to crop (index is 0 based)
+    :return: a Jim object
+    """
+    return _pj.Jim(mask._jipjim.distanceGeodesic(marker._jipjim, graph, band))
+
+
 def getRegionalMinima(jim, graph):
     """Compute the regional minima of the input image.
 
@@ -505,6 +519,20 @@ class _CCOps():
         """
         self._jim_object._set(
             self._jim_object._jipjim.distance2dEuclideanSquared(band))
+
+    def distanceGeodesic(self, marker, graph, band=0):
+        """Compute geodesic distance function from marker within mask.
+
+        Using graph connectivity.
+
+        Modifies the instance on which the method was called.
+
+        :param marker: an image node for marker image
+        :param graph: integer for connectivity
+        :param band: List of band indices to crop (index is 0 based)
+        """
+        self._jim_object._jipjim.d_distanceGeodesic(marker._jipjim, graph,
+                                                    band)
 
     def morphoGeodesicReconstructionByDilation(self, jim_object_mask, graph,
                                                flag=1):

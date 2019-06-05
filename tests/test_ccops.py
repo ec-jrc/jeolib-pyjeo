@@ -12,7 +12,7 @@ class BadCCOps(unittest.TestCase):
     """Test functions and methods from ccops modules."""
 
     def test_distances(self):
-        """Test the distance2d functions and methods."""
+        """Test the distance functions and methods."""
         jim = pj.Jim(tiles[0])
 
         jim.pixops.convert('Byte')
@@ -70,6 +70,61 @@ class BadCCOps(unittest.TestCase):
         assert not jim.pixops.isEqual(distances), \
             'Suspicious values for distance2dChamfer() ' \
             '(same results for different types of distance)'
+
+        # Test distanceGeodesic
+
+        jim1 = pj.Jim(tiles[0])
+        jim1.pixops.convert('Byte')
+        jim2 = pj.Jim(tiles[1])
+        jim2.pixops.convert('Byte')
+
+        jim1.pixops.simpleThreshold(127, 250, 0, 1)
+        jim2.pixops.simpleThreshold(127, 200, 0, 1)
+
+        jim_byte1 = pj.Jim(jim1)
+        jim_byte2 = pj.Jim(jim1)
+
+        distances = pj.ccops.distanceGeodesic(jim_byte1, jim2, 4)
+        jim_byte1.ccops.distanceGeodesic(jim2, 4)
+        stats = jim_byte1.stats.getStats()
+        mean = stats['mean']
+
+        assert jim_byte1.pixops.isEqual(distances), \
+            'Inconsistency in ccops.distanceGeodesic() ' \
+            '(method returns different result than function)'
+
+        assert not jim1.pixops.isEqual(distances), \
+            'Error in ccops.distanceGeodesic() ' \
+            '(did not have any effect)'
+
+        assert stats['max'] == 255, \
+            'Error in Jim.ccops.distanceGeodesic() ' \
+            '(maximum value not 255 for Byte)'
+        assert stats['min'] == 0, \
+            'Error in Jim.ccops.distanceGeodesic() ' \
+            '(minimum value not 0 for Byte)'
+
+        distances = pj.ccops.distanceGeodesic(jim_byte2, jim2, 8)
+        jim_byte2.ccops.distanceGeodesic(jim2, 8)
+        stats = jim_byte2.stats.getStats()
+
+        assert jim_byte2.pixops.isEqual(distances), \
+            'Inconsistency in ccops.distanceGeodesic() ' \
+            '(method returns different result than function)'
+
+        assert not jim_byte2.pixops.isEqual(jim_byte1), \
+            'Error in ccops.distanceGeodesic() ' \
+            '(the same result for graph=8 and graph=4)'
+
+        assert stats['max'] == 255, \
+            'Error in Jim.ccops.distanceGeodesic() ' \
+            '(maximum value not 255 for Byte)'
+        assert stats['min'] == 0, \
+            'Error in Jim.ccops.distanceGeodesic() ' \
+            '(minimum value not 0 for Byte)'
+        assert stats['mean'] < mean, \
+            'Error in Jim.ccops.distanceGeodesic() ' \
+            '(mean value for graph=8 not smaller than for graph=4)'
 
 
 def load_tests(loader=None, tests=None, pattern=None):
