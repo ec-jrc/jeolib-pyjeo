@@ -71,6 +71,38 @@ class BadCCOps(unittest.TestCase):
             'Suspicious values for distance2dChamfer() ' \
             '(same results for different types of distance)'
 
+        # Test distance2dEuclideanConstrained
+
+        jim1 = pj.Jim(tiles[0])
+        jim1.pixops.convert('Byte')
+        jim2 = pj.Jim(jim1)
+
+        jim1.pixops.simpleThreshold(127, 250, 0, 1)
+        jim2.pixops.simpleThreshold(127, 200, 0, 1)
+
+        jim_byte = pj.Jim(jim2)
+
+        distances = pj.ccops.distance2dEuclideanConstrained(jim2, jim1)
+        jim_byte.ccops.distance2dEuclideanConstrained(jim1)
+        stats = jim_byte.stats.getStats()
+        max = stats['max']
+
+        assert jim_byte.pixops.isEqual(distances), \
+            'Inconsistency in ccops.distance2dEuclideanConstrained() ' \
+            '(method returns different result than function)'
+
+        assert not jim2.pixops.isEqual(distances), \
+            'Error in ccops.distance2dEuclideanConstrained() ' \
+            '(did not have any effect)'
+
+        assert 0 < max < jim_byte.properties.nrOfCol() * \
+               jim_byte.properties.nrOfRow(), \
+            'Error in Jim.ccops.distance2dEuclideanConstrained() ' \
+            '(maximum value not smaller than nrOfCol * nrOfRow or equal to 0)'
+        assert stats['min'] == 0, \
+            'Error in Jim.ccops.distance2dEuclideanConstrained() ' \
+            '(minimum value not 0 for Byte)'
+
         # Test distanceGeodesic
 
         jim1 = pj.Jim(tiles[0])

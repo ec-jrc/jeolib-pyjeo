@@ -284,6 +284,21 @@ def distance2dChamfer(jim, type, band=0):
     return _pj.Jim(jim._jipjim.distance2dChamfer(type, band))
 
 
+def distance2dEuclideanConstrained(marker, mask, band=0):
+    """Compute the Euclidean geodesic distance from the marker set.
+
+    Defined by the image marker and within the geodesic mask defined by
+    the image mask. The algorithm is described in (Soille, 1991).
+
+    Modifies the instance on which the method was called.
+
+    :param mask: binary UCHAR image with geodesic mask pixels set to 1
+    :param band: List of band indices to crop (index is 0 based)
+    """
+    return _pj.Jim(marker._jipjim.distance2dEuclideanConstrained(mask._jipjim,
+                                                                 band))
+
+
 def distance2dEuclideanSquared(jim, band=0):
     """Compute the squared Euclidean distance transform of im.
 
@@ -501,6 +516,21 @@ class _CCOps():
         :param band: List of band indices to crop (index is 0 based)
         """
         return self._jim_object._jipjim.d_distance2dChamfer(type, band)
+
+    def distance2dEuclideanConstrained(self, mask, band=0):
+        """Compute the Euclidean geodesic distance from the marker set.
+
+        Defined by the image marker and within the geodesic mask defined by
+        the image mask. The algorithm is described in (Soille, 1991).
+
+        Modifies the instance on which the method was called.
+
+        :param mask: binary UCHAR image with geodesic mask pixels set to 1
+        :param band: List of band indices to crop (index is 0 based)
+        """
+        self._jim_object._set(
+            self._jim_object._jipjim.distance2dEuclideanConstrained(
+                mask._jipjim, band))
 
     def distance2dEuclideanSquared(self, band=0):
         """Compute the squared Euclidean distance transform.
