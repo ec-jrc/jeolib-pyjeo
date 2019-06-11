@@ -1,4 +1,4 @@
-"""Basic file containing Jim and JimList objects."""
+"""Basic file containing Jim, JimList and JimVect objects."""
 
 from __future__ import division
 import numpy
