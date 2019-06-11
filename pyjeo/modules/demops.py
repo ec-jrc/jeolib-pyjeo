@@ -117,6 +117,8 @@ def contribDrainArea(jim_object, graph):
         (either 4 or 8)
     :return: a Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     return _pj.Jim(jim_object._jipjim.demContributingDrainageArea(graph))
 
 
@@ -128,7 +130,6 @@ def contribDrainAreaInf(jim_object):
 
     :param jim_object: a Jim object with Dinf drainage directions
         (t FLOAT, -1.0 for undefined direction)
-    :param graph: integer for number of nearest neighbours to consider
     :return: a Jim object
     """
     return _pj.Jim(jim_object._jipjim.demContributingDrainageAreaDInf())
@@ -165,6 +166,8 @@ def floodDir(jim_object, graph):
         (either 4 or 8)
     :return: a Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     return _pj.Jim(jim_object._jipjim.demFloodDirection(graph))
 
 
@@ -244,6 +247,8 @@ def flowNew(jim_object, drain_image, graph=8):
     :param graph: integer for connectivity (must be 8)
     :return: a Jim object
     """
+    _pj._check_graph(graph, [8])
+
     return _pj.Jim(jim_object._jipjim.demFlowNew(drain_image._jipjim, graph))
 
 
@@ -363,6 +368,8 @@ class _DEMOps():
           jim.demops.flowDirectionD8()
           jim.demops.contribDrainArea(8)
         """
+        _pj._check_graph(graph, [4, 8])
+
         self._jim_object._set(
             self._jim_object._jipjim.demContributingDrainageArea(graph))
 
@@ -429,6 +436,8 @@ class _DEMOps():
           jim = pj.Jim('/path/to/raster.tif')
           jim.demops.floodDir()
         """
+        _pj._check_graph(graph, [4, 8])
+
         self._jim_object._jipjim.d_demFloodDirection(graph)
 
     def flow(self, graph):
@@ -523,6 +532,8 @@ class _DEMOps():
           flow = pj.demops.flowDirectionD8(jim)
           jim.demops.flowNew(flow)
         """
+        _pj._check_graph(graph, [8])
+
         self._jim_object._set(
             self._jim_object._jipjim.demFlowNew(drain_image._jipjim,
                                                 graph))

@@ -24,19 +24,18 @@ def labelGraph(jim, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif graph == 8:
+    else:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
-    else:
-        print("graph must be equal to 4 or 8")
-        raise ValueError('graph must be equal to 4 or 8')
 
     return _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
 
@@ -49,19 +48,18 @@ def labelFlatZonesGraph(jim, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif graph == 8:
+    else:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
-    else:
-        print("graph must be equal to 4 or 8")
-        raise ValueError('graph must be equal to 4 or 8')
 
     return _pj.Jim(jim._jipjim.labelFlatZones(ngb._jipjim, 1, 1, 0))
 
@@ -87,19 +85,18 @@ def seededRegionGrowing(jimo, seeds, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif graph == 8:
+    else:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
-    else:
-        print("graph must be equal to 4 or 8")
-        raise ValueError('graph must be equal to 4 or 8')
 
     if isinstance(jimo, _pj.Jim):
         jim_object_list = _pj.JimList([jimo])
@@ -127,19 +124,18 @@ def labelConstrainedCCs(jimo, localRange, globalRange, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif graph == 8:
+    else:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
-    else:
-        print("graph must be equal to 4 or 8")
-        raise ValueError('graph must be equal to 4 or 8')
 
     if isinstance(jimo, _pj.Jim):
         return _pj.Jim(jimo._jipjim.labelConstrainedCCs(
@@ -191,19 +187,18 @@ def labelStronglyCCs(jimo, localRange, graph=4):
         (4 or 8 for 2-D images, default is 4)
     :return: labeled Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif graph == 8:
+    else:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
-    else:
-        print("graph must be equal to 4 or 8")
-        raise ValueError('graph must be equal to 4 or 8')
 
     if isinstance(jimo, _pj.Jim):
         return _pj.Jim(jimo._jipjim.labelConstrainedCCsCi(
@@ -241,19 +236,18 @@ def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
     :param dataFileName:
     :return: labeled Jim object
     """
+    _pj._check_graph(graph, [4, 8])
+
     if graph == 4:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb[0, 1] = 1
         ngb[1, 0] = 1
         ngb[1, 2] = 1
         ngb[2, 1] = 1
-    elif graph == 8:
+    else:
         ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
-    else:
-        print("graph must be equal to 4 or 8")
-        raise ValueError('graph must be equal to 4 or 8')
 
     return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(
         graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
@@ -478,19 +472,18 @@ class _CCOps():
             (4 or 8 for 2-D images, default is 8)
         :return: labeled Jim object
         """
+        _pj._check_graph(graph, [4, 8])
+
         if graph == 4:
             ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
             ngb[0, 1] = 1
             ngb[1, 0] = 1
             ngb[1, 2] = 1
             ngb[2, 1] = 1
-        elif graph == 8:
+        else:
             ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
             ngb.pixops.setData(1)
             ngb[1, 1] = 0
-        else:
-            print("graph must be equal to 4 or 8")
-            raise ValueError('graph must be equal to 4 or 8')
 
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
 
