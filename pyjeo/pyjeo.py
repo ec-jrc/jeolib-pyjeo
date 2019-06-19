@@ -1243,6 +1243,8 @@ class _ParentVect(_jl.VectorOgr):
         if kwargs:
             if vector:
                 if isinstance(vector, JimVect):
+                    #test
+                    print("output is : {}".format(kwargs['output']))
                     kwargs.update({'filename': kwargs.pop('output', None)})
                     super(_ParentVect, self).__init__(vector._jipjimvect,
                                                       kwargs)

@@ -12,7 +12,6 @@ import numpy
 def convert(jim_object, otype, **kwargs):
     """Convert Jim image with respect to data type.
 
-    :param jim_object: a Jim object
     :param otype: Data type for output image
     :param kwargs: See table below
     :return: a Jim object
@@ -29,59 +28,117 @@ def convert(jim_object, otype, **kwargs):
     | a_srs            | Override the projection for the output file          |
     +------------------+------------------------------------------------------+
 
-    # .. note::
-    #     To ignore some pixels from the extraction process, see list
-    #     of :ref:`mask <extract_mask>` key values:
 
     Example:
 
     Convert data type of input image to byte using autoscale::
 
         jim0=jl.io.createJim('/path/to/raster.tif')
-        jim0.convert(Byte,autoscale=[0,255])
+        jim0.convert(otype=Byte,autoscale=[0,255])
 
-        Clip raster dataset between 0 and 255 (set all other values to 0), then
-        convert data type to byte::
+        Clip raster dataset between 0 and 255 (set all other values to 0),
+        then convert data type to byte::
 
         jim1=jl.io.createJim('/path/to/raster.tif')
         jim1.setThreshold(min=0,max=255,nodata=0)
-        jim1.convert('Byte')
+        jim1.convert(Byte)
     """
-    # commented out for now
-    # if len(kwargs) == 0:
-    #     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
-    #         return _pj.Jim(jim_object._jipjim.convertToUchar8())
-    #     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-    #         return _pj.Jim(jim_object._jipjim.convertToUint16())
-    #     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-    #         return _pj.Jim(jim_object._jipjim.convertToUint32())
-    #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
-    #                    _jl.GDT_Float32]:
-    #         return _pj.Jim(jim_object._jipjim.convertToFloat32())
-    #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
-    #                   _jl.GDT_Float64]:
-    #         return _pj.Jim(jim_object._jipjim.convertToDouble64())
-
-    if otype in [1, 'int8', 'uint8', 'UInt8', 'Byte', 'GDT_Byte',
-                 _jl.GDT_Byte]:
-        kwargs.update({'otype': 'GDT_Byte'})
+    if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
+        otype='GDT_Byte'
+        nptype=numpy.int8
     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-        kwargs.update({'otype': 'GDT_UInt16'})
+        otype='GDT_UInt16'
+        nptype=numpy.uint16
     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
-        kwargs.update({'otype': 'GDT_Int16'})
+        otype='GDT_Int16'
+        nptype=numpy.int16
     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-        kwargs.update({'otype': 'GDT_UInt32'})
+        otype='GDT_UInt32'
+        nptype=numpy.uint32
     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
-        kwargs.update({'otype': 'GDT_Int32'})
+        otype='GDT_Int32'
+        nptype=numpy.int32
     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
-        kwargs.update({'otype': 'GDT_Float32'})
+        otype='GDT_Float32'
+        nptype=numpy.float32
     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
-        kwargs.update({'otype': 'GDT_Float64'})
+        otype='GDT_Float64'
+        nptype=numpy.float64
+    elif otype in  ['int64', 'Int64', 'JDT_Int64']:
+        otype='JDT_Int64'
+        nptype=numpy.int64
+    elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
+        otype='JDT_UInt64'
+        nptype=numpy.uint64
+    elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
+        otype='JDT_UInt64'
+        nptype=numpy.uint64
     else:
         raise TypeError("Output type {} not supported".format(otype))
-        # TODO: Support CTypes when bug fixed in jiplib
+    # TODO: Support CTypes
 
-    return _pj.Jim(jim_object._jipjim.convert(kwargs))
+    if len(kwargs) and jim_object.properties.nrOfPlane()==1:
+        kwargs.update({'otype': otype})
+        return _pj.Jim(jim_object._jipjim.convert(kwargs))
+    else:
+        jimnew=_pj.Jim(ncol=jim_object.properties.nrOfCol(),nrow=jim_object.properties.nrOfRow(),nband=jim_object.properties.nrOfBand(),nplane=jim_object.properties.nrOfPlane(),otype=otype)
+        jimnew.np()[:]=jim_object.np().astype(nptype)
+        return jimnew
+
+# def convert(jim_object, otype, **kwargs):
+#     """Convert Jim image with respect to data type.
+
+#     :param jim_object: a Jim object
+#     :param otype: Data type for output image
+#     :param kwargs: See table below
+#     :return: a Jim object
+
+#     +------------------+------------------------------------------------------+
+#     | key              | value                                                |
+#     +==================+======================================================+
+#     | scale            | Scale output: output=scale*input+offset              |
+#     +------------------+------------------------------------------------------+
+#     | offset           | Apply offset: output=scale*input+offset              |
+#     +------------------+------------------------------------------------------+
+#     | autoscale        | Scale output to min and max, e.g., [0,255]           |
+#     +------------------+------------------------------------------------------+
+#     | a_srs            | Override the projection for the output file          |
+#     +------------------+------------------------------------------------------+
+
+#     Example:
+
+#     Convert data type of input image to byte using autoscale::
+
+#         jim0=jl.io.createJim('/path/to/raster.tif')
+#         jim0.convert(Byte,autoscale=[0,255])
+
+#         Clip raster dataset between 0 and 255 (set all other values to 0), then
+#         convert data type to byte::
+
+#         jim1=jl.io.createJim('/path/to/raster.tif')
+#         jim1.setThreshold(min=0,max=255,nodata=0)
+#         jim1.convert('Byte')
+#     """
+#     if otype in [1, 'int8', 'uint8', 'UInt8', 'Byte', 'GDT_Byte',
+#                  _jl.GDT_Byte]:
+#         kwargs.update({'otype': 'GDT_Byte'})
+#     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+#         kwargs.update({'otype': 'GDT_UInt16'})
+#     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
+#         kwargs.update({'otype': 'GDT_Int16'})
+#     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+#         kwargs.update({'otype': 'GDT_UInt32'})
+#     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
+#         kwargs.update({'otype': 'GDT_Int32'})
+#     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
+#         kwargs.update({'otype': 'GDT_Float32'})
+#     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
+#         kwargs.update({'otype': 'GDT_Float64'})
+#     else:
+#         raise TypeError("Output type {} not supported".format(otype))
+#         # TODO: Support CTypes when bug fixed in jiplib
+
+#     return _pj.Jim(jim_object._jipjim.convert(kwargs))
 
 
 def isEqual(first_jim, second_jim):
@@ -189,46 +246,12 @@ def simpleThreshold(jim_object, min, max, bg_val, fg_val):
 def setThreshold(jim_object, **kwargs):
     """Apply min and max threshold to pixel values in raster dataset.
 
-    :param kwargs: See table below
+    :jim_object: the Jim object on which to set threshold
+    :param kwargs: See table :py:meth:`~pixops._PixOps.setThreshold`.
 
     Modifies the instance on which the method was called.
 
-
-    +------------------+--------------------------------------------------+
-    | key              | value                                            |
-    +==================+==================================================+
-    | min              | Minimum threshold value (if pixel value < min    |
-    |                  | set pixel value to no data)                      |
-    +------------------+--------------------------------------------------+
-    | max              | Maximum threshold value                          |
-    |                  | (if pixel value < max set pixel value to no data)|
-    +------------------+--------------------------------------------------+
-    | value            | value to be set if within min and max            |
-    |                  | (if not set, valid pixels will remain their input|
-    |                  | value)                                           |
-    +------------------+--------------------------------------------------+
-    | abs              | Set to True to perform threshold test to absolute|
-    |                  | pixel values                                     |
-    +------------------+--------------------------------------------------+
-    | nodata           | Set pixel value to this no data if pixel value   |
-    |                  | < min or > max                                   |
-    +------------------+--------------------------------------------------+
-
-    .. note::
-
-        A simplified interface to set a threshold is provided via :ref:`indexing <indexing>` (see also example below).
-
-    .. _setitem_example:
-
-    Example:
-
-    Mask all values not within [0,250] and set to 255::
-
-        jim0[(jim0<0) | (jim0>250)]=255
-
-        Mask all values not within [0,250] and set to 255 (no data)::
-
-        jim_threshold=jim.setThreshold(min=0,max=250,nodata=255)
+    for help, please refer to the corresponding method :py:meth:`~pixops._PixOps.setThreshold`.
     """
     return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
@@ -358,10 +381,6 @@ class _PixOps():
         | a_srs            | Override the projection for the output file      |
         +------------------+--------------------------------------------------+
 
-        # .. note::
-        #     To ignore some pixels from the extraction process, see list
-        #     of :ref:`mask <extract_mask>` key values:
-
         Example:
 
         Convert data type of input image to byte using autoscale::
@@ -376,54 +395,103 @@ class _PixOps():
             jim1.setThreshold(min=0,max=255,nodata=0)
             jim1.convert(Byte)
         """
-        # commented out for now
-        # if len(kwargs) == 0:
-        #     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte',
-        #                 _jl.GDT_Byte]:
-        #         self._jim_object._jipjim.d_convertToUchar8()
-        #         return None
-        #     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16',
-        #                    _jl.GDT_UInt16]:
-        #         self._jim_object._set(
-        #             self._jim_object._jipjim.convertToUint16())
-        #         return None
-        #     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32',
-        #                    _jl.GDT_UInt32]:
-        #         self._jim_object._set(
-        #             self._jim_object._jipjim.convertToUint32())
-        #         return None
-        #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
-        #                    _jl.GDT_Float32]:
-        #         self._jim_object._set(
-        #             self._jim_object._jipjim.convertToFloat32())
-        #         return None
-        #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
-        #                    _jl.GDT_Float64]:
-        #         self._jim_object._set(
-        #             self._jim_object._jipjim.convertToDouble64())
-        #         return None
-
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
+            otype='GDT_Byte'
+            nptype=numpy.int8
         elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-            kwargs.update({'otype': 'GDT_UInt16'})
+            otype='GDT_UInt16'
+            nptype=numpy.uint16
         elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
-            kwargs.update({'otype': 'GDT_Int16'})
+            otype='GDT_Int16'
+            nptype=numpy.int16
         elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-            kwargs.update({'otype': 'GDT_UInt32'})
+            otype='GDT_UInt32'
+            nptype=numpy.uint32
         elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
-            kwargs.update({'otype': 'GDT_Int32'})
-        elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
-                       _jl.GDT_Float32]:
-            kwargs.update({'otype': 'GDT_Float32'})
-        elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
-                       _jl.GDT_Float64]:
-            kwargs.update({'otype': 'GDT_Float64'})
+            otype='GDT_Int32'
+            nptype=numpy.int32
+        elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
+            otype='GDT_Float32'
+            nptype=numpy.float32
+        elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
+            otype='GDT_Float64'
+            nptype=numpy.float64
+        elif otype in  ['int64', 'Int64', 'JDT_Int64']:
+            otype='JDT_Int64'
+            nptype=numpy.int64
+        elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
+            otype='JDT_UInt64'
+            nptype=numpy.uint64
+        elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
+            otype='JDT_UInt64'
+            nptype=numpy.uint64
         else:
             raise TypeError("Output type {} not supported".format(otype))
-        # TODO: Support CTypes when bug fixed in jiplib
+        # TODO: Support CTypes
+        if len(kwargs) and self._jim_object.properties.nrOfPlane()==1:
+            kwargs.update({'otype': otype})
+            self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
+        else:
+            jimnew=_pj.Jim(ncol=self._jim_object.properties.nrOfCol(),nrow=self._jim_object.properties.nrOfRow(),nband=self._jim_object.properties.nrOfBand(),nplane=self._jim_object.properties.nrOfPlane(),otype=otype)
+            jimnew.np()[:]=self._jim_object.np().astype(nptype)
+            self._jim_object._set(jimnew._jipjim)
 
-        self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
+    # def convert(self, otype, **kwargs):
+    #     """Convert Jim image with respect to data type.
+
+    #     :param otype: Data type for output image
+    #     :param kwargs: See table below
+
+    #     Modifies the instance on which the method was called.
+
+    #     +------------------+--------------------------------------------------+
+    #     | key              | value                                            |
+    #     +==================+==================================================+
+    #     | scale            | Scale output: output=scale*input+offset          |
+    #     +------------------+--------------------------------------------------+
+    #     | offset           | Apply offset: output=scale*input+offset          |
+    #     +------------------+--------------------------------------------------+
+    #     | autoscale        | Scale output to min and max, e.g., [0,255]       |
+    #     +------------------+--------------------------------------------------+
+    #     | a_srs            | Override the projection for the output file      |
+    #     +------------------+--------------------------------------------------+
+
+    #     Example:
+
+    #     Convert data type of input image to byte using autoscale::
+
+    #         jim0=jl.io.createJim('/path/to/raster.tif')
+    #         jim0.convert(otype=Byte,autoscale=[0,255])
+
+    #         Clip raster dataset between 0 and 255 (set all other values to 0),
+    #         then convert data type to byte::
+
+    #         jim1=jl.io.createJim('/path/to/raster.tif')
+    #         jim1.setThreshold(min=0,max=255,nodata=0)
+    #         jim1.convert(Byte)
+    #     """
+    #     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
+    #         kwargs.update({'otype': 'GDT_Byte'})
+    #     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
+    #         kwargs.update({'otype': 'GDT_UInt16'})
+    #     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
+    #         kwargs.update({'otype': 'GDT_Int16'})
+    #     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
+    #         kwargs.update({'otype': 'GDT_UInt32'})
+    #     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
+    #         kwargs.update({'otype': 'GDT_Int32'})
+    #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
+    #                    _jl.GDT_Float32]:
+    #         kwargs.update({'otype': 'GDT_Float32'})
+    #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
+    #                    _jl.GDT_Float64]:
+    #         kwargs.update({'otype': 'GDT_Float64'})
+    #     else:
+    #         raise TypeError("Output type {} not supported".format(otype))
+    #     # TODO: Support CTypes when bug fixed in jiplib
+
+    #     self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
 
     def histoCompress(self, band=None):
         """Redistribute the intensity of histogram to fit full range of values.
@@ -577,7 +645,7 @@ class _PixOps():
 
             A simplified interface to set a threshold is provided via :ref:`indexing <indexing>` (see also example below).
 
-        .. _setitem_example:
+        .. _setThreshold_example:
 
         Example:
 

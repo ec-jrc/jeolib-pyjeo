@@ -12,6 +12,7 @@ def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     # NOTE: In case of raising segmentation faults, maybe there is still the
     #       problem with mialib/jiplib in DEMOps. Try to comment them.
+
     return unittest.TestSuite([test_ccops.load_tests(),
                                test_geometry.load_tests(),
                                test_demops.load_tests(),

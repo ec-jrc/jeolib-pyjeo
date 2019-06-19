@@ -19,7 +19,7 @@ class BadGeometry(unittest.TestCase):
     """Test functions and methods from geometry module."""
 
     def test_stack(self):
-        """Test the stack method."""
+        """Test the stack band method."""
         jim0 = pj.Jim(rasterfn, band=0)
         jim1 = pj.Jim(rasterfn, band=1)
         jim2 = pj.Jim(rasterfn, band=2)
@@ -47,6 +47,39 @@ class BadGeometry(unittest.TestCase):
         jim.geometry.cropBand(0)
         assert jim.pixops.isEqual(jim1), \
             'Error jim not equal to jim1'
+
+        """Test the stack plane method."""
+        jim0 = pj.Jim(rasterfn, band=0)
+        jim1 = pj.Jim(rasterfn, band=1)
+        jim2 = pj.Jim(rasterfn, band=2)
+        jimlist = pj.JimList([jim0, jim1, jim2])
+        jimliststack = pj.geometry.stackPlane(jimlist)
+        jimstack = pj.geometry.stackPlane(pj.geometry.stackPlane(jim0, jim1),
+                                          jim2)
+        assert jimliststack.pixops.isEqual(jimstack), \
+            'Error in geometry.stackPlane(): jimliststack not equal to jimstack'
+        jim3 = pj.JimList([jim0, jim1, jim2]).geometry.stackPlane()
+        jim3.geometry.cropPlane([0, 1])
+        assert pj.geometry.cropPlane(jim3, 0).pixops.isEqual(jim0), \
+            'Error jim3 not equal to jim0'
+        jim4 = pj.JimList([jim0, jim1, jim2]).geometry.stackPlane()
+        jim4.geometry.cropPlane([1, 2])
+        assert pj.geometry.cropPlane(jim4, 0).pixops.isEqual(jim1), \
+            'Error jim3 not equal to jim1'
+        jim = pj.JimList([jim3, jim4]).geometry.stackPlane()
+        jim.geometry.cropPlane([1, 2])
+        jim.geometry.cropPlane(0)
+        assert jim.pixops.isEqual(jim1), \
+            'Error jim not equal to jim1'
+
+        """Test the reduce plane method."""
+        jimstack = pj.Jim(rasterfn, band=[0,1,2], band2plane=True)
+        jimreduce = pj.geometry.reducePlane(jimstack, rule='max')
+        assert(jimreduce.properties.nrOfPlane()==1)
+        jimstack.geometry.reducePlane(rule='max')
+        assert(jimstack.properties.nrOfPlane()==1)
+        assert jimreduce.pixops.isEqual(jimstack) ,\
+                'Error in geometry.reducePlane()'
 
     def test_warp(self):
         """Test the warp method."""

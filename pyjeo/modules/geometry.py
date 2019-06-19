@@ -1,6 +1,7 @@
 """Module for operations working with the geometry of the Jim objects."""
 
 import pyjeo as _pj
+import os
 
 
 def image2geo(jim_object, i, j):
@@ -106,7 +107,12 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         kwargs.update({'dx': dx})
         kwargs.update({'dy': dy})
         kwargs.update({'nogeo': nogeo})
-        return _pj.Jim(jim_object._jipjim.crop(kwargs))
+
+        jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(kwargs))
+        for iplane in range(1,jim_object.properties.nrOfPlane()):
+            jimplane=_pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.crop(kwargs))
+            jim.geometry.stackPlane(jimplane)
+        return jim
 
     else:
         if nogeo:
@@ -141,7 +147,13 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         kwargs.update({'uly': uly})
         kwargs.update({'lrx': lrx})
         kwargs.update({'lry': lry})
-        return _pj.Jim(jim_object._jipjim.crop(kwargs))
+
+        jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(kwargs))
+        for iplane in range(1,jim_object.properties.nrOfPlane()):
+            jimplane=_pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.crop(kwargs))
+            jim.geometry.stackPlane(jimplane)
+        return jim
+        # return _pj.Jim(jim_object._jipjim.crop(kwargs))
 
 
 def cropOgr(jim_object, extent, **kwargs):
@@ -184,13 +196,17 @@ def cropOgr(jim_object, extent, **kwargs):
 
        For instance you can use 'eo':'ATTRIBUTE=fieldname'
     """
-    return _pj.Jim(jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
+    jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.cropOgr(extent._jipjimvect, kwargs))
+    for iplane in range(1,jim_object.properties.nrOfPlane()):
+        jimplane=pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.cropOgr(extent._jipjimvect, kwargs))
+        jim.geometry.stackPlane(jimplane)
+    return jim
 
 
 def cropBand(jim_object, band):
     """Subset raster dataset.
 
-    Subset raster dataset in spectral/temporal domain.
+    Subset raster dataset in spectral domain.
 
     :param jim_object: a Jim object
     :param band: List of band indices to crop (index is 0 based)
@@ -207,8 +223,28 @@ def cropBand(jim_object, band):
     return _pj.Jim(jim_object._jipjim.cropBand({'band': band}))
 
 
+def cropPlane(jim_object, plane):
+    """Subset raster dataset.
+
+    Subset raster dataset in temporal domain.
+
+    :param jim_object: a Jim object
+    :param plane: List of plane indices to crop (index is 0 based)
+    :return: Cropped subimage as Jim instance
+
+    Example:
+
+    Crop the first three planes from raster dataset jim::
+
+        jim=pj.Jim('/path/to/raster.tif')
+        jim3=pj.geometry.cropPlane(jim,plane=[0,1,2])
+
+    """
+    return _pj.Jim(jim_object._jipjim.cropPlane({'plane': plane}))
+
+
 def stackBand(jim_object, jim_other=None, band=None):
-    """Stack bands of Jim objects.
+    """Stack bands of Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the bands
     :param jim_other: a Jim object or jimlist from which to copy bands
@@ -267,6 +303,86 @@ def stackBand(jim_object, jim_other=None, band=None):
         raise TypeError('Error: expected a Jim object')
 
 
+def stackPlane(jim_object, jim_other=None, plane=None):
+    """Stack planes of Jim object.
+
+    :param jim_object: a Jim or JimList object used for stacking the planes
+    :param jim_other: a Jim object or jimlist from which to copy planes
+        (optional)
+    :return: Jim object with stacked planes
+
+    Append all the planes of jim1 to jim0::
+
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
+        jim_stacked=pj.geometry.stackPlane(jim0,jim1)
+
+    Stack all planes of the JimList, returning a multi-plane Jim object::
+
+        jim0=pj.Jim('/path/to/raster0.tif')
+        jim1=pj.Jim('/path/to/raster1.tif')
+        jimlist=pj.JimList([jim0,jim1])
+        jim_stacked=pj.geometry.stackPlane(jimlist)
+    """
+    if isinstance(jim_object, _pj.JimList):
+        retJim = _pj.Jim(jim_object._jipjimlist.stackPlane())
+        if isinstance(jim_other, _pj.Jim):
+            retJim.geometry.stackPlane(jim_other)
+            return retJim
+        else:
+            return retJim
+    elif isinstance(jim_object, _pj.Jim):
+        retJim = _pj.Jim(jim_object)
+        if not isinstance(jim_other, list):
+            jim_other = [jim_other]
+
+        for jim in jim_other:
+            retJim.geometry.stackPlane(jim_other)
+
+        return retJim
+    else:
+        raise TypeError('Error: expected a Jim object')
+
+
+def reducePlane(jim, rule='max', band=0, nodata=None):
+    """Reduce planes of Jim object.
+
+    :param jim: jim object on which to reduce planes
+    :param rule: rule to reduce (max, min, mean, median)
+    :param band: band on which to apply rule (default is first band: 0)
+    :param nodata: value to ignore when applying rule
+    :return: reduced single plane jim object
+    """
+    if jim.properties.nrOfPlane()<2:
+        print("Warning: single plane, no reduction is performed")
+    jimreduced=_pj.geometry.cropPlane(jim,0)
+    maskreduced=_pj.geometry.cropBand(jimreduced,band)
+    for iplane in range(1,jim.properties.nrOfPlane()):
+        jimplane=_pj.geometry.cropPlane(jim,iplane)
+        mask=_pj.geometry.cropBand(jimplane,band)
+        if nodata is not None:
+            jimreduced[maskreduced==nodata]=jimplane
+            maskreduced[maskreduced==nodata]=mask
+        if rule=='max':
+            jimreduced[maskreduced<mask]=jimplane
+            maskreduced[maskreduced<mask]=mask
+        elif rule=='min':
+            jimreduced[maskreduced>mask]=jimplane
+            maskreduced[maskreduced>mask]=mask
+    if rule=='mean' or rule=='avg':
+        for iband in range(1,jim.properties.nrOfBand()):
+            if nodata:
+                jimreduced.np()[:]=np.ma.filled(np.ma.mean(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+            else:
+                jimreduced.np()[:]=np.mean(jim.np(iband),axis=0)
+    elif rule=='median':
+        for iband in range(1,self.properties.nrOfBand()):
+            if nodata:
+                jimreduced.np()[:]=np.ma.filled(np.ma.median(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+            else:
+                jimreduced.np()[:]=np.median(jim.np(iband),axis=0)
+    return jimreduced
+
 def warp(jim_object, t_srs, **kwargs):
     """Warp a raster dataset to a target spatial reference system.
 
@@ -275,20 +391,20 @@ def warp(jim_object, t_srs, **kwargs):
     :param kwargs: See table below
     :return: Cropped subimage as Jim instance
 
-    +------------------+-------------------------------------------------------------------+
-    | key              | value                                                             |
-    +==================+===================================================================+
-    | s_srs            | Source spatial reference system (default is to read               |
-    |                  | from input)                                                       |
-    +------------------+-------------------------------------------------------------------+
-    | resample         | Resample algorithm used for reading pixel data in                 |
-    |                  | case of interpolation                                             |
-    |                  | (default: GRIORA_NearestNeighbour). Check                         |
+    +------------------+---------------------------------------------------------------------------------------------+
+    | key              | value                                                                                       |
+    +==================+=============================================================================================+
+    | s_srs            | Source spatial reference system (default is to read                                         |
+    |                  | from input)                                                                                 |
+    +------------------+---------------------------------------------------------------------------------------------+
+    | resample         | Resample algorithm used for reading pixel data in                                           |
+    |                  | case of interpolation                                                                       |
+    |                  | (default: GRIORA_NearestNeighbour). Check                                                   |
     |                  | https://gdal.org/api/raster_c_api.html?highlight=griora_nearestn#_CPPv418GDALRIOResampleAlg |
-    |                  | for available options.                                            |
-    +------------------+-------------------------------------------------------------------+
-    | nodata           | Nodata value to put in image if out of bounds                     |
-    +------------------+-------------------------------------------------------------------+
+    |                  | for available options.                                                                      |
+    +------------------+---------------------------------------------------------------------------------------------+
+    | nodata           | Nodata value to put in image if out of bounds                                               |
+    +------------------+---------------------------------------------------------------------------------------------+
 
     Example:
 
@@ -309,7 +425,13 @@ def warp(jim_object, t_srs, **kwargs):
 
     """
     kwargs.update({'t_srs': t_srs})
-    return _pj.Jim(jim_object._jipjim.warp(kwargs))
+
+    jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.warp(kwargs))
+    for iplane in range(1,jim_object.properties.nrOfPlane()):
+        jimplane=_pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.warp(kwargs))
+        jim.geometry.stackPlane(jimplane)
+    return jim
+    # return _pj.Jim(jim_object._jipjim.warp(kwargs))
 
 
 def imageInsert(jim_object, sec_jim_object, x, y, z, band=0):
@@ -790,7 +912,13 @@ class _Geometry():
             kwargs.update({'dx': dx})
             kwargs.update({'dy': dy})
             kwargs.update({'nogeo': nogeo})
-            self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
+
+            jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.crop(kwargs))
+            for iplane in range(1,self._jim_object.properties.nrOfPlane()):
+                jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.crop(kwargs))
+                jim.geometry.stackPlane(jimplane)
+            self._jim_object._set(jim._jipjim)
+            # self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
         # else:
         #     if nogeo:
         #         uli = ulx
@@ -871,13 +999,18 @@ class _Geometry():
 
            For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        self._jim_object._set(
-            self._jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
+        jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.cropOgr(iextent._jipjimvect, kwargs))
+        for iplane in range(1,self._jim_object.properties.nrOfPlane()):
+            jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.cropOgr(iextent._jipjimvect, kwargs))
+            jim.geometry.stackPlane(jimplane)
+        self._jim_object._set(jim._jipjim)
+        # self._jim_object._set(
+        #     self._jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
 
     def cropBand(self, band):
         """Subset raster dataset.
 
-        Subset raster dataset in spectral/temporal domain.
+        Subset raster dataset in spectral domain.
 
         Modifies the instance on which the method was called.
 
@@ -893,33 +1026,24 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_cropBand({'band': band})
 
-    """Stack bands of Jim objects
+    def cropPlane(self, plane):
+        """Subset raster dataset.
 
-    :param jim_object: a Jim or JimList object used for stacking the bands
-    :param jim_other: a Jim object from which to copy bands (optional)
-    :param band: List of band indices to stack (index is 0 based).
-        Default is to stack all bands.
-    :return: Jim object with stacked bands
+        Subset raster dataset in temporal domain.
 
-    Append all the bands of jim1 to jim0::
+        Modifies the instance on which the method was called.
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jim_stacked=pj.geometry.stackBand(jim0,jim1)
+        :param plane: List of plane indices to crop (index is 0 based)
 
-    Stack all bands of the JimList, returning a multi-band Jim object::
+        Example:
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jimlist=pj.JimList([jim0,jim1])
-        jim_stacked=pj.geometry.stackBand(jimlist)
+        Crop the first three planes from raster dataset jim0::
 
-    Append the first three bands of raster dataset jim1 to the image jim0::
+            jim0=pj.Jim('/path/to/raster0.tif')
+            jim0.cropPlane(plane=[0,1,2])
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jim_stacked=pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
-    """
+        """
+        self._jim_object._jipjim.d_cropPlane({'plane': plane})
 
     def stackBand(self, jim_other, band=None):
         """Stack the bands of another Jim object to the current Jim object.
@@ -955,10 +1079,78 @@ class _Geometry():
             else:
                 self._jim_object._jipjim.d_stackBand(jim._jipjim)
 
-    def extractOgr(self, jim_ref, rule, output, **kwargs):
+    def stackPlane(self, jim_other):
+        """Stack the planes of another Jim object to the current Jim object.
+
+        Modifies the instance on which the method was called.
+
+        :param jim_other: a Jim object or jimlist from which to copy planes
+
+        Example:
+
+        Append all the planes of a multiplane Jim object jim1 to the current
+        single plane Jim object jim0::
+
+            jim0 = pj.Jim('/path/to/singleplane.tif')
+            jim1 = pj.Jim('/path/to/multiplane.tif')
+            jim0.geometry.stackPlane(jim1)
+        """
+        if not isinstance(jim_other, list):
+            jim_other = [jim_other]
+
+        for jim in jim_other:
+            self._jim_object._jipjim.d_stackPlane(jim._jipjim)
+
+    def reducePlane(self, rule='max', band=0, nodata=None):
+        """Reduce planes of Jim object.
+
+        :param rule: rule to reduce (max, min, mean, median)
+        :param band: band on which to apply rule (default is first band: 0)
+        :param nodata: value to ignore when applying rule
+
+
+        Stack planes of two single plane jim objects, then reduce by taking the means::
+
+            jim0=pj.Jim('/path/to/raster0.tif')
+            jim1=pj.Jim('/path/to/raster1.tif')
+            jim_stacked=pj.geometry.stackPlane(jim0,jim1)
+            jim_stacked.geometry.reducePlane('mean')
+        """
+        if self._jim_object.properties.nrOfPlane()<2:
+            print("Warning: single plane, no reduction is performed")
+        jimreduced=_pj.geometry.cropPlane(self._jim_object,0)
+        maskreduced=_pj.geometry.cropBand(jimreduced,band)
+        for iplane in range(1,self._jim_object.properties.nrOfPlane()):
+            jimplane=_pj.geometry.cropPlane(self._jim_object,iplane)
+            mask=_pj.geometry.cropBand(jimplane,band)
+            if nodata is not None:
+                jimreduced[maskreduced==nodata]=jimplane
+                maskreduced[maskreduced==nodata]=mask
+            if rule=='max':
+                jimreduced[maskreduced<mask]=jimplane
+                maskreduced[maskreduced<mask]=mask
+            elif rule=='min':
+                jimreduced[maskreduced>mask]=jimplane
+                maskreduced[maskreduced>mask]=mask
+        if rule=='mean' or rule=='avg':
+            for iband in range(1,self._jim_object.properties.nrOfBand()):
+                if nodata:
+                    jimreduced.np()[:]=np.ma.filled(np.ma.mean(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+                else:
+                    jimreduced.np()[:]=np.mean(self._jim_object.np(iband),axis=0)
+        elif rule=='median':
+            for iband in range(1,self._jim_object.properties.nrOfBand()):
+                if nodata:
+                    jimreduced.np()[:]=np.ma.filled(np.ma.median(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+                else:
+                    jimreduced.np()[:]=np.median(self._jimobject.np(iband),axis=0)
+        self._jim_object._set(jimreduced._jipjim)
+
+    #deprecated: use aggregate_vector instead
+    def extractOgr(self, jvec, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
-        :param jim_ref: reference JimVect instance
+        :param jvec: reference JimVect instance
         :param rule: Rule how to calculate zonal statistics per feature
             (see list of :ref:`supported rules <extract_rules>`)
         :param output: Name of the output vector dataset in which the zonal
@@ -1099,11 +1291,329 @@ class _Geometry():
             else:
                 kwargs['threshold'] = -kwargs['threshold']
 
-        avect = self._jim_object._jipjim.extractOgr(jim_ref._jipjimvect,
-                                                    kwargs)
+        avect = self._jim_object._jipjim.extractOgr(jvec._jipjimvect, kwargs)
         pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
+
+
+    def aggregate_vector(self, jvec, rule, output, **kwargs):
+        """Extract pixel values from raster image based on a vector dataset.
+
+        :param jvec: reference JimVect instance
+        :param rule: Rule how to calculate zonal statistics per feature
+            (see list of :ref:`supported rules <extract_rules>`)
+        :param output: Name of the output vector dataset in which the zonal
+            statistics will be saved
+        :param kwargs: See table below
+        :return: A VectorOgr with the same geometry as the sample vector
+            dataset and an extra field for each of the calculated raster value
+            (zonal) statistics. The same layer name(s) of the sample will be
+            used for the output vector dataset
+
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | copy             | Copy these fields from the sample vector dataset |
+        |                  | (default is to copy all fields)                  |
+        +------------------+--------------------------------------------------+
+        | label            | Create extra field named 'label' with this value |
+        +------------------+--------------------------------------------------+
+        | fid              | Create extra field named 'fid' with this field   |
+        |                  | identifier (sequence of features)                |
+        +------------------+--------------------------------------------------+
+        | band             | List of bands to extract (0 indexed). Default is |
+        |                  | to use extract all bands                         |
+        +------------------+--------------------------------------------------+
+        | bandname         | List of band name corresponding to list of bands |
+        |                  | to extract                                       |
+        +------------------+--------------------------------------------------+
+        | startband        | Start band sequence number (0 indexed)           |
+        +------------------+--------------------------------------------------+
+        | endband          | End band sequence number (0 indexed)             |
+        +------------------+--------------------------------------------------+
+        | plane            | List of planes to extract (0 indexed). Default is|
+        |                  | to use extract all planes                        |
+        +------------------+--------------------------------------------------+
+        | planename        | List of plane name corresponding to list of      |
+        |                  | planes to extract                                |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+
+        .. _extract_rules:
+
+        :Supported rules to extract:
+
+        +------------------+--------------------------------------------------+
+        | rule             | description                                      |
+        +==================+==================================================+
+        | point            | extract a single pixel within the polygon or on  |
+        |                  | each point feature                               |
+        +------------------+--------------------------------------------------+
+        | allpoints        | Extract all pixel values covered by the polygon  |
+        +------------------+--------------------------------------------------+
+        | centroid         | Extract pixel value at the centroid of           |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | mean             | Extract average of all pixel values within the   |
+        |                  | polygon                                          |
+        +------------------+--------------------------------------------------+
+        | stdev            | Extract standard deviation of all pixel values   |
+        |                  | within the polygon                               |
+        +------------------+--------------------------------------------------+
+        | median           | Extract median of all pixel values within        |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | min              | Extract minimum value of all pixels within       |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | max              | Extract maximum value of all pixels within       |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | sum              | Extract sum of the values of all pixels within   |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | mode             | Extract the mode of classes within the polygon   |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | proportion       | Extract proportion of class(es) within           |
+        |                  | the polygon                                      |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | count            | Extract count of class(es) within the polygon    |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | percentile       | Extract percentile as defined by option perc     |
+        |                  | (e.g, 95th percentile of values covered by       |
+        |                  | polygon)                                         |
+        +------------------+--------------------------------------------------+
+
+
+        .. note::
+            To ignore some pixels from the extraction process, see list
+            of :ref:`mask <extract_mask>` key values:
+
+        .. _extract_mask:
+
+        :Supported key values to mask pixels that must be ignored in the extraction process:
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | srcnodata        | List of nodata values not to extract             |
+        +------------------+--------------------------------------------------+
+        | buffer           | Buffer (in geometric units of raster dataset).   |
+        |                  | Use neg. value to exclude pixels within buffer   |
+        +------------------+--------------------------------------------------+
+        | bndnodata        | List of band in input image to check if pixel is |
+        |                  | valid (used for srcnodata)                       |
+        +------------------+--------------------------------------------------+
+        | mask             | Use the the specified file as a validity mask    |
+        +------------------+--------------------------------------------------+
+        | mskband          | Use the the specified band of the mask file      |
+        |                  | defined                                          |
+        +------------------+------------------------------------------------  +
+        | msknodata        | List of mask values not to extract               |
+        +------------------+--------------------------------------------------+
+        | threshold        | Maximum number of features to extract. Use       |
+        |                  | percentage value as string                       |
+        |                  | (e.g., '10%') or integer value for absolute      |
+        |                  | threshold                                        |
+        +------------------+--------------------------------------------------+
+
+        Example:
+
+        Extract the mean value of the pixels within the polygon of the provided
+        reference vector. Exclude the pixels within a buffer of 10m of
+        the polygon boundary. Use a temporary vector in memory for
+        the calculation. Then write the result to the final destination
+        on disk::
+
+            reference = pj.JimVect('/path/to/reference.sqlite')
+            jim0 = pj.Jim('/path/to/raster.tif')
+            v = jim0.extractOgr(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v.write('/path/to/output.sqlite)
+
+        """
+
+        #make list of rules
+        rules=[]
+        if rule:
+            for irule in rule:
+                rules.append(irule)
+
+        kwargs.update({'output': output})
+        kwargs.update({'rule': rules})
+        if 'threshold' in kwargs:
+            if '%' in kwargs['threshold']:
+                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+            else:
+                kwargs['threshold'] = -kwargs['threshold']
+
+        bandnames = kwargs.pop('bandname', None)
+        if bandnames is None:
+            bandnames=['b'+str(iband) for iband in range(0,self._jim_object.properties.nrOfBand())]
+
+        planenames = kwargs.pop('planename', None)
+        if planenames is None:
+            planenames=['t'+str(iplane) for iplane in range(0,self._jim_object.properties.nrOfPlane())]
+
+        plane = kwargs.pop('plane',None)
+
+        if jvec == None:
+            raise Exception('Error: missing jvec option')
+
+        if self._jim_object.properties.nrOfPlane()>1:
+            if plane is None:
+                plane=range(0,self._jim_object.properties.nrOfPlane())
+            else:
+                for iplane in plane:
+                    if iplane >= self._jim_object.properties.nrOfPlane():
+                        raise Exception('Error: illegal plane {}'.format(iplane))
+            if len(planenames)!=self._jim_object.properties.nrOfPlane():
+                raise Exception('Error: number of planes does not correspond to planename')
+
+            if jvec.properties.getLayerCount() > 1:
+                raise Exception('Error: multiple layers not supported when aggregating vectors over multi-plane raster datasets, please use single layer vector object')
+        else:
+            plane=[0]
+            planenames=None
+
+
+        if len(plane)==1:
+            if '/' not in kwargs['output']:
+                kwargs['output']=os.path.join('/vsimem/',kwargs['output'])
+            print("len of plane is 1")
+            print("kwargs: {}".format(kwargs))
+            if self._jim_object.properties.nrOfPlane() == 1:
+                print("nrOfPlane is 1")
+                avect = self._jim_object.geometry.extractOgr(jvec, **kwargs)
+                print("avect created")
+            else:
+                print("nrOfPlane is not 1")
+                avect = pj.geometry.cropPlane(self,plane[0])._jim_object.geometry.extractOgr(jvec, **kwargs)
+                print("avect created")
+            avect.io.write()
+            print("number of featues in avect: {}".format(avect.properties.getFeatureCount()))
+            avect.io.close()
+
+            pjvect = _pj.JimVect(kwargs['output'])
+            print("set avect")
+            pjvect._set(avect)
+            print("number of featues in pjvect: {}".format(pjvect.properties.getFeatureCount()))
+            return pjvect
+
+        verbose=True
+        if verbose:
+            print("planes: {}".format(planenames))
+
+        intersectfn = '/vsimem/sampleintersect.sqlite'
+        sampleintersect = _pj.geometry.intersect(jvec, self._jim_object, output=intersectfn, oformat='SQLite',co=['OVERWRITE=YES'])
+        if sampleintersect.properties.isEmpty():
+            if verbose:
+                print("warning: no features found")
+            sampleintersect.io.close()
+            raise Exception('intersect is empty')
+        else:
+            foundFeaturesSinglePlane=True
+            if verbose:
+                print("intersect contains {} features.".format(sampleintersect.properties.getFeatureCount()))
+            sampleintersect.io.write()
+
+        firstExtract=True
+        joinfn=None
+
+        vsioutput = os.path.join('/vsimem','aggregate_polygon.sqlite')
+        for iplane in range(0,len(plane)):
+            ibandnames=[]
+            try:
+                foundFeaturesSinglePlane=False
+                if verbose:
+                    print("Processing plane", planenames[iplane])
+
+                for band in bandnames:
+                    if len(rules) > 1:
+                        ibandnames.append('_' + planenames[iplane] + '_' + band)  # rules are automatically pre-pended in extractogr
+                    else:
+                        ibandnames.append(rules[0] + '_' + planenames[iplane] + '_' + band)
+
+                fieldnames = sampleintersect.properties.getFieldNames()
+                if verbose:
+                    print("fieldnames are: {}".format(fieldnames))
+
+                    print("we search for {} features".format(sampleintersect.properties.getFeatureCount()))
+                    print("starting extractOgr")
+
+                try:
+                    if 'buffer' in kwargs:
+                        jim=_pj.geometry.cropPlane(self._jim_object,plane[iplane])
+                        v=jim.geometry.extractOgr(sampleintersect, rule=rules, output=vsioutput, oformat='SQLite', co=['OVERWRITE=YES'], bandname=ibandnames, copy=fieldnames, fid='fid', buffer=kwargs['buffer'])
+                    else:
+                        print("not using buffer")
+                        jim=_pj.geometry.cropPlane(self._jim_object,plane[iplane])
+                        v=jim.geometry.extractOgr(sampleintersect, rule=rules, output=vsioutput, oformat='SQLite', co=['OVERWRITE=YES'], bandname=ibandnames, copy=fieldnames, fid='fid')
+                        # v=_pj.geometry.cropPlane(self._jim_object,plane[iplane])._jipjim.extractOgr(sampleintersect, rules, vsioutput, oformat='SQLite', co=['OVERWRITE=YES'], bandname=bandnames, copy=fieldnames, fid='fid')
+                    if v.properties.isEmpty():
+                        v.io.close()
+                except:
+                    print("no coverage for plane {}, continue with next product".format(planenames[iplane]))
+                    if v:
+                        v.io.close()
+                    continue
+                if not v.properties.isEmpty():
+                    if verbose:
+                        print("we have found {} features".format(v.properties.getFeatureCount()))
+                    v.io.write()
+                    #join vectors
+                    if '/' not in output:
+                        joinfn=os.path.join('/vsimem/',output)
+                    else:
+                        joinfn=output
+                    # joinfn='/vsimem/vjoin.sqlite'
+
+                    if firstExtract:
+                        if verbose:
+                            print("firstExtract write to {}".format(joinfn))
+                        vjoin=_pj.JimVect(v,output=joinfn,co='OVERWRITE=YES')
+                        vjoin.io.write()
+                        vjoin.io.close()
+                        firstExtract=False
+                    else:
+                        print("opening {}".format(joinfn))
+                        vprev=_pj.JimVect(joinfn)
+                        print("join to {}".format(joinfn))
+                        if vprev.properties.isEmpty():
+                            print("vprev is empty")
+                        if v.properties.isEmpty():
+                            print("v is empty")
+                        vjoin=_pj.geometry.join(vprev, v, joinfn, oformat='SQLite', co=['OVERWRITE=YES'], key=['fid'],
+                                                method='OUTER_FULL')
+                        print("write vjoin (to {})".format(joinfn))
+                        vjoin.io.write()
+                        print("close vjoin")
+                        vjoin.io.close()
+                    v.io.close()
+                else:
+                    v.io.close()
+            except:
+                print("raised exception dataset in for plane {}".format(planenames[iplane]))
+                continue
+
+        sampleintersect.io.close()
+        if verbose:
+            print("we are in join at end")
+        if joinfn:
+            if verbose:
+                print("joinfn is {}".format(joinfn))
+            v = _pj.JimVect(joinfn)
+            return v
+        else:
+            print("Error: joinfn is None, no valid features found")
+            raise Exception('Error: joinfn is None, no valid features found')
 
     def extractSample(self, output, **kwargs):
         """Extract a random or grid sample from a raster dataset.
@@ -1265,15 +1775,15 @@ class _Geometry():
         Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
         41 (water) and an aggregated (rest) class 50::
 
-            jim_ref=pj.Jim('/path/to/landcovermap.tif')
+            jvec=pj.Jim('/path/to/landcovermap.tif')
 
             classes=[2,12,25,41,50]
             thresholds=['20%','25%','25%','10%','5%']
 
-            jim_ref=pj.Jim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
+            jvec=pj.Jim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
 
             outputfn='/path/to/output.sqlite'
-            sample=jim.extractImg(jim_ref,srcnodata=[0],output=outputfn,class=classes,threshold=thresholds,bandname=['B02','B03','B04','B08'],band=[0,1,2,3])
+            sample=jim.extractImg(jvec,srcnodata=[0],output=outputfn,class=classes,threshold=thresholds,bandname=['B02','B03','B04','B08'],band=[0,1,2,3])
         """
         kwargs.update({'output': output})
         if 'threshold' in kwargs:
@@ -1323,7 +1833,12 @@ class _Geometry():
 
         """
         kwargs.update({'t_srs': t_srs})
-        self._jim_object._set(self._jim_object._jipjim.warp(kwargs))
+        jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.warp(kwargs))
+        for iplane in range(1,self._jim_object.properties.nrOfPlane()):
+            jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.warp(kwargs))
+            jim.geometry.stackPlane(jimplane)
+        self._jim_object._set(jim._jipjim)
+        # self._jim_object._set(self._jim_object._jipjim.warp(kwargs))
 
     def imageInsert(self, sec_jim_object, x, y, z, band=0):
         """Merge Jim instance with values of sec_jim_object in given coords.
@@ -1508,10 +2023,8 @@ class _GeometryList():
         self._jim_list = caller
 
     def stackBand(self, band=None):
-        """Stack bands from another raster dataset to current raster dataset.
+        """Stack bands from all raster datasets in list in new multiband Jim object
 
-        :param jim_object: a Jim object to stack bands
-        :param jim_other: a Jim object from which to copy bands
         :param band: List of band indices to stack (index is 0 based)
         :return: multiband Jim object
 
@@ -1535,6 +2048,23 @@ class _GeometryList():
                 self._jim_list._jipjimlist.stackBand({'band': band}))
         else:
             return _pj.Jim(self._jim_list._jipjimlist.stackBand())
+
+    def stackPlane(self):
+        """Stack planes from all raster datasets in list in new multiplane Jim object
+
+        :return: multiplane Jim object
+
+        Stack planes from another raster dataset to current raster dataset.
+
+        :return: multiplane Jim object
+
+        Create a multiplane Jim object from a list of two Jim objects::
+
+            jim0=pj.Jim('/path/to/raster0.tif')
+            jim1=pj.Jim('/path/to/raster1.tif')
+            jim_stacked=pj.JimList([jim0,jim1]).geometry.stackPlane()
+        """
+        return _pj.Jim(self._jim_list._jipjimlist.stackPlane())
 
     def extractOgr(self, sample, rule, output, **kwargs):
         if isinstance(sample, _pj.JimVect):

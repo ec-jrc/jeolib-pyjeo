@@ -171,6 +171,12 @@ Open a vector and read layer named lodi::
 
   v=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
 
+Open a vector and read layer named lodi and save vector to new filename::
+
+  v=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
+  vnew=pj.JimVect(v,output='/path/to/newvect.sqlite')
+  vnew.io.write()
+
 Open a vector and use an attribute filter (the field intern_id must be between 10000 and 10500)::
 
   v=pj.JimVect('/path/to/vector.sqlite', attributeFilter='(intern_id>10000) AND (intern_id<10500)')

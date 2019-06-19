@@ -295,16 +295,16 @@ class _PropertiesList():
         """Check if a geolocation is covered by this dataset.
 
         You can check the coverage for a :ref:`point of interest
-        <covers1>` or :ref:`region of interest <covers2>`.
+        <coversl1>` or :ref:`region of interest <coversl2>`.
 
-        .. _covers1:
+        .. _coversl1:
 
         :Using a point coordinates:
 
         * ``x`` (float): x coordinate in spatial reference system of the raster dataset
         * ``y`` (float): y coordinate in spatial reference system of the raster dataset
 
-        .. _covers2:
+        .. _coversl2:
 
         :Using a region of interest:
 
@@ -458,3 +458,4 @@ class _PropertiesVect():
         :return: The projection string in well known text format.
         """
         return self._jim_vect._jipjimvect.getProjection(layer)
+
