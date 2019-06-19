@@ -3,6 +3,37 @@
 import pyjeo as _pj
 
 
+def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, graph=4):
+    """Label image.
+
+    :param jim: a Jim object
+    :param ox: x coordinate of origin of imngb
+    :param oy: y coordinate of origin of imngb
+    :param oz: z coordinate of origin of imngb
+    :param rg: integer for range parameter lambda g
+    :param rl: integer for range parameter lambda l
+    :param varmax: float for maximum variance of cc
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images, default is 4)
+    :return: labeled Jim object
+    """
+    _pj._check_graph(graph, [4, 8])
+
+    if graph == 4:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+    else:
+        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb.pixops.setData(1)
+        ngb[1, 1] = 0
+
+    return _pj.Jim(jim._jipjim.labelConstrainedCCsVariance(
+        ngb._jipjim, ox, oy, oz, rg, rl, varmax))
+
+
 def labelImagePixels(jim):
     """Label each non-zero pixel of im with a unique label.
 
@@ -452,6 +483,37 @@ class _CCOps():
 
     def _set_caller(self, caller):
         self._jim_object = caller
+
+    def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, graph=4):
+        """Label image.
+
+        :param jim: a Jim object
+        :param ox: x coordinate of origin of imngb
+        :param oy: y coordinate of origin of imngb
+        :param oz: z coordinate of origin of imngb
+        :param rg: integer for range parameter lambda g
+        :param rl: integer for range parameter lambda l
+        :param varmax: float for maximum variance of cc
+        :param graph: an integer holding for the graph connectivity
+            (4 or 8 for 2-D images, default is 4)
+        :return: labeled Jim object
+        """
+        _pj._check_graph(graph, [4, 8])
+
+        if graph == 4:
+            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+            ngb[0, 1] = 1
+            ngb[1, 0] = 1
+            ngb[1, 2] = 1
+            ngb[2, 1] = 1
+        else:
+            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+            ngb.pixops.setData(1)
+            ngb[1, 1] = 0
+
+        self._jim_object._set(
+            self._jim_object._jipjim.labelConstrainedCCsVariance(
+                ngb._jipjim, ox, oy, oz, rg, rl, varmax))
 
     def labelImagePixels(self):
         """Label each non-zero pixel of im with a unique label.

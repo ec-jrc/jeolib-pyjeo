@@ -3,6 +3,8 @@
 import pyjeo as pj
 import unittest
 
+import numpy as np
+
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
@@ -157,6 +159,61 @@ class BadCCOps(unittest.TestCase):
         assert stats['mean'] < mean, \
             'Error in Jim.ccops.distanceGeodesic() ' \
             '(mean value for graph=8 not smaller than for graph=4)'
+
+    def test_labelling(self):
+        """Test the distance functions and methods."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(tiles[1])
+
+        jim1.pixops.convert('Byte')
+        jim2.pixops.convert('Byte')
+
+        labelled = pj.ccops.labelConstrainedCCsVariance(
+            jim1, 0, 0, 0, 0, 0, 0, 4)
+        labelled_different = pj.ccops.labelConstrainedCCsVariance(
+            jim1, 0, 0, 0, 0, 0, 0, 8)
+        jim1_copy = pj.Jim(jim1)
+        jim1_copy.ccops.labelConstrainedCCsVariance(0, 0, 0, 0, 0, 0, 4)
+
+        stats = labelled.stats.getStats()
+
+        assert jim1_copy.pixops.isEqual(labelled), \
+            'Inconsistency in ccops.labelConstrainedCCsVariance() ' \
+            '(method returns different result than function)'
+
+        assert not labelled.pixops.isEqual(labelled_different), \
+            'Error in ccops.labelConstrainedCCsVariance() ' \
+            'created the same object for different alpha value)'
+
+        assert stats['min'] == 0, \
+            'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
+            '(minimum value not equal to 0)'
+        assert 0 < stats['max'] < jim1.properties.nrOfCol() * \
+               jim1.properties.nrOfRow(), \
+                'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
+                '(maximum value not smaller than nrOfCol * nrOfRow or equal to 0)'
+
+        labelled_different = pj.ccops.labelConstrainedCCsVariance(
+            jim1, 0, 0, 0, 1, 1, 5, 4)
+        stats2 = labelled_different.stats.getStats()
+
+        assert stats2['max'] < stats['max'], \
+            'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
+            '(maximum value for rg2, rl2 and varmax2 > rg1, rl1 and varmax1 ' \
+            'not smaller)'
+
+        labelled_different = pj.ccops.labelConstrainedCCsVariance(
+            jim1, 5, 5, 0, 0, 0, 0, 4)
+
+        assert labelled_different[1, 1].np()[0, 0] == 0, \
+            'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
+            '(some of parameters ox, oy, oz not applied)'
+
+        non_zero1 = np.count_nonzero(jim1_copy.np())
+        non_zero2 = np.count_nonzero(labelled_different.np())
+        assert non_zero1 > non_zero2, \
+            'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
+            '(some of parameters ox, oy, oz not applied)'
 
 
 def load_tests(loader=None, tests=None, pattern=None):
