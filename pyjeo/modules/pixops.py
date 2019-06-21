@@ -82,7 +82,10 @@ def convert(jim_object, otype, **kwargs):
         return _pj.Jim(jim_object._jipjim.convert(kwargs))
     else:
         jimnew=_pj.Jim(ncol=jim_object.properties.nrOfCol(),nrow=jim_object.properties.nrOfRow(),nband=jim_object.properties.nrOfBand(),nplane=jim_object.properties.nrOfPlane(),otype=otype)
-        jimnew.np()[:]=jim_object.np().astype(nptype)
+        jimnew.properties.setProjection(jim_object.properties.getProjection())
+        jimnew.properties.setGeoTransform(jim_object.properties.getGeoTransform())
+        for iband in range(0,jim_object.properties.nrOfBand()):
+            jimnew.np(iband)[:]=jim_object.np(iband).astype(nptype)
         return jimnew
 
 # def convert(jim_object, otype, **kwargs):
@@ -149,7 +152,23 @@ def isEqual(first_jim, second_jim):
     :return: True if the values are equal, zero otherwise
     """
     if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
-        return numpy.array_equal(first_jim.np(), second_jim.np())
+        if first_jim.properties.nrOfPlane() != second_jim.properties.nrOfPlane():
+            return False
+        if first_jim.properties.nrOfPlane() == 1:
+            for iband in range(0,first_jim.properties.nrOfBand()):
+                if not numpy.array_equal(first_jim.np(iband), second_jim.np(iband)):
+                    return False
+            return True
+        else:
+            for iplane in range(0,jim_object.properties.nrOfPlane()):
+                first_plane=_pj.geometry.cropPlane(first_jim, iplane)
+                second_plane=_pj.geometry.cropPlane(second_jim, iplane)
+                if first_plane.properties.nrOfBand() != second_plane.properties.nrOfBand():
+                    return False
+                for iband in range(0,first_plane.properties.nrOfBand()):
+                    if not numpy.array_equal(first_plane.np(iband), second_plane.np(iband)):
+                        return False
+            return True
     else:
         return False
 
@@ -434,7 +453,10 @@ class _PixOps():
             self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
         else:
             jimnew=_pj.Jim(ncol=self._jim_object.properties.nrOfCol(),nrow=self._jim_object.properties.nrOfRow(),nband=self._jim_object.properties.nrOfBand(),nplane=self._jim_object.properties.nrOfPlane(),otype=otype)
-            jimnew.np()[:]=self._jim_object.np().astype(nptype)
+            jimnew.properties.setProjection(self._jim_object.properties.getProjection())
+            jimnew.properties.setGeoTransform(self._jim_object.properties.getGeoTransform())
+            for iband in range(0,self._jim_object.properties.nrOfBand()):
+                jimnew.np(iband)[:]=self._jim_object.np(iband).astype(nptype)
             self._jim_object._set(jimnew._jipjim)
 
     # def convert(self, otype, **kwargs):
@@ -514,7 +536,23 @@ class _PixOps():
         :return: True if the values are equal, zero otherwise
         """
         if isinstance(other, _pj.Jim):
-            return numpy.array_equal(self._jim_object.np(), other.np())
+            if self._jim_object.properties.nrOfPlane() != other.properties.nrOfPlane():
+                return False
+            if self._jim_object.properties.nrOfPlane() == 1:
+                for iband in range(0,self._jim_object.properties.nrOfBand()):
+                    if not numpy.array_equal(self._jim_object.np(iband), other.np(iband)):
+                        return False
+                return True
+            else:
+                for iplane in range(0,self._jim_object.properties.nrOfPlane()):
+                    first_plane=_pj.geometry.cropPlane(self._jim_object, iplane)
+                    second_plane=_pj.geometry.cropPlane(other, iplane)
+                    if first_plane.properties.nrOfBand() != second_plane.properties.nrOfBand():
+                        return False
+                    for iband in range(0,first_plane.properties.nrOfBand()):
+                        if not numpy.array_equal(first_plane.np(iband), second_plane.np(iband)):
+                            return False
+                return True
         else:
             return False
 
