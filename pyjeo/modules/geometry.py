@@ -999,9 +999,9 @@ class _Geometry():
 
            For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.cropOgr(iextent._jipjimvect, kwargs))
+        jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.cropOgr(extent._jipjimvect, kwargs))
         for iplane in range(1,self._jim_object.properties.nrOfPlane()):
-            jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.cropOgr(iextent._jipjimvect, kwargs))
+            jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.cropOgr(extent._jipjimvect, kwargs))
             jim.geometry.stackPlane(jimplane)
         self._jim_object._set(jim._jipjim)
         # self._jim_object._set(
