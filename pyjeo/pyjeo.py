@@ -1057,14 +1057,15 @@ class _ParentList(_jl.JimList):
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
-        jiplib_images_list = [i._jipjim for i in images_list]
+        jiplib_images_list = [i._jipjim if isinstance(i, Jim) else i for i in
+                              images_list]
         super(_ParentList, self).__init__(jiplib_images_list, *args)
 
 
 class JimList(list):
     """Definition of JimList object."""
 
-    def __init__(self, images_list=list(), *args):
+    def __init__(self, images_list=[], *args):
         """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
