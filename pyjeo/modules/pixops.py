@@ -36,8 +36,8 @@ def convert(jim_object, otype, **kwargs):
         jim0=jl.io.createJim('/path/to/raster.tif')
         jim0.convert(otype=Byte,autoscale=[0,255])
 
-        Clip raster dataset between 0 and 255 (set all other values to 0),
-        then convert data type to byte::
+    Clip raster dataset between 0 and 255 (set all other values to 0),
+    then convert data type to byte::
 
         jim1=jl.io.createJim('/path/to/raster.tif')
         jim1.setThreshold(min=0,max=255,nodata=0)
@@ -407,8 +407,8 @@ class _PixOps():
             jim0=jl.io.createJim('/path/to/raster.tif')
             jim0.convert(otype=Byte,autoscale=[0,255])
 
-            Clip raster dataset between 0 and 255 (set all other values to 0),
-            then convert data type to byte::
+        Clip raster dataset between 0 and 255 (set all other values to 0),
+        then convert data type to byte::
 
             jim1=jl.io.createJim('/path/to/raster.tif')
             jim1.setThreshold(min=0,max=255,nodata=0)
