@@ -190,8 +190,9 @@ class BadCCOps(unittest.TestCase):
             '(minimum value not equal to 0)'
         assert 0 < stats['max'] < jim1.properties.nrOfCol() * \
                jim1.properties.nrOfRow(), \
-                'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
-                '(maximum value not smaller than nrOfCol * nrOfRow or equal to 0)'
+            'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
+            '(maximum value not smaller than nrOfCol * nrOfRow or ' \
+            'equal to 0)'
 
         labelled_different = pj.ccops.labelConstrainedCCsVariance(
             jim1, 0, 0, 0, 1, 1, 5, 4)

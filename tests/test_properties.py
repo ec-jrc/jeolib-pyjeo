@@ -211,6 +211,6 @@ def load_tests(loader=None, tests=None, pattern=None):
     if not loader:
         loader = unittest.TestLoader()
     suite_list = [loader.loadTestsFromTestCase(BadProps),
-                  # loader.loadTestsFromTestCase(BadPropsLists),
+                  loader.loadTestsFromTestCase(BadPropsLists),
                   loader.loadTestsFromTestCase(BadPropsVects)]
     return unittest.TestSuite(suite_list)

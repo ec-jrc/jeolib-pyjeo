@@ -77,7 +77,7 @@ class BadBasicMethods(unittest.TestCase):
 
         assert jim.pixops.isEqual(new_jim), 'Error in jim2np() or np2jim()'
 
-        anp = np.arange(2*100*256).reshape((2,100,256)).astype(np.float64)
+        anp = np.arange(2 * 100 * 256).reshape((2, 100, 256)).astype(np.float64)
         ajim = pj.np2jim(anp)
 
         assert ajim.properties.nrOfBand() == 1
@@ -668,7 +668,7 @@ class BadBasicMethods(unittest.TestCase):
         assert not failed, 'Error in catching wrong left side of & operation'
 
     def test_pixel_wise_conditions(self):
-        """Tests conditions like ==, !=, >, >=, <, <= for Jims."""
+        """Test conditions like ==, !=, >, >=, <, <= for Jims."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(jim1)
 
