@@ -757,7 +757,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0,self.properties.nrOfBand()):
-                if self.properties.nrOfBand()>left.properties.nrOfBand():
+                if self.properties.nrOfBand() > right.properties.nrOfBand():
                     result.np(iband)[:] /= right.np()
                 else:
                     result.np(iband)[:] /= right.np(iband)
