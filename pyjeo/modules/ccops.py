@@ -487,6 +487,8 @@ class _CCOps():
     def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, graph=4):
         """Label image.
 
+        Modifies the instance on which the method was called.
+
         :param jim: a Jim object
         :param ox: x coordinate of origin of imngb
         :param oy: y coordinate of origin of imngb
@@ -528,6 +530,8 @@ class _CCOps():
         """Label each non-zero connected component with a unique label.
 
         Uses graph-connectivity
+
+        Modifies the instance on which the method was called.
 
         :param jim_object: a Jim object holding a binary image
         :param graph: an integer holding for the graph connectivity

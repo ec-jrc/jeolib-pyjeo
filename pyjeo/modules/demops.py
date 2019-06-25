@@ -5,7 +5,8 @@ import numpy as np
 from scipy import signal
 
 
-# this numpy implementation works and is faster but does not ignore nodata values in the image during the convolution process
+# this numpy implementation works and is faster but does not ignore nodata
+# values in the image during the convolution process
 # def slopenp(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
 #     if jim_object.properties.getNoDataVals() and not nodata:
 #         nodata=jim_object.properties.getNoDataVals()[0]

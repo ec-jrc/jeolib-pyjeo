@@ -108,9 +108,11 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         kwargs.update({'dy': dy})
         kwargs.update({'nogeo': nogeo})
 
-        jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(kwargs))
-        for iplane in range(1,jim_object.properties.nrOfPlane()):
-            jimplane=_pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.crop(kwargs))
+        jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(
+            kwargs))
+        for iplane in range(1, jim_object.properties.nrOfPlane()):
+            jimplane = _pj.Jim(_pj.geometry.cropPlane(
+                jim_object, iplane)._jipjim.crop(kwargs))
             jim.geometry.stackPlane(jimplane)
         return jim
 
@@ -124,8 +126,8 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
             lowerRight = jim_object._jipjim.image2geo(lrx, lry)
             ulx = upperLeft[0]
             uly = upperLeft[1]
-            lrx = lowerRight[0]+jim_object.properties.getDeltaX()/2.0
-            lry = lowerRight[1]-jim_object.properties.getDeltaY()/2.0
+            lrx = lowerRight[0] + jim_object.properties.getDeltaX() / 2.0
+            lry = lowerRight[1] - jim_object.properties.getDeltaY() / 2.0
             if dx is None:
                 dx = 1
             if dy is None:
@@ -148,9 +150,11 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         kwargs.update({'lrx': lrx})
         kwargs.update({'lry': lry})
 
-        jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(kwargs))
-        for iplane in range(1,jim_object.properties.nrOfPlane()):
-            jimplane=_pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.crop(kwargs))
+        jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(
+            kwargs))
+        for iplane in range(1, jim_object.properties.nrOfPlane()):
+            jimplane = _pj.Jim(_pj.geometry.cropPlane(
+                jim_object, iplane)._jipjim.crop(kwargs))
             jim.geometry.stackPlane(jimplane)
         return jim
         # return _pj.Jim(jim_object._jipjim.crop(kwargs))
@@ -196,9 +200,11 @@ def cropOgr(jim_object, extent, **kwargs):
 
        For instance you can use 'eo':'ATTRIBUTE=fieldname'
     """
-    jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.cropOgr(extent._jipjimvect, kwargs))
-    for iplane in range(1,jim_object.properties.nrOfPlane()):
-        jimplane=pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.cropOgr(extent._jipjimvect, kwargs))
+    jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.cropOgr(
+        extent._jipjimvect, kwargs))
+    for iplane in range(1, jim_object.properties.nrOfPlane()):
+        jimplane = pj.Jim(_pj.geometry.cropPlane(
+            jim_object, iplane)._jipjim.cropOgr(extent._jipjimvect, kwargs))
         jim.geometry.stackPlane(jimplane)
     return jim
 
@@ -244,7 +250,7 @@ def cropPlane(jim_object, plane):
 
 
 def stackBand(jim_object, jim_other=None, band=None):
-    """Stack bands of Jim object.
+    """Stack bands from raster datasets into new multiband Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the bands
     :param jim_other: a Jim object or jimlist from which to copy bands
@@ -304,7 +310,7 @@ def stackBand(jim_object, jim_other=None, band=None):
 
 
 def stackPlane(jim_object, jim_other=None, plane=None):
-    """Stack planes of Jim object.
+    """Stack planes from raster datasets into new multiplane Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the planes
     :param jim_other: a Jim object or jimlist from which to copy planes
@@ -353,34 +359,40 @@ def reducePlane(jim, rule='max', band=0, nodata=None):
     :param nodata: value to ignore when applying rule
     :return: reduced single plane jim object
     """
-    if jim.properties.nrOfPlane()<2:
+    if jim.properties.nrOfPlane() < 2:
         print("Warning: single plane, no reduction is performed")
-    jimreduced=_pj.geometry.cropPlane(jim,0)
-    maskreduced=_pj.geometry.cropBand(jimreduced,band)
+    jimreduced = _pj.geometry.cropPlane(jim, 0)
+    maskreduced = _pj.geometry.cropBand(jimreduced, band)
     for iplane in range(1,jim.properties.nrOfPlane()):
-        jimplane=_pj.geometry.cropPlane(jim,iplane)
-        mask=_pj.geometry.cropBand(jimplane,band)
+        jimplane = _pj.geometry.cropPlane(jim, iplane)
+        mask = _pj.geometry.cropBand(jimplane, band)
         if nodata is not None:
-            jimreduced[maskreduced==nodata]=jimplane
-            maskreduced[maskreduced==nodata]=mask
-        if rule=='max':
-            jimreduced[maskreduced<mask]=jimplane
-            maskreduced[maskreduced<mask]=mask
-        elif rule=='min':
-            jimreduced[maskreduced>mask]=jimplane
-            maskreduced[maskreduced>mask]=mask
-    if rule=='mean' or rule=='avg':
-        for iband in range(1,jim.properties.nrOfBand()):
+            jimreduced[maskreduced == nodata] = jimplane
+            maskreduced[maskreduced == nodata] = mask
+        if rule == 'max':
+            jimreduced[maskreduced < mask] = jimplane
+            maskreduced[maskreduced < mask] = mask
+        elif rule == 'min':
+            jimreduced[maskreduced > mask] = jimplane
+            maskreduced[maskreduced > mask] = mask
+    if rule == 'mean' or rule == 'avg':
+        for iband in range(1, jim.properties.nrOfBand()):
             if nodata:
-                jimreduced.np()[:]=np.ma.filled(np.ma.mean(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+                jimreduced.np()[:] = np.ma.filled(np.ma.mean(
+                    np.ma.masked_where(jimreduced.np() == nodata,
+                                       jimreduced.np()), axis=0),
+                    fill_value=nodata)
             else:
-                jimreduced.np()[:]=np.mean(jim.np(iband),axis=0)
-    elif rule=='median':
-        for iband in range(1,self.properties.nrOfBand()):
+                jimreduced.np()[:] = np.mean(jim.np(iband), axis=0)
+    elif rule == 'median':
+        for iband in range(1, self.properties.nrOfBand()):
             if nodata:
-                jimreduced.np()[:]=np.ma.filled(np.ma.median(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+                jimreduced.np()[:] = np.ma.filled(np.ma.median(
+                    np.ma.masked_where(jimreduced.np() == nodata,
+                                       jimreduced.np()), axis=0),
+                    fill_value=nodata)
             else:
-                jimreduced.np()[:]=np.median(jim.np(iband),axis=0)
+                jimreduced.np()[:] = np.median(jim.np(iband), axis=0)
     return jimreduced
 
 def warp(jim_object, t_srs, **kwargs):
@@ -426,9 +438,10 @@ def warp(jim_object, t_srs, **kwargs):
     """
     kwargs.update({'t_srs': t_srs})
 
-    jim =_pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.warp(kwargs))
-    for iplane in range(1,jim_object.properties.nrOfPlane()):
-        jimplane=_pj.Jim(_pj.geometry.cropPlane(jim_object, iplane)._jipjim.warp(kwargs))
+    jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.warp(kwargs))
+    for iplane in range(1, jim_object.properties.nrOfPlane()):
+        jimplane = _pj.Jim(_pj.geometry.cropPlane(jim_object,
+                                                  iplane)._jipjim.warp(kwargs))
         jim.geometry.stackPlane(jimplane)
     return jim
     # return _pj.Jim(jim_object._jipjim.warp(kwargs))
@@ -913,9 +926,11 @@ class _Geometry():
             kwargs.update({'dy': dy})
             kwargs.update({'nogeo': nogeo})
 
-            jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.crop(kwargs))
-            for iplane in range(1,self._jim_object.properties.nrOfPlane()):
-                jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.crop(kwargs))
+            jim = _pj.Jim(_pj.geometry.cropPlane(self._jim_object,
+                                                 0)._jipjim.crop(kwargs))
+            for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+                jimplane = _pj.Jim(_pj.geometry.cropPlane(
+                    self._jim_object, iplane)._jipjim.crop(kwargs))
                 jim.geometry.stackPlane(jimplane)
             self._jim_object._set(jim._jipjim)
             # self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
@@ -999,9 +1014,12 @@ class _Geometry():
 
            For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
-        jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.cropOgr(extent._jipjimvect, kwargs))
-        for iplane in range(1,self._jim_object.properties.nrOfPlane()):
-            jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.cropOgr(extent._jipjimvect, kwargs))
+        jim = _pj.Jim(_pj.geometry.cropPlane(
+            self._jim_object, 0)._jipjim.cropOgr(extent._jipjimvect, kwargs))
+        for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+            jimplane = _pj.Jim(_pj.geometry.cropPlane(
+                self._jim_object, iplane)._jipjim.cropOgr(extent._jipjimvect,
+                                                          kwargs))
             jim.geometry.stackPlane(jimplane)
         self._jim_object._set(jim._jipjim)
         # self._jim_object._set(
@@ -1109,41 +1127,50 @@ class _Geometry():
         :param nodata: value to ignore when applying rule
 
 
-        Stack planes of two single plane jim objects, then reduce by taking the means::
+        Stack planes of two single plane jim objects, then reduce by taking
+        the means::
 
             jim0=pj.Jim('/path/to/raster0.tif')
             jim1=pj.Jim('/path/to/raster1.tif')
             jim_stacked=pj.geometry.stackPlane(jim0,jim1)
             jim_stacked.geometry.reducePlane('mean')
         """
-        if self._jim_object.properties.nrOfPlane()<2:
+        if self._jim_object.properties.nrOfPlane() < 2:
             print("Warning: single plane, no reduction is performed")
-        jimreduced=_pj.geometry.cropPlane(self._jim_object,0)
-        maskreduced=_pj.geometry.cropBand(jimreduced,band)
-        for iplane in range(1,self._jim_object.properties.nrOfPlane()):
-            jimplane=_pj.geometry.cropPlane(self._jim_object,iplane)
-            mask=_pj.geometry.cropBand(jimplane,band)
+        jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
+        maskreduced = _pj.geometry.cropBand(jimreduced, band)
+        for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+            jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
+            mask = _pj.geometry.cropBand(jimplane, band)
             if nodata is not None:
-                jimreduced[maskreduced==nodata]=jimplane
-                maskreduced[maskreduced==nodata]=mask
-            if rule=='max':
-                jimreduced[maskreduced<mask]=jimplane
-                maskreduced[maskreduced<mask]=mask
-            elif rule=='min':
-                jimreduced[maskreduced>mask]=jimplane
-                maskreduced[maskreduced>mask]=mask
-        if rule=='mean' or rule=='avg':
-            for iband in range(1,self._jim_object.properties.nrOfBand()):
+                jimreduced[maskreduced == nodata] = jimplane
+                maskreduced[maskreduced == nodata] = mask
+            if rule == 'max':
+                jimreduced[maskreduced < mask] = jimplane
+                maskreduced[maskreduced < mask] = mask
+            elif rule == 'min':
+                jimreduced[maskreduced > mask] = jimplane
+                maskreduced[maskreduced > mask] = mask
+        if rule == 'mean' or rule == 'avg':
+            for iband in range(1, self._jim_object.properties.nrOfBand()):
                 if nodata:
-                    jimreduced.np()[:]=np.ma.filled(np.ma.mean(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+                    jimreduced.np()[:] = np.ma.filled(np.ma.mean(
+                        np.ma.masked_where(jimreduced.np() == nodata,
+                                           jimreduced.np()), axis=0),
+                        fill_value=nodata)
                 else:
-                    jimreduced.np()[:]=np.mean(self._jim_object.np(iband),axis=0)
-        elif rule=='median':
-            for iband in range(1,self._jim_object.properties.nrOfBand()):
+                    jimreduced.np()[:] = np.mean(self._jim_object.np(iband),
+                                                 axis=0)
+        elif rule == 'median':
+            for iband in range(1, self._jim_object.properties.nrOfBand()):
                 if nodata:
-                    jimreduced.np()[:]=np.ma.filled(np.ma.median(np.ma.masked_where(jimreduced.np() == nodata,jimreduced.np()),axis=0),fill_value=nodata)
+                    jimreduced.np()[:] = np.ma.filled(np.ma.median(
+                        np.ma.masked_where(jimreduced.np() == nodata,
+                                           jimreduced.np()), axis=0),
+                        fill_value=nodata)
                 else:
-                    jimreduced.np()[:]=np.median(self._jimobject.np(iband),axis=0)
+                    jimreduced.np()[:] = np.median(self._jimobject.np(iband),
+                                                   axis=0)
         self._jim_object._set(jimreduced._jipjim)
 
     #deprecated: use aggregate_vector instead
@@ -1296,7 +1323,6 @@ class _Geometry():
         pjvect._set(avect)
         return pjvect
 
-
     def aggregate_vector(self, jvec, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
@@ -1439,9 +1465,8 @@ class _Geometry():
             v.write('/path/to/output.sqlite)
 
         """
-
-        #make list of rules
-        rules=[]
+        # make list of rules
+        rules = []
         if rule:
             for irule in rule:
                 rules.append(irule)
@@ -1456,159 +1481,141 @@ class _Geometry():
 
         bandnames = kwargs.pop('bandname', None)
         if bandnames is None:
-            bandnames=['b'+str(iband) for iband in range(0,self._jim_object.properties.nrOfBand())]
+            bandnames = ['b'+str(iband) for iband in range(
+                0, self._jim_object.properties.nrOfBand())]
 
         planenames = kwargs.pop('planename', None)
         if planenames is None:
-            planenames=['t'+str(iplane) for iplane in range(0,self._jim_object.properties.nrOfPlane())]
+            planenames = ['t'+str(iplane) for iplane in range(
+                0, self._jim_object.properties.nrOfPlane())]
 
-        plane = kwargs.pop('plane',None)
+        plane = kwargs.pop('plane', None)
 
-        if jvec == None:
+        if jvec is None:
             raise Exception('Error: missing jvec option')
 
-        if self._jim_object.properties.nrOfPlane()>1:
+        if self._jim_object.properties.nrOfPlane() > 1:
             if plane is None:
-                plane=range(0,self._jim_object.properties.nrOfPlane())
+                plane = range(0, self._jim_object.properties.nrOfPlane())
             else:
                 for iplane in plane:
                     if iplane >= self._jim_object.properties.nrOfPlane():
-                        raise Exception('Error: illegal plane {}'.format(iplane))
-            if len(planenames)!=self._jim_object.properties.nrOfPlane():
-                raise Exception('Error: number of planes does not correspond to planename')
+                        raise Exception(
+                            'Error: illegal plane {}'.format(iplane))
+            if len(planenames) != self._jim_object.properties.nrOfPlane():
+                raise Exception(
+                    'Error: number of planes does not correspond to planename')
 
             if jvec.properties.getLayerCount() > 1:
-                raise Exception('Error: multiple layers not supported when aggregating vectors over multi-plane raster datasets, please use single layer vector object')
+                raise Exception(
+                    'Error: multiple layers not supported when aggregating '
+                    'vectors over multi-plane raster datasets, please use '
+                    'single layer vector object')
         else:
-            plane=[0]
-            planenames=None
+            plane = [0]
+            planenames = None
 
-
-        if len(plane)==1:
+        if len(plane) == 1:
             if '/' not in kwargs['output']:
-                kwargs['output']=os.path.join('/vsimem/',kwargs['output'])
-            print("len of plane is 1")
-            print("kwargs: {}".format(kwargs))
+                kwargs['output'] = os.path.join('/vsimem/', kwargs['output'])
             if self._jim_object.properties.nrOfPlane() == 1:
-                print("nrOfPlane is 1")
                 avect = self._jim_object.geometry.extractOgr(jvec, **kwargs)
-                print("avect created")
             else:
-                print("nrOfPlane is not 1")
-                avect = pj.geometry.cropPlane(self,plane[0])._jim_object.geometry.extractOgr(jvec, **kwargs)
-                print("avect created")
+                avect = pj.geometry.cropPlane(
+                    self, plane[0])._jim_object.geometry.extractOgr(jvec,
+                                                                    **kwargs)
             avect.io.write()
-            print("number of featues in avect: {}".format(avect.properties.getFeatureCount()))
             avect.io.close()
 
             pjvect = _pj.JimVect(kwargs['output'])
-            print("set avect")
             pjvect._set(avect)
-            print("number of featues in pjvect: {}".format(pjvect.properties.getFeatureCount()))
             return pjvect
 
-        verbose=True
-        if verbose:
-            print("planes: {}".format(planenames))
-
         intersectfn = '/vsimem/sampleintersect.sqlite'
-        sampleintersect = _pj.geometry.intersect(jvec, self._jim_object, output=intersectfn, oformat='SQLite',co=['OVERWRITE=YES'])
+        sampleintersect = _pj.geometry.intersect(
+            jvec, self._jim_object, output=intersectfn, oformat='SQLite',
+            co=['OVERWRITE=YES'])
         if sampleintersect.properties.isEmpty():
-            if verbose:
-                print("warning: no features found")
             sampleintersect.io.close()
             raise Exception('intersect is empty')
         else:
-            foundFeaturesSinglePlane=True
-            if verbose:
-                print("intersect contains {} features.".format(sampleintersect.properties.getFeatureCount()))
             sampleintersect.io.write()
 
-        firstExtract=True
-        joinfn=None
+        firstExtract = True
+        joinfn = None
 
-        vsioutput = os.path.join('/vsimem','aggregate_polygon.sqlite')
-        for iplane in range(0,len(plane)):
-            ibandnames=[]
+        vsioutput = os.path.join('/vsimem', 'aggregate_polygon.sqlite')
+        for iplane in range(0, len(plane)):
+            ibandnames = []
             try:
-                foundFeaturesSinglePlane=False
-                if verbose:
-                    print("Processing plane", planenames[iplane])
-
                 for band in bandnames:
                     if len(rules) > 1:
-                        ibandnames.append('_' + planenames[iplane] + '_' + band)  # rules are automatically pre-pended in extractogr
+                        # rules are automatically pre-pended in extractogr
+                        ibandnames.append(
+                            '_' + planenames[iplane] + '_' + band)
                     else:
-                        ibandnames.append(rules[0] + '_' + planenames[iplane] + '_' + band)
+                        ibandnames.append(
+                            rules[0] + '_' + planenames[iplane] + '_' + band)
 
                 fieldnames = sampleintersect.properties.getFieldNames()
-                if verbose:
-                    print("fieldnames are: {}".format(fieldnames))
-
-                    print("we search for {} features".format(sampleintersect.properties.getFeatureCount()))
-                    print("starting extractOgr")
 
                 try:
                     if 'buffer' in kwargs:
-                        jim=_pj.geometry.cropPlane(self._jim_object,plane[iplane])
-                        v=jim.geometry.extractOgr(sampleintersect, rule=rules, output=vsioutput, oformat='SQLite', co=['OVERWRITE=YES'], bandname=ibandnames, copy=fieldnames, fid='fid', buffer=kwargs['buffer'])
+                        jim = _pj.geometry.cropPlane(self._jim_object,
+                                                     plane[iplane])
+                        v = jim.geometry.extractOgr(
+                            sampleintersect, rule=rules, output=vsioutput,
+                            oformat='SQLite', co=['OVERWRITE=YES'],
+                            bandname=ibandnames, copy=fieldnames, fid='fid',
+                            buffer=kwargs['buffer'])
                     else:
-                        print("not using buffer")
-                        jim=_pj.geometry.cropPlane(self._jim_object,plane[iplane])
-                        v=jim.geometry.extractOgr(sampleintersect, rule=rules, output=vsioutput, oformat='SQLite', co=['OVERWRITE=YES'], bandname=ibandnames, copy=fieldnames, fid='fid')
-                        # v=_pj.geometry.cropPlane(self._jim_object,plane[iplane])._jipjim.extractOgr(sampleintersect, rules, vsioutput, oformat='SQLite', co=['OVERWRITE=YES'], bandname=bandnames, copy=fieldnames, fid='fid')
+                        jim = _pj.geometry.cropPlane(self._jim_object,
+                                                     plane[iplane])
+                        v = jim.geometry.extractOgr(
+                            sampleintersect, rule=rules, output=vsioutput,
+                            oformat='SQLite', co=['OVERWRITE=YES'],
+                            bandname=ibandnames, copy=fieldnames, fid='fid')
                     if v.properties.isEmpty():
                         v.io.close()
                 except:
-                    print("no coverage for plane {}, continue with next product".format(planenames[iplane]))
+                    print("no coverage for plane {}, continue with next "
+                          "product".format(planenames[iplane]))
                     if v:
                         v.io.close()
                     continue
                 if not v.properties.isEmpty():
-                    if verbose:
-                        print("we have found {} features".format(v.properties.getFeatureCount()))
                     v.io.write()
-                    #join vectors
+                    # join vectors
                     if '/' not in output:
-                        joinfn=os.path.join('/vsimem/',output)
+                        joinfn = os.path.join('/vsimem/', output)
                     else:
-                        joinfn=output
+                        joinfn = output
                     # joinfn='/vsimem/vjoin.sqlite'
 
                     if firstExtract:
-                        if verbose:
-                            print("firstExtract write to {}".format(joinfn))
-                        vjoin=_pj.JimVect(v,output=joinfn,co='OVERWRITE=YES')
+                        vjoin = _pj.JimVect(v, output=joinfn,
+                                            co='OVERWRITE=YES')
                         vjoin.io.write()
                         vjoin.io.close()
-                        firstExtract=False
+                        firstExtract = False
                     else:
-                        print("opening {}".format(joinfn))
-                        vprev=_pj.JimVect(joinfn)
-                        print("join to {}".format(joinfn))
-                        if vprev.properties.isEmpty():
-                            print("vprev is empty")
-                        if v.properties.isEmpty():
-                            print("v is empty")
-                        vjoin=_pj.geometry.join(vprev, v, joinfn, oformat='SQLite', co=['OVERWRITE=YES'], key=['fid'],
-                                                method='OUTER_FULL')
-                        print("write vjoin (to {})".format(joinfn))
+                        vprev = _pj.JimVect(joinfn)
+                        vjoin = _pj.geometry.join(
+                            vprev, v, joinfn, oformat='SQLite',
+                            co=['OVERWRITE=YES'], key=['fid'],
+                            method='OUTER_FULL')
                         vjoin.io.write()
-                        print("close vjoin")
                         vjoin.io.close()
                     v.io.close()
                 else:
                     v.io.close()
             except:
-                print("raised exception dataset in for plane {}".format(planenames[iplane]))
+                print("raised exception dataset in for plane {}".format(
+                    planenames[iplane]))
                 continue
 
         sampleintersect.io.close()
-        if verbose:
-            print("we are in join at end")
         if joinfn:
-            if verbose:
-                print("joinfn is {}".format(joinfn))
             v = _pj.JimVect(joinfn)
             return v
         else:
@@ -1833,9 +1840,11 @@ class _Geometry():
 
         """
         kwargs.update({'t_srs': t_srs})
-        jim =_pj.Jim(_pj.geometry.cropPlane(self._jim_object, 0)._jipjim.warp(kwargs))
-        for iplane in range(1,self._jim_object.properties.nrOfPlane()):
-            jimplane=_pj.Jim(_pj.geometry.cropPlane(self._jim_object, iplane)._jipjim.warp(kwargs))
+        jim = _pj.Jim(_pj.geometry.cropPlane(
+            self._jim_object, 0)._jipjim.warp(kwargs))
+        for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+            jimplane = _pj.Jim(_pj.geometry.cropPlane(
+                self._jim_object, iplane)._jipjim.warp(kwargs))
             jim.geometry.stackPlane(jimplane)
         self._jim_object._set(jim._jipjim)
         # self._jim_object._set(self._jim_object._jipjim.warp(kwargs))
@@ -2023,7 +2032,7 @@ class _GeometryList():
         self._jim_list = caller
 
     def stackBand(self, band=None):
-        """Stack bands from all raster datasets in list in new multiband Jim object
+        """Stack bands from raster datasets into new multiband Jim object.
 
         :param band: List of band indices to stack (index is 0 based)
         :return: multiband Jim object
@@ -2050,7 +2059,7 @@ class _GeometryList():
             return _pj.Jim(self._jim_list._jipjimlist.stackBand())
 
     def stackPlane(self):
-        """Stack planes from all raster datasets in list in new multiplane Jim object
+        """Stack planes from raster datasets into new multiplane Jim object.
 
         :return: multiplane Jim object
 

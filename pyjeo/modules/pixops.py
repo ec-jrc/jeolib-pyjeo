@@ -44,48 +44,53 @@ def convert(jim_object, otype, **kwargs):
         jim1.convert(Byte)
     """
     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
-        otype='GDT_Byte'
-        nptype=numpy.int8
+        otype = 'GDT_Byte'
+        nptype = numpy.int8
     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-        otype='GDT_UInt16'
-        nptype=numpy.uint16
+        otype = 'GDT_UInt16'
+        nptype = numpy.uint16
     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
-        otype='GDT_Int16'
-        nptype=numpy.int16
+        otype = 'GDT_Int16'
+        nptype = numpy.int16
     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-        otype='GDT_UInt32'
-        nptype=numpy.uint32
+        otype = 'GDT_UInt32'
+        nptype = numpy.uint32
     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
-        otype='GDT_Int32'
-        nptype=numpy.int32
+        otype = 'GDT_Int32'
+        nptype = numpy.int32
     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
-        otype='GDT_Float32'
-        nptype=numpy.float32
+        otype = 'GDT_Float32'
+        nptype = numpy.float32
     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
-        otype='GDT_Float64'
-        nptype=numpy.float64
-    elif otype in  ['int64', 'Int64', 'JDT_Int64']:
-        otype='JDT_Int64'
-        nptype=numpy.int64
-    elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
-        otype='JDT_UInt64'
-        nptype=numpy.uint64
-    elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
-        otype='JDT_UInt64'
-        nptype=numpy.uint64
+        otype = 'GDT_Float64'
+        nptype = numpy.float64
+    elif otype in ['int64', 'Int64', 'JDT_Int64']:
+        otype = 'JDT_Int64'
+        nptype = numpy.int64
+    elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
+        otype = 'JDT_UInt64'
+        nptype = numpy.uint64
+    elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
+        otype = 'JDT_UInt64'
+        nptype = numpy.uint64
     else:
         raise TypeError("Output type {} not supported".format(otype))
     # TODO: Support CTypes
 
-    if len(kwargs) and jim_object.properties.nrOfPlane()==1:
+    if len(kwargs) and jim_object.properties.nrOfPlane() == 1:
         kwargs.update({'otype': otype})
         return _pj.Jim(jim_object._jipjim.convert(kwargs))
     else:
-        jimnew=_pj.Jim(ncol=jim_object.properties.nrOfCol(),nrow=jim_object.properties.nrOfRow(),nband=jim_object.properties.nrOfBand(),nplane=jim_object.properties.nrOfPlane(),otype=otype)
+        jimnew = _pj.Jim(ncol=jim_object.properties.nrOfCol(),
+                         nrow=jim_object.properties.nrOfRow(),
+                         nband=jim_object.properties.nrOfBand(),
+                         nplane=jim_object.properties.nrOfPlane(),
+                         otype=otype)
         jimnew.properties.setProjection(jim_object.properties.getProjection())
-        jimnew.properties.setGeoTransform(jim_object.properties.getGeoTransform())
-        for iband in range(0,jim_object.properties.nrOfBand()):
-            jimnew.np(iband)[:]=jim_object.np(iband).astype(nptype)
+        jimnew.properties.setGeoTransform(
+            jim_object.properties.getGeoTransform())
+        for iband in range(0, jim_object.properties.nrOfBand()):
+            jimnew.np(iband)[:] = jim_object.np(iband).astype(nptype)
         return jimnew
 
 # def convert(jim_object, otype, **kwargs):
@@ -96,17 +101,17 @@ def convert(jim_object, otype, **kwargs):
 #     :param kwargs: See table below
 #     :return: a Jim object
 
-#     +------------------+------------------------------------------------------+
-#     | key              | value                                                |
-#     +==================+======================================================+
-#     | scale            | Scale output: output=scale*input+offset              |
-#     +------------------+------------------------------------------------------+
-#     | offset           | Apply offset: output=scale*input+offset              |
-#     +------------------+------------------------------------------------------+
-#     | autoscale        | Scale output to min and max, e.g., [0,255]           |
-#     +------------------+------------------------------------------------------+
-#     | a_srs            | Override the projection for the output file          |
-#     +------------------+------------------------------------------------------+
+#     +------------------+--------------------------------------------------+
+#     | key              | value                                            |
+#     +==================+==================================================+
+#     | scale            | Scale output: output=scale*input+offset          |
+#     +------------------+--------------------------------------------------+
+#     | offset           | Apply offset: output=scale*input+offset          |
+#     +------------------+--------------------------------------------------+
+#     | autoscale        | Scale output to min and max, e.g., [0,255]       |
+#     +------------------+--------------------------------------------------+
+#     | a_srs            | Override the projection for the output file      |
+#     +------------------+--------------------------------------------------+
 
 #     Example:
 
@@ -115,8 +120,8 @@ def convert(jim_object, otype, **kwargs):
 #         jim0=jl.io.createJim('/path/to/raster.tif')
 #         jim0.convert(Byte,autoscale=[0,255])
 
-#         Clip raster dataset between 0 and 255 (set all other values to 0), then
-#         convert data type to byte::
+#         Clip raster dataset between 0 and 255 (set all other values to 0),
+#         then convert data type to byte::
 
 #         jim1=jl.io.createJim('/path/to/raster.tif')
 #         jim1.setThreshold(min=0,max=255,nodata=0)
@@ -152,21 +157,25 @@ def isEqual(first_jim, second_jim):
     :return: True if the values are equal, zero otherwise
     """
     if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
-        if first_jim.properties.nrOfPlane() != second_jim.properties.nrOfPlane():
+        if first_jim.properties.nrOfPlane() != \
+                second_jim.properties.nrOfPlane():
             return False
         if first_jim.properties.nrOfPlane() == 1:
-            for iband in range(0,first_jim.properties.nrOfBand()):
-                if not numpy.array_equal(first_jim.np(iband), second_jim.np(iband)):
+            for iband in range(0, first_jim.properties.nrOfBand()):
+                if not numpy.array_equal(first_jim.np(iband),
+                                         second_jim.np(iband)):
                     return False
             return True
         else:
-            for iplane in range(0,jim_object.properties.nrOfPlane()):
-                first_plane=_pj.geometry.cropPlane(first_jim, iplane)
-                second_plane=_pj.geometry.cropPlane(second_jim, iplane)
-                if first_plane.properties.nrOfBand() != second_plane.properties.nrOfBand():
+            for iplane in range(0, jim_object.properties.nrOfPlane()):
+                first_plane = _pj.geometry.cropPlane(first_jim, iplane)
+                second_plane = _pj.geometry.cropPlane(second_jim, iplane)
+                if first_plane.properties.nrOfBand() != \
+                        second_plane.properties.nrOfBand():
                     return False
-                for iband in range(0,first_plane.properties.nrOfBand()):
-                    if not numpy.array_equal(first_plane.np(iband), second_plane.np(iband)):
+                for iband in range(0, first_plane.properties.nrOfBand()):
+                    if not numpy.array_equal(first_plane.np(iband),
+                                             second_plane.np(iband)):
                         return False
             return True
     else:
@@ -270,7 +279,8 @@ def setThreshold(jim_object, **kwargs):
 
     Modifies the instance on which the method was called.
 
-    for help, please refer to the corresponding method :py:meth:`~pixops._PixOps.setThreshold`.
+    for help, please refer to the corresponding
+    method :py:meth:`~pixops._PixOps.setThreshold`.
     """
     return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
@@ -416,47 +426,55 @@ class _PixOps():
         """
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
-            otype='GDT_Byte'
-            nptype=numpy.int8
+            otype = 'GDT_Byte'
+            nptype = numpy.int8
         elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-            otype='GDT_UInt16'
-            nptype=numpy.uint16
+            otype = 'GDT_UInt16'
+            nptype = numpy.uint16
         elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
-            otype='GDT_Int16'
-            nptype=numpy.int16
+            otype = 'GDT_Int16'
+            nptype = numpy.int16
         elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-            otype='GDT_UInt32'
-            nptype=numpy.uint32
+            otype = 'GDT_UInt32'
+            nptype = numpy.uint32
         elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
-            otype='GDT_Int32'
-            nptype=numpy.int32
-        elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
-            otype='GDT_Float32'
-            nptype=numpy.float32
-        elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
-            otype='GDT_Float64'
-            nptype=numpy.float64
-        elif otype in  ['int64', 'Int64', 'JDT_Int64']:
-            otype='JDT_Int64'
-            nptype=numpy.int64
-        elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
-            otype='JDT_UInt64'
-            nptype=numpy.uint64
-        elif otype in  ['uint64', 'UInt64', 'JDT_UInt64']:
-            otype='JDT_UInt64'
-            nptype=numpy.uint64
+            otype = 'GDT_Int32'
+            nptype = numpy.int32
+        elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
+                       _jl.GDT_Float32]:
+            otype = 'GDT_Float32'
+            nptype = numpy.float32
+        elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
+                       _jl.GDT_Float64]:
+            otype = 'GDT_Float64'
+            nptype = numpy.float64
+        elif otype in ['int64', 'Int64', 'JDT_Int64']:
+            otype = 'JDT_Int64'
+            nptype = numpy.int64
+        elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
+            otype = 'JDT_UInt64'
+            nptype = numpy.uint64
+        elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
+            otype = 'JDT_UInt64'
+            nptype = numpy.uint64
         else:
             raise TypeError("Output type {} not supported".format(otype))
         # TODO: Support CTypes
-        if len(kwargs) and self._jim_object.properties.nrOfPlane()==1:
+        if len(kwargs) and self._jim_object.properties.nrOfPlane() == 1:
             kwargs.update({'otype': otype})
             self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
         else:
-            jimnew=_pj.Jim(ncol=self._jim_object.properties.nrOfCol(),nrow=self._jim_object.properties.nrOfRow(),nband=self._jim_object.properties.nrOfBand(),nplane=self._jim_object.properties.nrOfPlane(),otype=otype)
-            jimnew.properties.setProjection(self._jim_object.properties.getProjection())
-            jimnew.properties.setGeoTransform(self._jim_object.properties.getGeoTransform())
-            for iband in range(0,self._jim_object.properties.nrOfBand()):
-                jimnew.np(iband)[:]=self._jim_object.np(iband).astype(nptype)
+            jimnew = _pj.Jim(ncol=self._jim_object.properties.nrOfCol(),
+                             nrow=self._jim_object.properties.nrOfRow(),
+                             nband=self._jim_object.properties.nrOfBand(),
+                             nplane=self._jim_object.properties.nrOfPlane(),
+                             otype=otype)
+            jimnew.properties.setProjection(
+                self._jim_object.properties.getProjection())
+            jimnew.properties.setGeoTransform(
+                self._jim_object.properties.getGeoTransform())
+            for iband in range(0, self._jim_object.properties.nrOfBand()):
+                jimnew.np(iband)[:] = self._jim_object.np(iband).astype(nptype)
             self._jim_object._set(jimnew._jipjim)
 
     # def convert(self, otype, **kwargs):
@@ -467,17 +485,17 @@ class _PixOps():
 
     #     Modifies the instance on which the method was called.
 
-    #     +------------------+--------------------------------------------------+
-    #     | key              | value                                            |
-    #     +==================+==================================================+
-    #     | scale            | Scale output: output=scale*input+offset          |
-    #     +------------------+--------------------------------------------------+
-    #     | offset           | Apply offset: output=scale*input+offset          |
-    #     +------------------+--------------------------------------------------+
-    #     | autoscale        | Scale output to min and max, e.g., [0,255]       |
-    #     +------------------+--------------------------------------------------+
-    #     | a_srs            | Override the projection for the output file      |
-    #     +------------------+--------------------------------------------------+
+    #     +------------------+----------------------------------------------+
+    #     | key              | value                                        |
+    #     +==================+==============================================+
+    #     | scale            | Scale output: output=scale*input+offset      |
+    #     +------------------+----------------------------------------------+
+    #     | offset           | Apply offset: output=scale*input+offset      |
+    #     +------------------+----------------------------------------------+
+    #     | autoscale        | Scale output to min and max, e.g., [0,255]   |
+    #     +------------------+----------------------------------------------+
+    #     | a_srs            | Override the projection for the output file  |
+    #     +------------------+----------------------------------------------+
 
     #     Example:
 
@@ -486,8 +504,8 @@ class _PixOps():
     #         jim0=jl.io.createJim('/path/to/raster.tif')
     #         jim0.convert(otype=Byte,autoscale=[0,255])
 
-    #         Clip raster dataset between 0 and 255 (set all other values to 0),
-    #         then convert data type to byte::
+    #         Clip raster dataset between 0 and 255 (set all other values to
+    #         0), then convert data type to byte::
 
     #         jim1=jl.io.createJim('/path/to/raster.tif')
     #         jim1.setThreshold(min=0,max=255,nodata=0)
@@ -530,27 +548,33 @@ class _PixOps():
             self._jim_object._jipjim.d_histoCompress()
 
     def isEqual(self, other):
-        """Check if the values of one Jim object are the same as in another one.
+        """Check if the values of one Jim object are the same as in another.
 
         :param other: a Jim object
         :return: True if the values are equal, zero otherwise
         """
         if isinstance(other, _pj.Jim):
-            if self._jim_object.properties.nrOfPlane() != other.properties.nrOfPlane():
+            if self._jim_object.properties.nrOfPlane() != \
+                    other.properties.nrOfPlane():
                 return False
             if self._jim_object.properties.nrOfPlane() == 1:
-                for iband in range(0,self._jim_object.properties.nrOfBand()):
-                    if not numpy.array_equal(self._jim_object.np(iband), other.np(iband)):
+                for iband in range(0, self._jim_object.properties.nrOfBand()):
+                    if not numpy.array_equal(self._jim_object.np(iband),
+                                             other.np(iband)):
                         return False
                 return True
             else:
-                for iplane in range(0,self._jim_object.properties.nrOfPlane()):
-                    first_plane=_pj.geometry.cropPlane(self._jim_object, iplane)
-                    second_plane=_pj.geometry.cropPlane(other, iplane)
-                    if first_plane.properties.nrOfBand() != second_plane.properties.nrOfBand():
+                for iplane in range(0,
+                                    self._jim_object.properties.nrOfPlane()):
+                    first_plane = _pj.geometry.cropPlane(self._jim_object,
+                                                         iplane)
+                    second_plane = _pj.geometry.cropPlane(other, iplane)
+                    if first_plane.properties.nrOfBand() != \
+                            second_plane.properties.nrOfBand():
                         return False
-                    for iband in range(0,first_plane.properties.nrOfBand()):
-                        if not numpy.array_equal(first_plane.np(iband), second_plane.np(iband)):
+                    for iband in range(0, first_plane.properties.nrOfBand()):
+                        if not numpy.array_equal(first_plane.np(iband),
+                                                 second_plane.np(iband)):
                             return False
                 return True
         else:
@@ -681,7 +705,8 @@ class _PixOps():
 
         .. note::
 
-            A simplified interface to set a threshold is provided via :ref:`indexing <indexing>` (see also example below).
+            A simplified interface to set a threshold is provided
+            via :ref:`indexing <indexing>` (see also example below).
 
         .. _setThreshold_example:
 

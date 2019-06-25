@@ -458,4 +458,3 @@ class _PropertiesVect():
         :return: The projection string in well known text format.
         """
         return self._jim_vect._jipjimvect.getProjection(layer)
-
