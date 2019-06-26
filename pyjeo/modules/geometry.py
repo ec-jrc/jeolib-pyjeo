@@ -351,12 +351,12 @@ def stackPlane(jim_object, jim_other=None, plane=None):
         raise TypeError('Error: expected a Jim object')
 
 
-def reducePlane(jim, rule='max', band=0, nodata=None):
+def reducePlane(jim, rule='max', band=None, nodata=None):
     """Reduce planes of Jim object.
 
     :param jim: jim object on which to reduce planes
     :param rule: rule to reduce (max, min, mean, median)
-    :param band: band on which to apply rule (default is first band: 0)
+    :param band: band on which to apply rule (default is to check all bands)
     :param nodata: value to ignore when applying rule
     :return: reduced single plane jim object
     """
@@ -364,50 +364,79 @@ def reducePlane(jim, rule='max', band=0, nodata=None):
         print("Warning: single plane, no reduction is performed")
         return None
 
-    theType=jim.properties.getDataType()
-    if rule in ('mean','avg','median') and nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
-        theType=jim.properties.getDataType()
-        jim.pixops.convert(otype='GDT_Float32')
     jimreduced=_pj.geometry.cropPlane(jim,0)
-    maskreduced=_pj.geometry.cropBand(jimreduced,band)
+    if rule in ('mean','avg','median'):
+        theType=jim.properties.getDataType()
+        if nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
+            jim.pixops.convert(otype='GDT_Float32')
+        if band is not None:
+            mask=_pj.geometry.cropBand(jim,band=band)
+        if rule=='mean' or rule=='avg':
+            for iband in range(0,jim.properties.nrOfBand()):
+                if nodata is not None:
+                    if band is None:
+                        jim.np(iband)[jim.np(iband)==nodata]=numpy.nan
+                        jimreduced.np(iband)[:]=numpy.nanmean(jim.np(iband),axis=0)
+                        jim.np(iband)[jim.np(iband)==numpy.nan]=nodata
+                    else:
+                        jim.np(iband)[mask.np()==nodata]=numpy.nan
+                        jimreduced.np(iband)[:]=numpy.nanmean(jim.np(iband),axis=0)
+                        jim.np(iband)[mask.np()==nodata]=nodata
+                else:
+                    jimreduced.np(iband)[:]=numpy.mean(jim.np(iband),axis=0)
+        if rule=='median':
+            for iband in range(0,jim.properties.nrOfBand()):
+                if nodata is not None:
+                    if band is None:
+                        jim.np(iband)[jim.np(iband)==nodata]=numpy.nan
+                        jimreduced.np(iband)[:]=numpy.nanmedian(jim.np(iband),axis=0)
+                        jim.np(iband)[jim.np(iband)==numpy.nan]=nodata
+                    else:
+                        jim.np(iband)[mask.np()==nodata]=numpy.nan
+                        jimreduced.np(iband)[:]=numpy.nanmedian(jim.np(iband),axis=0)
+                        jim.np(iband)[mask.np()==nodata]=nodata
+                else:
+                    jimreduced.np(iband)[:]=numpy.median(jim.np(iband),axis=0)
+        if nodata is not None:
+            if theType not in ('GDT_Float32','GDT_Float64'):
+                jimreduced.pixops.convert(otype=theType)
+                jim.pixops.convert(otype=theType)
+    else:
+        if band is not None:
+            maskreduced=_pj.geometry.cropBand(jimreduced,band)
     for iplane in range(1,jim.properties.nrOfPlane()):
         jimplane=_pj.geometry.cropPlane(jim,iplane)
-        mask=_pj.geometry.cropBand(jimplane,band)
+        if band is not None:
+            maskplane=_pj.geometry.cropBand(jimplane,band)
         if rule=='max':
             if nodata is not None:
-                jimreduced[(maskreduced<mask) & (mask!=nodata)]=jimplane
-                maskreduced[(maskreduced<mask) & (mask!=nodata)]=mask
+                if band is not None:
+                    themask=((maskreduced<maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
+                    jimreduced[theask]=jimplane
+                    maskreduced[themask]=maskplane
+                else:
+                    raise Exception('Error: use band option for nodata')
             else:
-                jimreduced[maskreduced<mask]=jimplane
-                maskreduced[maskreduced<mask]=mask
+                if band is not None:
+                    jimreduced[maskreduced<maskplane]=jimplane
+                    maskreduced[maskreduced<maskplane]=maskplane
+                else:
+                    jimreduced[jimreduced<jimplane]=jimplane
         elif rule=='min':
             if nodata is not None:
-                jimreduced[(maskreduced>mask) & (mask!=nodata)]=jimplane
-                maskreduced[(maskreduced>mask) & (mask!=nodata)]=mask
+                if band is not None:
+                    themask=((maskreduced>maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
+                    jimreduced[themask]=jimplane
+                    maskreduced[themask]=maskplane
+                else:
+                    raise Exception('Error: use band option for nodata')
             else:
-                jimreduced[maskreduced>mask]=jimplane
-                maskreduced[maskreduced>mask]=mask
+                if band is not None:
+                    jimreduced[maskreduced>maskplane]=jimplane
+                    maskreduced[maskreduced>maskplane]=maskplane
+                else:
+                    jimreduced[jimreduced>jimplane]=jimplane
 
-        elif nodata is not None:
-            jim.np()[iplane][mask.np()==nodata]=numpy.nan
-
-    if rule=='mean' or rule=='avg':
-        for iband in range(0,jim.properties.nrOfBand()):
-            if nodata:
-                jimreduced.np(iband)[:]=numpy.nanmean(jim.np(iband),axis=0)
-            else:
-                jimreduced.np(iband)[:]=numpy.mean(jim.np(iband),axis=0)
-    elif rule=='median':
-        for iband in range(0,self._jim_object.properties.nrOfBand()):
-            if nodata is not None:
-                jimreduced.np(iband)[:]=numpy.nanmedian(jim.np(iband),axis=0)
-            else:
-                jimreduced.np(iband)[:]=numpy.median(jim.np(iband),axis=0)
-
-    if rule in ('mean','avg','median') and nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
-        jimreduced.pixops.convert(otype=theType)
-        jim.np()[mask.np()==nodata]=nodata
-        jim.pixops.convert(otype=theType)
     return jimreduced
 
 def warp(jim_object, t_srs, **kwargs):
@@ -1134,11 +1163,11 @@ class _Geometry():
         for jim in jim_other:
             self._jim_object._jipjim.d_stackPlane(jim._jipjim)
 
-    def reducePlane(self, rule='max', band=0, nodata=None):
+    def reducePlane(self, rule='max', band=None, nodata=None):
         """Reduce planes of Jim object.
 
         :param rule: rule to reduce (max, min, mean, median)
-        :param band: band on which to apply rule (default is first band: 0)
+        :param band: band on which to apply rule (default is to check all bands)
         :param nodata: value to ignore when applying rule
 
 
@@ -1154,49 +1183,78 @@ class _Geometry():
             print("Warning: single plane, no reduction is performed")
             return None
 
-        theType=self._jim_object.properties.getDataType()
-        if rule in ('mean','avg','median') and nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
-            theType=self._jim_object.properties.getDataType()
-            self._jim_object.pixops.convert(otype='GDT_Float32')
         jimreduced=_pj.geometry.cropPlane(self._jim_object,0)
-        maskreduced=_pj.geometry.cropBand(jimreduced,band)
-        for iplane in range(1,self._jim_object.properties.nrOfPlane()):
-            jimplane=_pj.geometry.cropPlane(self._jim_object,iplane)
-            mask=_pj.geometry.cropBand(jimplane,band)
-            if rule=='max':
-                if nodata is not None:
-                    jimreduced[((maskreduced<mask) | (maskreduced == nodata)) & (mask!=nodata)]=jimplane
-                    maskreduced[((maskreduced<mask) | (maskreduced == nodata)) & (mask!=nodata)]=mask
-                else:
-                    jimreduced[maskreduced<mask]=jimplane
-                    maskreduced[maskreduced<mask]=mask
-            elif rule=='min':
-                if nodata is not None:
-                    jimreduced[((maskreduced>mask) | (maskreduced == nodata)) & (mask!=nodata)]=jimplane
-                    maskreduced[((maskreduced>mask) | (maskreduced == nodata)) & (mask!=nodata)]=mask
-                else:
-                    jimreduced[maskreduced>mask]=jimplane
-                    maskreduced[maskreduced>mask]=mask
-            elif nodata is not None:
-                self._jim_object.np()[iplane][mask.np()==nodata]=numpy.nan
-
-        if rule=='mean' or rule=='avg':
-            for iband in range(0,self._jim_object.properties.nrOfBand()):
-                if nodata is not None:
-                    jimreduced.np(iband)[:]=numpy.nanmean(self._jim_object.np(iband),axis=0)
-                else:
-                    jimreduced.np(iband)[:]=numpy.mean(self._jim_object.np(iband),axis=0)
-        elif rule=='median':
-            for iband in range(0,self._jim_object.properties.nrOfBand()):
-                if nodata is not None:
-                    jimreduced.np(iband)[:]=numpy.nanmedian(self._jim_object.np(iband),axis=0)
-                else:
-                    jimreduced.np(iband)[:]=numpy.median(self._jim_object.np(iband),axis=0)
-        if rule in ('mean','avg','median') and nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
-            jimreduced.np()[jimreduced==numpy.nan]=nodata
-            jimreduced.pixops.convert(otype=theType)
-            self._jim_object.np()[self._jim_object.np()==numpy.nan]=nodata
-            self._jim_object.pixops.convert(otype=theType)
+        if rule in ('mean','avg','median'):
+            theType=self._jim_object.properties.getDataType()
+            if nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
+                self._jim_object.pixops.convert(otype='GDT_Float32')
+            if band is not None:
+                mask=_pj.geometry.cropBand(self._jim_object,band=band)
+            if rule=='mean' or rule=='avg':
+                for iband in range(0,self._jim_object.properties.nrOfBand()):
+                    if nodata is not None:
+                        if band is None:
+                            self._jim_object.np(iband)[self._jim_object.np(iband)==nodata]=numpy.nan
+                            jimreduced.np(iband)[:]=numpy.nanmean(self._jim_object.np(iband),axis=0)
+                            self._jim_object.np(iband)[self._jim_object.np(iband)==numpy.nan]=nodata
+                        else:
+                            self._jim_object.np(iband)[mask.np()==nodata]=numpy.nan
+                            jimreduced.np(iband)[:]=numpy.nanmean(self._jim_object.np(iband),axis=0)
+                            self._jim_object.np(iband)[mask.np()==nodata]=nodata
+                    else:
+                        jimreduced.np(iband)[:]=numpy.mean(self._jim_object.np(iband),axis=0)
+            elif rule=='median':
+                for iband in range(0,self._jim_object.properties.nrOfBand()):
+                    if nodata is not None:
+                        if band is None:
+                            self._jim_object.np(iband)[self._jim_object.np(iband)==nodata]=numpy.nan
+                            jimreduced.np(iband)[:]=numpy.nanmedian(self._jim_object.np(iband),axis=0)
+                            self._jim_object.np(iband)[self._jim_object.np(iband)==numpy.nan]=nodata
+                        else:
+                            self._jim_object.np(iband)[mask.np()==nodata]=numpy.nan
+                            jimreduced.np(iband)[:]=numpy.nanmedian(self._jim_object.np(iband),axis=0)
+                            self._jim_object.np(iband)[mask.np()==nodata]=nodata
+                    else:
+                        jimreduced.np(iband)[:]=numpy.median(self._jim_object.np(iband),axis=0)
+            if nodata is not None:
+                if theType not in ('GDT_Float32','GDT_Float64'):
+                    jimreduced.pixops.convert(otype=theType)
+                    self._jim_object.pixops.convert(otype=theType)
+        else:
+            if band is not None:
+                maskreduced=_pj.geometry.cropBand(jimreduced,band)
+            for iplane in range(1,self._jim_object.properties.nrOfPlane()):
+                jimplane=_pj.geometry.cropPlane(self._jim_object,iplane)
+                if band is not None:
+                    maskplane=_pj.geometry.cropBand(jimplane,band)
+                if rule=='max':
+                    if nodata is not None:
+                        if band is not None:
+                            themask=((maskreduced<maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
+                            jimreduced[themask]=jimplane
+                            maskreduced[themask]=maskplane
+                        else:
+                            raise Exception('Error: use band option for nodata')
+                    else:
+                        if band is not None:
+                            jimreduced[maskreduced<maskplane]=jimplane
+                            maskreduced[maskreduced<maskplane]=maskplane
+                        else:
+                            jimreduced[jimreduced<jimplane]=jimplane
+                elif rule=='min':
+                    if nodata is not None:
+                        if band is not None:
+                            themask=((maskreduced>maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
+                            jimreduced[themask]=jimplane
+                            maskreduced[themask]=maskplane
+                        else:
+                            raise Exception('Error: use band option for nodata')
+                    else:
+                        if band is not None:
+                            jimreduced[maskreduced>maskplane]=jimplane
+                            maskreduced[maskreduced>maskplane]=maskplane
+                        else:
+                            jimreduced[jimreduced>jimplane]=jimplane
         self._jim_object._set(jimreduced._jipjim)
 
     #deprecated: use aggregate_vector instead
