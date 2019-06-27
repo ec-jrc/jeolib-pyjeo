@@ -840,18 +840,38 @@ class BadBasicMethods(unittest.TestCase):
 
         # Test inner checks in operators
 
-        warnings.filterwarnings('error')
-        jim_oneband = pj.Jim(ncol=5, nrow=5, nband=1, otype='GDT_Byte')
         jim_twobands = pj.Jim(ncol=5, nrow=5, nband=2, otype='GDT_Byte')
+        jim_threebands = pj.Jim(ncol=5, nrow=5, nband=3, otype='GDT_Byte')
 
         try:
-            jim_twobands == jim_oneband
+            jim_threebands == jim_twobands
+            failed = True
+        except IndexError:
+            failed = False
+
+        assert not failed, 'Error in raising an error when left Jim has ' \
+                           'more bands than the right one for basic conditions'
+
+        warnings.filterwarnings('error', category=Warning)
+        try:
+            jim_twobands == jim_threebands
             failed = True
         except Warning:
             failed = False
 
         assert not failed, 'Error in raising a warning when left Jim has ' \
-                           'more bands than the right one for basic conditions'
+                           'less bands than the right one for basic conditions'
+
+        warnings.resetwarnings()
+        warnings.filterwarnings('ignore', category=Warning)
+
+        eq = jim_twobands == jim_threebands
+
+        assert eq.properties.nrOfBand() == 2, \
+            'Error in equations with the left Jim with less bands ' \
+            '(the output Jim does not have the same number of bands)'
+
+        warnings.resetwarnings()
 
 
 def load_tests(loader=None, tests=None, pattern=None):

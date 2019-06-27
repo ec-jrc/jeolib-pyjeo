@@ -255,6 +255,13 @@ class Jim():
             raise IndexError('Jims used in conditions must have either the '
                              'same number of bands or one of them must have '
                              'number of bands == 1')
+        elif 1 < self.properties.nrOfBand() < \
+                another_jim.properties.nrOfBand():
+            _warnings.warn('Left Jim has less bands than the right one and '
+                           'more than one band. Only corresponding bands of '
+                           'the right Jim will be taken in consideration.',
+                           Warning)
+
 
     def _feed(self, stdev, uniform, seed, kwargs):
         """Feed the Jim object with either uniform or random seed of values.
