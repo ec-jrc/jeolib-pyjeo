@@ -2,7 +2,9 @@
 
 import pyjeo as pj
 import unittest
+
 import numpy as np
+import warnings
 
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
@@ -835,6 +837,21 @@ class BadBasicMethods(unittest.TestCase):
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim <= number'
+
+        # Test inner checks in operators
+
+        warnings.filterwarnings('error')
+        jim_oneband = pj.Jim(ncol=5, nrow=5, nband=1, otype='GDT_Byte')
+        jim_twobands = pj.Jim(ncol=5, nrow=5, nband=2, otype='GDT_Byte')
+
+        try:
+            jim_twobands == jim_oneband
+            failed = True
+        except Warning:
+            failed = False
+
+        assert not failed, 'Error in raising a warning when left Jim has ' \
+                           'more bands than the right one for basic conditions'
 
 
 def load_tests(loader=None, tests=None, pattern=None):
