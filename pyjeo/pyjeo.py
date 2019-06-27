@@ -251,9 +251,10 @@ class Jim():
         :param another_jim: Another Jim object which nrOfBands is going to be
             checked
         """
-        if self.properties.nrOfBand() > another_jim.properties.nrOfBand():
-            _warnings.warn('Number of bands of arguments do not match',
-                           Warning)
+        if self.properties.nrOfBand() > another_jim.properties.nrOfBand() > 1:
+            raise IndexError('Jims used in conditions must have either the '
+                             'same number of bands or one of them must have '
+                             'number of bands == 1')
 
     def _feed(self, stdev, uniform, seed, kwargs):
         """Feed the Jim object with either uniform or random seed of values.
