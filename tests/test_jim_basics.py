@@ -95,6 +95,23 @@ class BadBasicMethods(unittest.TestCase):
         assert not failed, \
             'Error in catching a call of Jim.np() for non-dimensional Jims'
 
+        try:
+            _ = ajim.np(ajim.properties.nrOfBand() - 1)
+            failed = False
+        except:
+            failed = True
+
+        assert not failed, 'Error in Jim.np(band)'
+
+        try:
+            _ = ajim.np(ajim.properties.nrOfBand())
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, 'Error in catching a call of Jim.np(band) with ' \
+                           'band value greater than number of bands'
+
     def test_getters_setters(self):
         """Test getters and setters."""
         jim1 = pj.Jim(tiles[0])

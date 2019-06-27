@@ -222,8 +222,7 @@ class Jim():
             raise ValueError(
                 'Jim has to have a data type and dimensions to use Jim.np()')
         if band >= self.properties.nrOfBand():
-            raise ValueError(
-                'Band out of bounds')
+            raise ValueError('Band out of bounds')
         return _jl.np(self._jipjim, band)
 
     def _checkInitParamsSense(self, image, kwargs):
