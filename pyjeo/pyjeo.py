@@ -547,9 +547,16 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:] = (self.np() < right.np())
+            self._checkNumberOfBands(right)
+
+            for iband in range(0, self.properties.nrOfBand()):
+                if right.properties.nrOfBand() == 1:
+                    jim.np(iband)[:] = (self.np(iband) < right.np())
+                else:
+                    jim.np(iband)[:] = (self.np(iband) < right.np(iband))
         else:
-            jim.np()[:] = (self.np() < right)
+            for iband in range(0, self.properties.nrOfBand()):
+                jim.np(iband)[:] = (self.np(iband) < right)
         return jim
 
     def __le__(self, right):
@@ -657,9 +664,8 @@ class Jim():
                 else:
                     self.np(iband)[:] += right.np(iband)
         else:
-            # for iband in range(0, self.properties.nrOfBand()):
-            #     self.np(iband)[:] += right
-            self.np()[:] += right
+            for iband in range(0, self.properties.nrOfBand()):
+                self.np(iband)[:] += right
         return self
 
     def __sub__(self, right):
@@ -921,7 +927,8 @@ class Jim():
             return jim
         elif isinstance(right, int) or isinstance(right, numpy.ndarray):
             jim = Jim(self)
-            jim.np()[:] |= right
+            for iband in range(0, self.properties.nrOfBand()):
+                jim.np(iband)[:] |= right
             return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
@@ -1020,7 +1027,8 @@ class Jim():
             return jim
         elif isinstance(right, int) or isinstance(right, numpy.ndarray):
             jim = Jim(self)
-            jim.np()[:] &= right
+            for iband in range(0, self.properties.nrOfBand()):
+                jim.np(iband)[:] &= right
             return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(
