@@ -199,6 +199,11 @@ class BadPropsVects(unittest.TestCase):
         assert self.jimv.properties.getLry() == bbox[3], \
             'Error in properties.getBBox() or properties.getLry() for JimVects'
 
+        projection = self.jimv.properties.getProjection()
+
+        assert projection.split('GEOGCS["')[1][:13] == 'GCS_ETRS_1989', \
+            'Error in properties.getProjection() for JimVects (wrong GEOGCS)'
+
     def test_feature_layer_counts(self):
         """Test JimVect methods getLayerCount() and getFeatureType()."""
         assert self.jimv.properties.getLayerCount() == 2, \
