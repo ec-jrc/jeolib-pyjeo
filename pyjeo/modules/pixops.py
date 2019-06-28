@@ -285,7 +285,7 @@ def setThreshold(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
 
-def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
+def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=None,
             dx=0, dy=0, nogeo=False):
     """Set range of pixels to value.
 
@@ -307,6 +307,10 @@ def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
     :return: a Jim object
     """
     jout = _pj.Jim(jim)
+
+    if bands is None:
+        bands = range(jim.properties.nrOfBand())
+
     jout.pixops.setData(value, ulx, uly, lrx, lry, bands, dx, dy, nogeo)
     return jout
 
@@ -625,8 +629,8 @@ class _PixOps():
     #     """
     #     self._jim_object._jipjim.d_pointOpBlank(val)
 
-    def setData(self, value, ulx=None, uly=None, lrx=None, lry=None, bands=[0],
-                dx=0, dy=0, nogeo=False):
+    def setData(self, value, ulx=None, uly=None, lrx=None, lry=None,
+                bands=None, dx=0, dy=0, nogeo=False):
         """Set range of pixels to value.
 
         :param jim_object: a Jim object
@@ -646,6 +650,10 @@ class _PixOps():
             if True
         :return: a Jim object
         """
+
+        if bands is None:
+            bands = range(self._jim_object.properties.nrOfBand())
+
         if all(v is None for v in [ulx, uly, lrx, lry]) and dx == 0 and \
                 dy == 0 and not nogeo:
             for band in bands:
