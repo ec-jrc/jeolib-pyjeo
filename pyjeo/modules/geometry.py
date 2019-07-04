@@ -4,6 +4,8 @@ import pyjeo as _pj
 import os
 import numpy
 
+from collections import Iterable
+
 
 def image2geo(jim_object, i, j):
     """Convert image coordinates (col and row) to georeferenced coordinates.
@@ -668,6 +670,25 @@ def polygonize(jim_object, output, **kwargs):
 #     ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
 #     return ajim
 
+def append(jvec1, jvec2, output, **kwargs):
+    """Append JimVect object with another JimVect object.
+
+    :param jvec1: first JimVect
+    :param jvec2: second JimVect to append
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
+    :param oformat: output vector dataset format
+    """
+    kwargs.update({'filename': output})
+    if isinstance(jvec2, _pj.JimVect):
+        avect = _pj.JimVect(jvec1,kwargs)
+        avect._jipjimvect.append(jvec2._jipjimvect)
+        pjvect = _pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
+    else:
+        raise TypeError('Error: can only join with JimVect object')
+
 def join(jvec1, jvec2, output, **kwargs):
     """Join JimVect object with another JimVect object.
 
@@ -1287,8 +1308,11 @@ class _Geometry():
         | band             | List of bands to extract (0 indexed). Default is |
         |                  | to use extract all bands                         |
         +------------------+--------------------------------------------------+
-        | bandname         | List of band name corresponding to list of bands |
-        |                  | to extract                                       |
+        | bandname         | List of band names corresponding to list of      |
+        |                  | bands to extract                                 |
+        +------------------+--------------------------------------------------+
+        | planename        | List of plane names corresponding to list of     |
+        |                  | planes to extract                                |
         +------------------+--------------------------------------------------+
         | startband        | Start band sequence number (0 indexed)           |
         +------------------+--------------------------------------------------+
@@ -1390,8 +1414,8 @@ class _Geometry():
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
-            v = jim0.extractOgr(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
-            v.write('/path/to/output.sqlite)
+            v = jim0.geometry.extractOgr(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v.io.write('/path/to/output.sqlite)
 
         """
         kwargs.update({'output': output})
@@ -1438,6 +1462,9 @@ class _Geometry():
         +------------------+--------------------------------------------------+
         | bandname         | List of band name corresponding to list of bands |
         |                  | to extract                                       |
+        +------------------+--------------------------------------------------+
+        | planename        | List of plane names corresponding to list of     |
+        |                  | planes to extract                                |
         +------------------+--------------------------------------------------+
         | startband        | Start band sequence number (0 indexed)           |
         +------------------+--------------------------------------------------+
@@ -1545,7 +1572,7 @@ class _Geometry():
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
-            v = jim0.extractOgr(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v = jim0.geometry.aggregateVector(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
             v.write('/path/to/output.sqlite)
 
         """
@@ -1572,8 +1599,6 @@ class _Geometry():
         if planenames is None:
             planenames = ['t'+str(iplane) for iplane in range(
                 0, self._jim_object.properties.nrOfPlane())]
-
-        plane = kwargs.pop('plane', None)
 
         if jvec is None:
             raise Exception('Error: missing jvec option')
@@ -2160,6 +2185,291 @@ class _GeometryList():
         return _pj.Jim(self._jim_list._jipjimlist.stackPlane())
 
     def extractOgr(self, sample, rule, output, **kwargs):
+        """Extract pixel values from JimList object based on a JimVect vector dataset.
+
+        :param sample: reference JimVect instance
+        :param rule: Rule how to calculate zonal statistics per feature
+            (see list of :ref:`supported rules <extract_rules>`)
+        :param output: Name of the output vector dataset in which the zonal
+            statistics will be saved
+        :param kwargs: See table below
+        :return: A VectorOgr with the same geometry as the sample vector
+            dataset and an extra field for each of the calculated raster value
+            (zonal) statistics. The same layer name(s) of the sample will be
+            used for the output vector dataset
+
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | copy             | Copy these fields from the sample vector dataset |
+        |                  | (default is to copy all fields)                  |
+        +------------------+--------------------------------------------------+
+        | label            | Create extra field named 'label' with this value |
+        +------------------+--------------------------------------------------+
+        | fid              | Create extra field named 'fid' with this field   |
+        |                  | identifier (sequence of features)                |
+        +------------------+--------------------------------------------------+
+        | band             | List of bands to extract (0 indexed). Default is |
+        |                  | to use extract all bands                         |
+        +------------------+--------------------------------------------------+
+        | bandname         | List of band name corresponding to list of bands |
+        |                  | to extract                                       |
+        +------------------+--------------------------------------------------+
+        | planename        | List of plane names corresponding to list of     |
+        |                  | planes to extract                                |
+        +------------------+--------------------------------------------------+
+        | startband        | Start band sequence number (0 indexed)           |
+        +------------------+--------------------------------------------------+
+        | endband          | End band sequence number (0 indexed)             |
+        +------------------+--------------------------------------------------+
+        | plane            | List of planes to extract (0 indexed). Default is|
+        |                  | to use extract all planes                        |
+        +------------------+--------------------------------------------------+
+        | planename        | List of plane name corresponding to list of      |
+        |                  | planes to extract                                |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+
+        .. _extract_rules:
+
+        :Supported rules to extract:
+
+        +------------------+--------------------------------------------------+
+        | rule             | description                                      |
+        +==================+==================================================+
+        | point            | extract a single pixel within the polygon or on  |
+        |                  | each point feature                               |
+        +------------------+--------------------------------------------------+
+        | allpoints        | Extract all pixel values covered by the polygon  |
+        +------------------+--------------------------------------------------+
+        | centroid         | Extract pixel value at the centroid of           |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | mean             | Extract average of all pixel values within the   |
+        |                  | polygon                                          |
+        +------------------+--------------------------------------------------+
+        | stdev            | Extract standard deviation of all pixel values   |
+        |                  | within the polygon                               |
+        +------------------+--------------------------------------------------+
+        | median           | Extract median of all pixel values within        |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | min              | Extract minimum value of all pixels within       |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | max              | Extract maximum value of all pixels within       |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | sum              | Extract sum of the values of all pixels within   |
+        |                  | the polygon                                      |
+        +------------------+--------------------------------------------------+
+        | mode             | Extract the mode of classes within the polygon   |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | proportion       | Extract proportion of class(es) within           |
+        |                  | the polygon                                      |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | count            | Extract count of class(es) within the polygon    |
+        |                  | (classes must be set with the option class)      |
+        +------------------+--------------------------------------------------+
+        | percentile       | Extract percentile as defined by option perc     |
+        |                  | (e.g, 95th percentile of values covered by       |
+        |                  | polygon)                                         |
+        +------------------+--------------------------------------------------+
+
+
+        .. note::
+            To ignore some pixels from the extraction process, see list
+            of :ref:`mask <extract_mask>` key values:
+
+        .. _extract_mask:
+
+        :Supported key values to mask pixels that must be ignored in the extraction process:
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | srcnodata        | List of nodata values not to extract             |
+        +------------------+--------------------------------------------------+
+        | buffer           | Buffer (in geometric units of raster dataset).   |
+        |                  | Use neg. value to exclude pixels within buffer   |
+        +------------------+--------------------------------------------------+
+        | bndnodata        | List of band in input image to check if pixel is |
+        |                  | valid (used for srcnodata)                       |
+        +------------------+--------------------------------------------------+
+        | mask             | Use the the specified file as a validity mask    |
+        +------------------+--------------------------------------------------+
+        | mskband          | Use the the specified band of the mask file      |
+        |                  | defined                                          |
+        +------------------+------------------------------------------------  +
+        | msknodata        | List of mask values not to extract               |
+        +------------------+--------------------------------------------------+
+        | threshold        | Maximum number of features to extract. Use       |
+        |                  | percentage value as string                       |
+        |                  | (e.g., '10%') or integer value for absolute      |
+        |                  | threshold                                        |
+        +------------------+--------------------------------------------------+
+
+        Example:
+
+        Extract the mean value of the pixels within the polygon of the provided
+        reference vector. Exclude the pixels within a buffer of 10m of
+        the polygon boundary. Use a temporary vector in memory for
+        the calculation. Then write the result to the final destination
+        on disk::
+
+            jiml = pj.JimList([jim0,jim1,jim2])
+            v = jiml.geometry.extractOgr(reference, bandname, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v.io.write('/path/to/output.sqlite)
+
+        """
+        # make list of rules
+        # if not isinstance(rule, Iterable) or isinstance(rule, basestring):
+        #     rules = [rule]
+        # else:
+        #     rules=rule[:]
+        # # rules = []
+        # # if rule:
+        # #     for irule in rule:
+        # #         rules.append(irule)
+
+        # kwargs.update({'output': output})
+        # kwargs.update({'rule': rules})
+        # if 'threshold' in kwargs:
+        #     if '%' in kwargs['threshold']:
+        #         kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+        #     else:
+        #         kwargs['threshold'] = -kwargs['threshold']
+
+
+        # if sample is None:
+        #     raise Exception('Error: missing sample option')
+
+        # firstExtract = True
+        # joinfn = None
+
+
+
+        # vsioutput = os.path.join('/vsimem', 'aggregate_polygon.sqlite')
+        # filenames=[]
+        # ijim=0
+        # for jim in self._jim_list:
+        #     print("ijim: {}".format(ijim))
+        #     filenames.append('t'+str(ijim))
+        #     print("filenames: {}".format(filenames))
+        #     bandnames = kwargs.pop('bandname', None)
+        #     if bandnames is None:
+        #         bandnames = ['b'+str(iband) for iband in range(
+        #             0, jim.properties.nrOfBand())]
+        #     if jim.properties.nrOfPlane() > 1:
+        #         if sample.properties.getLayerCount() > 1:
+        #             raise Exception(
+        #                 'Error: multiple layers not supported when aggregating '
+        #                 'vectors over multi-plane raster datasets, please use '
+        #                 'single layer vector object')
+
+        #     intersectfn = '/vsimem/sampleintersect.sqlite'
+        #     sampleintersect = _pj.geometry.intersect(
+        #         sample, jim, output=intersectfn, oformat='SQLite',
+        #         co=['OVERWRITE=YES'])
+        #     if sampleintersect.properties.isEmpty():
+        #         sampleintersect.io.close()
+        #         raise Exception('intersect is empty')
+        #     else:
+        #         sampleintersect.io.write()
+
+        #     print("debug 0 ijim: {}".format(ijim))
+        #     ibandnames = []
+        #     # try:
+        #     if True:
+        #         print("debug 1 ijim: {}".format(ijim))
+        #         print("rules: {}".format(rules))
+        #         for band in bandnames:
+        #             if len(rules) > 1:
+        #                 # rules are automatically pre-pended in extractogr
+        #                 ibandnames.append(
+        #                     '_' + filenames[ijim] + '_' + band)
+        #             else:
+        #                 ibandnames.append(
+        #                     rules[0] + '_' + filenames[ijim] + '_' + band)
+
+        #         fieldnames = sampleintersect.properties.getFieldNames()
+
+        #         # try:
+        #         if True:
+        #             if 'buffer' in kwargs:
+        #                 v = jim.geometry.extractOgr(
+        #                     sampleintersect, rule=rules, output=vsioutput,
+        #                     oformat='SQLite', co=['OVERWRITE=YES'],
+        #                     bandname=ibandnames, copy=fieldnames, fid='fid',
+        #                     buffer=kwargs['buffer'])
+        #             else:
+        #                 v = jim.geometry.extractOgr(
+        #                     sampleintersect, rule=rules, output=vsioutput,
+        #                     oformat='SQLite', co=['OVERWRITE=YES'],
+        #                     bandname=ibandnames, copy=fieldnames, fid='fid')
+        #             if v.properties.isEmpty():
+        #                 v.io.close()
+        #             sampleintersect.io.close()
+        #         print("debug 2 ijim: {}".format(ijim))
+        #         try:
+        #             print("debug0")
+        #         except:
+        #             print("no coverage for jim {}, continue with next "
+        #                   "product".format(filenames[ijim]))
+        #             sampleintersect.io.close()
+        #             if v:
+        #                 v.io.close()
+        #             continue
+        #         print("debug 3 ijim: {}".format(ijim))
+        #         if not v.properties.isEmpty():
+        #             print("debug 4 ijim: {}".format(ijim))
+        #             v.io.write()
+        #             # join vectors
+        #             if '/' not in output:
+        #                 joinfn = os.path.join('/vsimem/', output)
+        #             else:
+        #                 joinfn = output
+        #             # joinfn='/vsimem/vjoin.sqlite'
+
+        #             if firstExtract:
+        #                 vjoin = _pj.JimVect(v, output=joinfn,
+        #                                     co='OVERWRITE=YES')
+        #                 vjoin.io.write()
+        #                 vjoin.io.close()
+        #                 firstExtract = False
+        #             else:
+        #                 vprev = _pj.JimVect(joinfn)
+        #                 vjoin = _pj.geometry.join(
+        #                     vprev, v, joinfn, oformat='SQLite',
+        #                     co=['OVERWRITE=YES'], key=['fid'],
+        #                     method='OUTER_FULL')
+        #                 vjoin.io.write()
+        #                 vjoin.io.close()
+        #             v.io.close()
+        #         else:
+        #             v.io.close()
+        #     try:
+        #         print("debug1")
+        #     except:
+        #         print("raised exception dataset")
+        #         continue
+        #     print("debug 5 ijim: {}".format(ijim))
+        #     ijim=ijim+1
+        #     print("debug 6 ijim: {}".format(ijim))
+
+        # if joinfn:
+        #     v = _pj.JimVect(joinfn)
+        #     return v
+        # else:
+        #     print("Error: joinfn is None, no valid features found")
+        #     raise Exception('Error: joinfn is None, no valid features found')
+        #############
         if isinstance(sample, _pj.JimVect):
             kwargs.update({'rule': rule})
             kwargs.update({'output': output})
@@ -2168,6 +2478,17 @@ class _GeometryList():
                     kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
                 else:
                     kwargs['threshold'] = -kwargs['threshold']
+
+            bandname = kwargs.pop('bandname', None)
+
+            #todo: support multi-band images in JimList...
+            if bandname is None:
+                bandname = ['t'+str(ifile) for ifile in range(0,len(self._jim_list))]
+            # elif isinstance(bandname,list):
+            #     if len(bandname) != len(self._jim_list):
+            #         raise ValueError('Error: len of bandname should be identical to len of JimList')
+            kwargs.update({'bandname':bandname})
+
             avect = self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,
                                                           kwargs)
             pjvect = _pj.JimVect()

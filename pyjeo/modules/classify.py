@@ -290,7 +290,8 @@ class _ClassifyVect():
         label    Attribute name for class label in training vector file
                  (default: 'label')
         bandname List of band names to use that correspond to the fields in
-                 the vector dataset. Leave empty to use all bands
+                 the vector dataset. This parameter is mandatory if vector contains
+                 more attributes than just label
         class    List of alpha numeric class names as defined in the label
                  attribute (use only if labels contain not numerical values)
         reclass  List of numeric class values corresponding to the list defined
@@ -351,8 +352,9 @@ class _ClassifyVect():
         Then use the extracted vector to train a SVM and write the model to
         a file.::
 
-           training=jim.extractOgr(sample,'training','oformat':'Memory','copy':'label'})
-           training.train({'method':'svm','label':'label','model':args.model})
+           jim=pj.Jim('/path/to/multiband/raster.tif')
+           training=jim.geometry.extractOgr(sample,rule='centroid',oformat='Memory',copy='label'})
+           training.classify.train(method='svm',label='label',model='/path/to/model.txt')
 
         Use :py:meth:`~_Classify.classify` to perform the classification
 
@@ -394,8 +396,9 @@ class _ClassifyVect():
         Then use the extracted vector to train an ANN and write the model to
         a file.::
 
-           training=jim.extractOgr(sample,'training','oformat':'Memory','copy':'label'})
-           training.train({'method':'ann','label':'label','model':args.model})
+           jim=pj.Jim('/path/to/multiband/raster.tif')
+           training=jim.geometry.extractOgr(sample,rule='centroid',oformat='Memory',copy='label'})
+           training.classify.train(method='ann',label='label',model='/path/to/model.txt')
 
         Use :py:meth:`~_Classify.classify` to perform the classification
         """
