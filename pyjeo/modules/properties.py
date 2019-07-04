@@ -392,9 +392,9 @@ class _PropertiesVect():
         """Get the number of features of this dataset.
 
         :layer: the layer number (default is all layers)
-        :return: the number of layers of this dataset
+        :return: the number of features of this layer
         """
-        if layer:
+        if layer is not None:
             return self._jim_vect._jipjimvect.getFeatureCount(layer)
         else:
             return self._jim_vect._jipjimvect.getFeatureCount()

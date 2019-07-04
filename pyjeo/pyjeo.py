@@ -222,8 +222,7 @@ class Jim():
             raise ValueError(
                 'Jim has to have a data type and dimensions to use Jim.np()')
         if band >= self.properties.nrOfBand():
-            raise ValueError(
-                'Band out of bounds')
+            raise ValueError('Band out of bounds')
         return _jl.np(self._jipjim, band)
 
     def _checkInitParamsSense(self, image, kwargs):
@@ -252,9 +251,17 @@ class Jim():
         :param another_jim: Another Jim object which nrOfBands is going to be
             checked
         """
-        if self.properties.nrOfBand() > another_jim.properties.nrOfBand():
-            _warnings.warn('Number of bands of arguments do not match',
+        if self.properties.nrOfBand() > another_jim.properties.nrOfBand() > 1:
+            raise IndexError('Jims used in conditions must have either the '
+                             'same number of bands or one of them must have '
+                             'number of bands == 1')
+        elif 1 < self.properties.nrOfBand() < \
+                another_jim.properties.nrOfBand():
+            _warnings.warn('Left Jim has less bands than the right one and '
+                           'more than one band. Only corresponding bands of '
+                           'the right Jim will be taken in consideration.',
                            Warning)
+
 
     def _feed(self, stdev, uniform, seed, kwargs):
         """Feed the Jim object with either uniform or random seed of values.
@@ -497,7 +504,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] = (self.np(iband) == right.np())
                 else:
                     jim.np(iband)[:] = (self.np(iband) == right.np(iband))
@@ -520,7 +527,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] = (self.np(iband) != right.np())
                 else:
                     jim.np(iband)[:] = (self.np(iband) != right.np(iband))
@@ -540,9 +547,16 @@ class Jim():
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
         if isinstance(right, Jim):
-            jim.np()[:] = (self.np() < right.np())
+            self._checkNumberOfBands(right)
+
+            for iband in range(0, self.properties.nrOfBand()):
+                if right.properties.nrOfBand() == 1:
+                    jim.np(iband)[:] = (self.np(iband) < right.np())
+                else:
+                    jim.np(iband)[:] = (self.np(iband) < right.np(iband))
         else:
-            jim.np()[:] = (self.np() < right)
+            for iband in range(0, self.properties.nrOfBand()):
+                jim.np(iband)[:] = (self.np(iband) < right)
         return jim
 
     def __le__(self, right):
@@ -559,7 +573,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] = (self.np(iband) <= right.np())
                 else:
                     jim.np(iband)[:] = (self.np(iband) <= right.np(iband))
@@ -582,7 +596,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] = (self.np(iband) > right.np())
                 else:
                     jim.np(iband)[:] = (self.np(iband) > right.np(iband))
@@ -605,7 +619,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] = (self.np(iband) >= right.np())
                 else:
                     jim.np(iband)[:] = (self.np(iband) >= right.np(iband))
@@ -621,7 +635,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     result.np(iband)[:] += right.np()
                 else:
                     result.np(iband)[:] += right.np(iband)
@@ -645,14 +659,13 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] += right.np()
                 else:
                     self.np(iband)[:] += right.np(iband)
         else:
-            # for iband in range(0, self.properties.nrOfBand()):
-            #     self.np(iband)[:] += right
-            self.np()[:] += right
+            for iband in range(0, self.properties.nrOfBand()):
+                self.np(iband)[:] += right
         return self
 
     def __sub__(self, right):
@@ -662,7 +675,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     result.np(iband)[:] -= right.np()
                 else:
                     result.np(iband)[:] -= right.np(iband)
@@ -686,7 +699,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] -= right.np()
                 else:
                     self.np(iband)[:] -= right.np(iband)
@@ -702,7 +715,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     result.np(iband)[:] *= right.np()
                 else:
                     result.np(iband)[:] *= right.np(iband)
@@ -741,7 +754,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] *= right.np()
                 else:
                     self.np(iband)[:] *= right.np(iband)
@@ -757,7 +770,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     result.np(iband)[:] /= right.np()
                 else:
                     result.np(iband)[:] /= right.np(iband)
@@ -772,7 +785,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] /= right.np()
                 else:
                     self.np(iband)[:] /= right.np(iband)
@@ -790,7 +803,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     result.np(iband)[:] /= right.np()
                 else:
                     result.np(iband)[:] /= right.np(iband)
@@ -805,7 +818,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] /= right.np()
                 else:
                     self.np(iband)[:] /= right.np(iband)
@@ -821,7 +834,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     result.np(iband)[:] %= right.np()
                 else:
                     result.np(iband)[:] %= right.np(iband)
@@ -836,7 +849,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] %= right.np()
                 else:
                     self.np(iband)[:] %= right.np(iband)
@@ -907,14 +920,15 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] |= right.np()
                 else:
                     jim.np(iband)[:] |= right.np(iband)
             return jim
         elif isinstance(right, int) or isinstance(right, numpy.ndarray):
             jim = Jim(self)
-            jim.np()[:] |= right
+            for iband in range(0, self.properties.nrOfBand()):
+                jim.np(iband)[:] |= right
             return jim
         else:
             raise TypeError('unsupported operand type for | : {}'.format(
@@ -926,7 +940,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] |= right.np()
                 else:
                     self.np(iband)[:] |= right.np(iband)
@@ -956,7 +970,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] ^= right.np()
                 else:
                     jim.np(iband)[:] ^= right.np(iband)
@@ -976,7 +990,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] ^= right.np()
                 else:
                     self.np(iband)[:] ^= right.np(iband)
@@ -1006,14 +1020,15 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     jim.np(iband)[:] &= right.np()
                 else:
                     jim.np(iband)[:] &= right.np(iband)
             return jim
         elif isinstance(right, int) or isinstance(right, numpy.ndarray):
             jim = Jim(self)
-            jim.np()[:] &= right
+            for iband in range(0, self.properties.nrOfBand()):
+                jim.np(iband)[:] &= right
             return jim
         else:
             raise TypeError('unsupported operand type for & : {}'.format(
@@ -1025,7 +1040,7 @@ class Jim():
             self._checkNumberOfBands(right)
 
             for iband in range(0, self.properties.nrOfBand()):
-                if self.properties.nrOfBand() > right.properties.nrOfBand():
+                if right.properties.nrOfBand() == 1:
                     self.np(iband)[:] &= right.np()
                 else:
                     self.np(iband)[:] &= right.np(iband)
