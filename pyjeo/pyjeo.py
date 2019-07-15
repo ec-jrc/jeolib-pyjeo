@@ -1226,10 +1226,7 @@ class JimList(list):
             del self[:]
             for i in range(modified_list._jipjimlist.getSize()):
                 im = modified_list._jipjimlist.getImage(i)
-                if isinstance(im, Jim):
-                    self.append(im)
-                else:
-                    self.append(Jim(im))
+                self.append(Jim(im))
         else:
             for _ in range(self._jipjimlist.getSize()):
                 self._jipjimlist.popImage()
