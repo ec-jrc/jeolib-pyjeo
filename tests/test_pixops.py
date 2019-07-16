@@ -131,7 +131,7 @@ class BadPixOps(unittest.TestCase):
                 max_ndvi2 = pj.Jim(max_ndvi)
 
     def test_setFunctions(self):
-        """Test setData and setThreshold functions and methods."""
+        """Test setData, setLevel and setThreshold functions and methods."""
         jim = pj.Jim(testFile)
 
         stats = jim.stats.getStats()
@@ -155,13 +155,32 @@ class BadPixOps(unittest.TestCase):
 
         jim.pixops.setThreshold(min=min+1, max=max-1, nodata=(max+min)/2)
 
-        stats = jim.stats.getStats()
+        stats_jim_thresholded = jim.stats.getStats()
 
-        assert stats == thresholded_stats, \
+        assert stats_jim_thresholded == thresholded_stats, \
             'Error in pixops.setThreshold() or stats.getStats()'
         assert jim.properties.getNoDataVals() == nodata, \
             'Error in pixops.setThreshold() or properties.getNoDataVals()'
 
+        jim = pj.Jim(testFile)
+
+        levelled = pj.pixops.setLevel(jim, min=min+1, max=max-1, val=max+1)
+        jim.pixops.setLevel(min=min+1, max=max-1, val=max+1)
+
+        levelled_stats = levelled.stats.getStats()
+
+        # TODO: Uncomment when bug #14 in jiplib will be solved
+        # assert jim.pixops.isEqual(levelled), \
+        #     'Inconsistency in pixops.setLevel() ' \
+        #     '(method returns different result than function)'
+        assert levelled_stats != stats, \
+            'Error in pixops.setLevel() (object not changed)'
+        assert levelled_stats['min'] == min, \
+            'Error in pixops.setLevel() (min value changed)'
+        assert levelled_stats['max'] == max + 1, \
+            'Error in pixops.setLevel() (value not setted)'
+
+        fives = pj.pixops.setData(jim, 5, bands=[0, 1])
         jim.pixops.setData(5, bands=[0, 1])
 
         stats = jim.stats.getStats()
