@@ -3,9 +3,9 @@
 import sys
 import unittest
 
-from tests import test_ccops, test_demops, test_geometry, test_jim_basics, \
-    test_jimlist_basics, test_jimvect_basics, test_pixops, test_properties, \
-    test_stats
+from tests import test_ccops, test_demops, test_geometry, test_io, \
+    test_jim_basics, test_jimlist_basics, test_jimvect_basics, test_pixops, \
+    test_properties, test_stats
 
 
 def load_tests(loader=None, tests=None, pattern=None):
@@ -14,8 +14,9 @@ def load_tests(loader=None, tests=None, pattern=None):
     #       problem with mialib/jiplib in DEMOps. Try to comment them.
 
     return unittest.TestSuite([test_ccops.load_tests(),
-                               test_geometry.load_tests(),
                                test_demops.load_tests(),
+                               test_geometry.load_tests(),
+                               test_io.load_tests(),
                                test_jim_basics.load_tests(),
                                test_jimlist_basics.load_tests(),
                                test_jimvect_basics.load_tests(),
