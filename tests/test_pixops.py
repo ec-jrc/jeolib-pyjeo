@@ -47,6 +47,42 @@ class BadPixOps(unittest.TestCase):
             'Error in pj.pixops.isEqual() ' \
             '(not False for different number of planes)'
 
+        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
+                                otype='GDT_Byte')
+        jim_twoplanes2.pixops.setData(5)
+
+        assert jim_twoplanes.pixops.isEqual(jim_twoplanes2), \
+            'Error in pj.pixops.isEqual() ' \
+            '(wrong result for multiplane Jim object)'
+
+        assert pj.pixops.isEqual(jim_twoplanes, jim_twoplanes2), \
+            'Error in pj.pixops.isEqual() ' \
+            '(wrong result for multiplane Jim object)'
+
+        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=3, nplane=2,
+                                otype='GDT_Byte')
+        jim_twoplanes2.pixops.setData(5)
+
+        assert not jim_twoplanes.pixops.isEqual(jim_twoplanes2), \
+            'Error in Jim.pixops.isEqual() ' \
+            '(not False for different number of bands for multiplane Jim)'
+
+        assert not pj.pixops.isEqual(jim_twoplanes, jim_twoplanes2), \
+            'Error in pj.pixops.isEqual() ' \
+            '(not False for different number of bands for multiplane Jim)'
+
+        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
+                                otype='GDT_Byte')
+        jim_twoplanes2.pixops.setData(6)
+
+        assert not jim_twoplanes.pixops.isEqual(jim_twoplanes2), \
+            'Error in pj.pixops.isEqual() ' \
+            '(wrong result for multiplane multiband Jim object)'
+
+        assert not pj.pixops.isEqual(jim_twoplanes, jim_twoplanes2), \
+            'Error in pj.pixops.isEqual() ' \
+            '(wrong result for multiplane multiband Jim object)'
+
     def test_NDVI(self):
         """Test computing NDVI in different ways."""
         jim = pj.Jim(testFile)
