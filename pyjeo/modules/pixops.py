@@ -167,7 +167,7 @@ def isEqual(first_jim, second_jim):
                     return False
             return True
         else:
-            for iplane in range(0, jim_object.properties.nrOfPlane()):
+            for iplane in range(0, first_jim.properties.nrOfPlane()):
                 first_plane = _pj.geometry.cropPlane(first_jim, iplane)
                 second_plane = _pj.geometry.cropPlane(second_jim, iplane)
                 if first_plane.properties.nrOfBand() != \
