@@ -32,6 +32,21 @@ class BadPixOps(unittest.TestCase):
         assert not pj.pixops.isEqual(jim1, 1), \
             'Error in pixops.isEqual() function (for not Jim object)'
 
+        jim_oneplane = pj.Jim(ncol=5, nrow=5, nband=2, otype='GDT_Byte')
+        jim_twoplanes = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
+                               otype='GDT_Byte')
+
+        jim_oneplane.pixops.setData(5)
+        jim_twoplanes.pixops.setData(5)
+
+        assert not jim_oneplane.pixops.isEqual(jim_twoplanes), \
+            'Error in Jim.pixops.isEqual() ' \
+            '(not False for different number of planes)'
+
+        assert not pj.pixops.isEqual(jim_oneplane, jim_twoplanes), \
+            'Error in pj.pixops.isEqual() ' \
+            '(not False for different number of planes)'
+
     def test_NDVI(self):
         """Test computing NDVI in different ways."""
         jim = pj.Jim(testFile)
