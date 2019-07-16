@@ -250,9 +250,6 @@ def setLevel(jim_object, min, max, val):
     :param min:  Minimum threshold value
     :param max:  Maximum threshold value
     :param val:  All pixels within [min,max] are set to val
-
-    Modifies the instance on which the method was called.
-
     """
     return _pj.Jim(jim_object._jipjim.pointOpSetLevel(min, max, val))
 
@@ -264,9 +261,6 @@ def simpleThreshold(jim_object, min, max, bg_val, fg_val):
     :param max:  Maximum threshold value
     :param bg_val:  All pixels outside [min,max] are set to bg_val
     :param fg_val:  All pixels within [min,max] are set to fg_val
-
-    Modifies the instance on which the method was called.
-
     """
     return _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
 
@@ -276,8 +270,6 @@ def setThreshold(jim_object, **kwargs):
 
     :jim_object: the Jim object on which to set threshold
     :param kwargs: See table :py:meth:`~pixops._PixOps.setThreshold`.
-
-    Modifies the instance on which the method was called.
 
     for help, please refer to the corresponding
     method :py:meth:`~pixops._PixOps.setThreshold`.
@@ -670,6 +662,17 @@ class _PixOps():
             for band in bands:
                 self._jim_object._jipjim.setData(value, ulx, uly, lrx, lry,
                                                  band, dx, dy, nogeo)
+
+    def setLevel(self, min, max, val):
+        """Set all pixels within min and max values to val.
+
+        :param min:  Minimum threshold value
+        :param max:  Maximum threshold value
+        :param val:  All pixels within [min,max] are set to val
+
+        Modifies the instance on which the method was called.
+        """
+        self._jim_object._jipjim.d_pointOpSetLevel(min, max, val)
 
     def simpleThreshold(self, min, max, bg_val, fg_val):
         """Set all pixels within min and max values to val.
