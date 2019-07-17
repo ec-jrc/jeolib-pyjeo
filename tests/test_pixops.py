@@ -372,6 +372,35 @@ class BadPixOps(unittest.TestCase):
         assert jim.stats.getStats()['min'] == 0, \
             'Error in pixops.histoCompress() (minimum value not 0)'
 
+    def test_simple_op(self):
+        """Test simpleArithOp() and simpleBitwiseOp() functions and methods."""
+        jim = pj.Jim(tiles[0])
+
+        ones = pj.pixops.setData(jim, 1)
+        jim_plus_one = jim + 1
+        jim_plus_one_arith = pj.pixops.simpleArithOp(jim, ones, 0)
+        jim.pixops.simpleArithOp(ones, 0)
+
+        assert jim.pixops.isEqual(jim_plus_one_arith), \
+            'Inconsistency in pixops.simpleArithOp() ' \
+            '(method returns different result than function)'
+
+        assert jim.pixops.isEqual(jim_plus_one), \
+            'Error in pixops.simpleArithOp(op=0) or Jim + int ' \
+            '(Results not equal)'
+
+        jim_minus_one = jim - 1
+        jim_minus_one_arith = pj.pixops.simpleArithOp(jim, ones, 1)
+        jim.pixops.simpleArithOp(ones, 1)
+
+        assert jim.pixops.isEqual(jim_minus_one_arith), \
+            'Inconsistency in pixops.simpleArithOp() ' \
+            '(method returns different result than function)'
+
+        assert jim.pixops.isEqual(jim_minus_one), \
+            'Error in pixops.simpleArithOp(op=1) or Jim - int ' \
+            '(Results not equal)'
+
 
 class BadPixOpsLists(unittest.TestCase):
     """Test JimList functions and methods from pixops modules."""
