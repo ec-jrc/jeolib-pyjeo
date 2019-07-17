@@ -376,6 +376,7 @@ class BadPixOps(unittest.TestCase):
         """Test simpleArithOp() and simpleBitwiseOp() functions and methods."""
         jim = pj.Jim(tiles[0])
 
+        # Test simpleArithOp()
         ones = pj.pixops.setData(jim, 1)
         jim_plus_one = jim + 1
         jim_plus_one_arith = pj.pixops.simpleArithOp(jim, ones, 0)
@@ -399,6 +400,31 @@ class BadPixOps(unittest.TestCase):
 
         assert jim.pixops.isEqual(jim_minus_one), \
             'Error in pixops.simpleArithOp(op=1) or Jim - int ' \
+            '(Results not equal)'
+
+        # Test simpleBitwiseOp()
+        jim_and = jim & ones
+        jim_and_bitwise = pj.pixops.simpleBitwiseOp(jim, ones, 10)
+        jim.pixops.simpleBitwiseOp(ones, 10)
+
+        assert jim.pixops.isEqual(jim_and_bitwise), \
+            'Inconsistency in pixops.simpleBitwiseOp() ' \
+            '(method returns different result than function)'
+
+        assert jim.pixops.isEqual(jim_and), \
+            'Error in pixops.simpleBitwiseOp(op=10) or Jim & Jim ' \
+            '(Results not equal)'
+
+        jim_or = jim | jim_minus_one
+        jim_or_bitwise = pj.pixops.simpleBitwiseOp(jim, jim_minus_one, 11)
+        jim.pixops.simpleBitwiseOp(jim_minus_one, 11)
+
+        assert jim.pixops.isEqual(jim_or_bitwise), \
+            'Inconsistency in pixops.simpleBitwiseOp() ' \
+            '(method returns different result than function)'
+
+        assert jim.pixops.isEqual(jim_or), \
+            'Error in pixops.simpleBitwiseOp(op=11) or Jim & Jim ' \
             '(Results not equal)'
 
 
