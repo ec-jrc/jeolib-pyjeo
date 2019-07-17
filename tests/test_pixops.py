@@ -183,6 +183,17 @@ class BadPixOps(unittest.TestCase):
         fives = pj.pixops.setData(jim, 5, bands=[0, 1])
         jim.pixops.setData(5, bands=[0, 1])
 
+        assert jim.pixops.isEqual(fives), \
+            'Inconsistency in pixops.setData() ' \
+            '(method returns different result than function)'
+
+        fives = pj.pixops.setData(jim, 5)
+        jim.pixops.setData(5)
+
+        assert jim.pixops.isEqual(fives), \
+            'Inconsistency in pixops.setData() ' \
+            '(method returns different result than function)'
+
         stats = jim.stats.getStats()
 
         assert all(v == 5 for v in [stats['min'],
