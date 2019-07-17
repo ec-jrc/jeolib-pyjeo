@@ -110,25 +110,40 @@ class BadPixOps(unittest.TestCase):
 
         assert not jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
 
-    def test_supremum(self):
-        """Test picking up supremum from different computed NDVIs."""
+    def test_supremum_infimum(self):
+        """Test picking up supremum and infimum from computed NDVIs."""
         for tile in tiles:
             jim4 = pj.Jim(tile)
             jim8 = pj.Jim(tile[:-8] + 'nir' + tile[-5] + '.tif')
 
-            if 'max_ndvi' in locals():
+            if 'max_ndvi' and 'min_ndvi' in locals():
                 b = pj.pixops.NDVISeparateBands(jim4, jim8)
 
                 max_ndvi[b > max_ndvi] = b
                 max_ndvi_func = pj.pixops.supremum(max_ndvi, b)
-                assert max_ndvi.pixops.isEqual(max_ndvi_func), \
-                    'Error in computing supremum or jim[a>jim] = a'
                 max_ndvi2.pixops.supremum(b)
+
                 assert max_ndvi.pixops.isEqual(max_ndvi2), \
-                    'Error in computing supremum'
+                    'Inconsistency in pixops.supremum() ' \
+                    '(method returns different result than function)'
+                assert max_ndvi.pixops.isEqual(max_ndvi_func), \
+                    'Error in pixops.supremum or jim[a>jim] = a'
+
+                min_ndvi[b < min_ndvi] = b
+                min_ndvi_func = pj.pixops.infimum(min_ndvi, b)
+                min_ndvi2.pixops.infimum(b)
+
+                assert min_ndvi.pixops.isEqual(min_ndvi2), \
+                    'Inconsistency in pixops.infimum() ' \
+                    '(method returns different result than function)'
+                assert min_ndvi.pixops.isEqual(min_ndvi_func), \
+                    'Error in pixops.infimum or jim[a<jim] = a'
             else:
                 max_ndvi = pj.pixops.NDVISeparateBands(jim4, jim8)
                 max_ndvi2 = pj.Jim(max_ndvi)
+
+                min_ndvi = pj.Jim(max_ndvi)
+                min_ndvi2 = pj.Jim(min_ndvi)
 
     def test_setFunctions(self):
         """Test setData, setLevel and setThreshold functions and methods."""
