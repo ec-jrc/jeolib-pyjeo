@@ -326,17 +326,20 @@ def simpleArithOp(jim1, jim2, op, *args):
     return _pj.Jim(jout)
 
 
-def simpleBitwiseOp(jim, op, *args):
+def simpleBitwiseOp(jim, another_jim, op, *args):
     """Create Jim composed using a simple bitwise operation (coded with op).
 
-    :param jim: Jim object (to be sure that at least one is provided)
+    :param jim: Jim object
+    :param another_jim: Jim object (to be sure that at least one is provided)
     :param op: integer for operation type
     :param args: Jim objects
     :return: Jim holding specified bitwise operation with from provided
         Jim objects
     """
     jout = _pj.Jim(jim)
-    for newJim in args:
+    jims = [another_jim]
+    jims.extend(args)
+    for newJim in jims:
         jout._jipjim.d_pointOpBitwise(newJim._jipjim, op)
 
     return _pj.Jim(jout)
@@ -738,6 +741,7 @@ class _PixOps():
 
         Modifies the instance on which the method was called.
 
+        :param jim: Jim object (to be sure that at least one is provided)
         :param op: integer coding operation type (see table below)
         :param args: Jim objects
         """
@@ -751,6 +755,7 @@ class _PixOps():
 
         Modifies the instance on which the method was called.
 
+        :param jim: Jim object (to be sure that at least one is provided)
         :param op: integer coding operation type (see table below)
         :param args: Jim objects
         """
