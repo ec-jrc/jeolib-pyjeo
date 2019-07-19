@@ -948,7 +948,7 @@ class _Geometry():
                 lri = lowerRightImage[0]
                 lrj = lowerRightImage[1]
             for iband in range(0, self._jim_object.properties.nrOfBand()):
-                self._jim_object._jipjim.d_imageFrameSubstract([
+                self._jim_object._jipjim.d_imageFrameSubtract([
                     uli, nr_of_cols - lri,
                     ulj, nr_of_rows - lrj,
                     ulz, self._jim_object.properties.nrOfPlane() - lrz],
