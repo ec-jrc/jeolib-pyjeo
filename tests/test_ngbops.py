@@ -99,6 +99,64 @@ class BadNgbOps(unittest.TestCase):
         #       (must wait until the issue #17 in jiplib will be
         #       fixed)
 
+        # Test morphoDilateLine()
+        jim[0:3, 0:3] = arr
+        stats = jim.stats.getStats()
+
+        dilated = pj.ngbops.morphoDilateLine(jim, 1, 0, 3, 0)
+        jim.ngbops.morphoDilateLine(1, 0, 3, 0)
+
+        stats_dilated = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(dilated), \
+            'Inconsistency in ngbops.morphoDilateLine() ' \
+            '(method returns different result than function)'
+        assert stats_dilated['max'] == 1, \
+            'Error in ngbops.morphoDilateLine() ' \
+            '(max value is not the same as of the original Jim)'
+        assert stats_dilated['min'] == 0, \
+            'Error in ngbops.morphoDilateLine() ' \
+            '(min value is not equal to 0)'
+        assert stats_dilated['mean'] > stats['mean'], \
+            'Error in ngbops.morphoDilateLine() ' \
+            '(mean value is not greater than the one of the original Jim)'
+        assert jim[0, 0] == jim[0, 1] == jim[2, 0] == jim[2, 1] == 0, \
+            'Error in ngbops.morphoDilateLine() ' \
+            '(values surrounded in left-right ngb by value 0 not equal to 0)'
+        assert jim[1, 0] == jim[1, 1] == jim[1, 2] == 1, \
+            'Error in ngbops.morphoDilateLine() ' \
+            '(values in left-right ngb of value 1 not equal to 1)'
+
+        # Test morphoErodeLine()
+        jim[0:3, 0:3] = arr
+        jim[1, 0] = 1
+        stats = jim.stats.getStats()
+
+        dilated = pj.ngbops.morphoErodeLine(jim, 1, 0, 3, 0)
+        jim.ngbops.morphoErodeLine(1, 0, 3, 0)
+
+        stats_dilated = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(dilated), \
+            'Inconsistency in ngbops.morphoErodeLine() ' \
+            '(method returns different result than function)'
+        assert stats_dilated['max'] == 1, \
+            'Error in ngbops.morphoErodeLine() ' \
+            '(max value is not the same as of the original Jim)'
+        assert stats_dilated['min'] == 0, \
+            'Error in ngbops.morphoErodeLine() ' \
+            '(min value is not equal to 0)'
+        assert stats_dilated['mean'] < stats['mean'], \
+            'Error in ngbops.morphoErodeLine() ' \
+            '(mean value is not lower than the one of the original Jim)'
+        assert jim[0, 0] == jim[0, 1] == jim[0, 2] == jim[1, 1] == \
+               jim[1, 2] == jim[2, 0] == jim[2, 1] == jim[2, 2] == 0, \
+            'Error in ngbops.morphoErodeLine() ' \
+            '(values in left-right ngb of value 0 not equal to 0)'
+        assert jim[1, 0] == 1, \
+            'Error in ngbops.morphoDilateLine() ' \
+            '(value 1 not in left-right ngb of value 0 not equal to 1)'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
