@@ -55,7 +55,37 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.filter1d() (wrong values)'
 
         # TODO: Test numpy array as filter for filter2d()
-        #       (must wait until the bug in filter2d() in jiplib will be fixed)
+        #       (must wait until the bug #16 in filter2d() in jiplib will be
+        #       fixed)
+
+    def test_erode_dilate(self):
+        """Test morphoDilate... and morphoErode...() functions and methods."""
+        jim = pj.Jim(nrow=500, ncol=500, otype='Int32', uniform=[0, 2], seed=0)
+
+        stats = jim.stats.getStats()
+
+        # Test morphoDilateDiamond()
+        dilated = pj.ngbops.morphoDilateDiamond(jim)
+        jim.ngbops.morphoDilateDiamond()
+
+        stats_dilated = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(dilated), \
+            'Inconsistency in ngbops.morphoDilateDiamond() ' \
+            '(method returns different result than function)'
+        assert stats_dilated['max'] == stats['max'], \
+            'Error in ngbops.morphoDilateDiamond() ' \
+            '(max value is not the same as of the original Jim)'
+        assert stats_dilated['min'] >= 0, \
+            'Error in ngbops.morphoDilateDiamond() ' \
+            '(min value is not equal or greater than 0)'
+        assert stats_dilated['mean'] > stats['mean'], \
+            'Error in ngbops.morphoDilateDiamond() ' \
+            '(mean value is not greater than the one of the original Jim)'
+
+        # TODO: Test morphoErodeDiamond()
+        #       (must wait until the issue #17 in jiplib will be
+        #       fixed)
 
 
 def load_tests(loader=None, tests=None, pattern=None):
