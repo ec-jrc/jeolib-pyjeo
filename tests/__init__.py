@@ -4,8 +4,8 @@ import sys
 import unittest
 
 from tests import test_ccops, test_demops, test_geometry, test_io, \
-    test_jim_basics, test_jimlist_basics, test_jimvect_basics, test_pixops, \
-    test_properties, test_stats
+    test_jim_basics, test_jimlist_basics, test_jimvect_basics, test_ngbops, \
+    test_pixops, test_properties, test_stats
 
 
 def load_tests(loader=None, tests=None, pattern=None):
@@ -20,6 +20,7 @@ def load_tests(loader=None, tests=None, pattern=None):
                                test_jim_basics.load_tests(),
                                test_jimlist_basics.load_tests(),
                                test_jimvect_basics.load_tests(),
+                               test_ngbops.load_tests(),
                                test_pixops.load_tests(),
                                test_properties.load_tests(),
                                test_stats.load_tests()])
