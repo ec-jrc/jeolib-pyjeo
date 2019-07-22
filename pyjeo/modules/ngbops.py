@@ -718,6 +718,41 @@ class _NgbOps():
         """
         self._jim_object._jipjim.d_morphoDilateNgb4(ox, oy)
 
+    def morphoDilateLine(self, dx, dy, k, o, type=0):
+        """Output the dilation of im.
+
+        Uses the line SE with slope dy/dx, length k, origin o, and line type
+        (see details at  :cite:`soille-breen-jones96`).
+
+        Modifies the instance on which the method was called.
+
+        :param dx: integer for displacement along x-axis to set slope
+        :param dy: integer for displacement along y-axis to set slope
+        :param k: integer for number of pixels of line SE
+        :param o: integer for origin of SE
+        :param type: integer for line type (0 for plain and 1 for periodic).
+            0 is the default value
+        """
+        self._jim_object._jipjim.d_morphoDilateLine(dx, dy, k, o, type)
+
+    def morphoErodeLine(self, dx, dy, k, o, type=0):
+        """Output the erosion of im using a line segment.
+
+        Uses the line SE with slope dy/dx, length k, origin o, and line type. See
+        details at  :cite:`soille-breen-jones96`.
+
+        Modifies the instance on which the method was called.
+
+        :param dx: integer for displacement along x-axis to set slope
+        :param dy: integer for displacement along y-axis to set slope
+        :param k: integer for number of pixels of line SE
+            (must be odd; if not, it is extended by one pixel)
+        :param o: integer for origin of SE
+        :param type: integer for line type (0 for plain and 1 for periodic).
+            0 is the default value
+        """
+        self._jim_object._jipjim.d_morphoErodeLine(dx, dy, k, o, type)
+
     def morphoErode(self, sec_jim_object, ox, oy, oz, trFlag=0):
         """Output the erosion of im using the SE defined by imse.
 
