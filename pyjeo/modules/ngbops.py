@@ -501,6 +501,7 @@ class _NgbOps():
 
             jim.filter1d(tapz=[1,1,1])
         """
+        kwargs.update({'filter': filter})
         if dz:
             kwargs.update({'dz': dz})
         if pad:
