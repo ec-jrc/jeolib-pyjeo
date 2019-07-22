@@ -3,6 +3,8 @@
 import pyjeo as pj
 import unittest
 
+import numpy as np
+
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
@@ -60,7 +62,10 @@ class BadNgbOps(unittest.TestCase):
 
     def test_erode_dilate(self):
         """Test morphoDilate... and morphoErode...() functions and methods."""
-        jim = pj.Jim(nrow=500, ncol=500, otype='Int32', uniform=[0, 2], seed=0)
+        jim = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 2], seed=0)
+
+        arr = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]])
+        jim[0:3, 0:3] = arr
 
         stats = jim.stats.getStats()
 
@@ -73,15 +78,22 @@ class BadNgbOps(unittest.TestCase):
         assert jim.pixops.isEqual(dilated), \
             'Inconsistency in ngbops.morphoDilateDiamond() ' \
             '(method returns different result than function)'
-        assert stats_dilated['max'] == stats['max'], \
+        assert stats_dilated['max'] == 1, \
             'Error in ngbops.morphoDilateDiamond() ' \
             '(max value is not the same as of the original Jim)'
-        assert stats_dilated['min'] >= 0, \
+        assert stats_dilated['min'] == 0, \
             'Error in ngbops.morphoDilateDiamond() ' \
-            '(min value is not equal or greater than 0)'
+            '(min value is not equal to 0)'
         assert stats_dilated['mean'] > stats['mean'], \
             'Error in ngbops.morphoDilateDiamond() ' \
             '(mean value is not greater than the one of the original Jim)'
+        assert jim[0, 0] == 0, \
+            'Error in ngbops.morphoDilateDiamond() ' \
+            '(value whose 4-ngbs are of value 0 not equal to 0)'
+        assert jim[0, 1] == jim[1, 0] == jim[1, 1] == jim[1, 2] == \
+               jim[2, 1] == 1, \
+            'Error in ngbops.morphoDilateDiamond() ' \
+            '(values in 4-ngb of value 1 not equal to 1)'
 
         # TODO: Test morphoErodeDiamond()
         #       (must wait until the issue #17 in jiplib will be
