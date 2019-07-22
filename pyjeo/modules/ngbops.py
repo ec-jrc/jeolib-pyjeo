@@ -82,15 +82,16 @@ def morphoErodeDiamond(jim_object, ox=1, oy=1):
 
 
 def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
-    """Output the erosion of im using.
+    """Output the erosion of im using a line segment.
 
-    Usesthe line SE with slope dy/dx, length k, origin o, and line type (see
-    details at  :cite:`soille-breen-jones96`)
+    Uses the line SE with slope dy/dx, length k, origin o, and line type. See
+    details at  :cite:`soille-breen-jones96`.
 
     :param jim_object: image on which to perform the erosion
     :param dx: integer for displacement along x-axis to set slope
     :param dy: integer for displacement along y-axis to set slope
     :param k: integer for number of pixels of line SE
+        (must be odd; if not, it is extended by one pixel)
     :param o: integer for origin of SE
     :param type: integer for line type (0 for plain and 1 for periodic).
         0 is the default value
@@ -102,12 +103,13 @@ def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
     """Output the dilation of im.
 
     Uses the line SE with slope dy/dx, length k, origin o, and line type
-    (see details at  :cite:`soille-breen-jones96`)
+    (see details at  :cite:`soille-breen-jones96`).
 
     :param jim_object: image on which to perform the dilation
     :param dx: integer for displacement along x-axis to set slope
     :param dy: integer for displacement along y-axis to set slope
     :param k: integer for number of pixels of line SE
+        (must be odd; if not, it is extended by one pixel)
     :param o: integer for origin of SE
     :param type: integer for line type (0 for plain and 1 for periodic).
         0 is the default value
@@ -697,6 +699,8 @@ class _NgbOps():
 
         Its origin is set at coordinates (x,y).
 
+        Modifies the instance on which the method was called.
+
         :param ox: x coordinate
         :param oy: y coordinate
         """
@@ -706,6 +710,8 @@ class _NgbOps():
         """Output the dilation of im using the elementary diamond shaped SE.
 
         Its origin is set at coordinates (x,y).
+
+        Modifies the instance on which the method was called.
 
         :param ox: x coordinate
         :param oy: y coordinate
@@ -718,6 +724,8 @@ class _NgbOps():
         Its origin is set at coordinates (x,y,z). The reflection of the SE
         is considered if trflag equals 1 (no reflection by default). Points of
         the SE are points with a non zero value in imse.
+
+        Modifies the instance on which the method was called.
 
         :param sec_jim_object: an image node for SE (UCHAR type)
         :param ox: x coordinate
@@ -734,6 +742,8 @@ class _NgbOps():
         Its origin is set at coordinates (x,y,z). The reflection of the SE
         is considered if trflag equals 1 (no reflection by default). Points of
         the SE are points with a non zero value in imse.
+
+        Modifies the instance on which the method was called.
 
         :param sec_jim_object: an image node for SE (UCHAR type)
         :param ox: x coordinate
