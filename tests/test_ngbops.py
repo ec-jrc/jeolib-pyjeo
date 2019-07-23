@@ -79,8 +79,8 @@ class BadNgbOps(unittest.TestCase):
             'Inconsistency in ngbops.morphoDilateDiamond() ' \
             '(method returns different result than function)'
         assert stats_dilated['max'] == 1, \
-            'Error in ngbops.morphoDilateDiamond() ' \
-            '(max value is not the same as of the original Jim)'
+            'Error in ngbops.morphoDilateDiamond() (max value is not equal ' \
+            'to 1, but is {})'.format(stats_dilated['max'])
         assert stats_dilated['min'] == 0, \
             'Error in ngbops.morphoDilateDiamond() ' \
             '(min value is not equal to 0)'
