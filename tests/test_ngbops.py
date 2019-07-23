@@ -95,13 +95,38 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.morphoDilateDiamond() ' \
             '(values in 4-ngb of value 1 not equal to 1)'
 
-        # TODO: Test morphoErodeDiamond()
-        #       (must wait until the issue #17 in jiplib will be
-        #       fixed)
+        # Test morphoErodeDiamond()
+        jim[0:3, 0:3] = arr
+        jim[0:3, 1] = np.array([1, 1, 1])
+        stats = stats_dilated
+        eroded = pj.ngbops.morphoErodeDiamond(jim)
+        jim.ngbops.morphoErodeDiamond()
+
+        stats_eroded = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(eroded), \
+            'Inconsistency in ngbops.morphoErodeDiamond() ' \
+            '(method returns different result than function)'
+        assert stats_eroded['max'] == 1, \
+            'Error in ngbops.morphoErodeDiamond() (max value is not equal ' \
+            'to 1, but is {})'.format(stats_eroded['max'])
+        assert stats_eroded['min'] == 0, \
+            'Error in ngbops.morphoErodeDiamond() ' \
+            '(min value is not equal to 0)'
+        assert stats_eroded['mean'] < stats['mean'], \
+            'Error in ngbops.morphoErodeDiamond() ' \
+            '(mean value is not smaller than the one of the original Jim)'
+        assert jim[1, 0] == 1, \
+            'Error in ngbops.morphoErodeDiamond() ' \
+            '(value whose 4-ngbs are of value 1 not equal to 1)'
+        assert jim[0, 0] == jim[0, 1] == jim[0, 2] == jim[1, 1] == \
+               jim[1, 2] == jim[2, 0] == jim[2, 1] == jim[2, 2] == 0, \
+            'Error in ngbops.morphoErodeDiamond() ' \
+            '(values in 4-ngb of value 0 not equal to 0)'
 
         # Test morphoDilateLine()
         jim[0:3, 0:3] = arr
-        stats = jim.stats.getStats()
+        stats = stats_eroded
 
         dilated = pj.ngbops.morphoDilateLine(jim, 1, 0, 3, 0)
         jim.ngbops.morphoDilateLine(1, 0, 3, 0)
@@ -130,7 +155,7 @@ class BadNgbOps(unittest.TestCase):
         # Test morphoErodeLine()
         jim[0:3, 0:3] = arr
         jim[1, 0] = 1
-        stats = jim.stats.getStats()
+        stats = stats_dilated
 
         dilated = pj.ngbops.morphoErodeLine(jim, 1, 0, 3, 0)
         jim.ngbops.morphoErodeLine(1, 0, 3, 0)
