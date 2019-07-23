@@ -154,7 +154,7 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.morphoErodeLine() ' \
             '(values in left-right ngb of value 0 not equal to 0)'
         assert jim[1, 0] == 1, \
-            'Error in ngbops.morphoDilateLine() ' \
+            'Error in ngbops.morphoErodeLine() ' \
             '(value 1 not in left-right ngb of value 0 not equal to 1)'
 
 
