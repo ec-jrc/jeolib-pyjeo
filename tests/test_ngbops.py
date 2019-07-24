@@ -186,6 +186,21 @@ class BadNgbOps(unittest.TestCase):
         #       (must wait until the issue #18 in jiplib will be
         #       fixed)
 
+        # Test morphoGradientByDilationDiamond()
+        jim_copy = pj.Jim(jim)
+
+        eroded = pj.ngbops.morphoGradientByDilationDiamond(jim)
+        jim.ngbops.morphoGradientByDilationDiamond()
+
+        assert jim.pixops.isEqual(eroded), \
+            'Inconsistency in ngbops.morphoGradientByDilationDiamond() ' \
+            '(method returns different result than function)'
+        assert jim.pixops.isEqual(
+            jim_copy - pj.ngbops.morphoDilateDiamond(jim_copy)), \
+            'Error in ngbops.morphoGradientByDilationDiamond() ' \
+            '(jim.ngbops.morphoGradientByDilationDiamond() not equal to ' \
+            'jim - pj.ngbops.morphoDilateDiamond(jim))'
+
         # Test morphoGradientByErosionDiamond()
         jim_copy = pj.Jim(jim)
 

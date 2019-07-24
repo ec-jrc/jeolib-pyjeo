@@ -155,6 +155,14 @@ def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
                                                    ox, oy, oz, trFlag))
 
 
+def morphoGradientByDilationDiamond(jim_object):
+    """Output the gradient by dilation of Jim.
+
+    Uses the elementary diamond shaped SE.
+    """
+    return jim_object - _pj.Jim(jim_object._jipjim.morphoDilateNgb4(1, 1))
+
+
 def morphoGradientByErosionDiamond(jim_object):
     """Output the gradient by erosion of Jim.
 
@@ -788,6 +796,16 @@ class _NgbOps():
         """
         self._jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
                                               ox, oy, oz, trFlag)
+
+    def morphoGradientByDilationDiamond(self):
+        """Output the gradient by dilation of Jim.
+
+        Uses the elementary diamond shaped SE.
+
+        Modifies the instance on which the method was called.
+        """
+        self._jim_object -= _pj.Jim(
+            self._jim_object._jipjim.morphoDilateNgb4(1, 1))
 
     def morphoGradientByErosionDiamond(self):
         """Output the gradient by erosion of Jim.
