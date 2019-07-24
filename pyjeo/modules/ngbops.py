@@ -789,6 +789,16 @@ class _NgbOps():
         self._jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
                                               ox, oy, oz, trFlag)
 
+    def morphoGradientByErosionDiamond(self):
+        """Output the gradient by erosion of Jim.
+
+        Uses the elementary diamond shaped SE.
+
+        Modifies the instance on which the method was called.
+        """
+        self._jim_object -= _pj.Jim(
+            self._jim_object._jipjim.morphoErodeNgb4(1, 1))
+
 
 class _NgbOpsList():
     """Define all NgbOps methods for JimLists."""
