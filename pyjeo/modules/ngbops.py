@@ -63,21 +63,23 @@ def filter2d(jim_object, filter, **kwargs):
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
-def morphoDilateDiamond(jim_object, ox=1, oy=1):
+def morphoDilateDiamond(jim_object):
     """Output the dilation of im using the elementary diamond shaped SE.
 
-    :param ox: integer for origin along x-axis of SE (default is 1 for centred)
-    :param oy: integer for origin along y-axis of SE (default is 1 for centred)
+    :param jim_object: a Jim object
     """
+    ox = 1
+    oy = 1
     return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(ox, oy))
 
 
-def morphoErodeDiamond(jim_object, ox=1, oy=1):
+def morphoErodeDiamond(jim_object):
     """Output the erosion of im using the elementary diamond shaped SE.
 
-    :param ox: integer for origin along x-axis of SE (default is 1 for centred)
-    :param oy: integer for origin along y-axis of SE (default is 1 for centred)
+    :param jim_object: a Jim object
     """
+    ox = 1
+    oy = 1
     return _pj.Jim(jim_object._jipjim.morphoErodeNgb4(ox, oy))
 
 
@@ -154,9 +156,9 @@ def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
 
 
 def morphoGradientByErosionDiamond(jim_object):
-    """Output the gradient by erosion of im.
+    """Output the gradient by erosion of Jim.
 
-    Uses the elementary diamond shaped SE
+    Uses the elementary diamond shaped SE.
     """
     return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
@@ -694,28 +696,26 @@ class _NgbOps():
             kwargs.update({'filter': filter})
         self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
-    def morphoErodeDiamond(self, ox=1, oy=1):
+    def morphoErodeDiamond(self):
         """Output the erosion of im using the elementary diamond shaped SE.
 
         Its origin is set at coordinates (x,y).
 
         Modifies the instance on which the method was called.
-
-        :param ox: x coordinate
-        :param oy: y coordinate
         """
+        ox = 1
+        oy = 1
         self._jim_object._jipjim.d_morphoErodeNgb4(ox, oy)
 
-    def morphoDilateDiamond(self, ox=1, oy=1):
+    def morphoDilateDiamond(self):
         """Output the dilation of im using the elementary diamond shaped SE.
 
         Its origin is set at coordinates (x,y).
 
         Modifies the instance on which the method was called.
-
-        :param ox: x coordinate
-        :param oy: y coordinate
         """
+        ox = 1
+        oy = 1
         self._jim_object._jipjim.d_morphoDilateNgb4(ox, oy)
 
     def morphoDilateLine(self, dx, dy, k, o, type=0):
