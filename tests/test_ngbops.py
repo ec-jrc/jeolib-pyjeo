@@ -182,6 +182,25 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.morphoErodeLine() ' \
             '(value 1 not in left-right ngb of value 0 not equal to 1)'
 
+        # TODO: Test morphoErode() and morphoDilate()
+        #       (must wait until the issue #18 in jiplib will be
+        #       fixed)
+
+        # Test morphoGradientByErosionDiamond()
+        jim_copy = pj.Jim(jim)
+
+        eroded = pj.ngbops.morphoGradientByErosionDiamond(jim)
+        jim.ngbops.morphoGradientByErosionDiamond()
+
+        assert jim.pixops.isEqual(eroded), \
+            'Inconsistency in ngbops.morphoGradientByErosionDiamond() ' \
+            '(method returns different result than function)'
+        assert jim.pixops.isEqual(
+            jim_copy - pj.ngbops.morphoErodeDiamond(jim_copy)), \
+            'Error in ngbops.morphoGradientByErosionDiamond() ' \
+            '(jim.ngbops.morphoGradientByErosionDiamond() not equal to ' \
+            'jim - pj.ngbops.morphoErodeDiamond(jim))'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
