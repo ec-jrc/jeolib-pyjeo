@@ -10,6 +10,10 @@ dist
 build
 doc/_build
 
+## direnv ###
+.direnv
+.envrc
+
 ### Coverage info ###
 .coverage
 
