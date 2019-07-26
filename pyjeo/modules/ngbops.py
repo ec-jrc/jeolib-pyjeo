@@ -174,7 +174,7 @@ def morphoGradientByErosionDiamond(jim_object):
 def edgeWeight(jim_object, dir=0, type=0):
     """Compute the weights of the horizontal or vertical edges.
 
-     Linking any pair of horizontally or vertically adjacent pixels.
+    Linking any pair of horizontally or vertically adjacent pixels.
 
     :param dir:  integer for coding edge direction
         (horizontal if 0, vertical otherwise).
@@ -268,6 +268,22 @@ class _NgbOps():
 
     def _set_caller(self, caller):
         self._jim_object = caller
+
+    def edgeWeight(self, dir=0, type=0):
+        """Compute the weights of the horizontal or vertical edges.
+
+        Linking any pair of horizontally or vertically adjacent pixels.
+
+        Modifies the instance on which the method was called.
+
+        :param dir:  integer for coding edge direction
+            (horizontal if 0, vertical otherwise).
+        :param type: integer determining how the edge weights are computed:
+            0 for absolute difference (default),
+            1 for maximum value,
+            2 for minimum value.
+        """
+        self._jim_object._set(self._jim_object._jipjim.edgeWeight(dir, type))
 
     def filter1d(self, filter, dz=None, pad=None, otype=None, **kwargs):
         """Subset raster dataset in spectral/temporal domain.
