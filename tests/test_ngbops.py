@@ -189,17 +189,17 @@ class BadNgbOps(unittest.TestCase):
         # Test morphoGradientByDilationDiamond()
         jim_copy = pj.Jim(jim)
 
-        eroded = pj.ngbops.morphoGradientByDilationDiamond(jim)
+        dilated = pj.ngbops.morphoGradientByDilationDiamond(jim)
         jim.ngbops.morphoGradientByDilationDiamond()
 
-        assert jim.pixops.isEqual(eroded), \
+        assert jim.pixops.isEqual(dilated), \
             'Inconsistency in ngbops.morphoGradientByDilationDiamond() ' \
             '(method returns different result than function)'
         assert jim.pixops.isEqual(
-            jim_copy - pj.ngbops.morphoDilateDiamond(jim_copy)), \
+            pj.ngbops.morphoDilateDiamond(jim_copy)) - jim_copy, \
             'Error in ngbops.morphoGradientByDilationDiamond() ' \
             '(jim.ngbops.morphoGradientByDilationDiamond() not equal to ' \
-            'jim - pj.ngbops.morphoDilateDiamond(jim))'
+            'pj.ngbops.morphoDilateDiamond(jim)) - jim'
 
         # Test morphoGradientByErosionDiamond()
         jim_copy = pj.Jim(jim)
