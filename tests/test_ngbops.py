@@ -216,6 +216,86 @@ class BadNgbOps(unittest.TestCase):
             '(jim.ngbops.morphoGradientByErosionDiamond() not equal to ' \
             'jim - pj.ngbops.morphoErodeDiamond(jim))'
 
+    def test_edgeWeight(self):
+        """Test edgeWeight() function and method."""
+        jim = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 2], seed=0)
+
+        max_value = 2
+        arr = np.array([[0, 1, 0], [0, max_value, 1], [0, 0, 0]])
+        jim[0:3, 0:3] = arr
+
+        # Test edgeWeight() with dir=0 and type=0
+        hori_diff = pj.ngbops.edgeWeight(jim)
+        jim.ngbops.edgeWeight()
+        stats = jim.stats.getStats(['max', 'min'])
+
+        assert jim.pixops.isEqual(hori_diff), \
+            'Inconsistency in ngbops.edgeWeight() ' \
+            '(method returns different result than function)'
+        assert stats['max'] <= max_value, \
+            'Error in ngbops.edgeWeight() ' \
+            '(max value not <= max value before edgeWight())'
+        assert stats['min'] >= 0, \
+            'Error in ngbops.edgeWeight() ' \
+            '(min value not >= min value before edgeWight())'
+        assert jim[2, 0] == jim[2, 1] == 0, \
+            'Error in ngbops.edgeWeight() ' \
+            '(processing of [0, 0, 0] did not return [0, 0, x] for type=0)'
+        assert jim[0, 0] == jim[0, 1] == 1, \
+            'Error in ngbops.edgeWeight() ' \
+            '(processing of [0, 1, 0] did not return [1, 1, x] for type=0)'
+        assert jim[1, 0] == jim[1, 1] == 2, \
+            'Error in ngbops.edgeWeight() ' \
+            '(processing of [0, 2, 1] did not return [2, 1, x] for type=0)'
+
+        # Test edgeWeight() with dir=1 and type=1
+        jim[0:3, 0:3] = arr
+        verti_max = pj.ngbops.edgeWeight(jim, 1, 1)
+        jim.ngbops.edgeWeight(1, 1)
+        stats = jim.stats.getStats(['max', 'min'])
+
+        assert jim.pixops.isEqual(verti_max), \
+            'Inconsistency in ngbops.edgeWeight(dir=1, type=1) ' \
+            '(method returns different result than function)'
+        assert stats['max'] <= max_value, \
+            'Error in ngbops.edgeWeight(dir=1, type=1) ' \
+            '(max value not <= max value before edgeWight())'
+        assert stats['min'] >= 0, \
+            'Error in ngbops.edgeWeight(dir=1, type=1) ' \
+            '(min value not >= min value before edgeWight())'
+        assert jim[0, 0] == jim[1, 0] == 0, \
+            'Error in ngbops.edgeWeight(dir=1, type=1) ' \
+            '(processing of [[0], [0], [0]] did not return [[0], [0], [x]])'
+        assert jim[0, 2] == jim[1, 2] == 1, \
+            'Error in ngbops.edgeWeight(dir=1, type=1) ' \
+            '(processing of [[0], [1], [0]] did not return [[1], [1], [x]])'
+        assert jim[0, 1] == jim[1, 1] == 2, \
+            'Error in ngbops.edgeWeight(dir=1, type=1) ' \
+            '(processing of [[1], [2], [0]] did not return [[2], [2], [x]])'
+
+        # Test edgeWeight() with dir=0 and type=2
+        jim[0:3, 0:3] = arr
+        hori_min = pj.ngbops.edgeWeight(jim, type=2)
+        jim.ngbops.edgeWeight(type=2)
+        stats = jim.stats.getStats(['max', 'min'])
+
+        assert jim.pixops.isEqual(hori_min), \
+            'Inconsistency in ngbops.edgeWeight(type=2) ' \
+            '(method returns different result than function)'
+        assert stats['max'] <= max_value, \
+            'Error in ngbops.edgeWeight(type=2) ' \
+            '(max value not <= max value before edgeWight())'
+        assert stats['min'] >= 0, \
+            'Error in ngbops.edgeWeight(type=2) ' \
+            '(min value not >= min value before edgeWight())'
+        assert jim[0, 0] == jim[0, 1] == jim[1, 0] == jim[2, 0] == \
+               jim[2, 1] == 0, \
+            'Error in ngbops.edgeWeight(type=2) ' \
+            '(processing of [0, 0, 1, 0, 2] did not return [0, 0, 0, 0, x]'
+        assert jim[1, 1] == 1, \
+            'Error in ngbops.edgeWeight(type=2) ' \
+            '(processing of [2, 1] did not return [1, x]'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
