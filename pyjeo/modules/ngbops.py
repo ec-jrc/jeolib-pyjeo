@@ -171,34 +171,6 @@ def morphoGradientByErosionDiamond(jim_object):
     return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
 
-def morphoGradientByErosionDiamondFrame(jim_object):
-    """Output the gradient by erosion of im.
-
-    Uses the elementary diamond shaped SE
-    """
-    jim0 = _pj.Jim(jim_object)
-    pixmax = jim0.stats.getStats('max')['max']
-    jim0.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, pixmax)
-    jim0.ngbops.morphoErodeDiamond()
-    jim0.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
-    jim0.pixops.simpleArithOp(jim_object, 16)  # 16 for SUBSWAP_op
-    return jim0
-
-
-def morphoGradientByDilationDiamondFrame(jim_object):
-    """Output the gradient by erosion of im.
-
-    Uses the elementary diamond shaped SE
-    """
-    jim0 = _pj.Jim(jim_object)
-    pixmin = jim0.stats.getStats('min')['min']
-    jim0.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, pixmin)
-    jim0.ngbops.morphoDilateDiamond()
-    jim0.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
-    jim0.pixops.simpleArithOp(jim_object, 1)  # for SUB_op
-    return jim0
-
-
 def edgeWeight(jim_object, dir=0, type=0):
     """Compute the weights of the horizontal or vertical edges.
 
@@ -256,9 +228,9 @@ def getDissim(jimo, dissimType=0):
 
     elif dissimType == 1:
         mingraderograddil = _pj.pixops.infimum(
-            _pj.ngbops.morphoGradientByDilationDiamondFrame(
+            _pj.ngbops.morphoGradientByDilationDiamond(
                 jim_object_list[0]),
-            _pj.ngbops.morphoGradientByErosionDiamondFrame(jim_object_list[0]))
+            _pj.ngbops.morphoGradientByErosionDiamond(jim_object_list[0]))
         h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
         v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
         mingraderograddil = 0
@@ -269,8 +241,8 @@ def getDissim(jimo, dissimType=0):
 
         for im in jim_object_list[1:]:
             mingraderograddil = _pj.pixops.infimum(
-                _pj.ngbops.morphoGradientByDilationDiamondFrame(im),
-                _pj.ngbops.morphoGradientByErosionDiamondFrame(im))
+                _pj.ngbops.morphoGradientByDilationDiamond(im),
+                _pj.ngbops.morphoGradientByErosionDiamond(im))
             h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI,
                                                  MAX_op)
             v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT,
