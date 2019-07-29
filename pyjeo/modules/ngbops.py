@@ -192,9 +192,9 @@ def getDissim(jimo, dissimType=0):
     Compute the dissimilarities between horizontal and vertical pairs of
     adjacent pixels.
 
-    :param jim_object_list: a list of grey level Jim objects with the same
-        definition domain. The dissimilarities are calculated for each image
-        separately and composed using the point-wise maximum rule.
+    :param jimo: a list of grey level Jim objects with the same
+        definition domain. The dissimilarities are calculated for each
+        image separately and composed using the point-wise maximum rule.
     :param dissimType: integer value indicating the type of dissimilarity
                           measure
                        0 (default) for absolute difference
@@ -693,6 +693,86 @@ class _NgbOps():
         else:
             kwargs.update({'filter': filter})
         self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
+
+    def getDissim(self, jimo=None, dissimType=0):
+        """Compute the dissimilarities.
+
+        Compute the dissimilarities between horizontal and vertical pairs of
+        adjacent pixels.
+
+        :param jimo: a list of grey level Jim objects with the same
+            definition domain. The dissimilarities are calculated for each
+            image separately and composed using the point-wise maximum rule.
+        :param dissimType: integer value indicating the type of dissimilarity
+                              measure
+                           0 (default) for absolute difference
+                           1 for dissimilarity measure countering the chaining
+                              effect as described in :cite:`soille2011ismm`
+        """
+        DIR_HORI = 0
+        DIR_VERT = 1
+        ABS_DIFF_op = 0
+        MAX_op = 1
+        MIN_op = 2
+
+        if isinstance(jimo, _pj.Jim):
+            jim_object_list = _pj.JimList([jimo])
+        elif isinstance(jimo, _pj.JimList):
+            jim_object_list = jimo
+        else:
+            jim_object_list = []
+
+        if dissimType == 0:
+            # TODO: Check if looping through everything with edgeWeight() and
+            #       then one call of supremum is not faster
+            h_dissim = _pj.ngbops.edgeWeight(self._jim_object, DIR_HORI,
+                                             ABS_DIFF_op)
+            v_dissim = _pj.ngbops.edgeWeight(self._jim_object, DIR_VERT,
+                                             ABS_DIFF_op)
+
+            for im in jim_object_list:
+                h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
+                                                               ABS_DIFF_op))
+                v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
+                                                               ABS_DIFF_op))
+
+        elif dissimType == 1:
+            mingraderograddil = _pj.pixops.infimum(
+                _pj.ngbops.morphoGradientByDilationDiamond(
+                    self._jim_object),
+                _pj.ngbops.morphoGradientByErosionDiamond(self._jim_object))
+            h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI,
+                                             MAX_op)
+            v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT,
+                                             MAX_op)
+            mingraderograddil = 0
+            h_dissim.pixops.supremum(
+                _pj.ngbops.edgeWeight(self._jim_object, DIR_HORI,
+                                      ABS_DIFF_op))
+            v_dissim.pixops.supremum(
+                _pj.ngbops.edgeWeight(self._jim_object, DIR_VERT,
+                                      ABS_DIFF_op))
+
+            for im in jim_object_list:
+                mingraderograddil = _pj.pixops.infimum(
+                    _pj.ngbops.morphoGradientByDilationDiamond(im),
+                    _pj.ngbops.morphoGradientByErosionDiamond(im))
+                h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil,
+                                                     DIR_HORI,
+                                                     MAX_op)
+                v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil,
+                                                     DIR_VERT,
+                                                     MAX_op)
+                mingraderograddil = 0
+                h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
+                                                                   ABS_DIFF_op))
+                v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
+                                                                   ABS_DIFF_op))
+
+                h_dissim.pixops.supremum(h_dissim_crt)
+                v_dissim.pixops.supremum(v_dissim_crt)
+
+        return [h_dissim, v_dissim]
 
     def morphoErodeDiamond(self):
         """Output the erosion of im using the elementary diamond shaped SE.
