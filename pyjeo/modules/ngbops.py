@@ -215,6 +215,8 @@ def getDissim(jimo, dissimType=0):
         jim_object_list = jimo
 
     if dissimType == 0:
+        # TODO: Check if looping through everything with edgeWeight() and
+        #       then one call of supremum is not faster
         h_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI,
                                          ABS_DIFF_op)
         v_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT,
