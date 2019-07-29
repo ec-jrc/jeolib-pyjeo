@@ -296,6 +296,147 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.edgeWeight(type=2) ' \
             '(processing of [2, 1] did not return [1, x]'
 
+    def test_getDissim(self):
+        """Test getDissim() function and method."""
+        jim1 = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 3])
+        jim2 = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 2])
+
+        max_value = 3
+        arr1 = np.array([[0, 1, 0], [0, 2, 1], [0, 0, 0]])
+        jim1[0:3, 0:3] = arr1
+        arr2 = np.array([[0, 0, 0], [0, max_value, 1], [0, 0, 0]])
+        jim2[0:3, 0:3] = arr2
+
+        # Test getDissim() with dissimType=0
+        hori_diss1, vert_diss1 = pj.ngbops.getDissim(jim1)
+        hori_diss2, vert_diss2 = jim1.ngbops.getDissim()
+        stats = jim1.stats.getStats(['max', 'min'])
+
+        assert hori_diss1 == hori_diss2 and vert_diss1 == vert_diss2, \
+            'Inconsistency in ngbops.getDissim() ' \
+            '(method returns different result than function)'
+        assert stats['max'] <= 2, \
+            'Error in ngbops.getDissim() ' \
+            '(max value not <= max value before getDissim())'
+        assert stats['min'] >= 0, \
+            'Error in ngbops.getDissim() ' \
+            '(min value not >= min value before getDissim())'
+        assert hori_diss1[2, 0] == hori_diss1[2, 1] == 0, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 0, 0] did not return ' \
+            '[0, 0, x] for dissimType=0)'
+        assert hori_diss1[0, 0] == hori_diss1[0, 1] == hori_diss1[1, 1] == 1, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 1, 0] did not return ' \
+            '[1, 1, x] for dissimType=0)'
+        assert hori_diss1[1, 0] == 2, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [3, 1] and [2, 1] did not return ' \
+            '[2, x] for dissimType=0)'
+        assert vert_diss1[0, 0] == vert_diss1[1, 0] == 0, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 0, 0] did not return ' \
+            '[0, 0, x] for dissimType=0)'
+        assert vert_diss1[0, 1] == vert_diss1[0, 2] == vert_diss1[1, 2] == 1, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 1, 0] did not return ' \
+            '[1, 1, x] for dissimType=0)'
+        assert vert_diss1[1, 1] == 2, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 3, 0] and [1, 2, 0] did not return ' \
+            '[3, 3, x] for dissimType=0)'
+
+        # Test getDissim() with dissimType=0 and multiple Jims
+        hori_diss1, vert_diss1 = pj.ngbops.getDissim([jim1, jim2])
+        hori_diss2, vert_diss2 = jim1.ngbops.getDissim(jim2)
+        hori_diss3, vert_diss3 = jim1.ngbops.getDissim([jim2])
+        stats = jim1.stats.getStats(['max', 'min'])
+
+        assert hori_diss1 == hori_diss2 and vert_diss1 == vert_diss2, \
+            'Inconsistency in ngbops.getDissim() ' \
+            '(method returns different result than function)'
+        assert hori_diss3 == hori_diss2 and vert_diss3 == vert_diss2, \
+            'Error in ngbops.getDissim(jimo=x) ' \
+            '(when one Jim parsed into jimo as Jim returns different result ' \
+            'than parsed as a list)'
+        assert stats['max'] <= max_value, \
+            'Error in ngbops.getDissim() ' \
+            '(max value not <= max value before getDissim())'
+        assert stats['min'] >= 0, \
+            'Error in ngbops.getDissim() ' \
+            '(min value not >= min value before getDissim())'
+        assert hori_diss1[2, 0] == hori_diss1[2, 1] == 0, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 0, 0] did not return ' \
+            '[0, 0, x] for dissimType=0)'
+        assert hori_diss1[0, 0] == hori_diss1[0, 1] == 1, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 1, 0] did not return ' \
+            '[1, 1, x] for dissimType=0)'
+        assert hori_diss1[1, 1] == 2, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [3, 1] and [2, 1] did not return ' \
+            '[2, x] for dissimType=0)'
+        assert hori_diss1[1, 0] == 3, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 3] and [0, 2] did not return ' \
+            '[3, x] for dissimType=0)'
+        assert vert_diss1[0, 0] == vert_diss1[1, 0] == 0, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 0, 0] did not return ' \
+            '[0, 0, x] for dissimType=0)'
+        assert vert_diss1[0, 2] == vert_diss1[1, 2] == 1, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 1, 0] did not return ' \
+            '[1, 1, x] for dissimType=0)'
+        assert vert_diss1[0, 1] == vert_diss1[1, 1] == 3, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 3, 0] and [1, 2, 0] did not return ' \
+            '[3, 3, x] for dissimType=0)'
+
+        # Test getDissim() with dissimType=1
+        hori_diss1, vert_diss1 = pj.ngbops.getDissim([jim1, jim2], 1)
+        hori_diss2, vert_diss2 = jim1.ngbops.getDissim(jim2, 1)
+        stats = jim1.stats.getStats(['max', 'min'])
+
+        assert hori_diss1 == hori_diss2 and vert_diss1 == vert_diss2, \
+            'Inconsistency in ngbops.getDissim() ' \
+            '(method returns different result than function)'
+        assert stats['max'] <= max_value, \
+            'Error in ngbops.getDissim() ' \
+            '(max value not <= max value before getDissim())'
+        assert stats['min'] >= 0, \
+            'Error in ngbops.getDissim() ' \
+            '(min value not >= min value before getDissim())'
+        assert hori_diss1[2, 0] == hori_diss1[2, 1] == 0, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 0, 0] did not return ' \
+            '[0, 0, x] for dissimType=1)'
+        assert hori_diss1[0, 0] == hori_diss1[0, 1] == 1, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 1, 0] did not return ' \
+            '[1, 1, x] for dissimType=1)'
+        assert hori_diss1[1, 1] == 2, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [3, 1] and [2, 1] did not return ' \
+            '[2, x] for dissimType=1)'
+        assert hori_diss1[1, 0] == 3, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 3] and [0, 2] did not return ' \
+            '[3, x] for dissimType=1)'
+        assert vert_diss1[0, 0] == vert_diss1[1, 0] == 0, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 0, 0] did not return ' \
+            '[0, 0, x] for dissimType=1)'
+        assert vert_diss1[0, 2] == vert_diss1[1, 2] == 1, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 0, 0] and [0, 1, 0] did not return ' \
+            '[1, 1, x] for dissimType=1)'
+        assert vert_diss1[0, 1] == vert_diss1[1, 1] == 3, \
+            'Error in ngbops.getDissim() ' \
+            '(processing of [0, 3, 0] and [1, 2, 0] did not return ' \
+            '[3, 3, x] for dissimType=1)'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
