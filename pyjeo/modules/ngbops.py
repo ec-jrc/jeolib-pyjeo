@@ -717,7 +717,7 @@ class _NgbOps():
 
         if isinstance(jimo, _pj.Jim):
             jim_object_list = _pj.JimList([jimo])
-        elif isinstance(jimo, _pj.JimList):
+        elif isinstance(jimo, list):
             jim_object_list = jimo
         else:
             jim_object_list = []
