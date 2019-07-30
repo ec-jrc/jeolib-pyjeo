@@ -79,10 +79,12 @@ class BadBasicMethods(unittest.TestCase):
 
         assert jim.pixops.isEqual(new_jim), 'Error in jim2np() or np2jim()'
 
-        anp = np.arange(2 * 100 * 256).reshape((2, 100, 256)).astype(np.float64)
+        anp = np.arange(2 * 100 * 256).reshape((2, 100, 256)).astype(
+            np.float64)
         ajim = pj.np2jim(anp)
+        nr_of_band = ajim.properties.nrOfBand()
 
-        assert ajim.properties.nrOfBand() == 1
+        assert nr_of_band == 1
         assert ajim.properties.nrOfPlane() == anp.shape[0]
         assert ajim.properties.nrOfRow() == anp.shape[1]
         assert ajim.properties.nrOfCol() == anp.shape[2]
@@ -97,13 +99,12 @@ class BadBasicMethods(unittest.TestCase):
         assert not failed, \
             'Error in catching a call of Jim.np() for non-dimensional Jims'
 
-        try:
-            _ = ajim.np(ajim.properties.nrOfBand() - 1)
-            failed = False
-        except:
-            failed = True
+        band0 = ajim.np(nr_of_band - 1)
+        cropped = pj.geometry.cropBand(ajim, nr_of_band - 1).np()
 
-        assert not failed, 'Error in Jim.np(band)'
+        assert (band0 == cropped).all(), \
+            'Error in Jim.np(band) ' \
+            '(not returning the same object as cropBand(band).np())'
 
         try:
             _ = ajim.np(ajim.properties.nrOfBand())
