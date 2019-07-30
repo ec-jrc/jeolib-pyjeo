@@ -126,18 +126,25 @@ class _Properties():
 
         :Using a point coordinates:
 
-        * ``x`` (float): x coordinate in spatial reference system of the rasterdataset
-        * ``y`` (float): y coordinate in spatial reference system of the raster dataset
+        * ``x`` (float): x coordinate in spatial reference system of \
+                         the rasterdataset
+        * ``y`` (float): y coordinate in spatial reference system of \
+                         the raster dataset
 
         .. _covers2:
 
         :Using a region of interest:
 
-        * ``ulx`` (float): upper left x coordinate in spatial reference system of the raster dataset
-        * ``uly`` (float): upper left y coordinate in spatial reference system of the raster dataset
-        * ``lrx`` (float): lower right x coordinate in spatial reference system of the raster dataset
-        * ``lry`` (float): lower right x coordinate in spatial reference system of the raster dataset
-        * ``all`` (bool): set to True if the entire bounding box must be covered by the raster dataset
+        * ``ulx`` (float): upper left x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``uly`` (float): upper left y coordinate in spatial reference \
+                           system of the raster dataset
+        * ``lrx`` (float): lower right x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``lry`` (float): lower right x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``all`` (bool): set to True if the entire bounding box must be \
+                          covered by the raster dataset
 
         Returns:
         True if the raster dataset covers the point or region of interest.
@@ -301,18 +308,25 @@ class _PropertiesList():
 
         :Using a point coordinates:
 
-        * ``x`` (float): x coordinate in spatial reference system of the raster dataset
-        * ``y`` (float): y coordinate in spatial reference system of the raster dataset
+        * ``x`` (float): x coordinate in spatial reference system of \
+                         the raster dataset
+        * ``y`` (float): y coordinate in spatial reference system of \
+                         the raster dataset
 
         .. _coversl2:
 
         :Using a region of interest:
 
-        * ``ulx`` (float): upper left x coordinate in spatial reference system of the raster dataset
-        * ``uly`` (float): upper left y coordinate in spatial reference system of the raster dataset
-        * ``lrx`` (float): lower right x coordinate in spatial reference system of the raster dataset
-        * ``lry`` (float): lower right x coordinate in spatial reference system of the raster dataset
-        * ``all`` (bool): set to True if the entire bounding box must be covered by the raster dataset
+        * ``ulx`` (float): upper left x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``uly`` (float): upper left y coordinate in spatial reference \
+                           system of the raster dataset
+        * ``lrx`` (float): lower right x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``lry`` (float): lower right x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``all`` (bool): set to True if the entire bounding box must be \
+                          covered by the raster dataset
 
         Returns:
         True if the raster dataset covers the point or region of interest.

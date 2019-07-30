@@ -262,7 +262,6 @@ class Jim():
                            'the right Jim will be taken in consideration.',
                            Warning)
 
-
     def _feed(self, stdev, uniform, seed, kwargs):
         """Feed the Jim object with either uniform or random seed of values.
 

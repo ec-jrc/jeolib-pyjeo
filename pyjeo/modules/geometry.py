@@ -366,80 +366,89 @@ def reducePlane(jim, rule='max', band=None, nodata=None):
         print("Warning: single plane, no reduction is performed")
         return None
 
-    jimreduced=_pj.geometry.cropPlane(jim,0)
-    if rule in ('mean','avg','median'):
-        theType=jim.properties.getDataType()
-        if nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
+    jimreduced = _pj.geometry.cropPlane(jim, 0)
+    if rule in ('mean', 'avg', 'median'):
+        theType = jim.properties.getDataType()
+        if nodata is not None and theType not in ('GDT_Float32',
+                                                  'GDT_Float64'):
             jim.pixops.convert(otype='GDT_Float32')
         if band is not None:
-            mask=_pj.geometry.cropBand(jim,band=band)
-        if rule=='mean' or rule=='avg':
-            for iband in range(0,jim.properties.nrOfBand()):
+            mask = _pj.geometry.cropBand(jim, band=band)
+        if rule == 'mean' or rule == 'avg':
+            for iband in range(0, jim.properties.nrOfBand()):
                 if nodata is not None:
                     if band is None:
-                        jim.np(iband)[jim.np(iband)==nodata]=numpy.nan
-                        jimreduced.np(iband)[:]=numpy.nanmean(jim.np(iband),axis=0)
-                        jim.np(iband)[jim.np(iband)==numpy.nan]=nodata
+                        jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
+                        jimreduced.np(iband)[:] = numpy.nanmean(jim.np(iband),
+                                                                axis=0)
+                        jim.np(iband)[jim.np(iband) == numpy.nan] = nodata
                     else:
-                        jim.np(iband)[mask.np()==nodata]=numpy.nan
-                        jimreduced.np(iband)[:]=numpy.nanmean(jim.np(iband),axis=0)
-                        jim.np(iband)[mask.np()==nodata]=nodata
+                        jim.np(iband)[mask.np() == nodata] = numpy.nan
+                        jimreduced.np(iband)[:] = numpy.nanmean(jim.np(iband),
+                                                                axis=0)
+                        jim.np(iband)[mask.np() == nodata] = nodata
                 else:
-                    jimreduced.np(iband)[:]=numpy.mean(jim.np(iband),axis=0)
-        if rule=='median':
-            for iband in range(0,jim.properties.nrOfBand()):
+                    jimreduced.np(iband)[:] = numpy.mean(jim.np(iband), axis=0)
+        if rule == 'median':
+            for iband in range(0, jim.properties.nrOfBand()):
                 if nodata is not None:
                     if band is None:
-                        jim.np(iband)[jim.np(iband)==nodata]=numpy.nan
-                        jimreduced.np(iband)[:]=numpy.nanmedian(jim.np(iband),axis=0)
-                        jim.np(iband)[jim.np(iband)==numpy.nan]=nodata
+                        jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
+                        jimreduced.np(iband)[:] = numpy.nanmedian(
+                            jim.np(iband), axis=0)
+                        jim.np(iband)[jim.np(iband) == numpy.nan] = nodata
                     else:
-                        jim.np(iband)[mask.np()==nodata]=numpy.nan
-                        jimreduced.np(iband)[:]=numpy.nanmedian(jim.np(iband),axis=0)
-                        jim.np(iband)[mask.np()==nodata]=nodata
+                        jim.np(iband)[mask.np() == nodata] = numpy.nan
+                        jimreduced.np(iband)[:] = numpy.nanmedian(
+                            jim.np(iband), axis=0)
+                        jim.np(iband)[mask.np() == nodata] = nodata
                 else:
-                    jimreduced.np(iband)[:]=numpy.median(jim.np(iband),axis=0)
+                    jimreduced.np(iband)[:] = numpy.median(jim.np(iband),
+                                                           axis=0)
         if nodata is not None:
-            if theType not in ('GDT_Float32','GDT_Float64'):
+            if theType not in ('GDT_Float32', 'GDT_Float64'):
                 jimreduced.pixops.convert(otype=theType)
                 jim.pixops.convert(otype=theType)
     else:
         if band is not None:
-            maskreduced=_pj.geometry.cropBand(jimreduced,band)
-    for iplane in range(1,jim.properties.nrOfPlane()):
-        jimplane=_pj.geometry.cropPlane(jim,iplane)
+            maskreduced = _pj.geometry.cropBand(jimreduced, band)
+    for iplane in range(1, jim.properties.nrOfPlane()):
+        jimplane = _pj.geometry.cropPlane(jim, iplane)
         if band is not None:
-            maskplane=_pj.geometry.cropBand(jimplane,band)
-        if rule=='max':
+            maskplane = _pj.geometry.cropBand(jimplane, band)
+        if rule == 'max':
             if nodata is not None:
                 if band is not None:
-                    themask=((maskreduced<maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
-                    jimreduced[theask]=jimplane
-                    maskreduced[themask]=maskplane
+                    themask = ((maskreduced < maskplane) |
+                               (maskreduced == nodata)) & (maskplane != nodata)
+                    jimreduced[themask] = jimplane
+                    maskreduced[themask] = maskplane
                 else:
                     raise Exception('Error: use band option for nodata')
             else:
                 if band is not None:
-                    jimreduced[maskreduced<maskplane]=jimplane
-                    maskreduced[maskreduced<maskplane]=maskplane
+                    jimreduced[maskreduced < maskplane] = jimplane
+                    maskreduced[maskreduced < maskplane] = maskplane
                 else:
-                    jimreduced[jimreduced<jimplane]=jimplane
-        elif rule=='min':
+                    jimreduced[jimreduced < jimplane] = jimplane
+        elif rule == 'min':
             if nodata is not None:
                 if band is not None:
-                    themask=((maskreduced>maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
-                    jimreduced[themask]=jimplane
-                    maskreduced[themask]=maskplane
+                    themask = ((maskreduced > maskplane) |
+                               (maskreduced == nodata)) & (maskplane != nodata)
+                    jimreduced[themask] = jimplane
+                    maskreduced[themask] = maskplane
                 else:
                     raise Exception('Error: use band option for nodata')
             else:
                 if band is not None:
-                    jimreduced[maskreduced>maskplane]=jimplane
-                    maskreduced[maskreduced>maskplane]=maskplane
+                    jimreduced[maskreduced > maskplane] = jimplane
+                    maskreduced[maskreduced > maskplane] = maskplane
                 else:
-                    jimreduced[jimreduced>jimplane]=jimplane
+                    jimreduced[jimreduced > jimplane] = jimplane
 
     return jimreduced
+
 
 def warp(jim_object, t_srs, **kwargs):
     """Warp a raster dataset to a target spatial reference system.
@@ -449,20 +458,20 @@ def warp(jim_object, t_srs, **kwargs):
     :param kwargs: See table below
     :return: Cropped subimage as Jim instance
 
-    +------------------+---------------------------------------------------------------------------------------------+
-    | key              | value                                                                                       |
-    +==================+=============================================================================================+
-    | s_srs            | Source spatial reference system (default is to read                                         |
-    |                  | from input)                                                                                 |
-    +------------------+---------------------------------------------------------------------------------------------+
-    | resample         | Resample algorithm used for reading pixel data in                                           |
-    |                  | case of interpolation                                                                       |
-    |                  | (default: GRIORA_NearestNeighbour). Check                                                   |
-    |                  | https://gdal.org/api/raster_c_api.html?highlight=griora_nearestn#_CPPv418GDALRIOResampleAlg |
-    |                  | for available options.                                                                      |
-    +------------------+---------------------------------------------------------------------------------------------+
-    | nodata           | Nodata value to put in image if out of bounds                                               |
-    +------------------+---------------------------------------------------------------------------------------------+
+    +----------+---------------------------------------------------------------------------------------------+
+    | key      | value                                                                                       |
+    +==========+=============================================================================================+
+    | s_srs    | Source spatial reference system (default is to read                                         |
+    |          | from input)                                                                                 |
+    +----------+---------------------------------------------------------------------------------------------+
+    | resample | Resample algorithm used for reading pixel data in                                           |
+    |          | case of interpolation                                                                       |
+    |          | (default: GRIORA_NearestNeighbour). Check                                                   |
+    |          | https://gdal.org/api/raster_c_api.html?highlight=griora_nearestn#_CPPv418GDALRIOResampleAlg |
+    |          | for available options.                                                                      |
+    +----------+---------------------------------------------------------------------------------------------+
+    | nodata   | Nodata value to put in image if out of bounds                                               |
+    +----------+---------------------------------------------------------------------------------------------+
 
     Example:
 
@@ -478,7 +487,8 @@ def warp(jim_object, t_srs, **kwargs):
     projection (epsg:4326). Then warp the raster dataset to the target
     spatial reference system (epsg:3035)::
 
-        jim = pj.Jim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
+        jim = pj.Jim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000,
+                     uly=4000000, lrx=1500000, lry=3500000)
         jim_warped=pj.geometry.warp(jim, 'epsg:3035', s_srs='epsg:4326')
 
     """
@@ -670,6 +680,7 @@ def polygonize(jim_object, output, **kwargs):
 #     ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
 #     return ajim
 
+
 def append(jvec1, jvec2, output, **kwargs):
     """Append JimVect object with another JimVect object.
 
@@ -681,13 +692,14 @@ def append(jvec1, jvec2, output, **kwargs):
     """
     kwargs.update({'filename': output})
     if isinstance(jvec2, _pj.JimVect):
-        avect = _pj.JimVect(jvec1,kwargs)
+        avect = _pj.JimVect(jvec1, kwargs)
         avect._jipjimvect.append(jvec2._jipjimvect)
         pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
     else:
         raise TypeError('Error: can only join with JimVect object')
+
 
 def join(jvec1, jvec2, output, **kwargs):
     """Join JimVect object with another JimVect object.
@@ -725,20 +737,26 @@ def join(jvec1, jvec2, output, **kwargs):
 
     The join methods currently supported are:
 
-    INNER |inner|: join two JimVect objects, keeping only those features for which identical keys in both objects are found
+    INNER |inner|: join two JimVect objects, keeping only those features for \
+                   which identical keys in both objects are found
 
-    OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features from first object
+    OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features \
+                             from first object
 
-    OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features from second object
+    OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features \
+                               from second object
 
-    OUTER_FULL |outer_full|: join two JimVect objects, keeping all features from both objects
+    OUTER_FULL |outer_full|: join two JimVect objects, keeping all features \
+                             from both objects
 
     Example: join two vectors, based on the key 'id', which is a common field
     shared between v1 and v2. Use OUTER_FULL as the join method::
 
-      v1=pj.JimVect('/path/to/vector1.sqlite')
-      v2=pj.JimVect('/path/to/vector2.sqlite')
-      v3=pj.geometry.join(v1,v2,'/tmp/test.sqlite', oformat='SQLite', co=['OVERWRITE=YES'], key=['id'], method='OUTER_FULL')
+      v1 = pj.JimVect('/path/to/vector1.sqlite')
+      v2 = pj.JimVect('/path/to/vector2.sqlite')
+      v3 = pj.geometry.join(
+          v1, v2, '/tmp/test.sqlite', oformat='SQLite',
+          co=['OVERWRITE=YES'], key=['id'], method='OUTER_FULL')
     """
     kwargs.update({'output': output})
     if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
@@ -772,9 +790,11 @@ def intersect(jvec, jim, output, **kwargs):
 
     Example: intersect a sample with a Jim object::
 
-      jim=pj.Jim('/path/to/raster.tif')
-      v=pj.JimVect('/path/to/vector.sqlite')
-      sampleintersect = pj.geometry.intersect(v, jim, output='/vsimem/intersect', oformat='SQLite',co=['OVERWRITE=YES'])
+      jim = pj.Jim('/path/to/raster.tif')
+      v = pj.JimVect('/path/to/vector.sqlite')
+      sampleintersect = pj.geometry.intersect(
+          v, jim, output='/vsimem/intersect', oformat='SQLite',
+          co=['OVERWRITE=YES'])
       sampleintersect.io.write('/path/to/output.sqlite')
 
     """
@@ -1188,7 +1208,8 @@ class _Geometry():
         """Reduce planes of Jim object.
 
         :param rule: rule to reduce (max, min, mean, median)
-        :param band: band on which to apply rule (default is to check all bands)
+        :param band: band on which to apply rule
+            (default is to check all bands)
         :param nodata: value to ignore when applying rule
 
 
@@ -1204,78 +1225,99 @@ class _Geometry():
             print("Warning: single plane, no reduction is performed")
             return None
 
-        jimreduced=_pj.geometry.cropPlane(self._jim_object,0)
-        if rule in ('mean','avg','median'):
-            theType=self._jim_object.properties.getDataType()
-            if nodata is not None and theType not in ('GDT_Float32','GDT_Float64'):
+        jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
+        if rule in ('mean', 'avg', 'median'):
+            theType = self._jim_object.properties.getDataType()
+            if nodata is not None and theType not in ('GDT_Float32',
+                                                      'GDT_Float64'):
                 self._jim_object.pixops.convert(otype='GDT_Float32')
             if band is not None:
-                mask=_pj.geometry.cropBand(self._jim_object,band=band)
-            if rule=='mean' or rule=='avg':
-                for iband in range(0,self._jim_object.properties.nrOfBand()):
+                mask = _pj.geometry.cropBand(self._jim_object, band=band)
+            if rule == 'mean' or rule == 'avg':
+                for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
                         if band is None:
-                            self._jim_object.np(iband)[self._jim_object.np(iband)==nodata]=numpy.nan
-                            jimreduced.np(iband)[:]=numpy.nanmean(self._jim_object.np(iband),axis=0)
-                            self._jim_object.np(iband)[self._jim_object.np(iband)==numpy.nan]=nodata
+                            self._jim_object.np(iband)[self._jim_object.np(
+                                iband) == nodata] = numpy.nan
+                            jimreduced.np(iband)[:] = numpy.nanmean(
+                                self._jim_object.np(iband), axis=0)
+                            self._jim_object.np(iband)[self._jim_object.np(
+                                iband) == numpy.nan] = nodata
                         else:
-                            self._jim_object.np(iband)[mask.np()==nodata]=numpy.nan
-                            jimreduced.np(iband)[:]=numpy.nanmean(self._jim_object.np(iband),axis=0)
-                            self._jim_object.np(iband)[mask.np()==nodata]=nodata
+                            self._jim_object.np(iband)[mask.np() == nodata] = \
+                                numpy.nan
+                            jimreduced.np(iband)[:] = numpy.nanmean(
+                                self._jim_object.np(iband), axis=0)
+                            self._jim_object.np(iband)[mask.np() == nodata] = \
+                                nodata
                     else:
-                        jimreduced.np(iband)[:]=numpy.mean(self._jim_object.np(iband),axis=0)
-            elif rule=='median':
-                for iband in range(0,self._jim_object.properties.nrOfBand()):
+                        jimreduced.np(iband)[:] = numpy.mean(
+                            self._jim_object.np(iband), axis=0)
+            elif rule == 'median':
+                for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
                         if band is None:
-                            self._jim_object.np(iband)[self._jim_object.np(iband)==nodata]=numpy.nan
-                            jimreduced.np(iband)[:]=numpy.nanmedian(self._jim_object.np(iband),axis=0)
-                            self._jim_object.np(iband)[self._jim_object.np(iband)==numpy.nan]=nodata
+                            self._jim_object.np(iband)[self._jim_object.np(
+                                iband) == nodata] = numpy.nan
+                            jimreduced.np(iband)[:] = numpy.nanmedian(
+                                self._jim_object.np(iband), axis=0)
+                            self._jim_object.np(iband)[self._jim_object.np(
+                                iband) == numpy.nan] = nodata
                         else:
-                            self._jim_object.np(iband)[mask.np()==nodata]=numpy.nan
-                            jimreduced.np(iband)[:]=numpy.nanmedian(self._jim_object.np(iband),axis=0)
-                            self._jim_object.np(iband)[mask.np()==nodata]=nodata
+                            self._jim_object.np(iband)[mask.np() == nodata] = \
+                                numpy.nan
+                            jimreduced.np(iband)[:] = numpy.nanmedian(
+                                self._jim_object.np(iband), axis=0)
+                            self._jim_object.np(iband)[mask.np() == nodata] = \
+                                nodata
                     else:
-                        jimreduced.np(iband)[:]=numpy.median(self._jim_object.np(iband),axis=0)
+                        jimreduced.np(iband)[:] = numpy.median(
+                            self._jim_object.np(iband), axis=0)
             if nodata is not None:
-                if theType not in ('GDT_Float32','GDT_Float64'):
+                if theType not in ('GDT_Float32', 'GDT_Float64'):
                     jimreduced.pixops.convert(otype=theType)
                     self._jim_object.pixops.convert(otype=theType)
         else:
             if band is not None:
-                maskreduced=_pj.geometry.cropBand(jimreduced,band)
-            for iplane in range(1,self._jim_object.properties.nrOfPlane()):
-                jimplane=_pj.geometry.cropPlane(self._jim_object,iplane)
+                maskreduced = _pj.geometry.cropBand(jimreduced, band)
+            for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+                jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
                 if band is not None:
-                    maskplane=_pj.geometry.cropBand(jimplane,band)
-                if rule=='max':
+                    maskplane = _pj.geometry.cropBand(jimplane, band)
+                if rule == 'max':
                     if nodata is not None:
                         if band is not None:
-                            themask=((maskreduced<maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
-                            jimreduced[themask]=jimplane
-                            maskreduced[themask]=maskplane
+                            themask = ((maskreduced < maskplane) |
+                                       (maskreduced == nodata)) & \
+                                      (maskplane != nodata)
+                            jimreduced[themask] = jimplane
+                            maskreduced[themask] = maskplane
                         else:
-                            raise Exception('Error: use band option for nodata')
+                            raise Exception(
+                                'Error: use band option for nodata')
                     else:
                         if band is not None:
-                            jimreduced[maskreduced<maskplane]=jimplane
-                            maskreduced[maskreduced<maskplane]=maskplane
+                            jimreduced[maskreduced < maskplane] = jimplane
+                            maskreduced[maskreduced < maskplane] = maskplane
                         else:
-                            jimreduced[jimreduced<jimplane]=jimplane
-                elif rule=='min':
+                            jimreduced[jimreduced < jimplane] = jimplane
+                elif rule == 'min':
                     if nodata is not None:
                         if band is not None:
-                            themask=((maskreduced>maskplane) | (maskreduced == nodata)) & (maskplane!=nodata)
-                            jimreduced[themask]=jimplane
-                            maskreduced[themask]=maskplane
+                            themask = ((maskreduced > maskplane) |
+                                       (maskreduced == nodata)) & \
+                                      (maskplane != nodata)
+                            jimreduced[themask] = jimplane
+                            maskreduced[themask] = maskplane
                         else:
-                            raise Exception('Error: use band option for nodata')
+                            raise Exception(
+                                'Error: use band option for nodata')
                     else:
                         if band is not None:
-                            jimreduced[maskreduced>maskplane]=jimplane
-                            maskreduced[maskreduced>maskplane]=maskplane
+                            jimreduced[maskreduced > maskplane] = jimplane
+                            maskreduced[maskreduced > maskplane] = maskplane
                         else:
-                            jimreduced[jimreduced>jimplane]=jimplane
+                            jimreduced[jimreduced > jimplane] = jimplane
         self._jim_object._set(jimreduced._jipjim)
 
     #deprecated: use aggregate_vector instead
@@ -1378,7 +1420,8 @@ class _Geometry():
 
         .. _extract_mask:
 
-        :Supported key values to mask pixels that must be ignored in the extraction process:
+        :Supported key values to mask pixels that must be ignored in \
+        the extraction process:
 
         +------------------+--------------------------------------------------+
         | key              | value                                            |
@@ -1414,7 +1457,9 @@ class _Geometry():
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
-            v = jim0.geometry.extractOgr(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v = jim0.geometry.extractOgr(
+                reference, buffer=-10, rule=['mean'],
+                output='/vsimem/temp.sqlite', oformat='SQLite')
             v.io.write('/path/to/output.sqlite)
 
         """
@@ -1536,7 +1581,8 @@ class _Geometry():
 
         .. _extract_mask:
 
-        :Supported key values to mask pixels that must be ignored in the extraction process:
+        :Supported key values to mask pixels that must be ignored in \
+        the extraction process:
 
         +------------------+--------------------------------------------------+
         | key              | value                                            |
@@ -1572,7 +1618,9 @@ class _Geometry():
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
-            v = jim0.geometry.aggregateVector(reference, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v = jim0.geometry.aggregateVector(
+                reference, buffer=-10, rule=['mean'],
+                output='/vsimem/temp.sqlite', oformat='SQLite')
             v.write('/path/to/output.sqlite)
 
         """
@@ -1789,7 +1837,8 @@ class _Geometry():
         on a 3x3 window (buffer value of 100 m) in a vector
         dataset in memory::
 
-            v01 = jim0.extractSample(random=100, buffer=100, rule=['mean'], output='mem01', oformat='Memory')
+            v01 = jim0.extractSample(random=100, buffer=100, rule=['mean'],
+                                     output='mem01', oformat='Memory')
 
         Extract a sample of 100 points using a regular grid sampling scheme.
         For each grid point, calculate the median value based on a 3x3 window
@@ -1799,7 +1848,8 @@ class _Geometry():
             outputfn = '/path/to/output.sqlite'
             npoint = 100
             gridsize = int(jim.nrOfCol()*jim.getDeltaX()/math.sqrt(npoint))
-            v = jim.extractSample(grid=gridsize, buffer=100, rule=['median'], output=outputfn, oformat='SQLite')
+            v = jim.extractSample(grid=gridsize, buffer=100, rule=['median'],
+                                  output=outputfn, oformat='SQLite')
             v.write()
 
         """
@@ -1865,7 +1915,8 @@ class _Geometry():
 
         .. _extract_nodata:
 
-        :Supported key values to mask pixels that must be ignored in the extraction process:
+        :Supported key values to mask pixels that must be ignored in \
+        the extraction process:
 
         +------------------+--------------------------------------------------+
         | key              | value                                            |
@@ -1915,20 +1966,20 @@ class _Geometry():
         :param t_srs: Target spatial reference system
         :param kwargs: See table below
 
-        +------------------+-------------------------------------------------------------------+
-        | key              | value                                                             |
-        +==================+===================================================================+
-        | s_srs            | Source spatial reference system                                   |
-        |                  | (default is to read from input)                                   |
-        +------------------+-------------------------------------------------------------------+
-        | resample         | Resample algorithm used for reading pixel data in                 |
-        |                  | case of interpolation                                             |
-        |                  | (default: GRIORA_NearestNeighbour). Check                         |
-        |                  | http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a |
-        |                  | or available options.                                             |
-        +------------------+-------------------------------------------------------------------+
-        | nodata           | Nodata value to put in image if out of bounds                     |
-        +------------------+-------------------------------------------------------------------+
+        +----------+-------------------------------------------------------------------+
+        | key      | value                                                             |
+        +==========+===================================================================+
+        | s_srs    | Source spatial reference system                                   |
+        |          | (default is to read from input)                                   |
+        +----------+-------------------------------------------------------------------+
+        | resample | Resample algorithm used for reading pixel data in                 |
+        |          | case of interpolation                                             |
+        |          | (default: GRIORA_NearestNeighbour). Check                         |
+        |          | http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a |
+        |          | or available options.                                             |
+        +----------+-------------------------------------------------------------------+
+        | nodata   | Nodata value to put in image if out of bounds                     |
+        +----------+-------------------------------------------------------------------+
 
         Example:
 
@@ -2046,7 +2097,7 @@ class _Geometry():
         self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
 
     def plotLine(self, x1, y1, x2, y2, val):
-        """Draw a line from [x1, y1] to [x2, y2] by setting pixels to value val.
+        """Draw a line from [x1, y1] to [x2, y2] by setting pixels to a value.
 
         Modifies the instance on which the method was called.
 
@@ -2086,7 +2137,8 @@ class _Geometry():
           sclJim = pj.Jim(sclfn)
           sclJim[sclJim != 9] = 0
           sclJim[sclJim == 9] = 1
-          vcloud = sclJim.geometry.polygonize('/vsimem/cloud.sqlite', name='cloud', nodata=0)
+          vcloud = sclJim.geometry.polygonize('/vsimem/cloud.sqlite',
+                                              name='cloud', nodata=0)
           vcloud.io.write('/path/to/cloud.sqlite')
         """
         kwargs.update({'output': output})
@@ -2185,7 +2237,7 @@ class _GeometryList():
         return _pj.Jim(self._jim_list._jipjimlist.stackPlane())
 
     def extractOgr(self, sample, rule, output, **kwargs):
-        """Extract pixel values from JimList object based on a JimVect vector dataset.
+        """Extract pixel values based on a JimVect vector dataset.
 
         :param sample: reference JimVect instance
         :param rule: Rule how to calculate zonal statistics per feature
@@ -2289,7 +2341,8 @@ class _GeometryList():
 
         .. _extract_mask:
 
-        :Supported key values to mask pixels that must be ignored in the extraction process:
+        :Supported key values to mask pixels that must be ignored in \
+            the extraction process:
 
         +------------------+--------------------------------------------------+
         | key              | value                                            |
@@ -2324,7 +2377,9 @@ class _GeometryList():
         on disk::
 
             jiml = pj.JimList([jim0,jim1,jim2])
-            v = jiml.geometry.extractOgr(reference, bandname, buffer=-10, rule=['mean'], output='/vsimem/temp.sqlite', oformat='SQLite')
+            v = jiml.geometry.extractOgr(
+                reference, bandname, buffer=-10, rule=['mean'],
+                output='/vsimem/temp.sqlite', oformat='SQLite')
             v.io.write('/path/to/output.sqlite)
 
         """
@@ -2346,14 +2401,11 @@ class _GeometryList():
         #     else:
         #         kwargs['threshold'] = -kwargs['threshold']
 
-
         # if sample is None:
         #     raise Exception('Error: missing sample option')
 
         # firstExtract = True
         # joinfn = None
-
-
 
         # vsioutput = os.path.join('/vsimem', 'aggregate_polygon.sqlite')
         # filenames=[]
@@ -2369,9 +2421,9 @@ class _GeometryList():
         #     if jim.properties.nrOfPlane() > 1:
         #         if sample.properties.getLayerCount() > 1:
         #             raise Exception(
-        #                 'Error: multiple layers not supported when aggregating '
-        #                 'vectors over multi-plane raster datasets, please use '
-        #                 'single layer vector object')
+        #                 'Error: multiple layers not supported when '
+        #                 'aggregating vectors over multi-plane raster '
+        #                 'datasets, please use single layer vector object')
 
         #     intersectfn = '/vsimem/sampleintersect.sqlite'
         #     sampleintersect = _pj.geometry.intersect(
@@ -2483,11 +2535,13 @@ class _GeometryList():
 
             #todo: support multi-band images in JimList...
             if bandname is None:
-                bandname = ['t'+str(ifile) for ifile in range(0,len(self._jim_list))]
+                bandname = [
+                    't'+str(ifile) for ifile in range(0, len(self._jim_list))]
             # elif isinstance(bandname,list):
             #     if len(bandname) != len(self._jim_list):
-            #         raise ValueError('Error: len of bandname should be identical to len of JimList')
-            kwargs.update({'bandname':bandname})
+            #         raise ValueError('Error: len of bandname should be '
+            #                          'identical to len of JimList')
+            kwargs.update({'bandname': bandname})
 
             avect = self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,
                                                           kwargs)

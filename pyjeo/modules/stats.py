@@ -188,19 +188,21 @@ class _Stats():
         stop reading up to value 100. Do not consider values equal to 0::
 
             jim=pj.Jim('/path/to/raster.tif')
-            histDict=jim.stats.getStats('histogram', nbnin=10, src_min=0, src_max=100, nodata=0)
+            histDict=jim.stats.getStats('histogram', nbnin=10, src_min=0,
+                                        src_max=100, nodata=0)
             histDict
-            {'bin': [5.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 85.0, 95.0],
+            {'bin': [5.0, 15.0, 25.0, 35.0, 45.0,
+                     55.0, 65.0, 75.0, 85.0, 95.0],
             'histogram': [38543.0,
-              29991.0,
-              49251.0,
-              40006.0,
-              12945.0,
-              2520.0,
-              112.0,
-              0.0,
-              0.0,
-              0.0]}
+                          29991.0,
+                          49251.0,
+                          40006.0,
+                          12945.0,
+                          2520.0,
+                          112.0,
+                          0.0,
+                          0.0,
+                          0.0]}
 
         """
         if not isinstance(function, list):

@@ -117,7 +117,8 @@ class _Classify():
         a single reference image (e.g., corine land cover)::
 
           corine=pj.Jim('/path/to/corine.tif')
-          jim.classify.trainSML(corine,output='/path/to/model.txt',classes=[12, 40])
+          jim.classify.trainSML(
+              corine, output='/path/to/model.txt', classes=[12, 40])
 
         Use :py:meth:`~_Classify.sml` to perform the classification
 
@@ -290,8 +291,8 @@ class _ClassifyVect():
         label    Attribute name for class label in training vector file
                  (default: 'label')
         bandname List of band names to use that correspond to the fields in
-                 the vector dataset. This parameter is mandatory if vector contains
-                 more attributes than just label
+                 the vector dataset. This parameter is mandatory if vector
+                 contains more attributes than just label
         class    List of alpha numeric class names as defined in the label
                  attribute (use only if labels contain not numerical values)
         reclass  List of numeric class values corresponding to the list defined

@@ -645,7 +645,6 @@ class _PixOps():
             if True
         :return: a Jim object
         """
-
         if bands is None:
             bands = range(self._jim_object.properties.nrOfBand())
 

@@ -48,6 +48,7 @@ class BadIO(unittest.TestCase):
 #
 #         jimv.io.close()
 
+
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:

@@ -445,13 +445,16 @@ class _NgbOps():
         defined in the list wavelenghts_in to a multispectral raster dataset
         with three bands, corresponding to Red, Green, and Blue::
 
-            wavelengths_in=[]
-            #define the wavelenghts of the input raster dataset
+            wavelengths_in = []
+            # define the wavelenghts of the input raster dataset
 
             if len(wavelengths_in) == jim_hyperspectral.nrOfBand():
-                jim_hyperspectral.filter1d(wavelengthIn=wavelenghts_in,wavelengthOut=[650,510,475],fwhm=[50,50,50])
+                jim_hyperspectral.filter1d(wavelengthIn=wavelenghts_in,
+                                           wavelengthOut=[650,510,475],
+                                           fwhm=[50,50,50])
             else:
-                print("Error: number of input wavelengths must be equal to number of bands in input raster dataset")
+                print("Error: number of input wavelengths must be equal to "
+                      "number of bands in input raster dataset")
 
         .. note::
                 The input wavelenghts are automatically interpolated. You can
@@ -479,9 +482,13 @@ class _NgbOps():
             #specify the wavelenghts of the input raster dataset
 
             if len(wavelengths_in) == jim_hyperspectral.nrOfBand():
-                rgb=jim_hyperspectral.filter1d(wavelengthIn=wavelenghts_in,srf=['srf_red.txt','srf_green.txt','srf_blue.txt'])
+                rgb=jim_hyperspectral.filter1d(wavelengthIn=wavelenghts_in,
+                                               srf=['srf_red.txt',
+                                               'srf_green.txt',
+                                               'srf_blue.txt'])
             else:
-                print("Error: number of input wavelengths must be equal to number of bands in input raster dataset")
+                print("Error: number of input wavelengths must be equal to "
+                      "number of bands in input raster dataset")
 
         .. note::
             The input wavelenghts are automatically interpolated. You can
@@ -764,10 +771,10 @@ class _NgbOps():
                                                      DIR_VERT,
                                                      MAX_op)
                 mingraderograddil = 0
-                h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
-                                                                   ABS_DIFF_op))
-                v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
-                                                                   ABS_DIFF_op))
+                h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(
+                    im, DIR_HORI, ABS_DIFF_op))
+                v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(
+                    im, DIR_VERT, ABS_DIFF_op))
 
                 h_dissim.pixops.supremum(h_dissim_crt)
                 v_dissim.pixops.supremum(v_dissim_crt)
@@ -816,8 +823,8 @@ class _NgbOps():
     def morphoErodeLine(self, dx, dy, k, o, type=0):
         """Output the erosion of im using a line segment.
 
-        Uses the line SE with slope dy/dx, length k, origin o, and line type. See
-        details at  :cite:`soille-breen-jones96`.
+        Uses the line SE with slope dy/dx, length k, origin o, and line type.
+        See details at  :cite:`soille-breen-jones96`.
 
         Modifies the instance on which the method was called.
 

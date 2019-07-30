@@ -56,8 +56,10 @@ def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
     :param percent: if True, return value in percents, degrees otherwise
     :return: a Jim object representing the slope
     """
-    tapsdx = numpy.array([[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]])
-    tapsdy = numpy.array([[-1.0, -2.0, -1.0], [0.0, 0.0, 0.0], [1.0, 2.0, 1.0]])
+    tapsdx = numpy.array(
+        [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]])
+    tapsdy = numpy.array(
+        [[-1.0, -2.0, -1.0], [0.0, 0.0, 0.0], [1.0, 2.0, 1.0]])
     tapsdx *= zscale
     tapsdy *= zscale
     jimdx = _pj.Jim(jim_object)
