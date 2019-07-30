@@ -31,6 +31,28 @@ def classify(jim_object, method, model, **kwargs):
     return _pj.Jim(jim_object._jipjim.classify(kwargs))
 
 
+def reclass(jim_object, classes, reclasses, otype=None):
+    """Reclassify a Jim object, replacing all pixels in the set classes.
+
+    Replace all pixels in the set class to the corresponding values in
+    reclasses
+
+    :param jim_object: a Jim object
+    :param classes: list of source values that need to be replaced
+    :param reclasses: list of target values to which the pixels should be
+        replaced
+    :return: Jim object with replaced values
+
+    see :py:meth:`~_Classify.reclass` for an example
+    """
+    kwargs = {'class': classes, 'reclass': reclasses}
+    if otype:
+        kwargs.update({'otype': otype})
+    retJim = _pj.Jim(jim_object)
+    retJim._jipjim.d_reclass(kwargs)
+    return retJim
+
+
 def sml(jim_object, **kwargs):
     """Perform supervised classification of a Jim object using SML.
 
@@ -62,28 +84,6 @@ def sml(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.classify(kwargs))
 
 
-def reclass(jim_object, classes, reclasses, otype=None):
-    """Reclassify a Jim object, replacing all pixels in the set classes.
-
-    Replace all pixels in the set class to the corresponding values in
-    reclasses
-
-    :param jim_object: a Jim object
-    :param classes: list of source values that need to be replaced
-    :param reclasses: list of target values to which the pixels should be
-        replaced
-    :return: Jim object with replaced values
-
-    see :py:meth:`~_Classify.reclass` for an example
-    """
-    kwargs = {'class': classes, 'reclass': reclasses}
-    if otype:
-        kwargs.update({'otype': otype})
-    retJim = _pj.Jim(jim_object)
-    retJim._jipjim.d_reclass(kwargs)
-    return retJim
-
-
 class _Classify():
 
     def __init__(self):
@@ -92,6 +92,111 @@ class _Classify():
 
     def _set_caller(self, caller):
         self._jim_object = caller
+
+    def classify(self, method, model, **kwargs):
+        """Supervised classification of a raster dataset.
+
+        The classifier must have been trained via the train() method.
+        The classifier can be selected with the key 'method'.
+
+        Modifies the instance on which the method was called.
+
+        :param method: Classification method
+            (:ref:`svm <svm>` or :ref:`ann <ann>`)
+        :param model: Model filename for trained classifier
+        :param kwargs: See below
+
+        :keyword arguments:
+            :band: (list of) band index(indices), starting from 0. The band
+                order must correspond to the band names defined in the model.
+                Leave empty to use all bands.
+            :srcnodata: No data values in input image not to consider for
+                classification
+            :dstnodata: No data value to put where input image is no data
+            :priors: list of prior probabilities (one for each class)
+
+        Perform a SVM classification using the model obtained
+        via :py:meth:`~_ClassifyVect.train`::
+
+          jim_sml=pj.classify.classify('svm', jim,model='/path/to/model.txt')
+
+        Perform an ANN classification using the model obtained
+        via :py:meth:`~_ClassifyVect.train`::
+
+          jim_sml=pj.classify.classify('ann', jim,model='/path/to/model.txt')
+        """
+        kwargs.update({'method': method, 'model': model})
+        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
+
+    def reclass(self, classes, reclasses, otype=None):
+        """Reclassify a Jim object.
+
+        Replace all pixels in the set classes to the corresponding values in
+        reclasses.
+
+        :param classes: list of source values that need to be replaced
+        :param reclasses: list of target values to which the pixels should be
+            replaced
+
+        Reclass a Jim object, replacing all values in [0,1,2] to
+        [250,251,252]::
+
+          jim.classify.reclass(classes=[0,1,2],reclasses[250,251,252])
+        """
+        kwargs = {'class': classes, 'reclass': reclasses}
+        if otype:
+            kwargs.update({'otype': otype})
+        self._jim_object._jipjim.d_reclass(kwargs)
+
+    def sml(self, **kwargs):
+        """Perform supervised classification of a Jim object using SML.
+
+        For training, one or more reference raster datasets with categorical
+        values is expected as a JimList. The reference raster dataset is
+        typically at a lower spatial resolution than the input raster dataset
+        to be classified. Unlike the Jim.classify(), the training is performed
+        not prior to the classification, but in the same process as
+        the classification.
+
+        Modifies the instance on which the method was called.
+
+        :param kwargs: See below
+        :return: multi-band Jim object, where each band represents the
+            probability for each class
+
+        :keyword arguments:
+            :band: Band index (starting from 0). The band order must correspond
+                to the band names defined in the model. Leave empty to use all
+                bands
+            :classes: List of classes to extract from the reference. Leave
+                empty to extract two classes only (1 against rest)
+
+        Perform a SML classification using the model obtained
+        via :py:meth:`~_Classify.trainSML`::
+
+          jim_sml=pj.classify.sml(jim,model='/path/to/model.txt')
+
+        The result is a multi-band :py:class`Jim` object where the number of
+        bands equals the number of classes and each band represents
+        the probability for the respective class. To create a discrete
+        classification result, based on the maximum probability for each
+        class::
+
+          jim_sml._jipjim.band2plane()
+          smlclassnp=np.argmax(jim_sml.np(),axis=0).astype(np.uint8)
+          sml_class=pj.np2jim(smlclassnp)
+          sml_class.properties.setProjection(jim.properties.getProjection())
+          sml_class.properties.setGeoTransform(jim.properties.getGeoTransform())
+
+        The result contains the indices in the range(0,number of classes).
+        Use :py:meth:`~_Classify.reclass` to convert the indices to the actual
+        class numbers.
+
+        """
+        kwargs.update({'method': 'sml'})
+        if 'classes' in kwargs:
+            kwargs.update({'class': kwargs.pop('classes')})
+        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
 
     def trainSML(self, reference, output=None, **kwargs):
         """Train a supervised symbolic machine learning (SML) classifier.
@@ -149,111 +254,6 @@ class _Classify():
         else:
             self._jim_object._jipjim.trainSML(jimlist._jipjimlist, kwargs)
 
-    def classify(self, method, model, **kwargs):
-        """Supervised classification of a raster dataset.
-
-        The classifier must have been trained via the train() method.
-        The classifier can be selected with the key 'method'.
-
-        Modifies the instance on which the method was called.
-
-        :param method: Classification method
-            (:ref:`svm <svm>` or :ref:`ann <ann>`)
-        :param model: Model filename for trained classifier
-        :param kwargs: See below
-
-        :keyword arguments:
-            :band: (list of) band index(indices), starting from 0. The band
-                order must correspond to the band names defined in the model.
-                Leave empty to use all bands.
-            :srcnodata: No data values in input image not to consider for
-                classification
-            :dstnodata: No data value to put where input image is no data
-            :priors: list of prior probabilities (one for each class)
-
-        Perform a SVM classification using the model obtained
-        via :py:meth:`~_ClassifyVect.train`::
-
-          jim_sml=pj.classify.classify('svm', jim,model='/path/to/model.txt')
-
-        Perform an ANN classification using the model obtained
-        via :py:meth:`~_ClassifyVect.train`::
-
-          jim_sml=pj.classify.classify('ann', jim,model='/path/to/model.txt')
-        """
-        kwargs.update({'method': method, 'model': model})
-        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
-
-    def sml(self, **kwargs):
-        """Perform supervised classification of a Jim object using SML.
-
-        For training, one or more reference raster datasets with categorical
-        values is expected as a JimList. The reference raster dataset is
-        typically at a lower spatial resolution than the input raster dataset
-        to be classified. Unlike the Jim.classify(), the training is performed
-        not prior to the classification, but in the same process as
-        the classification.
-
-        Modifies the instance on which the method was called.
-
-        :param kwargs: See below
-        :return: multi-band Jim object, where each band represents the
-            probability for each class
-
-        :keyword arguments:
-            :band: Band index (starting from 0). The band order must correspond
-                to the band names defined in the model. Leave empty to use all
-                bands
-            :classes: List of classes to extract from the reference. Leave
-                empty to extract two classes only (1 against rest)
-
-        Perform a SML classification using the model obtained
-        via :py:meth:`~_Classify.trainSML`::
-
-          jim_sml=pj.classify.sml(jim,model='/path/to/model.txt')
-
-        The result is a multi-band :py:class`Jim` object where the number of
-        bands equals the number of classes and each band represents
-        the probability for the respective class. To create a discrete
-        classification result, based on the maximum probability for each
-        class::
-
-          jim_sml._jipjim.band2plane()
-          smlclassnp=np.argmax(jim_sml.np(),axis=0).astype(np.uint8)
-          sml_class=pj.np2jim(smlclassnp)
-          sml_class.properties.setProjection(jim.properties.getProjection())
-          sml_class.properties.setGeoTransform(jim.properties.getGeoTransform())
-
-        The result contains the indices in the range(0,number of classes).
-        Use :py:meth:`~_Classify.reclass` to convert the indices to the actual
-        class numbers.
-
-        """
-        kwargs.update({'method': 'sml'})
-        if 'classes' in kwargs:
-            kwargs.update({'class': kwargs.pop('classes')})
-        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
-
-    def reclass(self, classes, reclasses, otype=None):
-        """Reclassify a Jim object.
-
-        Replace all pixels in the set classes to the corresponding values in
-        reclasses.
-
-        :param classes: list of source values that need to be replaced
-        :param reclasses: list of target values to which the pixels should be
-            replaced
-
-        Reclass a Jim object, replacing all values in [0,1,2] to
-        [250,251,252]::
-
-          jim.classify.reclass(classes=[0,1,2],reclasses[250,251,252])
-        """
-        kwargs = {'class': classes, 'reclass': reclasses}
-        if otype:
-            kwargs.update({'otype': otype})
-        self._jim_object._jipjim.d_reclass(kwargs)
-
 
 class _ClassifyList():
 
@@ -273,6 +273,32 @@ class _ClassifyVect():
 
     def _set_caller(self, caller):
         self._jim_vect = caller
+
+    def classify(self, method, model, **kwargs):
+        """Supervised classification of a raster dataset.
+
+        The classifier must have been trained via the train() method.
+        The classifier can be selected with the key 'method'.
+
+        Modifies the instance on which the method was called.
+
+        :param method: Classification method ('svm', 'ann')
+        :param model: Model filename for trained classifier
+        :param kwargs: See below
+
+        :keyword arguments:
+            :band: Band index (starting from 0). The band order must correspond
+                to the band names defined in the model. Leave empty to use all
+                bands
+            :priors: list of prior probabilities (one for each class)
+            :output: output filename of classified vector dataset
+            :f: output filename of classified vector dataset
+            :co: creation option for output file. Multiple options can be
+                specified as list
+            :copy: copy these fields from input to output vector dataset
+        """
+        kwargs.update({'method': method, 'model': model})
+        self._jim_vect._set(self._jim_vect._jipjimvect.classify(kwargs))
 
     def train(self, method, output, **kwargs):
         """Train a supervised classifier based on extracted data.
@@ -405,29 +431,3 @@ class _ClassifyVect():
         """
         kwargs.update({'method': method, 'model': output})
         self._jim_vect._jipjimvect.train(kwargs)
-
-    def classify(self, method, model, **kwargs):
-        """Supervised classification of a raster dataset.
-
-        The classifier must have been trained via the train() method.
-        The classifier can be selected with the key 'method'.
-
-        Modifies the instance on which the method was called.
-
-        :param method: Classification method ('svm', 'ann')
-        :param model: Model filename for trained classifier
-        :param kwargs: See below
-
-        :keyword arguments:
-            :band: Band index (starting from 0). The band order must correspond
-                to the band names defined in the model. Leave empty to use all
-                bands
-            :priors: list of prior probabilities (one for each class)
-            :output: output filename of classified vector dataset
-            :f: output filename of classified vector dataset
-            :co: creation option for output file. Multiple options can be
-                specified as list
-            :copy: copy these fields from input to output vector dataset
-        """
-        kwargs.update({'method': method, 'model': model})
-        self._jim_vect._set(self._jim_vect._jipjimvect.classify(kwargs))
