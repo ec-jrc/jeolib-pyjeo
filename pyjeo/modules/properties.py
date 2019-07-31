@@ -19,63 +19,65 @@ class _Properties():
     def _set_caller(self, caller):
         self._jim_object = caller
 
-    def imageInfo(self):
-        """Return image information (number of lines, columns, etc.)."""
-        self._jim_object._jipjim.imageInfo()
-
-    def nrOfCol(self):
-        """Get number of columns in this raster dataset.
-
-        :return: The number of columns in this raster dataset
-        """
-        return self._jim_object._jipjim.nrOfCol()
-
-    def nrOfRow(self):
-        """Get number of rows in this raster dataset.
-
-        :return: The number of rows in this raster dataset
-        """
-        return self._jim_object._jipjim.nrOfRow()
-
-    def nrOfPlane(self):
-        """Get number of planes in this raster dataset.
-
-        :return: The number of planes in this raster dataset
-        """
-        return self._jim_object._jipjim.nrOfPlane()
-
-    def nrOfBand(self):
-        """Get number of bands in this raster dataset.
-
-        :return: The number of bands in this raster dataset
-        """
-        return self._jim_object._jipjim.nrOfBand()
-
-    def printNoDataVals(self):
-        """Print the list of no data values of this raster dataset."""
-        self._jim_object._jipjim.printNoDataValues()
-
-    def pushNoDataVal(self, value):
-        """Push a no data value for this raster dataset."""
-        self._jim_object._jipjim.pushNoDataValue(value)
-
-    def setNoDataVals(self, value):
-        """Set the list of no data value for this raster dataset."""
-        if isinstance(value, list):
-            self._jim_object._jipjim.setNoData(value)
-        elif type(value) in (float, int):
-            self._jim_object._jipjim.setNoDataValue(value)
-        else:
-            raise TypeError('Error: setNoDataVals not implemented for value '
-                            'type {}'.format(type(value)))
-
-    def getNoDataVals(self):
-        """Get the list of no data values."""
-        return self._jim_object._jipjim.getNoDataValues()
-
     def clearNoData(self):
         """Clear the list of no data values for this raster dataset."""
         self._jim_object._jipjim.clearNoData()
+
+    def copyGeoTransform(self, sec_jim_object):
+        """Copy geotransform information from another georeferenced image."""
+        self._jim_object._jipjim.copyGeoTransform(sec_jim_object._jipjim)
+
+    def covers(self, *args):
+        """Check if a geolocation is covered by this dataset.
+
+        You can check the coverage for a :ref:`point of interest
+        <covers1>` or :ref:`region of interest <covers2>`.
+
+        .. _covers1:
+
+        :Using a point coordinates:
+
+        * ``x`` (float): x coordinate in spatial reference system of \
+                         the rasterdataset
+        * ``y`` (float): y coordinate in spatial reference system of \
+                         the raster dataset
+
+        .. _covers2:
+
+        :Using a region of interest:
+
+        * ``ulx`` (float): upper left x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``uly`` (float): upper left y coordinate in spatial reference \
+                           system of the raster dataset
+        * ``lrx`` (float): lower right x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``lry`` (float): lower right x coordinate in spatial reference \
+                           system of the raster dataset
+        * ``all`` (bool): set to True if the entire bounding box must be \
+                          covered by the raster dataset
+
+        Returns:
+        True if the raster dataset covers the point or region of interest.
+        """
+        return self._jim_object._jipjim.covers(*args)
+
+    def getBBox(self):
+        """Get the bounding box (georeferenced) coordinates of this dataset.
+
+        :return: A list with upper left x, upper left y, lower right x, and
+            lower right y
+        """
+        return self._jim_object._jipjim.getBoundingBox()
+
+    def getCenterPos(self):
+        """
+        Get the center position of this dataset in georeferenced coordinates.
+
+        :return: A list with the center position of this dataset in
+            georeferenced coordinates.
+        """
+        return self._jim_object._jipjim.getCenterPos()
 
     def getDataType(self):
         """Get the internal datatype for this raster dataset.
@@ -116,40 +118,19 @@ class _Properties():
         else:
             raise TypeError("Unknown data format".format(otype))
 
-    def covers(self, *args):
-        """Check if a geolocation is covered by this dataset.
+    def getDeltaX(self):
+        """Get the pixel cell spacing in x.
 
-        You can check the coverage for a :ref:`point of interest
-        <covers1>` or :ref:`region of interest <covers2>`.
-
-        .. _covers1:
-
-        :Using a point coordinates:
-
-        * ``x`` (float): x coordinate in spatial reference system of \
-                         the rasterdataset
-        * ``y`` (float): y coordinate in spatial reference system of \
-                         the raster dataset
-
-        .. _covers2:
-
-        :Using a region of interest:
-
-        * ``ulx`` (float): upper left x coordinate in spatial reference \
-                           system of the raster dataset
-        * ``uly`` (float): upper left y coordinate in spatial reference \
-                           system of the raster dataset
-        * ``lrx`` (float): lower right x coordinate in spatial reference \
-                           system of the raster dataset
-        * ``lry`` (float): lower right x coordinate in spatial reference \
-                           system of the raster dataset
-        * ``all`` (bool): set to True if the entire bounding box must be \
-                          covered by the raster dataset
-
-        Returns:
-        True if the raster dataset covers the point or region of interest.
+        :return: The pixel cell spacing in x.
         """
-        return self._jim_object._jipjim.covers(*args)
+        return self._jim_object._jipjim.getDeltaX()
+
+    def getDeltaY(self):
+        """Get the piyel cell spacing in y.
+
+        :return: The piyel cell spacing in y.
+        """
+        return self._jim_object._jipjim.getDeltaY()
 
     def getGeoTransform(self):
         """Get the geotransform data for this dataset as a list of floats.
@@ -164,74 +145,6 @@ class _Properties():
         * [5] n-s pixel resolution
         """
         return self._jim_object._jipjim.getGeoTransform()
-
-    def setGeoTransform(self, *args):
-        """Set the geotransform data for this dataset.
-
-        :args: List of floats with geotransform data:
-
-        * [0] top left x
-        * [1] w-e pixel resolution
-        * [2] rotation, 0 if image is "north up"
-        * [3] top left y
-        * [4] rotation, 0 if image is "north up"
-        * [5] n-s pixel resolution
-        """
-        self._jim_object._jipjim.setGeoTransform(*args)
-
-    def copyGeoTransform(self, sec_jim_object):
-        """Copy geotransform information from another georeferenced image."""
-        self._jim_object._jipjim.copyGeoTransform(sec_jim_object._jipjim)
-
-    def getProjection(self):
-        """Get the projection for this dataset in well known text (wkt) format.
-
-        :return: The projection string in well known text format.
-        """
-        return self._jim_object._jipjim.getProjection()
-
-    def setProjection(self, *args):
-        """Set the projection for this dataset.
-
-        Set it in well known text (wkt) format or as a string epsg:<epsgcode>.
-
-        :args: the projection for this dataset in well known text (wkt) format
-            or as a string epsg:<epsgcode>.
-        """
-        self._jim_object._jipjim.setProjection(*args)
-
-    def getCenterPos(self):
-        """
-        Get the center position of this dataset in georeferenced coordinates.
-
-        :return: A list with the center position of this dataset in
-            georeferenced coordinates.
-        """
-        return self._jim_object._jipjim.getCenterPos()
-
-    def getBBox(self):
-        """Get the bounding box (georeferenced) coordinates of this dataset.
-
-        :return: A list with upper left x, upper left y, lower right x, and
-            lower right y
-        """
-        return self._jim_object._jipjim.getBoundingBox()
-
-    def getUlx(self):
-        """Get the upper left corner x coordinate of this dataset.
-
-        :return: The upper left corner x (georeferenced) coordinate of this
-            dataset
-        """
-        return self._jim_object._jipjim.getUlx()
-
-    def getUly(self):
-        """Get the upper left corner y coordinate of this dataset.
-
-        :return: The upper left corner y (georeferenced) coordinate of this
-            dataset
-        """
-        return self._jim_object._jipjim.getUly()
 
     def getLrx(self):
         """Get the lower left corner x coordinate of this dataset.
@@ -249,19 +162,16 @@ class _Properties():
         """
         return self._jim_object._jipjim.getLry()
 
-    def getDeltaX(self):
-        """Get the pixel cell spacing in x.
+    def getNoDataVals(self):
+        """Get the list of no data values."""
+        return self._jim_object._jipjim.getNoDataValues()
 
-        :return: The pixel cell spacing in x.
+    def getProjection(self):
+        """Get the projection for this dataset in well known text (wkt) format.
+
+        :return: The projection string in well known text format.
         """
-        return self._jim_object._jipjim.getDeltaX()
-
-    def getDeltaY(self):
-        """Get the piyel cell spacing in y.
-
-        :return: The piyel cell spacing in y.
-        """
-        return self._jim_object._jipjim.getDeltaY()
+        return self._jim_object._jipjim.getProjection()
 
     def getRefPix(self, *args):
         """Calculate the reference pixel as the center of gravity pixel.
@@ -275,6 +185,96 @@ class _Properties():
         """
         return self._jim_object._jipjim.getRefPix(*args)
 
+    def getUlx(self):
+        """Get the upper left corner x coordinate of this dataset.
+
+        :return: The upper left corner x (georeferenced) coordinate of this
+            dataset
+        """
+        return self._jim_object._jipjim.getUlx()
+
+    def getUly(self):
+        """Get the upper left corner y coordinate of this dataset.
+
+        :return: The upper left corner y (georeferenced) coordinate of this
+            dataset
+        """
+        return self._jim_object._jipjim.getUly()
+
+    def imageInfo(self):
+        """Return image information (number of lines, columns, etc.)."""
+        self._jim_object._jipjim.imageInfo()
+
+    def nrOfBand(self):
+        """Get number of bands in this raster dataset.
+
+        :return: The number of bands in this raster dataset
+        """
+        return self._jim_object._jipjim.nrOfBand()
+
+    def nrOfCol(self):
+        """Get number of columns in this raster dataset.
+
+        :return: The number of columns in this raster dataset
+        """
+        return self._jim_object._jipjim.nrOfCol()
+
+    def nrOfPlane(self):
+        """Get number of planes in this raster dataset.
+
+        :return: The number of planes in this raster dataset
+        """
+        return self._jim_object._jipjim.nrOfPlane()
+
+    def nrOfRow(self):
+        """Get number of rows in this raster dataset.
+
+        :return: The number of rows in this raster dataset
+        """
+        return self._jim_object._jipjim.nrOfRow()
+
+    def printNoDataVals(self):
+        """Print the list of no data values of this raster dataset."""
+        self._jim_object._jipjim.printNoDataValues()
+
+    def pushNoDataVal(self, value):
+        """Push a no data value for this raster dataset."""
+        self._jim_object._jipjim.pushNoDataValue(value)
+
+    def setGeoTransform(self, *args):
+        """Set the geotransform data for this dataset.
+
+        :args: List of floats with geotransform data:
+
+        * [0] top left x
+        * [1] w-e pixel resolution
+        * [2] rotation, 0 if image is "north up"
+        * [3] top left y
+        * [4] rotation, 0 if image is "north up"
+        * [5] n-s pixel resolution
+        """
+        self._jim_object._jipjim.setGeoTransform(*args)
+
+    def setNoDataVals(self, value):
+        """Set the list of no data value for this raster dataset."""
+        if isinstance(value, list):
+            self._jim_object._jipjim.setNoData(value)
+        elif type(value) in (float, int):
+            self._jim_object._jipjim.setNoDataValue(value)
+        else:
+            raise TypeError('Error: setNoDataVals not implemented for value '
+                            'type {}'.format(type(value)))
+
+    def setProjection(self, *args):
+        """Set the projection for this dataset.
+
+        Set it in well known text (wkt) format or as a string epsg:<epsgcode>.
+
+        :args: the projection for this dataset in well known text (wkt) format
+            or as a string epsg:<epsgcode>.
+        """
+        self._jim_object._jipjim.setProjection(*args)
+
 
 class _PropertiesList():
     """Define all properties methods for JimLists."""
@@ -286,17 +286,9 @@ class _PropertiesList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
-    def pushNoDataVal(self, value):
-        """Push a no data value for this raster JimList object."""
-        self._jim_list._jipjimlist.pushNoDataValue(value)
-
     def clearNoData(self):
         """Clear the list of no data values for this JimList object."""
         self._jim_list._jipjimlist.clearNoData()
-
-    def getNoDataVals(self):
-        """Get the list of no data values."""
-        return self._jim_list._jipjimlist.getNoDataValues()
 
     def covers(self, *args):
         """Check if a geolocation is covered by this dataset.
@@ -341,22 +333,6 @@ class _PropertiesList():
         """
         return self._jim_list._jipjimlist.getBoundingBox()
 
-    def getUlx(self):
-        """Get the upper left corner x coordinate of this dataset.
-
-        :return: The upper left corner x (georeferenced) coordinate of this
-            dataset
-        """
-        return self._jim_list._jipjimlist.getUlx()
-
-    def getUly(self):
-        """Get the upper left corner y coordinate of this dataset.
-
-        :return: The upper left corner y (georeferenced) coordinate of this
-            dataset
-        """
-        return self._jim_list._jipjimlist.getUly()
-
     def getLrx(self):
         """Get the lower left corner x coordinate of this dataset.
 
@@ -373,6 +349,30 @@ class _PropertiesList():
         """
         return self._jim_list._jipjimlist.getLry()
 
+    def getNoDataVals(self):
+        """Get the list of no data values."""
+        return self._jim_list._jipjimlist.getNoDataValues()
+
+    def getUlx(self):
+        """Get the upper left corner x coordinate of this dataset.
+
+        :return: The upper left corner x (georeferenced) coordinate of this
+            dataset
+        """
+        return self._jim_list._jipjimlist.getUlx()
+
+    def getUly(self):
+        """Get the upper left corner y coordinate of this dataset.
+
+        :return: The upper left corner y (georeferenced) coordinate of this
+            dataset
+        """
+        return self._jim_list._jipjimlist.getUly()
+
+    def pushNoDataVal(self, value):
+        """Push a no data value for this raster JimList object."""
+        self._jim_list._jipjimlist.pushNoDataValue(value)
+
     def selectGeo(self, *args):
         self._jim_list._jipjimlist.selectGeo(*args)
         self._jim_list._set(self._jim_list)
@@ -388,19 +388,13 @@ class _PropertiesVect():
     def _set_caller(self, caller):
         self._jim_vect = caller
 
-    def isEmpty(self):
-        """Check if object contains features (non-emtpy).
+    def getBBox(self):
+        """Get the bounding box (georeferenced) coordinates of this dataset.
 
-        :return: True if empty, False if not
+        :return: A list with upper left x, upper left y, lower right x, and
+            lower right y
         """
-        return self._jim_vect._jipjimvect.isEmpty()
-
-    def getLayerCount(self):
-        """Get the number of layers of this dataset.
-
-        :return: the number of layers of this dataset
-        """
-        return self._jim_vect._jipjimvect.getLayerCount()
+        return self._jim_vect._jipjimvect.getBoundingBox()
 
     def getFeatureCount(self, layer=None):
         """Get the number of features of this dataset.
@@ -413,29 +407,22 @@ class _PropertiesVect():
         else:
             return self._jim_vect._jipjimvect.getFeatureCount()
 
-    def getBBox(self):
-        """Get the bounding box (georeferenced) coordinates of this dataset.
+    def getFieldNames(self, layer=0):
+        """Get the list of field names for this dataset.
 
-        :return: A list with upper left x, upper left y, lower right x, and
-            lower right y
-        """
-        return self._jim_vect._jipjimvect.getBoundingBox()
-
-    def getUlx(self):
-        """Get the upper left corner x coordinate of this dataset.
-
-        :return: The upper left corner x (georeferenced) coordinate of this
+        :param layer: The layer to get the field names, index starting from 0
+            (default is 0: first layer)
+        :return: The list of field names
             dataset
         """
-        return self._jim_vect._jipjimvect.getUlx()
+        return self._jim_vect._jipjimvect.getFieldNames(layer)
 
-    def getUly(self):
-        """Get the upper left corner y coordinate of this dataset.
+    def getLayerCount(self):
+        """Get the number of layers of this dataset.
 
-        :return: The upper left corner y (georeferenced) coordinate of this
-            dataset
+        :return: the number of layers of this dataset
         """
-        return self._jim_vect._jipjimvect.getUly()
+        return self._jim_vect._jipjimvect.getLayerCount()
 
     def getLrx(self):
         """Get the lower left corner x coordinate of this dataset.
@@ -453,16 +440,6 @@ class _PropertiesVect():
         """
         return self._jim_vect._jipjimvect.getLry()
 
-    def getFieldNames(self, layer=0):
-        """Get the list of field names for this dataset.
-
-        :param layer: The layer to get the field names, index starting from 0
-            (default is 0: first layer)
-        :return: The list of field names
-            dataset
-        """
-        return self._jim_vect._jipjimvect.getFieldNames(layer)
-
     def getProjection(self, layer=0):
         """Get the projection for this dataset in well known text (wkt) format.
 
@@ -472,3 +449,26 @@ class _PropertiesVect():
         :return: The projection string in well known text format.
         """
         return self._jim_vect._jipjimvect.getProjection(layer)
+
+    def getUlx(self):
+        """Get the upper left corner x coordinate of this dataset.
+
+        :return: The upper left corner x (georeferenced) coordinate of this
+            dataset
+        """
+        return self._jim_vect._jipjimvect.getUlx()
+
+    def getUly(self):
+        """Get the upper left corner y coordinate of this dataset.
+
+        :return: The upper left corner y (georeferenced) coordinate of this
+            dataset
+        """
+        return self._jim_vect._jipjimvect.getUly()
+
+    def isEmpty(self):
+        """Check if object contains features (non-emtpy).
+
+        :return: True if empty, False if not
+        """
+        return self._jim_vect._jipjimvect.isEmpty()

@@ -7,32 +7,6 @@ except ImportError:
     from jeodpp import jiplib as _jl
 
 
-# def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
-#              nBufXSize=None, nBufYSize=None):
-#     """Read a GDAL compatible image stored in the filename.
-
-#     :param fn: a string for the name of an image file (possibly its path)
-#     :param band: an integer for the band number, 0 for first band
-#     :param nXOff: integer for the pixel offset to the top left corner
-#     :param nYOff: integer for the line offset to the top left corner
-#     :param nXSize: integer for the width of the region
-#     :param nYSize: integer for the height of the region
-#     :param nBufXSize: integer for the number of columns of output image
-#     :param nBufYSize: integer for the number of lines of output image
-#     :return: a Jim object
-#     """
-#     if nXSize is None:
-#         nXSize = nXOff
-#     if nYSize is None:
-#         nYSize = nYOff
-#     if nBufXSize is None:
-#         nBufXSize = nXSize
-#     if nBufYSize is None:
-#         nBufYSize = nYSize
-#     return _pj.Jim(_jl.GDALRead(fn, band, nXOff, nYOff, nXSize, nYSize,
-#                                nBufXSize, nBufYSize))
-
-
 # def createJim(filename=None, **kwargs):
 #     """
 #     :param filename: Path to a raster dataset or another Jim object
@@ -60,6 +34,32 @@ except ImportError:
 #     return _pj.JimVect(_jl.createVector(filename, **kwargs))
 
 
+# def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
+#              nBufXSize=None, nBufYSize=None):
+#     """Read a GDAL compatible image stored in the filename.
+
+#     :param fn: a string for the name of an image file (possibly its path)
+#     :param band: an integer for the band number, 0 for first band
+#     :param nXOff: integer for the pixel offset to the top left corner
+#     :param nYOff: integer for the line offset to the top left corner
+#     :param nXSize: integer for the width of the region
+#     :param nYSize: integer for the height of the region
+#     :param nBufXSize: integer for the number of columns of output image
+#     :param nBufYSize: integer for the number of lines of output image
+#     :return: a Jim object
+#     """
+#     if nXSize is None:
+#         nXSize = nXOff
+#     if nYSize is None:
+#         nYSize = nYOff
+#     if nBufXSize is None:
+#         nBufXSize = nXSize
+#     if nBufYSize is None:
+#         nBufYSize = nYSize
+#     return _pj.Jim(_jl.GDALRead(fn, band, nXOff, nYOff, nXSize, nYSize,
+#                                nBufXSize, nBufYSize))
+
+
 class _IO():
     """Define all IO methods."""
 
@@ -70,37 +70,9 @@ class _IO():
     def _set_caller(self, caller):
         self._jim_object = caller
 
-    def write(self, filename, **kwargs):
-        """Write the raster dataset to file in a GDAL supported format.
-
-        : param filename: output filename to write to
-
-        Supported keys as arguments:
-
-        ======== ===================================================
-        oformat  (default: GTiff) Output image (GDAL supported) format
-        co       Creation option for output file. Multiple options can be
-                 specified as a list
-        nodata   Nodata value to put in image
-        ======== ===================================================
-
-        .. note::
-
-           Supported GDAL output formats are restricted to those that support
-           `creation <http://www.gdal.org/formats_list.html#footnote1>`_.
-
-        Example:
-
-        Create Jim image object by opening an existing file in jp2 format.
-        Then write to a compressed and tiled file in the default GeoTIFF
-        format::
-
-           ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-           jim=pj.Jim({'filename':ifn})
-           jim.io.write('/tmp/test.tif','co':['COMPRESS=LZW','TILED=YES']})
-        """
-        kwargs.update({'filename': filename})
-        self._jim_object._jipjim.write(kwargs)
+    def close(self):
+        """Close Jim object."""
+        self._jim_object._jipjim.close()
 
     def dumpImg(self, **kwargs):
         """Dump the raster dataset to output (standard output or ASCII file).
@@ -136,9 +108,37 @@ class _IO():
         """
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
-    def close(self):
-        """Close Jim object."""
-        self._jim_object._jipjim.close()
+    def write(self, filename, **kwargs):
+        """Write the raster dataset to file in a GDAL supported format.
+
+        : param filename: output filename to write to
+
+        Supported keys as arguments:
+
+        ======== ===================================================
+        oformat  (default: GTiff) Output image (GDAL supported) format
+        co       Creation option for output file. Multiple options can be
+                 specified as a list
+        nodata   Nodata value to put in image
+        ======== ===================================================
+
+        .. note::
+
+           Supported GDAL output formats are restricted to those that support
+           `creation <http://www.gdal.org/formats_list.html#footnote1>`_.
+
+        Example:
+
+        Create Jim image object by opening an existing file in jp2 format.
+        Then write to a compressed and tiled file in the default GeoTIFF
+        format::
+
+           ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+           jim=pj.Jim({'filename':ifn})
+           jim.io.write('/tmp/test.tif','co':['COMPRESS=LZW','TILED=YES']})
+        """
+        kwargs.update({'filename': filename})
+        self._jim_object._jipjim.write(kwargs)
 
 
 class _IOList():
@@ -166,19 +166,6 @@ class _IOVect():
     def _set_caller(self, caller):
         self._jim_vect = caller
 
-    def write(self, filename=None):
-        """Write JimVect object to file.
-
-        If no filename is provided, the original filename with which
-        the JimVect object was created will be used.
-
-        :param filename: path to a raster dataset or another Jim object
-        """
-        if filename:
-            self._jim_vect._jipjimvect.write(filename)
-        else:
-            self._jim_vect._jipjimvect.write()
-
     def close(self):
         """Close JimVect object."""
         self._jim_vect._jipjimvect.close()
@@ -197,3 +184,16 @@ class _IOVect():
         if not kwargs:
             kwargs = {}
         self._jim_vect._jipjimvect.dumpOgr(kwargs)
+
+    def write(self, filename=None):
+        """Write JimVect object to file.
+
+        If no filename is provided, the original filename with which
+        the JimVect object was created will be used.
+
+        :param filename: path to a raster dataset or another Jim object
+        """
+        if filename:
+            self._jim_vect._jipjimvect.write(filename)
+        else:
+            self._jim_vect._jipjimvect.write()

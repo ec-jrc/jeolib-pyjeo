@@ -6,6 +6,21 @@ from scipy import signal
 from scipy import ndimage
 
 
+def edgeWeight(jim_object, dir=0, type=0):
+    """Compute the weights of the horizontal or vertical edges.
+
+    Linking any pair of horizontally or vertically adjacent pixels.
+
+    :param dir:  integer for coding edge direction
+        (horizontal if 0, vertical otherwise).
+    :param type: integer determining how the edge weights are computed:
+        0 for absolute difference (default),
+        1 for maximum value,
+        2 for minimum value.
+    """
+    return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
+
+
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     """Subset raster dataset in spectral/temporal domain.
 
@@ -61,129 +76,6 @@ def filter2d(jim_object, filter, **kwargs):
     else:
         kwargs.update({'filter': filter})
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
-
-
-def morphoDilateDiamond(jim_object):
-    """Output the dilation of im using the elementary diamond shaped SE.
-
-    :param jim_object: a Jim object
-    """
-    ox = 1
-    oy = 1
-    return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(ox, oy))
-
-
-def morphoErodeDiamond(jim_object):
-    """Output the erosion of im using the elementary diamond shaped SE.
-
-    :param jim_object: a Jim object
-    """
-    ox = 1
-    oy = 1
-    return _pj.Jim(jim_object._jipjim.morphoErodeNgb4(ox, oy))
-
-
-def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
-    """Output the erosion of im using a line segment.
-
-    Uses the line SE with slope dy/dx, length k, origin o, and line type. See
-    details at  :cite:`soille-breen-jones96`.
-
-    :param jim_object: image on which to perform the erosion
-    :param dx: integer for displacement along x-axis to set slope
-    :param dy: integer for displacement along y-axis to set slope
-    :param k: integer for number of pixels of line SE
-        (must be odd; if not, it is extended by one pixel)
-    :param o: integer for origin of SE
-    :param type: integer for line type (0 for plain and 1 for periodic).
-        0 is the default value
-    """
-    return _pj.Jim(jim_object._jipjim.morphoErodeLine(dx, dy, k, o, type))
-
-
-def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
-    """Output the dilation of im.
-
-    Uses the line SE with slope dy/dx, length k, origin o, and line type
-    (see details at  :cite:`soille-breen-jones96`).
-
-    :param jim_object: image on which to perform the dilation
-    :param dx: integer for displacement along x-axis to set slope
-    :param dy: integer for displacement along y-axis to set slope
-    :param k: integer for number of pixels of line SE
-        (must be odd; if not, it is extended by one pixel)
-    :param o: integer for origin of SE
-    :param type: integer for line type (0 for plain and 1 for periodic).
-        0 is the default value
-    """
-    return _pj.Jim(jim_object._jipjim.morphoDilateLine(dx, dy, k, o, type))
-
-
-def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
-    """Output the erosion of im using the SE defined by imse.
-
-    Its origin is set at coordinates (x,y,z). The reflection of the SE
-    is considered if trflag equals 1 (no reflection by default). Points of
-    the SE are points with a non zero value in imse.
-
-    :param jim_object: image on which to perform the erosion
-    :param sec_jim_object: an image node for SE (UCHAR type)
-    :param ox: x coordinate
-    :param oy: y coordinate
-    :param oz: z coordinate
-    :param trFlag: optional parameter (0 or 1)
-    """
-    return _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
-                                                  ox, oy, oz, trFlag))
-
-
-def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
-    """Output the dilation of im using the SE defined by imse.
-
-    Its origin is set at coordinates (x,y,z). The reflection of the SE
-    is considered if trflag equals 1 (no reflection by default). Points of
-    the SE are points with a non zero value in imse.
-
-    :param jim_object: image on which to perform the dilation
-    :param sec_jim_object: an image node for SE (UCHAR type)
-    :param ox: x coordinate
-    :param oy: y coordinate
-    :param oz: z coordinate
-    :param trFlag: optional parameter (0 or 1)
-    """
-    return _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
-                                                   ox, oy, oz, trFlag))
-
-
-def morphoGradientByDilationDiamond(jim_object):
-    """Output the gradient by dilation of Jim.
-
-    Uses the elementary diamond shaped SE.
-    """
-    return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(1, 1)) - jim_object
-
-
-def morphoGradientByErosionDiamond(jim_object):
-    """Output the gradient by erosion of Jim.
-
-    Uses the elementary diamond shaped SE.
-    """
-    return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
-
-
-def edgeWeight(jim_object, dir=0, type=0):
-    """Compute the weights of the horizontal or vertical edges.
-
-    Linking any pair of horizontally or vertically adjacent pixels.
-
-    :param dir:  integer for coding edge direction
-        (horizontal if 0, vertical otherwise).
-    :param type: integer determining how the edge weights are computed:
-        0 for absolute difference (default),
-        1 for maximum value,
-        2 for minimum value.
-    """
-    return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
 
 def getDissim(jimo, dissimType=0):
@@ -259,6 +151,114 @@ def getDissim(jimo, dissimType=0):
             v_dissim.pixops.supremum(v_dissim_crt)
 
     return [h_dissim, v_dissim]
+
+
+def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
+    """Output the dilation of im using the SE defined by imse.
+
+    Its origin is set at coordinates (x,y,z). The reflection of the SE
+    is considered if trflag equals 1 (no reflection by default). Points of
+    the SE are points with a non zero value in imse.
+
+    :param jim_object: image on which to perform the dilation
+    :param sec_jim_object: an image node for SE (UCHAR type)
+    :param ox: x coordinate
+    :param oy: y coordinate
+    :param oz: z coordinate
+    :param trFlag: optional parameter (0 or 1)
+    """
+    return _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
+                                                   ox, oy, oz, trFlag))
+
+
+def morphoDilateDiamond(jim_object):
+    """Output the dilation of im using the elementary diamond shaped SE.
+
+    :param jim_object: a Jim object
+    """
+    ox = 1
+    oy = 1
+    return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(ox, oy))
+
+
+def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
+    """Output the dilation of im.
+
+    Uses the line SE with slope dy/dx, length k, origin o, and line type
+    (see details at  :cite:`soille-breen-jones96`).
+
+    :param jim_object: image on which to perform the dilation
+    :param dx: integer for displacement along x-axis to set slope
+    :param dy: integer for displacement along y-axis to set slope
+    :param k: integer for number of pixels of line SE
+        (must be odd; if not, it is extended by one pixel)
+    :param o: integer for origin of SE
+    :param type: integer for line type (0 for plain and 1 for periodic).
+        0 is the default value
+    """
+    return _pj.Jim(jim_object._jipjim.morphoDilateLine(dx, dy, k, o, type))
+
+
+def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
+    """Output the erosion of im using the SE defined by imse.
+
+    Its origin is set at coordinates (x,y,z). The reflection of the SE
+    is considered if trflag equals 1 (no reflection by default). Points of
+    the SE are points with a non zero value in imse.
+
+    :param jim_object: image on which to perform the erosion
+    :param sec_jim_object: an image node for SE (UCHAR type)
+    :param ox: x coordinate
+    :param oy: y coordinate
+    :param oz: z coordinate
+    :param trFlag: optional parameter (0 or 1)
+    """
+    return _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
+                                                  ox, oy, oz, trFlag))
+
+
+def morphoErodeDiamond(jim_object):
+    """Output the erosion of im using the elementary diamond shaped SE.
+
+    :param jim_object: a Jim object
+    """
+    ox = 1
+    oy = 1
+    return _pj.Jim(jim_object._jipjim.morphoErodeNgb4(ox, oy))
+
+
+def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
+    """Output the erosion of im using a line segment.
+
+    Uses the line SE with slope dy/dx, length k, origin o, and line type. See
+    details at  :cite:`soille-breen-jones96`.
+
+    :param jim_object: image on which to perform the erosion
+    :param dx: integer for displacement along x-axis to set slope
+    :param dy: integer for displacement along y-axis to set slope
+    :param k: integer for number of pixels of line SE
+        (must be odd; if not, it is extended by one pixel)
+    :param o: integer for origin of SE
+    :param type: integer for line type (0 for plain and 1 for periodic).
+        0 is the default value
+    """
+    return _pj.Jim(jim_object._jipjim.morphoErodeLine(dx, dy, k, o, type))
+
+
+def morphoGradientByDilationDiamond(jim_object):
+    """Output the gradient by dilation of Jim.
+
+    Uses the elementary diamond shaped SE.
+    """
+    return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(1, 1)) - jim_object
+
+
+def morphoGradientByErosionDiamond(jim_object):
+    """Output the gradient by erosion of Jim.
+
+    Uses the elementary diamond shaped SE.
+    """
+    return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
 
 class _NgbOps():
@@ -781,16 +781,23 @@ class _NgbOps():
 
         return [h_dissim, v_dissim]
 
-    def morphoErodeDiamond(self):
-        """Output the erosion of im using the elementary diamond shaped SE.
+    def morphoDilate(self, sec_jim_object, ox, oy, oz, trFlag=0):
+        """Output the dilation of im using the SE defined by imse.
 
-        Its origin is set at coordinates (x,y).
+        Its origin is set at coordinates (x,y,z). The reflection of the SE
+        is considered if trflag equals 1 (no reflection by default). Points of
+        the SE are points with a non zero value in imse.
 
         Modifies the instance on which the method was called.
+
+        :param sec_jim_object: an image node for SE (UCHAR type)
+        :param ox: x coordinate
+        :param oy: y coordinate
+        :param oz: z coordinate
+        :param trFlag: optional parameter (0 or 1)
         """
-        ox = 1
-        oy = 1
-        self._jim_object._jipjim.d_morphoErodeNgb4(ox, oy)
+        self._jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
+                                              ox, oy, oz, trFlag)
 
     def morphoDilateDiamond(self):
         """Output the dilation of im using the elementary diamond shaped SE.
@@ -820,24 +827,6 @@ class _NgbOps():
         """
         self._jim_object._jipjim.d_morphoDilateLine(dx, dy, k, o, type)
 
-    def morphoErodeLine(self, dx, dy, k, o, type=0):
-        """Output the erosion of im using a line segment.
-
-        Uses the line SE with slope dy/dx, length k, origin o, and line type.
-        See details at  :cite:`soille-breen-jones96`.
-
-        Modifies the instance on which the method was called.
-
-        :param dx: integer for displacement along x-axis to set slope
-        :param dy: integer for displacement along y-axis to set slope
-        :param k: integer for number of pixels of line SE
-            (must be odd; if not, it is extended by one pixel)
-        :param o: integer for origin of SE
-        :param type: integer for line type (0 for plain and 1 for periodic).
-            0 is the default value
-        """
-        self._jim_object._jipjim.d_morphoErodeLine(dx, dy, k, o, type)
-
     def morphoErode(self, sec_jim_object, ox, oy, oz, trFlag=0):
         """Output the erosion of im using the SE defined by imse.
 
@@ -856,23 +845,34 @@ class _NgbOps():
         self._jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
                                              ox, oy, oz, trFlag)
 
-    def morphoDilate(self, sec_jim_object, ox, oy, oz, trFlag=0):
-        """Output the dilation of im using the SE defined by imse.
+    def morphoErodeDiamond(self):
+        """Output the erosion of im using the elementary diamond shaped SE.
 
-        Its origin is set at coordinates (x,y,z). The reflection of the SE
-        is considered if trflag equals 1 (no reflection by default). Points of
-        the SE are points with a non zero value in imse.
+        Its origin is set at coordinates (x,y).
+
+        Modifies the instance on which the method was called.
+        """
+        ox = 1
+        oy = 1
+        self._jim_object._jipjim.d_morphoErodeNgb4(ox, oy)
+
+    def morphoErodeLine(self, dx, dy, k, o, type=0):
+        """Output the erosion of im using a line segment.
+
+        Uses the line SE with slope dy/dx, length k, origin o, and line type.
+        See details at  :cite:`soille-breen-jones96`.
 
         Modifies the instance on which the method was called.
 
-        :param sec_jim_object: an image node for SE (UCHAR type)
-        :param ox: x coordinate
-        :param oy: y coordinate
-        :param oz: z coordinate
-        :param trFlag: optional parameter (0 or 1)
+        :param dx: integer for displacement along x-axis to set slope
+        :param dy: integer for displacement along y-axis to set slope
+        :param k: integer for number of pixels of line SE
+            (must be odd; if not, it is extended by one pixel)
+        :param o: integer for origin of SE
+        :param type: integer for line type (0 for plain and 1 for periodic).
+            0 is the default value
         """
-        self._jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
-                                              ox, oy, oz, trFlag)
+        self._jim_object._jipjim.d_morphoErodeLine(dx, dy, k, o, type)
 
     def morphoGradientByDilationDiamond(self):
         """Output the gradient by dilation of Jim.

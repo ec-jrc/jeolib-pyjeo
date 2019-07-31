@@ -4,40 +4,6 @@ import pyjeo as _pj
 import numpy
 
 
-def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
-    """Compute basic statistics on a JimList object.
-
-    Similar to the :py:meth:`~._Stats.getStats` method from Jim when
-    jim_object is an instance of Jim, similar to
-    the :py:meth:`~._StatsList.getStats` method from JimList when
-    jim_object is an instance of JimList. For functions requiring two
-    datasets (e.g., regression), use the objects in the list instead of bands.
-
-    :param jim_object: either a Jim object or a JimList object
-    :param function: (list of) statistical function(s) to calculate
-        (default is ['min', 'max', 'mean'])
-    :return: a dictionary with requested statistics
-    """
-    return jim_object.stats.getStats(function, **kwargs)
-
-
-def getStatProfile(jim_object, function, **kwargs):
-    kwargs.update({'function': function})
-    return _pj.Jim(jim_object._jipjim.statProfile(kwargs))
-
-
-# cannot overload?
-# def getStatProfile(jimlist, function, **kwargs):
-#     kwargs.update({'function': function})
-#     return _pj.Jim(jimlist._jim_list._jipjimlist.statProfile(kwargs))
-
-
-# cannot overload?
-# def getStats(jimlist, function=['min','max','mean'], **kwargs):
-#     kwargs.update({'function': function})
-#     return jimlist._jim_list._jipjimlist.getStats(kwargs)
-
-
 def getHisto1d(jim_object):
     """Compute the frequency distribution of the grey levels of im.
 
@@ -67,6 +33,40 @@ def getHisto3d(jim_object, jim_object2, jim_object3):
     """
     return _pj.Jim(jim_object._jipjim.histo3d(jim_object2._jipjim,
                                               jim_object3._jipjim))
+
+
+def getStatProfile(jim_object, function, **kwargs):
+    kwargs.update({'function': function})
+    return _pj.Jim(jim_object._jipjim.statProfile(kwargs))
+
+
+# cannot overload?
+# def getStatProfile(jimlist, function, **kwargs):
+#     kwargs.update({'function': function})
+#     return _pj.Jim(jimlist._jim_list._jipjimlist.statProfile(kwargs))
+
+
+def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
+    """Compute basic statistics on a JimList object.
+
+    Similar to the :py:meth:`~._Stats.getStats` method from Jim when
+    jim_object is an instance of Jim, similar to
+    the :py:meth:`~._StatsList.getStats` method from JimList when
+    jim_object is an instance of JimList. For functions requiring two
+    datasets (e.g., regression), use the objects in the list instead of bands.
+
+    :param jim_object: either a Jim object or a JimList object
+    :param function: (list of) statistical function(s) to calculate
+        (default is ['min', 'max', 'mean'])
+    :return: a dictionary with requested statistics
+    """
+    return jim_object.stats.getStats(function, **kwargs)
+
+
+# cannot overload?
+# def getStats(jimlist, function=['min','max','mean'], **kwargs):
+#     kwargs.update({'function': function})
+#     return jimlist._jim_list._jipjimlist.getStats(kwargs)
 
 
 def stretch(jim_object, **kwargs):

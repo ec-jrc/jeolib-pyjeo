@@ -9,6 +9,23 @@ except ImportError:
 import numpy
 
 
+# def blank(jim_object, val):
+#     """Set all pixels to val.
+
+#     :param val:  All pixels within [min,max] are set to val
+
+#     Modifies the instance on which the method was called.
+
+#     """
+#     return _pj.Jim(jim_object._jipjim.pointOpBlank(val))
+
+
+def composite(jim_list, crule='overwrite', **kwargs):
+    """Composite Jims in a JimList using a composite rule."""
+    kwargs.update({'crule': crule})
+    return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
+
+
 def convert(jim_object, otype, **kwargs):
     """Convert Jim image with respect to data type.
 
@@ -149,6 +166,35 @@ def convert(jim_object, otype, **kwargs):
 #     return _pj.Jim(jim_object._jipjim.convert(kwargs))
 
 
+def histoCompress(jim_object, band=None):
+    """Redistribute the intensity of histogram to fit full range of values.
+
+    Redistributes the intensity values of im in such a way that the
+    minimum value is zero and that all subsequent intensity values are
+    used until the maximum value (i.e. no gaps).
+
+    :return: a  Jim object
+    """
+    if band is not None:
+        return _pj.Jim(jim_object._jipjim.histoCompress(band))
+    else:
+        return _pj.Jim(jim_object._jipjim.histoCompress())
+
+
+def infimum(jim, *args):
+    """Create Jim composed using minimum rule from provided Jim objects.
+
+    :param jim: Jim object (to be sure that at least one is provided)
+    :param args: Jim objects
+    :return: Jim composed of biggest values from provided Jim objects
+    """
+    infimum = _pj.Jim(jim)
+    for newJim in args:
+        infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
+
+    return _pj.Jim(infimum)
+
+
 def isEqual(first_jim, second_jim):
     """Check if the values of one Jim object are the same as in another one.
 
@@ -182,19 +228,15 @@ def isEqual(first_jim, second_jim):
         return False
 
 
-def histoCompress(jim_object, band=None):
-    """Redistribute the intensity of histogram to fit full range of values.
+# def modulo(jim_object, val):
+#     """Set all pixels to their value modulo val.
 
-    Redistributes the intensity values of im in such a way that the
-    minimum value is zero and that all subsequent intensity values are
-    used until the maximum value (i.e. no gaps).
+#     :param val:  modulo value (integer)
 
-    :return: a  Jim object
-    """
-    if band is not None:
-        return _pj.Jim(jim_object._jipjim.histoCompress(band))
-    else:
-        return _pj.Jim(jim_object._jipjim.histoCompress())
+#     Modifies the instance on which the method was called.
+
+#     """
+#     return _pj.Jim(jim_object._jipjim.pointOpModulo(val))
 
 
 def NDVI(jim_object, redBand, nirBand):
@@ -220,61 +262,6 @@ def NDVISeparateBands(redJim, nirJim):
     :return: a Jim object with values of NDVI
     """
     return _pj.Jim(nirJim._jipjim.pointOpNDI(redJim._jipjim))
-
-
-# def modulo(jim_object, val):
-#     """Set all pixels to their value modulo val.
-
-#     :param val:  modulo value (integer)
-
-#     Modifies the instance on which the method was called.
-
-#     """
-#     return _pj.Jim(jim_object._jipjim.pointOpModulo(val))
-
-
-# def blank(jim_object, val):
-#     """Set all pixels to val.
-
-#     :param val:  All pixels within [min,max] are set to val
-
-#     Modifies the instance on which the method was called.
-
-#     """
-#     return _pj.Jim(jim_object._jipjim.pointOpBlank(val))
-
-
-def setLevel(jim_object, min, max, val):
-    """Set all pixels within min and max values to val.
-
-    :param min:  Minimum threshold value
-    :param max:  Maximum threshold value
-    :param val:  All pixels within [min,max] are set to val
-    """
-    return _pj.Jim(jim_object._jipjim.pointOpSetLevel(min, max, val))
-
-
-def simpleThreshold(jim_object, min, max, bg_val, fg_val):
-    """Set all pixels within min and max values to val.
-
-    :param min:  Minimum threshold value
-    :param max:  Maximum threshold value
-    :param bg_val:  All pixels outside [min,max] are set to bg_val
-    :param fg_val:  All pixels within [min,max] are set to fg_val
-    """
-    return _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
-
-
-def setThreshold(jim_object, **kwargs):
-    """Apply min and max threshold to pixel values in raster dataset.
-
-    :jim_object: the Jim object on which to set threshold
-    :param kwargs: See table :py:meth:`~pixops._PixOps.setThreshold`.
-
-    for help, please refer to the corresponding
-    method :py:meth:`~pixops._PixOps.setThreshold`.
-    """
-    return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
 
 def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=None,
@@ -305,6 +292,28 @@ def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=None,
 
     jout.pixops.setData(value, ulx, uly, lrx, lry, bands, dx, dy, nogeo)
     return jout
+
+
+def setLevel(jim_object, min, max, val):
+    """Set all pixels within min and max values to val.
+
+    :param min:  Minimum threshold value
+    :param max:  Maximum threshold value
+    :param val:  All pixels within [min,max] are set to val
+    """
+    return _pj.Jim(jim_object._jipjim.pointOpSetLevel(min, max, val))
+
+
+def setThreshold(jim_object, **kwargs):
+    """Apply min and max threshold to pixel values in raster dataset.
+
+    :jim_object: the Jim object on which to set threshold
+    :param kwargs: See table :py:meth:`~pixops._PixOps.setThreshold`.
+
+    for help, please refer to the corresponding
+    method :py:meth:`~pixops._PixOps.setThreshold`.
+    """
+    return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
 
 def simpleArithOp(jim1, jim2, op, *args):
@@ -345,6 +354,17 @@ def simpleBitwiseOp(jim, another_jim, op, *args):
     return _pj.Jim(jout)
 
 
+def simpleThreshold(jim_object, min, max, bg_val, fg_val):
+    """Set all pixels within min and max values to val.
+
+    :param min:  Minimum threshold value
+    :param max:  Maximum threshold value
+    :param bg_val:  All pixels outside [min,max] are set to bg_val
+    :param fg_val:  All pixels within [min,max] are set to fg_val
+    """
+    return _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
+
+
 def supremum(jim, *args):
     """Create Jim composed using maximum rule from provided Jim objects.
 
@@ -359,26 +379,6 @@ def supremum(jim, *args):
     return _pj.Jim(supremum)
 
 
-def infimum(jim, *args):
-    """Create Jim composed using minimum rule from provided Jim objects.
-
-    :param jim: Jim object (to be sure that at least one is provided)
-    :param args: Jim objects
-    :return: Jim composed of biggest values from provided Jim objects
-    """
-    infimum = _pj.Jim(jim)
-    for newJim in args:
-        infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
-
-    return _pj.Jim(infimum)
-
-
-def composite(jim_list, crule='overwrite', **kwargs):
-    """Composite Jims in a JimList using a composite rule."""
-    kwargs.update({'crule': crule})
-    return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
-
-
 class _PixOps():
     """Define all PixOps methods."""
 
@@ -388,6 +388,16 @@ class _PixOps():
 
     def _set_caller(self, caller):
         self._jim_object = caller
+
+    # def blank(self, val):
+    #     """Set all pixels to val
+
+    #     :param val:  All pixels are set to val
+
+    #      Modifies the instance on which the method was called.
+
+    #     """
+    #     self._jim_object._jipjim.d_pointOpBlank(val)
 
     def convert(self, otype, **kwargs):
         """Convert Jim image with respect to data type.
@@ -546,6 +556,16 @@ class _PixOps():
         else:
             self._jim_object._jipjim.d_histoCompress()
 
+    def infimum(self, *args):
+        """Change values of Jim using mimimum composition rule.
+
+        Modifies the instance on which the method was called.
+
+        :param args: Jim objects
+        """
+        for jim in args:
+            self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 4)
+
     def isEqual(self, other):
         """Check if the values of one Jim object are the same as in another.
 
@@ -579,6 +599,16 @@ class _PixOps():
         else:
             return False
 
+    # def modulo(self, val):
+    #     """Set all pixels to their value modulo val
+
+    #     :param val:  modulo value (integer)
+
+    #      Modifies the instance on which the method was called.
+
+    #     """
+    #     self._jim_object._jipjim.d_pointOpModulo(val)
+
     def NDVI(self, redBand, nirBand):
         """Compute NDVI on the Jim object.
 
@@ -603,26 +633,6 @@ class _PixOps():
         """
         self._jim_object._set(
             nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
-
-    # def modulo(self, val):
-    #     """Set all pixels to their value modulo val
-
-    #     :param val:  modulo value (integer)
-
-    #      Modifies the instance on which the method was called.
-
-    #     """
-    #     self._jim_object._jipjim.d_pointOpModulo(val)
-
-    # def blank(self, val):
-    #     """Set all pixels to val
-
-    #     :param val:  All pixels are set to val
-
-    #      Modifies the instance on which the method was called.
-
-    #     """
-    #     self._jim_object._jipjim.d_pointOpBlank(val)
 
     def setData(self, value, ulx=None, uly=None, lrx=None, lry=None,
                 bands=None, dx=0, dy=0, nogeo=False):
@@ -675,18 +685,6 @@ class _PixOps():
         Modifies the instance on which the method was called.
         """
         self._jim_object._jipjim.d_pointOpSetLevel(min, max, val)
-
-    def simpleThreshold(self, min, max, bg_val, fg_val):
-        """Set all pixels within min and max values to val.
-
-        Modifies the instance on which the method was called.
-
-        :param min:  Minimum threshold value
-        :param max:  Maximum threshold value
-        :param bg_val:  All pixels outside [min,max] are set to bg_val
-        :param fg_val:  All pixels within [min,max] are set to fg_val
-        """
-        self._jim_object._jipjim.d_pointOpThresh(min, max, bg_val, fg_val)
 
     def setThreshold(self, **kwargs):
         """Apply min and max threshold to pixel values in raster dataset.
@@ -763,6 +761,18 @@ class _PixOps():
         for jim in jims:
             self._jim_object._jipjim.d_pointOpBitwise(jim._jipjim, op)
 
+    def simpleThreshold(self, min, max, bg_val, fg_val):
+        """Set all pixels within min and max values to val.
+
+        Modifies the instance on which the method was called.
+
+        :param min:  Minimum threshold value
+        :param max:  Maximum threshold value
+        :param bg_val:  All pixels outside [min,max] are set to bg_val
+        :param fg_val:  All pixels within [min,max] are set to fg_val
+        """
+        self._jim_object._jipjim.d_pointOpThresh(min, max, bg_val, fg_val)
+
     def supremum(self, *args):
         """Change values of Jim using maximum composition rule.
 
@@ -772,16 +782,6 @@ class _PixOps():
         """
         for jim in args:
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
-
-    def infimum(self, *args):
-        """Change values of Jim using mimimum composition rule.
-
-        Modifies the instance on which the method was called.
-
-        :param args: Jim objects
-        """
-        for jim in args:
-            self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 4)
 
 
 class _PixOpsList():

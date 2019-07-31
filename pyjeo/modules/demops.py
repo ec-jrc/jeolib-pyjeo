@@ -5,88 +5,6 @@ import numpy
 from scipy import signal
 
 
-# this numpy implementation works and is faster but does not ignore nodata
-# values in the image during the convolution process
-# def slopenp(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
-#     if jim_object.properties.getNoDataVals() and not nodata:
-#         nodata=jim_object.properties.getNoDataVals()[0]
-#     tapsdx=numpy.array([[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]])
-#     tapsdy=numpy.array([[-1.0,-2.0,-1.0],[0.0,0.0,0.0],[1.0,2.0,1.0]])
-#     tapsdx*=zscale
-#     tapsdy*=zscale
-#     jimdx=_pj.Jim(jim_object)
-#     jimdy=_pj.Jim(jim_object)
-#     if jim_object.properties.getDataType() != 'Float32' and \
-#        jim_object.properties.getDataType() != 'Float64':
-#         jimdx.pixops.convert(otype="Float32")
-#         jimdy.pixops.convert(otype="Float32")
-#     if jim_object.properties.getNoDataVals():
-#         for ndval in jim_object.properties.getNoDataVals():
-#             jimdx[jimdx==ndval]=nodata
-#         jimdx.np()[jimdx.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
-#     else:
-#         jimdx.np()[:]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
-#     jimdx/=8.0*jimdx.properties.getDeltaX()*scale
-#     jimdx*=jimdx
-#     if jim_object.properties.getNoDataVals():
-#         for ndval in jim_object.properties.getNoDataVals():
-#             jimdy[jimdy==ndval]=nodata
-#         jimdy.np()[jimdy.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
-#     else:
-#         jimdy.np()[:]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
-#     jimdy/=8.0*jimdy.properties.getDeltaX()*scale
-#     jimdy*=jimdy
-#     rad2deg=180.0/numpy.pi
-#     jimdx+=jimdy
-#     jimdx.np()[:]=numpy.sqrt(jimdx.np())
-#     if percent:
-#         jimdx*=100
-#     else:
-#         jimdx.np()[:]=numpy.arctan(jimdx.np())
-#         jimdx*=rad2deg
-#         # jimdx=90-jimdx
-#     return jimdx
-
-def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
-    """Compute the slope of a Jim object.
-
-    :param jim_object: Jim
-    :param scale: horizontal scale
-    :param zscale: vertical scale
-    :param percent: if True, return value in percents, degrees otherwise
-    :return: a Jim object representing the slope
-    """
-    tapsdx = numpy.array(
-        [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]])
-    tapsdy = numpy.array(
-        [[-1.0, -2.0, -1.0], [0.0, 0.0, 0.0], [1.0, 2.0, 1.0]])
-    tapsdx *= zscale
-    tapsdy *= zscale
-    jimdx = _pj.Jim(jim_object)
-    jimdy = _pj.Jim(jim_object)
-    if jim_object.properties.getDataType() != 'Float32' and \
-       jim_object.properties.getDataType() != 'Float64':
-        jimdx.pixops.convert(otype="Float32")
-        jimdy.pixops.convert(otype="Float32")
-    jimdx.ngbops.filter2d(tapsdx, nodata=jim_object.properties.getNoDataVals(),
-                          abs=True, norm=True)
-    jimdx /= jimdx.properties.getDeltaX() * scale
-    jimdx *= jimdx
-    jimdy.ngbops.filter2d(tapsdy, nodata=jim_object.properties.getNoDataVals(),
-                          abs=True, norm=True)
-    jimdy /= jimdy.properties.getDeltaX()*scale
-    jimdy *= jimdy
-    rad2deg = 180.0 / numpy.pi
-    jimdx += jimdy
-    jimdx.np()[:] = numpy.sqrt(jimdx.np())
-    if percent:
-        jimdx *= 100
-    else:
-        jimdx.np()[:] = numpy.arctan(jimdx.np())
-        jimdx *= rad2deg
-    return jimdx
-
-
 def catchmentBasinConfluence(jim_object, d8):
     """Compute the catchment basin confluence.
 
@@ -290,6 +208,46 @@ def pitRemovalOptimal(labeled_jim, grey_jim, graph, maxfl, flag):
                                                             flag))
 
 
+def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
+    """Compute the slope of a Jim object.
+
+    :param jim_object: Jim
+    :param scale: horizontal scale
+    :param zscale: vertical scale
+    :param percent: if True, return value in percents, degrees otherwise
+    :return: a Jim object representing the slope
+    """
+    tapsdx = numpy.array(
+        [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]])
+    tapsdy = numpy.array(
+        [[-1.0, -2.0, -1.0], [0.0, 0.0, 0.0], [1.0, 2.0, 1.0]])
+    tapsdx *= zscale
+    tapsdy *= zscale
+    jimdx = _pj.Jim(jim_object)
+    jimdy = _pj.Jim(jim_object)
+    if jim_object.properties.getDataType() != 'Float32' and \
+       jim_object.properties.getDataType() != 'Float64':
+        jimdx.pixops.convert(otype="Float32")
+        jimdy.pixops.convert(otype="Float32")
+    jimdx.ngbops.filter2d(tapsdx, nodata=jim_object.properties.getNoDataVals(),
+                          abs=True, norm=True)
+    jimdx /= jimdx.properties.getDeltaX() * scale
+    jimdx *= jimdx
+    jimdy.ngbops.filter2d(tapsdy, nodata=jim_object.properties.getNoDataVals(),
+                          abs=True, norm=True)
+    jimdy /= jimdy.properties.getDeltaX()*scale
+    jimdy *= jimdy
+    rad2deg = 180.0 / numpy.pi
+    jimdx += jimdy
+    jimdx.np()[:] = numpy.sqrt(jimdx.np())
+    if percent:
+        jimdx *= 100
+    else:
+        jimdx.np()[:] = numpy.arctan(jimdx.np())
+        jimdx *= rad2deg
+    return jimdx
+
+
 def slopeD8(jim_object):
     """Compute the steepest slope within a 3x3 neighbourhood for each pixel.
 
@@ -308,6 +266,49 @@ def slopeDInf(jim_object):
     :return: a Jim object
     """
     return _pj.Jim(jim_object._jipjim.demSlopeDInf())
+
+
+# this numpy implementation works and is faster but does not ignore nodata
+# values in the image during the convolution process
+# def slopenp(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
+#     if jim_object.properties.getNoDataVals() and not nodata:
+#         nodata=jim_object.properties.getNoDataVals()[0]
+#     tapsdx=numpy.array([[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]])
+#     tapsdy=numpy.array([[-1.0,-2.0,-1.0],[0.0,0.0,0.0],[1.0,2.0,1.0]])
+#     tapsdx*=zscale
+#     tapsdy*=zscale
+#     jimdx=_pj.Jim(jim_object)
+#     jimdy=_pj.Jim(jim_object)
+#     if jim_object.properties.getDataType() != 'Float32' and \
+#        jim_object.properties.getDataType() != 'Float64':
+#         jimdx.pixops.convert(otype="Float32")
+#         jimdy.pixops.convert(otype="Float32")
+#     if jim_object.properties.getNoDataVals():
+#         for ndval in jim_object.properties.getNoDataVals():
+#             jimdx[jimdx==ndval]=nodata
+#         jimdx.np()[jimdx.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
+#     else:
+#         jimdx.np()[:]=signal.convolve2d(jim_object.np(),tapsdx,boundary='symm',mode='same')
+#     jimdx/=8.0*jimdx.properties.getDeltaX()*scale
+#     jimdx*=jimdx
+#     if jim_object.properties.getNoDataVals():
+#         for ndval in jim_object.properties.getNoDataVals():
+#             jimdy[jimdy==ndval]=nodata
+#         jimdy.np()[jimdy.np()!=nodata]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
+#     else:
+#         jimdy.np()[:]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
+#     jimdy/=8.0*jimdy.properties.getDeltaX()*scale
+#     jimdy*=jimdy
+#     rad2deg=180.0/numpy.pi
+#     jimdx+=jimdy
+#     jimdx.np()[:]=numpy.sqrt(jimdx.np())
+#     if percent:
+#         jimdx*=100
+#     else:
+#         jimdx.np()[:]=numpy.arctan(jimdx.np())
+#         jimdx*=rad2deg
+#         # jimdx=90-jimdx
+#     return jimdx
 
 
 def strahler(jim_object):
