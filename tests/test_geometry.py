@@ -155,6 +155,33 @@ class BadGeometry(unittest.TestCase):
             jl0.io.close()
         sample.io.close()
 
+    def test_crop(self):
+        """Test crop...() functions and methods."""
+        raster = pj.geometry.stackPlane(pj.Jim(rasterfn), pj.Jim(rasterfn))
+        vector = pj.JimVect(vectorfn)
+        raster_bbox = raster.properties.getBBox()
+        raster_dx = raster.properties.getDeltaX()
+        raster_dy = raster.properties.getDeltaY()
+        vector_bbox = vector.properties.getBBox()
+
+        # Test cropOgr()
+        cropped = pj.geometry.cropOgr(raster, vector)
+        raster.geometry.cropOgr(vector)
+        raster_bbox_cropped = raster.properties.getBBox()
+
+        mod_x = (raster_bbox_cropped[2] - raster_bbox_cropped[0]) % raster_dx
+        mod_y = (raster_bbox_cropped[3] - raster_bbox_cropped[1]) % raster_dy
+
+        assert raster.pixops.isEqual(cropped), \
+            'Inconsistency in geometry.cropOgr() ' \
+            '(method returns different result than function)'
+        assert raster_bbox != raster_bbox_cropped, \
+            'Error in geometry.cropOgr() ' \
+            '(BBox not changed after crop)'
+        assert raster_bbox_cropped[:2] == vector_bbox[:2] and mod_x == 0 and \
+               mod_y == 0, \
+            'Error in geometry.cropOgr() ' \
+            '(new BBox values not equal to the vector one)'
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
