@@ -205,7 +205,7 @@ def cropOgr(jim_object, extent, **kwargs):
     jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.cropOgr(
         extent._jipjimvect, kwargs))
     for iplane in range(1, jim_object.properties.nrOfPlane()):
-        jimplane = pj.Jim(_pj.geometry.cropPlane(
+        jimplane = _pj.Jim(_pj.geometry.cropPlane(
             jim_object, iplane)._jipjim.cropOgr(extent._jipjimvect, kwargs))
         jim.geometry.stackPlane(jimplane)
     return jim
