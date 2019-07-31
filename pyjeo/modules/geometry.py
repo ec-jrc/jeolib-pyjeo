@@ -16,9 +16,9 @@ def append(jvec1, jvec2, output, **kwargs):
         Use /vsimem for in memory vectors
     :param oformat: output vector dataset format
     """
-    kwargs.update({'filename': output})
+    kwargs.update({'output': output})
     if isinstance(jvec2, _pj.JimVect):
-        avect = _pj.JimVect(jvec1, kwargs)
+        avect = _pj.JimVect(jvec1, **kwargs)
         avect._jipjimvect.append(jvec2._jipjimvect)
         pjvect = _pj.JimVect()
         pjvect._set(avect)
