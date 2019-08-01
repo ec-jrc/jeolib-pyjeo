@@ -7,6 +7,8 @@ import random
 import string
 import os
 
+tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
+
 rasterfn = 'tests/data/modis_ndvi_2010.tif'
 vectorfn = 'tests/data/modis_ndvi_training.sqlite'
 outputfn = os.path.join('/tmp',
@@ -182,6 +184,56 @@ class BadGeometry(unittest.TestCase):
                mod_y == 0, \
             'Error in geometry.cropOgr() ' \
             '(new BBox values not equal to the vector one)'
+
+    def test_coords_transformations(self):
+        """Test geo2image() and image2geo() functions and methods."""
+        jim = pj.Jim(tiles[0])
+        geo_ulx, geo_uly, geo_lrx, geo_lry = jim.properties.getBBox()
+        delta_x = jim.properties.getDeltaX()
+        delta_y = jim.properties.getDeltaY()
+        ulx_pix_center = geo_ulx + delta_x / 2
+        uly_pix_center = geo_uly - delta_y / 2
+
+        im_x, im_y = pj.geometry.geo2image(jim, geo_ulx, geo_uly)
+        im_x_m, im_y_m = jim.geometry.geo2image(geo_ulx, geo_uly)
+
+        assert im_x == im_x_m and im_y == im_y_m, \
+            'Inconsistency in geometry.geo2image() ' \
+            '(method returns different result than function)'
+        assert im_x == 0 and im_y == 0, \
+            'Error in geometry.geo2image()' \
+            '(geo2image(BBox[0], BBox[1]) did not return zeros)'
+
+        im_x, im_y = pj.geometry.geo2image(jim, 0, 0)
+        im_x_m, im_y_m = jim.geometry.geo2image(0, 0)
+
+        assert im_x == im_x_m and im_y == im_y_m, \
+            'Inconsistency in geometry.geo2image() ' \
+            '(method returns different result than function)'
+        assert im_x == -geo_ulx / delta_x and im_y == geo_uly / delta_y, \
+            'Error in geometry.geo2image()' \
+            '(geo2image(0, 0) did not return original values divided by dX/dY)'
+
+        geo_ulx_2, geo_uly_2 = pj.geometry.image2geo(jim, 0, 0)
+        geo_ulx_2_m, geo_uly_2_m = jim.geometry.image2geo(0, 0)
+
+        assert geo_ulx_2 == geo_ulx_2_m and geo_uly_2 == geo_uly_2_m, \
+            'Inconsistency in geometry.geo2image() ' \
+            '(method returns different result than function)'
+        assert geo_ulx_2 == ulx_pix_center and geo_uly_2 == uly_pix_center, \
+            'Error in geometry.image2geo()' \
+            '(geo2image(0, 0) did not return original values divided by dX/dY)'
+
+        geo_ulx_2, geo_uly_2 = pj.geometry.image2geo(jim, im_x, im_y)
+        geo_ulx_2_m, geo_uly_2_m = jim.geometry.image2geo(im_x, im_y)
+
+        assert geo_ulx_2 == geo_ulx_2_m and geo_uly_2 == geo_uly_2_m, \
+            'Inconsistency in geometry.geo2image() ' \
+            '(method returns different result than function)'
+        assert geo_ulx_2 == 5 and geo_uly_2 == -5, \
+            'Error in geometry.image2geo()' \
+            '(geo2image(0, 0) did not return original values divided by dX/dY)'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
