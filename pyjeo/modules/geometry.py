@@ -272,7 +272,7 @@ def image2geo(jim_object, i, j):
     return jim_object._jipjim.image2geo(i, j)
 
 
-def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
+def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
     """Add an image frame and set its values to value val.
 
     :param jim_object: a Jim object
@@ -290,7 +290,7 @@ def imageFrameAdd(jim_object, l, r, t, b, u, d, val, band=0):
                                                     band))
 
 
-def imageFrameSet(jim_object, l, r, t, b, u, d, val, band=0):
+def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
     """Set the values of the image frame to value val.
 
     :param jim_object: a Jim object
@@ -308,7 +308,7 @@ def imageFrameSet(jim_object, l, r, t, b, u, d, val, band=0):
                                                     band))
 
 
-def imageFrameSubtract(jim_object, l, r, t, b, u, d, band=0):
+def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, band=0):
     """Subtract an image frame.
 
     :param jim_object: a Jim object
@@ -1788,7 +1788,7 @@ class _Geometry():
         """
         return self._jim_object._jipjim.image2geo(i, j)
 
-    def imageFrameAdd(self, l, r, t, b, u, d, val, band=0):
+    def imageFrameAdd(self, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
         """Set the values of the image frame to value val.
 
         Modifies the instance on which the method was called.
@@ -1804,7 +1804,7 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val, band)
 
-    def imageFrameSet(self, l, r, t, b, u, d, val, band=0):
+    def imageFrameSet(self, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
         """Set the values of the image frame to value val.
 
         Modifies the instance on which the method was called.
@@ -1820,7 +1820,7 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_imageFrameSet([l, r, t, b, u, d], val, band)
 
-    def imageFrameSubtract(self, l, r, t, b, u, d, band=0):
+    def imageFrameSubtract(self, l=0, r=0, t=0, b=0, u=0, d=0, band=0):
         """Subtract an image frame.
 
         Modifies the instance on which the method was called.
