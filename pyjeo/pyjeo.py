@@ -277,8 +277,9 @@ class Jim():
         if uniform:
             if isinstance(uniform, list):
                 if len(uniform) != 2:
-                    raise SyntaxError('The list parsed as the uniform argument'
-                                      ' must be in the form [min, max + 1]')
+                    raise AttributeError(
+                        'The list parsed as the uniform argument must be '
+                        'in the form [min, max + 1]')
                 self.np()[:] = numpy.random.uniform(uniform[0], uniform[1],
                                                     self.np().shape)
             else:
