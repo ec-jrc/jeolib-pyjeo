@@ -275,23 +275,22 @@ class Jim():
             numpy.random.seed(seed)
 
         if uniform:
-            if len(uniform) == 2:
-                min = uniform[0]
-                max = uniform[1]
-                scale = max - min
-                offset = min
-                self.np()[:] = scale * \
-                               numpy.random.rand(*(self.np().shape)) + \
-                               offset
+            if isinstance(uniform, list):
+                if len(uniform) != 2:
+                    raise SyntaxError('The list parsed as the uniform argument'
+                                      ' must be in the form [min, max + 1]')
+                self.np()[:] = numpy.random.uniform(uniform[0], uniform[1],
+                                                    self.np().shape)
+            else:
+                self.np()[:] = numpy.random.uniform(0, uniform,
+                                                    self.np().shape)
         else:
             if stdev is None:
                 stdev = 1
             if not mean:
                 mean = 0
-            scale = stdev
-            offset = mean
-            self.np()[:] = scale * numpy.random.rand(*(self.np().shape)) + \
-                           offset
+
+            self.np()[:] = numpy.random.normal(mean, stdev, self.np().shape)
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
