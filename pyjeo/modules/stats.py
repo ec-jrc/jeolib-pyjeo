@@ -217,17 +217,32 @@ class _Stats():
                 forceJiplib = True
                 break
         if not forceJiplib:
-            if 'min' in function or 'max' in function:
-                min_max = self._jim_object._jipjim.getMiaMinMax()
+            bands=[]
+            if 'band' in kwargs:
+                try:
+                    bands.extend(kwargs['band'])
+                except TypeError:
+                    bands.append(kwargs['band'])
+            else:
+                bands=range(0,self._jim_object.properties.nrOfBand())
 
-                if 'min' in function:
-                    statDict['min'] = min_max[1]
-                if 'max' in function:
-                    statDict['max'] = min_max[2]
-            if 'mean' in function:
-                statDict['mean'] = numpy.mean(self._jim_object.np()).item()
-            if 'median' in function:
-                statDict['median'] = numpy.median(self._jim_object.np()).item()
+            for f in function:
+                statDict.update({f:[]})
+            for band in bands:
+                if 'min' in function or 'max' in function:
+                    min_max = self._jim_object._jipjim.getMiaMinMax(band)
+                    if 'min' in function:
+                        statDict['min'].append(min_max[1])
+                    if 'max' in function:
+                        statDict['max'].append(min_max[2])
+                if 'mean' in function:
+                    statDict['mean'].append(numpy.mean(self._jim_object.np()).item())
+                if 'median' in function:
+                    statDict['median'].append(numpy.median(self._jim_object.np()).item())
+
+            for f in statDict:
+                if len(statDict[f]) == 1:
+                    statDict[f]=statDict[f][0]
 
             function_list = list()
             for f in function:
@@ -236,6 +251,8 @@ class _Stats():
 
             if len(function_list) > 0:
                 kwargs.update({'function': function_list})
+            if 'function' not in kwargs:
+                return statDict
         else:
             kwargs.update({'function': function})
 

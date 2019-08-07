@@ -149,31 +149,31 @@ class BadPixOps(unittest.TestCase):
         """Test setData, setLevel and setThreshold functions and methods."""
         jim = pj.Jim(testFile)
 
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
         min = stats['min']
         max = stats['max']
 
         thresholded = pj.pixops.setThreshold(jim, min=min+1, max=max-1,
                                              nodata=(max+min)/2)
 
-        thresholded_stats = thresholded.stats.getStats()
+        thresholded_stats = thresholded.stats.getStats(band=0)
         nodata = thresholded.properties.getNoDataVals()
 
         assert thresholded_stats != stats, \
-            'Error in pixops.setThreshold() or stats.getStats()'
+            'Error in pixops.setThreshold() or stats.getStats(band=0)'
         assert thresholded_stats['min'] >= min + 1, \
-            'Error in pixops.setThreshold() or stats.getStats()'
+            'Error in pixops.setThreshold() or stats.getStats(band=0)'
         assert thresholded_stats['max'] <= max - 1, \
-            'Error in pixops.setThreshold() or stats.getStats()'
+            'Error in pixops.setThreshold() or stats.getStats(band=0)'
         assert thresholded.properties.getNoDataVals() == [((max+min)/2)], \
             'Error in pixops.setThreshold() or properties.getNoDataVals()'
 
         jim.pixops.setThreshold(min=min+1, max=max-1, nodata=(max+min)/2)
 
-        stats_jim_thresholded = jim.stats.getStats()
+        stats_jim_thresholded = jim.stats.getStats(band=0)
 
         assert stats_jim_thresholded == thresholded_stats, \
-            'Error in pixops.setThreshold() or stats.getStats()'
+            'Error in pixops.setThreshold() or stats.getStats(band=0)'
         assert jim.properties.getNoDataVals() == nodata, \
             'Error in pixops.setThreshold() or properties.getNoDataVals()'
 
@@ -182,7 +182,7 @@ class BadPixOps(unittest.TestCase):
         levelled = pj.pixops.setLevel(jim, min=min+1, max=max-1, val=max+1)
         jim.pixops.setLevel(min=min+1, max=max-1, val=max+1)
 
-        levelled_stats = levelled.stats.getStats()
+        levelled_stats = levelled.stats.getStats(band=0)
 
         # TODO: Uncomment when bug #14 in jiplib will be solved
         # assert jim.pixops.isEqual(levelled), \
@@ -209,21 +209,21 @@ class BadPixOps(unittest.TestCase):
             'Inconsistency in pixops.setData() ' \
             '(method returns different result than function)'
 
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         assert all(v == 5 for v in [stats['min'],
                                     stats['max'],
                                     stats['mean']]),\
-            'Error in pixops.setData() or stats.getStats()'
+            'Error in pixops.setData() or stats.getStats(band=0)'
 
         jim.pixops.setData(10, dx=jim.properties.getDeltaX()+0.1, bands=[0, 1])
 
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         assert all(v == 10 for v in [stats['min'],
                                      stats['max'],
                                      stats['mean']]), \
-            'Error in pixops.setData() or stats.getStats()'
+            'Error in pixops.setData() or stats.getStats(band=0)'
 
     def test_convert(self):
         """Test data type conversions."""
@@ -376,7 +376,7 @@ class BadPixOps(unittest.TestCase):
 
         assert destructive_object.pixops.isEqual(compressed), \
             'Error in pixops.histoCompress()'
-        assert destructive_object.stats.getStats()['min'] == 0, \
+        assert destructive_object.stats.getStats(band=0)['min'] == 0, \
             'Error in pixops.histoCompress() (minimum value not 0)'
 
         compressed = pj.pixops.histoCompress(jim, 0)
@@ -384,7 +384,7 @@ class BadPixOps(unittest.TestCase):
 
         assert jim.pixops.isEqual(compressed), \
             'Error in pixops.histoCompress()'
-        assert jim.stats.getStats()['min'] == 0, \
+        assert jim.stats.getStats(band=0)['min'] == 0, \
             'Error in pixops.histoCompress() (minimum value not 0)'
 
     def test_simple_op(self):

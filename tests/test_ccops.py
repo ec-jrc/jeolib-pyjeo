@@ -24,7 +24,7 @@ class BadCCOps(unittest.TestCase):
         assert jim.pixops.isEqual(distances), \
             'Error in ccops.distance2dEuclideanSquared()'
 
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         assert stats['min'] == 0, 'Error in ccops.distance2dEuclideanSquared()'
         assert stats['max'] <= \
@@ -86,7 +86,7 @@ class BadCCOps(unittest.TestCase):
 
         distances = pj.ccops.distance2dEuclideanConstrained(jim2, jim1)
         jim_byte.ccops.distance2dEuclideanConstrained(jim1)
-        stats = jim_byte.stats.getStats()
+        stats = jim_byte.stats.getStats(band=0)
         max = stats['max']
 
         assert jim_byte.pixops.isEqual(distances), \
@@ -120,7 +120,7 @@ class BadCCOps(unittest.TestCase):
 
         distances = pj.ccops.distanceGeodesic(jim_byte1, jim2, 4)
         jim_byte1.ccops.distanceGeodesic(jim2, 4)
-        stats = jim_byte1.stats.getStats()
+        stats = jim_byte1.stats.getStats(band=0)
         mean = stats['mean']
 
         assert jim_byte1.pixops.isEqual(distances), \
@@ -140,7 +140,7 @@ class BadCCOps(unittest.TestCase):
 
         distances = pj.ccops.distanceGeodesic(jim_byte2, jim2, 8)
         jim_byte2.ccops.distanceGeodesic(jim2, 8)
-        stats = jim_byte2.stats.getStats()
+        stats = jim_byte2.stats.getStats(band=0)
 
         assert jim_byte2.pixops.isEqual(distances), \
             'Inconsistency in ccops.distanceGeodesic() ' \
@@ -175,7 +175,7 @@ class BadCCOps(unittest.TestCase):
         jim1_copy = pj.Jim(jim1)
         jim1_copy.ccops.labelConstrainedCCsVariance(0, 0, 0, 0, 0, 0, 4)
 
-        stats = labelled.stats.getStats()
+        stats = labelled.stats.getStats(band=0)
 
         assert jim1_copy.pixops.isEqual(labelled), \
             'Inconsistency in ccops.labelConstrainedCCsVariance() ' \
@@ -196,7 +196,7 @@ class BadCCOps(unittest.TestCase):
 
         labelled_different = pj.ccops.labelConstrainedCCsVariance(
             jim1, 0, 0, 0, 1, 1, 5, 4)
-        stats2 = labelled_different.stats.getStats()
+        stats2 = labelled_different.stats.getStats(band=0)
 
         assert stats2['max'] < stats['max'], \
             'Error in Jim.ccops.labelConstrainedCCsVariance() ' \

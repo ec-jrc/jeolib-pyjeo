@@ -17,7 +17,7 @@ class BadDEMOps(unittest.TestCase):
         jim = pj.Jim(tiles[0])
 
         slope = pj.demops.slope(jim)
-        stats = slope.stats.getStats()
+        stats = slope.stats.getStats(band=0)
 
         assert stats['max'] <= 90, \
             'Error: max>90 in demops.slope()'
@@ -31,7 +31,7 @@ class BadDEMOps(unittest.TestCase):
 
         destructive_object = pj.Jim(jim)
         flow = pj.demops.flowDirectionD8(destructive_object)
-        stats = flow.stats.getStats()
+        stats = flow.stats.getStats(band=0)
 
         assert stats['max'] <= 8, \
             'Error in demops.flowDirectionD8()'
@@ -44,7 +44,7 @@ class BadDEMOps(unittest.TestCase):
             'Error in demops.flowDirectionD8()'
 
         flow_2 = pj.demops.flow(destructive_object, 8)
-        stats = flow_2.stats.getStats()
+        stats = flow_2.stats.getStats(band=0)
 
         assert stats['min'] >= 1, \
             'Error in demops.flowDirectionD8()'
@@ -61,14 +61,14 @@ class BadDEMOps(unittest.TestCase):
 
         assert destructive_object.pixops.isEqual(flowNew), \
             'Error in demops.flowNew()'
-        assert flowNew.stats.getStats()['min'] > 0, 'Error in demops.flowNew()'
+        assert flowNew.stats.getStats(band=0)['min'] > 0, 'Error in demops.flowNew()'
         assert destructive_object.properties.getDataType() == \
                flowNew.properties.getDataType(), \
             'Error in demops.flowNew() (changed data type of object)'
 
         flow = pj.demops.flowDirectionDInf(jim)
         jim.demops.flowDirectionDInf()
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(flow), \
             'Error in demops.demFlowDirectionDInf()'
@@ -83,7 +83,7 @@ class BadDEMOps(unittest.TestCase):
 
         # flow = pj.demops.flowDirectionFlat(destructive_object, jim2, 8)
         # destructive_object.demops.flowDirectionFlat(jim2, 8)
-        # stats = destructive_object.stats.getStats()
+        # stats = destructive_object.stats.getStats(band=0)
 
         # assert destructive_object.pixops.isEqual(flow), \
         #     'Error in demops.flowDirectionFlat()'
@@ -110,14 +110,14 @@ class BadDEMOps(unittest.TestCase):
 
         assert destructive_object.pixops.isEqual(cda), \
             'Error in demops.contribDrainArea()'
-        assert destructive_object.stats.getStats()['min'] >= 1, \
+        assert destructive_object.stats.getStats(band=0)['min'] >= 1, \
             'Error in demops.contribDrainArea()'
         thresh = pj.Jim(jim)
         thresh.pixops.setData(5)
 
         strat = pj.demops.contribDrainAreaStrat(cda, thresh, d8)
         destructive_object.demops.contribDrainAreaStrat(thresh, d8)
-        stats = destructive_object.stats.getStats()
+        stats = destructive_object.stats.getStats(band=0)
         assert destructive_object.pixops.isEqual(strat), \
             'Error in demops.contribDrainAreaStrat()'
         assert stats['min'] == 0, 'Error in demops.contribDrainAreaStrat()'
@@ -131,7 +131,7 @@ class BadDEMOps(unittest.TestCase):
 
         assert inf.pixops.isEqual(cda_inf), \
             'Error in demops.contribDrainAreaInf()'
-        assert abs(inf.stats.getStats()['min']) == 1, \
+        assert abs(inf.stats.getStats(band=0)['min']) == 1, \
             'Error in demops.contribDrainAreaInf()'
 
     def test_slopes(self):
@@ -140,7 +140,7 @@ class BadDEMOps(unittest.TestCase):
         destructive_object = pj.Jim(jim)
 
         slope = pj.demops.slopeD8(destructive_object)
-        stats = slope.stats.getStats()
+        stats = slope.stats.getStats(band=0)
 
         assert stats['min'] >= 0, \
             'Error in demops.slopeD8()'
@@ -152,7 +152,7 @@ class BadDEMOps(unittest.TestCase):
         inf = pj.demops.slopeDInf(jim)
         jim.demops.slopeDInf()
         assert jim.pixops.isEqual(inf), 'Error in demops.slopeDInf()'
-        assert inf.stats.getStats()['min'] >= 0, 'Error in demops.slopeDInf()'
+        assert inf.stats.getStats(band=0)['min'] >= 0, 'Error in demops.slopeDInf()'
 
     def test_flood_dir(self):
         """Test floodDir() func and method."""
@@ -160,7 +160,7 @@ class BadDEMOps(unittest.TestCase):
 
         flood_dir = pj.demops.floodDir(jim, 8)
         jim.demops.floodDir(8)
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(flood_dir), 'Error in demops.floodDir()'
         assert stats['min'] >= 0, 'Error in demops.floodDir()'
@@ -192,7 +192,7 @@ class BadDEMOps(unittest.TestCase):
 
         strahler = pj.demops.strahler(jim)
         jim.demops.strahler()
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(strahler), 'Error in demops.strahler()'
         assert stats['min'] >= 0, 'Error in demops.strahler()'

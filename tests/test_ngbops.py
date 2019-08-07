@@ -18,18 +18,14 @@ class BadNgbOps(unittest.TestCase):
         jim = pj.Jim(testFile)
         jim.geometry.cropBand(band=[0, 1, 2])
 
-        stats_max_jim = max([stats['max'] for stats in [
-            jim.stats.getStats('max', band=i) for i in [0, 1, 2]]])
-        stats_min_jim = min([stats['min'] for stats in [
-            jim.stats.getStats('min', band=i) for i in [0, 1, 2]]])
+        stats_max_jim=max(jim.stats.getStats('max', band=[0,1,2])['max'])
+        stats_min_jim=min(jim.stats.getStats('min', band=[0,1,2])['min'])
 
         min_jim = pj.ngbops.filter2d(jim, 'min', dx=3)
         jim.ngbops.filter2d('min', dx=3)
 
-        stats_max_min_jim = max([stats['max'] for stats in [
-            jim.stats.getStats('max', band=i) for i in [0, 1, 2]]])
-        stats_min_min_jim = min([stats['min'] for stats in [
-            jim.stats.getStats('min', band=i) for i in [0, 1, 2]]])
+        stats_max_min_jim = max(jim.stats.getStats('max', band=[0,1,2])['max'])
+        stats_min_min_jim = min(jim.stats.getStats('min', band=[0,1,2])['min'])
 
         assert min_jim.pixops.isEqual(jim), \
             'Inconsistency in ngbops.filter2d() ' \
@@ -40,13 +36,11 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.filter2d() (wrong values)'
 
         max_jim = pj.ngbops.filter1d(jim, 'max', dz=3, pad='zeros',
-                                     otype='Int16')
-        jim.ngbops.filter1d('max', dz=3, pad='zeros', otype='Int16')
+                                     otype='Int32')
+        jim.ngbops.filter1d('max', dz=3, pad='zeros', otype='Int32')
 
-        stats_max_max_jim = max([stats['max'] for stats in [
-            jim.stats.getStats('max', band=i) for i in [0, 1, 2]]])
-        stats_min_max_jim = min([stats['min'] for stats in [
-            jim.stats.getStats('min', band=i) for i in [0, 1, 2]]])
+        stats_max_max_jim = max(jim.stats.getStats('max', band=[0,1,2])['max'])
+        stats_min_max_jim = min(jim.stats.getStats('min', band=[0,1,2])['min'])
 
         assert max_jim.pixops.isEqual(jim), \
             'Inconsistency in ngbops.filter1d() ' \
@@ -67,13 +61,13 @@ class BadNgbOps(unittest.TestCase):
         arr = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]])
         jim[0:3, 0:3] = arr
 
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         # Test morphoDilateDiamond()
         dilated = pj.ngbops.morphoDilateDiamond(jim)
         jim.ngbops.morphoDilateDiamond()
 
-        stats_dilated = jim.stats.getStats()
+        stats_dilated = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(dilated), \
             'Inconsistency in ngbops.morphoDilateDiamond() ' \
@@ -102,7 +96,7 @@ class BadNgbOps(unittest.TestCase):
         eroded = pj.ngbops.morphoErodeDiamond(jim)
         jim.ngbops.morphoErodeDiamond()
 
-        stats_eroded = jim.stats.getStats()
+        stats_eroded = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(eroded), \
             'Inconsistency in ngbops.morphoErodeDiamond() ' \
@@ -131,7 +125,7 @@ class BadNgbOps(unittest.TestCase):
         dilated = pj.ngbops.morphoDilateLine(jim, 1, 0, 3, 0)
         jim.ngbops.morphoDilateLine(1, 0, 3, 0)
 
-        stats_dilated = jim.stats.getStats()
+        stats_dilated = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(dilated), \
             'Inconsistency in ngbops.morphoDilateLine() ' \
@@ -160,7 +154,7 @@ class BadNgbOps(unittest.TestCase):
         dilated = pj.ngbops.morphoErodeLine(jim, 1, 0, 3, 0)
         jim.ngbops.morphoErodeLine(1, 0, 3, 0)
 
-        stats_dilated = jim.stats.getStats()
+        stats_dilated = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(dilated), \
             'Inconsistency in ngbops.morphoErodeLine() ' \

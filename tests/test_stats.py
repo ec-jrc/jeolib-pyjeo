@@ -15,8 +15,8 @@ class BadStats(unittest.TestCase):
     def test_getStats(self):
         """Test if values from getStats are not suspicious."""
         jim = pj.Jim(tiles[0])
-        stats = jim.stats.getStats()
-        stats2 = pj.stats.getStats(jim)
+        stats = jim.stats.getStats(band=0)
+        stats2 = pj.stats.getStats(jim,band=0)
 
         assert stats == stats2, 'Inconsistency in getStats() (method returns' \
                                 ' different result than function)'
@@ -25,7 +25,7 @@ class BadStats(unittest.TestCase):
         min = stats['min']
         mean = stats['mean']
 
-        jim_min_dict = jim.stats.getStats(function='min')
+        jim_min_dict = jim.stats.getStats(function='min',band=0)
 
         for key, val in jim_min_dict.iteritems():
             assert val == min, \
@@ -36,8 +36,8 @@ class BadStats(unittest.TestCase):
 
         jim.properties.clearNoData()
 
-        stats = jim.stats.getStats('median,invalid')
-        stats2 = pj.stats.getStats(jim, 'median,invalid')
+        stats = jim.stats.getStats('median,invalid',band=0)
+        stats2 = pj.stats.getStats(jim, 'median,invalid',band=0)
 
         assert stats == stats2, 'Inconsistency in getStats() (method returns' \
                                 ' different result than function)'
@@ -46,9 +46,9 @@ class BadStats(unittest.TestCase):
             'Error in properties.clearNoData() or ' \
             'getStats(function="invalid") (nodata detected after clearing)'
 
-        stats = jim.stats.getStats(['max', 'median', 'invalid'], nodata=max)
+        stats = jim.stats.getStats(['max', 'median', 'invalid'], nodata=max, band=0)
         stats2 = pj.stats.getStats(jim, ['max', 'median', 'invalid'],
-                                   nodata=max)
+                                   nodata=max, band=0)
 
         assert stats == stats2, 'Inconsistency in getStats() (method returns' \
                                 ' different result than function)'
@@ -73,10 +73,10 @@ class BadStats(unittest.TestCase):
         # Test getHisto1d()
         histo1d = jim1.stats.getHisto1d()
 
-        assert histo1d.stats.getStats()['min'] >= 0, \
+        assert histo1d.stats.getStats(band=0)['min'] >= 0, \
             'Error in computing 1D histogram'
 
-        assert histo1d.stats.getStats()['max'] <= jim1_rows * jim1_cols, \
+        assert histo1d.stats.getStats(band=0)['max'] <= jim1_rows * jim1_cols, \
             'Error in computing 1D histogram'
 
         assert histo1d.pixops.isEqual(pj.stats.getHisto1d(jim1)), \
@@ -87,10 +87,10 @@ class BadStats(unittest.TestCase):
         # Test getHisto2d()
         histo2d = jim1.stats.getHisto2d(jim2)
 
-        assert histo2d.stats.getStats()['min'] >= 0, \
+        assert histo2d.stats.getStats(band=0)['min'] >= 0, \
             'Error in computing 2D histogram'
 
-        assert histo2d.stats.getStats()['max'] <= jim1_rows * jim1_cols, \
+        assert histo2d.stats.getStats(band=0)['max'] <= jim1_rows * jim1_cols, \
             'Error in computing 2D histogram'
 
         assert histo2d.pixops.isEqual(pj.stats.getHisto2d(jim1, jim2)), \
@@ -119,12 +119,12 @@ class BadStats(unittest.TestCase):
         """Test stretching a Jim object."""
         jim = pj.Jim(testFile)
 
-        jim_min = jim.stats.getStats()['min']
+        jim_min = jim.stats.getStats(band=0)['min']
 
         jim_stretched = pj.stats.stretch(jim, dst_min=20)
 
         if jim_min != 20:
-            assert jim_stretched.stats.getStats()['min'] != jim_min, \
+            assert jim_stretched.stats.getStats(band=0)['min'] != jim_min, \
                 'Error in stretching Jim'
             assert not jim.pixops.isEqual(jim_stretched), \
                 'Error in stretching Jim'
@@ -137,7 +137,7 @@ class BadStats(unittest.TestCase):
         """Test if values from getStatProfile are not wrong."""
         jim = pj.Jim(tiles[0])
 
-        stats = jim.stats.getStats()
+        stats = jim.stats.getStats(band=0)
 
         min = stats['min']
         max = stats['max']
@@ -146,10 +146,10 @@ class BadStats(unittest.TestCase):
         min_profile = pj.stats.getStatProfile(jim, 'min')
         jim.stats.statProfile('max')
 
-        assert min_profile.stats.getStats()['min'] == min, \
+        assert min_profile.stats.getStats(band=0)['min'] == min, \
             'Error in stats.getStatProfile()'
 
-        assert jim.stats.getStats()['max'] == max, \
+        assert jim.stats.getStats(band=0)['max'] == max, \
             'Error in stats.getStatProfile()'
 
 
@@ -162,8 +162,8 @@ class BadStatsLists(unittest.TestCase):
         jim2 = pj.Jim(tiles[1])
         jiml = pj.JimList([jim1, jim2])
 
-        stats = jiml.stats.getStats()
-        stats2 = pj.stats.getStats(jiml)
+        stats = jiml.stats.getStats(band=0)
+        stats2 = pj.stats.getStats(jiml,band=0)
 
         assert stats == stats2, \
             'Inconsistency in JimList.stats.getStats() ' \
@@ -173,7 +173,7 @@ class BadStatsLists(unittest.TestCase):
         min = stats['min']
         mean = stats['mean']
 
-        jim_minmax_dict = jiml.stats.getStats(function=['min', 'max'])
+        jim_minmax_dict = jiml.stats.getStats(function=['min', 'max'],band=0)
 
         assert jim_minmax_dict['min'] == min, \
             'Error in getting statistics with JimList.stats.getStats()' \
@@ -190,8 +190,8 @@ class BadStatsLists(unittest.TestCase):
 
         jiml.properties.clearNoData()
 
-        stats = jiml.stats.getStats('median,invalid')
-        stats2 = pj.stats.getStats(jiml, 'median,invalid')
+        stats = jiml.stats.getStats('median,invalid',band=0)
+        stats2 = pj.stats.getStats(jiml, 'median,invalid',band=0)
 
         assert stats == stats2, \
             'Inconsistency in JimList.stats.getStats() ' \
@@ -202,9 +202,9 @@ class BadStatsLists(unittest.TestCase):
             'JimList.stats.getStats(function="invalid") ' \
             '(nodata detected after clearing)'
 
-        stats = jiml.stats.getStats(['max', 'median', 'invalid'], nodata=max)
+        stats = jiml.stats.getStats(['max', 'median', 'invalid'], nodata=max,band=0)
         stats2 = pj.stats.getStats(jiml, ['max', 'median', 'invalid'],
-                                   nodata=max)
+                                   nodata=max,band=0)
 
         assert stats == stats2, \
             'Inconsistency in JimList.stats.getStats() ' \
@@ -227,8 +227,8 @@ class BadStatsLists(unittest.TestCase):
         jim2 = pj.Jim(tiles[1])
         jiml = pj.JimList([jim1, jim2])
 
-        stats1 = jiml.stats.getStats(['min', 'max'])
-        stats2 = jim2.stats.getStats()
+        stats1 = jiml.stats.getStats(['min', 'max'],band=0)
+        stats2 = jim2.stats.getStats(band=0)
 
         min = stats1['min']
         if stats2['min'] < min:
@@ -242,10 +242,10 @@ class BadStatsLists(unittest.TestCase):
         min_profile = jiml.stats.getStatProfile('min')
         max_profile = jiml.stats.getStatProfile('max')
 
-        assert min_profile.stats.getStats()['min'] == min, \
+        assert min_profile.stats.getStats(band=0)['min'] == min, \
             'Error in stats.getStatProfile()'
 
-        assert max_profile.stats.getStats()['max'] == max, \
+        assert max_profile.stats.getStats(band=0)['max'] == max, \
             'Error in stats.getStatProfile()'
 
 

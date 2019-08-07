@@ -280,9 +280,10 @@ class Jim():
                 max = uniform[1]
                 scale = max - min
                 offset = min
-                self.np()[:] = scale * \
-                               numpy.random.rand(*(self.np().shape)) + \
-                               offset
+                for band in range(0,self.properties.nrOfBand()):
+                    self.np(band)[:] = scale * \
+                                       numpy.random.rand(*(self.np(band).shape)) + \
+                                       offset
         else:
             if stdev is None:
                 stdev = 1
@@ -290,8 +291,9 @@ class Jim():
                 mean = 0
             scale = stdev
             offset = mean
-            self.np()[:] = scale * numpy.random.rand(*(self.np().shape)) + \
-                           offset
+            for band in range(0,self.properties.nrOfBand()):
+                self.np(band)[:] = scale * numpy.random.rand(*(self.np(band).shape)) + \
+                                   offset
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.

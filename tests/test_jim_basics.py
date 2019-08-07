@@ -46,7 +46,7 @@ class BadBasicMethods(unittest.TestCase):
 
         jim7 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
                       seed=0)
-        stats7 = jim7.stats.getStats(['min', 'max'])
+        stats7 = jim7.stats.getStats(['min', 'max'],band=0)
 
         assert stats7['max'] < 2 and stats7['min'] > 0, \
             'Error in creating Jim with uniform distribution'
@@ -120,30 +120,30 @@ class BadBasicMethods(unittest.TestCase):
         jim1 = pj.Jim(tiles[0])
         vect = pj.JimVect(vector)
 
-        stats1 = jim1.stats.getStats()
+        stats1 = jim1.stats.getStats(band=0)
 
         jim1[0, 0] = stats1['mean']
         first = jim1[0, 0]
         # test
-        stats = first.stats.getStats()
+        stats = first.stats.getStats(band=0)
         assert stats['max'] == stats['min'] == int(stats1['mean']), \
             'Error in jim[int, int] (either get or set item)'
 
         jim1[-1, -1] = stats1['max'] + 1
-        stats = jim1.stats.getStats()
+        stats = jim1.stats.getStats(band=0)
         # test
         assert stats['max'] == stats1['max'] + 1, \
             'Error in jim[int, int] (either get or set item)'
 
         last = jim1[-1, -1]
         # test
-        stats = last.stats.getStats()
+        stats = last.stats.getStats(band=0)
         assert stats['max'] == stats['min'] == stats1['max'] + 1, \
             'Error in jim[-int, -int] (either get or set item)'
 
         last = jim1[-5::2, -5::2]
         # test
-        stats = last.stats.getStats()
+        stats = last.stats.getStats(band=0)
         assert stats['max'] == stats1['max'] + 1, \
             'Error in jim[-int:-int:stride, -int:-int:stride] or jim[slice] ' \
             '(either get or set item)'
@@ -168,7 +168,7 @@ class BadBasicMethods(unittest.TestCase):
         jim1.properties.setProjection('epsg:5514')
         jim1.geometry.cropBand(0)
         jim1.pixops.setData(5)
-        stats1 = jim1.stats.getStats()
+        stats1 = jim1.stats.getStats(band=0)
 
         jim_same = jim1[:]
 
@@ -178,7 +178,7 @@ class BadBasicMethods(unittest.TestCase):
         # first = jim1[0, 0, 0, 0]
         first = jim1[0, 0, 0]
         # test
-        stats = first.stats.getStats()
+        stats = first.stats.getStats(band=0)
         assert stats['max'] == stats['min'] == stats1['mean'] == 5, \
             'Error in jim[int, int, int, int] (either get or set item)'
         assert first.properties.nrOfBand() == 1, \
@@ -195,7 +195,7 @@ class BadBasicMethods(unittest.TestCase):
         # last = jim1[-1, -1, -2, -2]
         last = jim1[-2, -1, -1]
         # test
-        stats = last.stats.getStats()
+        stats = last.stats.getStats(band=0)
         assert stats['max'] == stats['min'] == stats['mean'] == 5, \
             'Error in jim[-int, -int, -int, -int] (either get or set item)'
         assert last.properties.nrOfBand() == 1, \
@@ -211,7 +211,7 @@ class BadBasicMethods(unittest.TestCase):
 
         # last = jim1[-1, -1, -2:-1:1, -2]
         # last = jim1[-2,-1, -1, -2:-1:1, -2]
-        # stats = last.stats.getStats()
+        # stats = last.stats.getStats(band=0)
         # assert stats['max'] == stats['min'] == stats['mean'] == 5, \
         #     'Error in jim[-int, -int] (either get or set item)'
         # assert last.properties.nrOfBand() == 1, \
@@ -222,7 +222,7 @@ class BadBasicMethods(unittest.TestCase):
         #     'wrong nrOfPlane)'
 
         jim1[0, 0] += 1
-        stats = jim1.stats.getStats()
+        stats = jim1.stats.getStats(band=0)
 
         assert stats['max'] == stats['min'] + 1, \
             'Error in jim[int, int] when jim[int, int] returns a 1-D array' \
@@ -237,7 +237,7 @@ class BadBasicMethods(unittest.TestCase):
             'Error in catching wrong indices in jim[index, index]'
 
         # last = jim1[-1, -1, -2:-1:1, -2:-1:1]
-        # stats = last.stats.getStats()
+        # stats = last.stats.getStats(band=0)
         # assert stats['max'] == stats['min'] == stats['mean'] == 5, \
         #     'Error in jim[-int, -int] (either get or set item)'
         # assert last.properties.nrOfBand() == 2, \
@@ -294,7 +294,7 @@ class BadBasicMethods(unittest.TestCase):
 
         modis[vect] = 5
         fives = modis[vect]
-        fives_stats = fives.stats.getStats()
+        fives_stats = fives.stats.getStats(band=0)
 
         assert fives_stats['max'] == 5 and fives_stats['min'] in [0, 5], \
             'Error in using JimVect as an argument in Jim[JimVect] = number'
@@ -310,11 +310,11 @@ class BadBasicMethods(unittest.TestCase):
         rand_jim = pj.Jim(nrow=50, ncol=50, uniform=[0, 2], otype='int8')
         rand_jim[0, 0] = 0
         rand_jim[0, 1] = 1
-        stats = rand_jim.stats.getStats()
+        stats = rand_jim.stats.getStats(band=0)
         twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2], otype='int8')
 
         twos_masked = twos[rand_jim]
-        stats_masked = twos_masked.stats.getStats()
+        stats_masked = twos_masked.stats.getStats(band=0)
 
         assert stats_masked['max'] == stats['max'] * 2 and \
                stats_masked['mean'] == stats['mean'] * 2 and \
@@ -350,11 +350,11 @@ class BadBasicMethods(unittest.TestCase):
                               otype='float32')
             fifteens.pixops.setData(15)
 
-            stats1 = jim_one.stats.getStats()
-            stats2 = jim_two.stats.getStats()
+            stats1 = jim_one.stats.getStats(band=0)
+            stats2 = jim_two.stats.getStats(band=0)
 
             jim3 = jim_one + jim_two
-            stats3 = jim3.stats.getStats()
+            stats3 = jim3.stats.getStats(band=0)
             max = stats3['max']
             min = stats3['min']
 
@@ -371,7 +371,7 @@ class BadBasicMethods(unittest.TestCase):
             # Test +=
 
             jim3 += 1
-            stats3 = jim3.stats.getStats()
+            stats3 = jim3.stats.getStats(band=0)
 
             assert stats3['max'] == max + 1, \
                 'Error in operation type Jim += int'
@@ -383,7 +383,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim += int (not performed for all bands)'
 
             jim3 += jim3
-            stats3 = jim3.stats.getStats()
+            stats3 = jim3.stats.getStats(band=0)
 
             assert stats3['max'] == (max + 1) * 2, \
                 'Error in operation type Jim += Jim'
@@ -401,7 +401,7 @@ class BadBasicMethods(unittest.TestCase):
             # Test * and *=
 
             fifteen_jim3 = pj.pixops.convert(jim3, 'float32') * fifteens
-            stats3 = fifteen_jim3.stats.getStats()
+            stats3 = fifteen_jim3.stats.getStats(band=0)
 
             assert stats3['max'] == (max + 1) * 30, \
                 'Error in operation type Jim * Jim'
@@ -417,7 +417,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim += Jim (not performed for all bands)'
 
             fifteen_jim3 *= empty
-            stats3 = fifteen_jim3.stats.getStats()
+            stats3 = fifteen_jim3.stats.getStats(band=0)
 
             assert stats3['min'] == stats3['max'] == stats3['mean'] == 0, \
                 'Error in operation type Jim += Jim'
@@ -483,7 +483,7 @@ class BadBasicMethods(unittest.TestCase):
             minus_ones.pixops.convert('float32')
 
             halves = minus_ones / 2
-            stats = halves.stats.getStats()
+            stats = halves.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == -0.5, \
                 'Error in Jim / number'
@@ -495,7 +495,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim / number (not performed for all bands)'
 
             halves /= minus_ones
-            stats = halves.stats.getStats()
+            stats = halves.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 0.5, \
                 'Error in Jim /= Jim'
@@ -507,7 +507,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim /= Jim (not performed for all bands)'
 
             halves /= -1
-            stats = halves.stats.getStats()
+            stats = halves.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == -0.5, \
                 'Error in Jim /= number'
@@ -519,7 +519,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim /= Jim (not performed for all bands)'
 
             halves = halves / minus_ones
-            stats = halves.stats.getStats()
+            stats = halves.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 0.5, \
                 'Error in Jim / Jim'
@@ -533,7 +533,7 @@ class BadBasicMethods(unittest.TestCase):
             # Test modulo
 
             sevens = fifteens % 8
-            stats = sevens.stats.getStats()
+            stats = sevens.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 7, \
                 'Error in Jim % number'
@@ -546,7 +546,7 @@ class BadBasicMethods(unittest.TestCase):
 
             test = pj.Jim(sevens)
             test %= 4
-            stats = test.stats.getStats()
+            stats = test.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 3, \
                 'Error in Jim %= number'
@@ -558,7 +558,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim %= number (not performed for all bands)'
 
             ones = fifteens % sevens
-            stats = ones.stats.getStats()
+            stats = ones.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim % Jim'
@@ -571,7 +571,7 @@ class BadBasicMethods(unittest.TestCase):
 
             test2 = sevens
             test2 %= test
-            stats = test2.stats.getStats()
+            stats = test2.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim %= Jim'
@@ -585,7 +585,7 @@ class BadBasicMethods(unittest.TestCase):
             # Test powering
 
             nines = test ** 2
-            stats = nines.stats.getStats()
+            stats = nines.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 9, \
                 'Error in Jim ** number'
@@ -604,7 +604,7 @@ class BadBasicMethods(unittest.TestCase):
             test.pixops.convert('int32')
 
             seventy_twos = test << 3
-            stats = seventy_twos.stats.getStats()
+            stats = seventy_twos.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 72, \
                 'Error in Jim << number'
@@ -825,7 +825,7 @@ class BadBasicMethods(unittest.TestCase):
             nr_of_bands = jim_one.properties.nrOfBand()
 
             jim_equality = jim_one == jim_two
-            stats = jim_equality.stats.getStats()
+            stats = jim_equality.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim == Jim'
@@ -837,7 +837,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim == Jim (not performed for all bands)'
 
             jim_not_equality = jim_one != jim_two
-            stats = jim_not_equality.stats.getStats()
+            stats = jim_not_equality.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 0, \
                 'Error in Jim != Jim'
@@ -849,7 +849,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim != Jim (not performed for all bands)'
 
             jim_greater = jim_one > jim_two
-            stats = jim_greater.stats.getStats()
+            stats = jim_greater.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 0, \
                 'Error in Jim > Jim'
@@ -861,7 +861,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim > Jim (not performed for all bands)'
 
             jim_greatere = jim_one >= jim_two
-            stats = jim_greatere.stats.getStats()
+            stats = jim_greatere.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim >= Jim'
@@ -873,7 +873,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim >= Jim (not performed for all bands)'
 
             jim_lesser = jim_one < jim_two
-            stats = jim_lesser.stats.getStats()
+            stats = jim_lesser.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 0, \
                 'Error in Jim < Jim'
@@ -885,7 +885,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim < Jim (not performed for all bands)'
 
             jim_lessere = jim_one <= jim_two
-            stats = jim_lessere.stats.getStats()
+            stats = jim_lessere.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim <= Jim'
@@ -897,7 +897,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim <= Jim (not performed for all bands)'
 
             jim_equality_int = jim_equality == 1
-            stats = jim_equality_int.stats.getStats()
+            stats = jim_equality_int.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim == number'
@@ -909,7 +909,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim == Jim (not performed for all bands)'
 
             jim_not_equality_int = jim_not_equality != 1
-            stats = jim_not_equality_int.stats.getStats()
+            stats = jim_not_equality_int.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim != number'
@@ -921,7 +921,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim != number (not performed for all bands)'
 
             jim_greater_int = jim_greater > -1
-            stats = jim_greater_int.stats.getStats()
+            stats = jim_greater_int.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim > number'
@@ -933,7 +933,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim > number (not performed for all bands)'
 
             jim_greatere_int = jim_greatere >= 1
-            stats = jim_greatere_int.stats.getStats()
+            stats = jim_greatere_int.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim >= number'
@@ -945,7 +945,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim >= number (not performed for all bands)'
 
             jim_lesser_int = jim_lesser < 1
-            stats = jim_lesser_int.stats.getStats()
+            stats = jim_lesser_int.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim < number'
@@ -957,7 +957,7 @@ class BadBasicMethods(unittest.TestCase):
                     'Error in Jim < number (not performed for all bands)'
 
             jim_lessere_int = jim_lessere <= 1
-            stats = jim_lessere_int.stats.getStats()
+            stats = jim_lessere_int.stats.getStats(band=0)
 
             assert stats['max'] == stats['min'] == stats['mean'] == 1, \
                 'Error in Jim <= number'
@@ -972,73 +972,73 @@ class BadBasicMethods(unittest.TestCase):
         jim2[0:10, 0:10] += 1
 
         jim_equality = jim1 == jim2
-        stats = jim_equality.stats.getStats()
+        stats = jim_equality.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim == Jim'
 
         jim_not_equality = jim1 != jim2
-        stats = jim_not_equality.stats.getStats()
+        stats = jim_not_equality.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim != Jim'
 
         jim_greater = jim2 > jim1
-        stats = jim_greater.stats.getStats()
+        stats = jim_greater.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim > Jim'
 
         jim_greatere = jim1 >= jim2
-        stats = jim_greatere.stats.getStats()
+        stats = jim_greatere.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim >= Jim'
 
         jim_lesser = jim1 < jim2
-        stats = jim_lesser.stats.getStats()
+        stats = jim_lesser.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim < Jim'
 
         jim_lessere = jim2 <= jim1
-        stats = jim_lessere.stats.getStats()
+        stats = jim_lessere.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim <= Jim'
 
         jim_equality_int = jim_equality == 1
-        stats = jim_equality_int.stats.getStats()
+        stats = jim_equality_int.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim == number'
 
         jim_not_equality_int = jim_not_equality != 1
-        stats = jim_not_equality_int.stats.getStats()
+        stats = jim_not_equality_int.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim != number'
 
         jim_greater_int = jim_greater > 0
-        stats = jim_greater_int.stats.getStats()
+        stats = jim_greater_int.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim > number'
 
         jim_greatere_int = jim_greatere >= 1
-        stats = jim_greatere_int.stats.getStats()
+        stats = jim_greatere_int.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim >= number'
 
         jim_lesser_int = jim_lesser < 1
-        stats = jim_lesser_int.stats.getStats()
+        stats = jim_lesser_int.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim < number'
 
         jim_lessere_int = jim_lessere <= 0
-        stats = jim_lessere_int.stats.getStats()
+        stats = jim_lessere_int.stats.getStats(band=0)
 
         assert stats['max'] == 1 and stats['min'] == 0, \
             'Error in Jim <= number'
