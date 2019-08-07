@@ -74,6 +74,8 @@ class BadBasicMethods(unittest.TestCase):
             'Error in catching a call of Jim creation with wrong value ' \
             'parsed as the uniform argument (three values parsed)'
 
+        # Test creation with mean and stdev
+
         jim9 = pj.Jim(nrow=500, ncol=500, otype='Float32', mean=500, stdev=50,
                       seed=0)
 
@@ -85,6 +87,17 @@ class BadBasicMethods(unittest.TestCase):
         assert 50 - 5 < stats['stdev'] < 50 + 5, \
             'Suspicious values in Jim when creating it with Jim(mean, stdev)' \
             '(stdev seems too different from the specified one)'
+
+        # Test creation with only seed (mean=0, stdev=1)
+
+        jim10 = pj.Jim(nrow=500, ncol=500, otype='Byte', seed=0)
+
+        jim10_2 = pj.Jim(nrow=500, ncol=500, otype='Byte', mean=0, stdev=1,
+                         seed=0)
+
+        assert jim10.pixops.isEqual(jim10_2), \
+            'Error when creating Jim with Jim(nrow, nncol, otype, seed) ' \
+            '(not equal to Jim(nrow, nncol, otype, seed, mean=0, stdev=1))'
 
         try:
             _ = pj.Jim(seed=5)
