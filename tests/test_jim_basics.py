@@ -57,6 +57,48 @@ class BadBasicMethods(unittest.TestCase):
         assert jim7.pixops.isEqual(jim8), \
             'Error in usage of seed keyword argument when creating Jim()'
 
+        jim8_2 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=2,
+                        seed=0)
+
+        assert jim7.pixops.isEqual(jim8_2), \
+            'Error in using only one value for uniform creation of Jim()' \
+            '(created Jim is not the same as the one created with[0, value])'
+
+        try:
+            _ = pj.Jim(nrow=5, ncol=5, otype='Float32', uniform=[0, 0, 0])
+            failed = True
+        except AttributeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of Jim creation with wrong value ' \
+            'parsed as the uniform argument (three values parsed)'
+
+        # Test creation with mean and stdev
+
+        jim9 = pj.Jim(nrow=500, ncol=500, otype='Float32', mean=500, stdev=50,
+                      seed=0)
+
+        stats = jim9.stats.getStats(['mean', 'stdev'])
+
+        assert 500 - 50 < stats['mean'] < 500 + 50, \
+            'Suspicious values in Jim when creating it with Jim(mean, stdev)' \
+            '(mean seems too distant from the specified one)'
+        assert 50 - 5 < stats['stdev'] < 50 + 5, \
+            'Suspicious values in Jim when creating it with Jim(mean, stdev)' \
+            '(stdev seems too different from the specified one)'
+
+        # Test creation with only seed (mean=0, stdev=1)
+
+        jim10 = pj.Jim(nrow=500, ncol=500, otype='Byte', seed=0)
+
+        jim10_2 = pj.Jim(nrow=500, ncol=500, otype='Byte', mean=0, stdev=1,
+                         seed=0)
+
+        assert jim10.pixops.isEqual(jim10_2), \
+            'Error when creating Jim with Jim(nrow, nncol, otype, seed) ' \
+            '(not equal to Jim(nrow, nncol, otype, seed, mean=0, stdev=1))'
+
         try:
             _ = pj.Jim(seed=5)
             failed = True

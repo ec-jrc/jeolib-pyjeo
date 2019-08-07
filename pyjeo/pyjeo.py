@@ -111,7 +111,7 @@ class Jim():
         self._properties = properties._Properties()
         self._stats = stats._Stats()
 
-        if stdev or uniform or seed:
+        if any(arg is not None for arg in [stdev, uniform, seed]):
             self._feed(stdev, uniform, seed, kwargs)
 
     @property
@@ -275,25 +275,27 @@ class Jim():
             numpy.random.seed(seed)
 
         if uniform:
-            if len(uniform) == 2:
-                min = uniform[0]
-                max = uniform[1]
-                scale = max - min
-                offset = min
+            if isinstance(uniform, list):
+                if len(uniform) == 2:
+                    min = uniform[0]
+                    max = uniform[1]
+                    scale = max - min
+                    offset = min
+                    for band in range(0,self.properties.nrOfBand()):
+                        self.np(band)[:] = scale * \
+                                           numpy.random.rand(*(self.np(band).shape)) + \
+                                           offset
+            else:
                 for band in range(0,self.properties.nrOfBand()):
-                    self.np(band)[:] = scale * \
-                                       numpy.random.rand(*(self.np(band).shape)) + \
-                                       offset
+                    self.np(band)[:] = numpy.random.uniform(0, uniform,
+                                                            self.np(band).shape)
         else:
             if stdev is None:
                 stdev = 1
-            if not mean:
+            if mean is None:
                 mean = 0
-            scale = stdev
-            offset = mean
             for band in range(0,self.properties.nrOfBand()):
-                self.np(band)[:] = scale * numpy.random.rand(*(self.np(band).shape)) + \
-                                   offset
+                self.np(band)[:] = numpy.random.normal(mean, stdev, self.np(band).shape)
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.
