@@ -111,7 +111,7 @@ class Jim():
         self._properties = properties._Properties()
         self._stats = stats._Stats()
 
-        if stdev or uniform or seed:
+        if any(arg is not None for arg in [stdev, uniform, seed]):
             self._feed(stdev, uniform, seed, kwargs)
 
     @property
@@ -288,7 +288,7 @@ class Jim():
         else:
             if stdev is None:
                 stdev = 1
-            if not mean:
+            if mean is None:
                 mean = 0
 
             self.np()[:] = numpy.random.normal(mean, stdev, self.np().shape)
