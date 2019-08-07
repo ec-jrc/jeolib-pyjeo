@@ -276,15 +276,13 @@ class Jim():
 
         if uniform:
             if isinstance(uniform, list):
-                if len(uniform) == 2:
-                    min = uniform[0]
-                    max = uniform[1]
-                    scale = max - min
-                    offset = min
-                    for band in range(0,self.properties.nrOfBand()):
-                        self.np(band)[:] = scale * \
-                                           numpy.random.rand(*(self.np(band).shape)) + \
-                                           offset
+                if len(uniform) != 2:
+                    raise AttributeError(
+                        'The list parsed as the uniform argument must be '
+                        'in the form [min, max + 1]')
+                for band in range(0,self.properties.nrOfBand()):
+                    self.np(band)[:] = numpy.random.uniform(uniform[0], uniform[1],
+                                                        self.np(band).shape)
             else:
                 for band in range(0,self.properties.nrOfBand()):
                     self.np(band)[:] = numpy.random.uniform(0, uniform,
