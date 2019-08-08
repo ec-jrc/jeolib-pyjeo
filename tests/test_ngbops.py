@@ -18,14 +18,16 @@ class BadNgbOps(unittest.TestCase):
         jim = pj.Jim(testFile)
         jim.geometry.cropBand(band=[0, 1, 2])
 
-        stats_max_jim=max(jim.stats.getStats('max', band=[0,1,2])['max'])
-        stats_min_jim=min(jim.stats.getStats('min', band=[0,1,2])['min'])
+        stats_max_jim = max(jim.stats.getStats('max', band=[0, 1, 2])['max'])
+        stats_min_jim = min(jim.stats.getStats('min', band=[0, 1, 2])['min'])
 
         min_jim = pj.ngbops.filter2d(jim, 'min', dx=3)
         jim.ngbops.filter2d('min', dx=3)
 
-        stats_max_min_jim = max(jim.stats.getStats('max', band=[0,1,2])['max'])
-        stats_min_min_jim = min(jim.stats.getStats('min', band=[0,1,2])['min'])
+        stats_max_min_jim = max(jim.stats.getStats('max',
+                                                   band=[0, 1, 2])['max'])
+        stats_min_min_jim = min(jim.stats.getStats('min',
+                                                   band=[0, 1, 2])['min'])
 
         assert min_jim.pixops.isEqual(jim), \
             'Inconsistency in ngbops.filter2d() ' \
@@ -39,8 +41,10 @@ class BadNgbOps(unittest.TestCase):
                                      otype='Int32')
         jim.ngbops.filter1d('max', dz=3, pad='zeros', otype='Int32')
 
-        stats_max_max_jim = max(jim.stats.getStats('max', band=[0,1,2])['max'])
-        stats_min_max_jim = min(jim.stats.getStats('min', band=[0,1,2])['min'])
+        stats_max_max_jim = max(jim.stats.getStats('max',
+                                                   band=[0, 1, 2])['max'])
+        stats_min_max_jim = min(jim.stats.getStats('min',
+                                                   band=[0, 1, 2])['min'])
 
         assert max_jim.pixops.isEqual(jim), \
             'Inconsistency in ngbops.filter1d() ' \

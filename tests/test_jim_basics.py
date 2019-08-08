@@ -46,7 +46,7 @@ class BadBasicMethods(unittest.TestCase):
 
         jim7 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
                       seed=0)
-        stats7 = jim7.stats.getStats(['min', 'max'],band=0)
+        stats7 = jim7.stats.getStats(['min', 'max'], band=0)
 
         assert stats7['max'] < 2 and stats7['min'] > 0, \
             'Error in creating Jim with uniform distribution'
