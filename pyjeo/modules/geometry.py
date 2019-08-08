@@ -272,7 +272,7 @@ def image2geo(jim_object, i, j):
     return jim_object._jipjim.image2geo(i, j)
 
 
-def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
+def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0):
     """Add an image frame and set its values to value val.
 
     :param jim_object: a Jim object
@@ -283,11 +283,9 @@ def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
     :param u: width of upper frame
     :param d: width of lower frame
     :param val: value of frame
-    :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageFrameAdd([l, r, t, b, u, d], val,
-                                                    band))
+    return _pj.Jim(jim_object._jipjim.imageFrameAdd([l, r, t, b, u, d], val))
 
 
 def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
@@ -308,7 +306,7 @@ def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
                                                     band))
 
 
-def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, band=0):
+def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
     """Subtract an image frame.
 
     :param jim_object: a Jim object
@@ -318,11 +316,9 @@ def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, band=0):
     :param b: width of bottom frame
     :param u: width of upper frame
     :param d: width of lower frame
-    :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageFrameSubtract([l, r, t, b, u, d],
-                                                         band))
+    return _pj.Jim(jim_object._jipjim.imageFrameSubtract([l, r, t, b, u, d]))
 
 
 def imageInsert(jim_object, sec_jim_object, x, y, z, band=0):
@@ -1238,8 +1234,7 @@ class _Geometry():
                 self._jim_object._jipjim.d_imageFrameSubtract([
                     uli, nr_of_cols - lri,
                     ulj, nr_of_rows - lrj,
-                    ulz, self._jim_object.properties.nrOfPlane() - lrz],
-                    iband)
+                    ulz, self._jim_object.properties.nrOfPlane() - lrz])
             gt[0] = ulx
             gt[3] = uly
             self._jim_object.properties.setGeoTransform(gt)
@@ -1807,14 +1802,14 @@ class _Geometry():
             for band in range(0,self._jim_object.properties.nrOfBand()):
                 if returnJim:
                     jimband = _pj.geometry.cropBand(self._jim_object, band=band)
-                    jimband._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val, 0)
+                    jimband._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
                     returnJim.geometry.stackBand(jimband)
                 else:
                     returnJim = _pj.geometry.cropBand(self._jim_object, band=band)
-                    returnJim._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val, 0)
+                    returnJim._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
             self._jim_object._set(returnJim._jipjim)
         else:
-            self._jim_object._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val, 0)
+            self._jim_object._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
 
     def imageFrameSet(self, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=None):
         """Set the values of the image frame to value val.
@@ -1852,14 +1847,14 @@ class _Geometry():
             for band in range(0,self._jim_object.properties.nrOfBand()):
                 if returnJim:
                     jimband = _pj.geometry.cropBand(self._jim_object, band=band)
-                    jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d], 0)
+                    jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
                     returnJim.geometry.stackBand(jimband)
                 else:
                     returnJim = _pj.geometry.cropBand(self._jim_object, band=band)
-                    returnJim._jipjim.d_imageFrameSubtract([l, r, t, b, u, d], 0)
+                    returnJim._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
             self._jim_object._set(returnJim._jipjim)
         else:
-            self._jim_object._jipjim.d_imageFrameSubtract([l, r, t, b, u, d], 0)
+            self._jim_object._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
 
     def imageInsert(self, sec_jim_object, x, y, z, band=None):
         """Merge Jim instance with values of sec_jim_object in given coords.
