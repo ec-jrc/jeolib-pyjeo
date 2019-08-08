@@ -285,10 +285,23 @@ def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0):
     :param val: value of frame
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageFrameAdd([l, r, t, b, u, d], val))
+    if jim_object.properties.nrOfBand() > 1:
+        returnJim = None
+        for band in range(0, jim_object.properties.nrOfBand()):
+            if returnJim:
+                jimband = _pj.geometry.cropBand(jim_object, band=band)
+                jimband._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
+                returnJim.geometry.stackBand(jimband)
+            else:
+                returnJim = _pj.geometry.cropBand(jim_object, band=band)
+                returnJim._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
+        return _pj.Jim(returnJim)
+    else:
+        return _pj.Jim(jim_object._jipjim.d_imageFrameAdd(
+            [l, r, t, b, u, d], val))
 
 
-def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
+def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=None):
     """Set the values of the image frame to value val.
 
     :param jim_object: a Jim object
@@ -302,8 +315,12 @@ def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageFrameSet([l, r, t, b, u, d], val,
-                                                    band))
+    if band is None:
+        return _pj.Jim(jim_object._jipjim.imageFrameSet(
+            [l, r, t, b, u, d], val, -1))
+    else:
+        return _pj.Jim(jim_object._jipjim.imageFrameSet(
+            [l, r, t, b, u, d], val, band))
 
 
 def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
@@ -318,22 +335,55 @@ def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
     :param d: width of lower frame
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageFrameSubtract([l, r, t, b, u, d]))
+    if jim_object.properties.nrOfBand() > 1:
+        returnJim = None
+        for band in range(0, jim_object.properties.nrOfBand()):
+            if returnJim:
+                jimband = _pj.geometry.cropBand(jim_object, band=band)
+                jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
+                returnJim.geometry.stackBand(jimband)
+            else:
+                returnJim = _pj.geometry.cropBand(jim_object, band=band)
+                returnJim._jipjim.d_imageFrameSubtract(
+                    [l, r, t, b, u, d])
+        return _pj.Jim(returnJim)
+    else:
+        return _pj.Jim(jim_object._jipjim.imageFrameSubtract(
+            [l, r, t, b, u, d]))
 
 
-def imageInsert(jim_object, sec_jim_object, x, y, z, band=0):
+def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
     """Merge Jim instance with values of sec_jim_object in given coords.
 
     :param jim_object: a Jim object
-    :param jim_object: a Jim object
+    :param sec_jim_object: a Jim object
     :param x: x coordinate of 1st pixel
     :param y: y coordinate of 1st pixel
     :param z: z coordinate of 1st pixel
-    :param band: List of band indices to crop (index is 0 based)
+    :param band: List of band indices to insert (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageInsert(sec_jim_object._jipjim,
-                                                  x, y, z, band))
+    bands = []
+    if band is None:
+        bands = range(0, self._jim_object.properties.nrOfBand())
+    else:
+        try:
+            bands.extend(band)
+        except TypeError:
+            bands.append(band)
+
+    returnJim = None
+
+    for band in bands:
+        if returnJim:
+            jimband = jim_object._jipjim.imageInsert(
+                sec_jim_object._jipjim, x, y, z, band)
+            returnJim.geometry.stackBand(jimband)
+        else:
+            returnJim = returnJim._jipjim.imageInsert(
+                sec_jim_object._jipjim, x, y, z, band)
+
+    return _pj.Jim(returnJim)
 
 
 def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
@@ -349,9 +399,27 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim_object._jipjim.imageInsertCompose(imlbl._jipjim,
-                                                         im2._jipjim,
-                                                         x, y, z, val, band))
+    bands = []
+    if band is None:
+        bands = range(0, self._jim_object.properties.nrOfBand())
+    else:
+        try:
+            bands.extend(band)
+        except TypeError:
+            bands.append(band)
+
+    returnJim = None
+
+    for band in bands:
+        if returnJim:
+            jimband = jim_object._jipjim.imageInsertCompose(
+                imlbl._jipjim, im2._jipjim, x, y, z, val, band)
+            returnJim.geometry.stackBand(jimband)
+        else:
+            returnJim = jim_object._jipjim.imageInsertCompose(
+                imlbl._jipjim, im2._jipjim, x, y, z, val, band)
+
+    return _pj.Jim(returnJim)
 
 
 def intersect(jvec, jim, output, **kwargs):
@@ -468,7 +536,20 @@ def magnify(jim_object, n):
     :param n: a positive integer for magnifying size by pixel replication
     :return: a Jim object containing the magnified image
     """
-    return _pj.Jim(jim_object._jipjim.imageMagnify(n))
+    if jim_object.properties.nrOfBand() > 1:
+        returnJim = None
+        for band in range(0, jim_object.properties.nrOfBand()):
+            if returnJim:
+                jimband = _pj.geometry.cropBand(jim_object, band=band)
+                returnJim.geometry.stackBand(jimband._jipjim.imageMagnify(n))
+            else:
+                returnJim = _pj.geometry.cropBand(
+                    jim_object, band=band)._jipjim.imageMagnify(n)
+
+            return returnJim
+    else:
+        return _pj.Jim(jim_object._jipjim.imageMagnify(n))
+
 
 
 def plotLine(jim_object, x1, y1, x2, y2, val):
@@ -1798,18 +1879,22 @@ class _Geometry():
         :param val: value of frame
         """
         if self._jim_object.properties.nrOfBand() > 1:
-            returnJim=None
-            for band in range(0,self._jim_object.properties.nrOfBand()):
+            returnJim = None
+            for band in range(0, self._jim_object.properties.nrOfBand()):
                 if returnJim:
-                    jimband = _pj.geometry.cropBand(self._jim_object, band=band)
+                    jimband = _pj.geometry.cropBand(self._jim_object,
+                                                    band=band)
                     jimband._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
                     returnJim.geometry.stackBand(jimband)
                 else:
-                    returnJim = _pj.geometry.cropBand(self._jim_object, band=band)
-                    returnJim._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
+                    returnJim = _pj.geometry.cropBand(self._jim_object,
+                                                      band=band)
+                    returnJim._jipjim.d_imageFrameAdd(
+                        [l, r, t, b, u, d], val)
             self._jim_object._set(returnJim._jipjim)
         else:
-            self._jim_object._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
+            self._jim_object._jipjim.d_imageFrameAdd(
+                [l, r, t, b, u, d], val)
 
     def imageFrameSet(self, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=None):
         """Set the values of the image frame to value val.
@@ -1826,9 +1911,11 @@ class _Geometry():
         :param band: value of band
         """
         if band is None:
-            self._jim_object._jipjim.d_imageFrameSet([l, r, t, b, u, d], val, -1)
+            self._jim_object._jipjim.d_imageFrameSet(
+                [l, r, t, b, u, d], val, -1)
         else:
-            self._jim_object._jipjim.d_imageFrameSet([l, r, t, b, u, d], val, band)
+            self._jim_object._jipjim.d_imageFrameSet(
+                [l, r, t, b, u, d], val, band)
 
     def imageFrameSubtract(self, l=0, r=0, t=0, b=0, u=0, d=0):
         """Subtract an image frame.
@@ -1843,8 +1930,8 @@ class _Geometry():
         :param d: width of lower frame
         """
         if self._jim_object.properties.nrOfBand() > 1:
-            returnJim=None
-            for band in range(0,self._jim_object.properties.nrOfBand()):
+            returnJim = None
+            for band in range(0, self._jim_object.properties.nrOfBand()):
                 if returnJim:
                     jimband = _pj.geometry.cropBand(self._jim_object, band=band)
                     jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
@@ -1861,16 +1948,15 @@ class _Geometry():
 
         Modifies the instance on which the method was called.
 
-        :param jim_object: a Jim object
+        :param sec_jim_object: a Jim object
         :param x: x coordinate of 1st pixel
         :param y: y coordinate of 1st pixel
         :param z: z coordinate of 1st pixel
         :param band: List of band indices to insert (index is 0 based)
         """
-
-        bands=[]
+        bands = []
         if band is None:
-            bands=range(0,self._jim_object.properties.nrOfBand())
+            bands = range(0, self._jim_object.properties.nrOfBand())
         else:
             try:
                 bands.extend(band)
@@ -1893,9 +1979,9 @@ class _Geometry():
         :param val: integer for label value
         :param band: List of band indices to compose (index is 0 based)
         """
-        bands=[]
+        bands = []
         if band is None:
-            bands=range(0,self._jim_object.properties.nrOfBand())
+            bands = range(0, self._jim_object.properties.nrOfBand())
         else:
             try:
                 bands.extend(band)
@@ -1914,13 +2000,16 @@ class _Geometry():
         :param n: a positive integer for magnifying size by pixel replication
         """
         if self._jim_object.properties.nrOfBand() > 1:
-            returnJim=None
-            for band in range(0,self._jim_object.properties.nrOfBand()):
+            returnJim = None
+            for band in range(0, self._jim_object.properties.nrOfBand()):
                 if returnJim:
-                    jimband = _pj.geometry.cropBand(self._jim_object, band=band)
-                    returnJim.geometry.stackBand(jimband._jipjim.imageMagnify(n))
+                    jimband = _pj.geometry.cropBand(self._jim_object,
+                                                    band=band)
+                    returnJim.geometry.stackBand(
+                        jimband._jipjim.imageMagnify(n))
                 else:
-                    returnJim = _pj.geometry.cropBand(self._jim_object, band=band)._jipjim.imageMagnify(n)
+                    returnJim = _pj.geometry.cropBand(
+                        self._jim_object, band=band)._jipjim.imageMagnify(n)
             self._jim_object._set(returnJim._jipjim)
         else:
             self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
