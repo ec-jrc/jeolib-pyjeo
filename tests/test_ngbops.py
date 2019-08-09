@@ -165,18 +165,18 @@ class BadNgbOps(unittest.TestCase):
         dilated = pj.ngbops.morphoErodeLine(jim, 1, 0, 3, 0)
         jim.ngbops.morphoErodeLine(1, 0, 3, 0)
 
-        stats_dilated = jim.stats.getStats(band=0)
+        stats_eroded = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(dilated), \
             'Inconsistency in ngbops.morphoErodeLine() ' \
             '(method returns different result than function)'
-        assert stats_dilated['max'] == 1, \
+        assert stats_eroded['max'] == 1, \
             'Error in ngbops.morphoErodeLine() ' \
             '(max value is not the same as of the original Jim)'
-        assert stats_dilated['min'] == 0, \
+        assert stats_eroded['min'] == 0, \
             'Error in ngbops.morphoErodeLine() ' \
             '(min value is not equal to 0)'
-        assert stats_dilated['mean'] < stats['mean'], \
+        assert stats_eroded['mean'] < stats['mean'], \
             'Error in ngbops.morphoErodeLine() ' \
             '(mean value is not lower than the one of the original Jim)'
         assert jim[0, 0] == jim[0, 1] == jim[0, 2] == jim[1, 1] == \
