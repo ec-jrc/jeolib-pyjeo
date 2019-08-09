@@ -54,9 +54,16 @@ class BadNgbOps(unittest.TestCase):
         assert stats_min_max_jim >= stats_min_min_jim, \
             'Error in ngbops.filter1d() (wrong values)'
 
-        # TODO: Test numpy array as filter for filter2d()
-        #       (must wait until the bug #16 in filter2d() in jiplib will be
-        #       fixed)
+        filt = np.array([[2.0, 2.0, 2.0], [2.0, 2.0, 2.0], [2.0, 2.0, 2.0]])
+
+        double_jim = pj.ngbops.filter2d(jim, filter=filt)
+        jim.ngbops.filter2d(filter=filt)
+
+        assert jim.pixops.isEqual(double_jim), \
+            'Inconsistency in ngbops.filter2d(dx, dy, tap) ' \
+            '(method returns different result than function)'
+        assert jim[1, 1].np()[0, 0] == 2 * max_jim[0:3, 0:3].np().sum(), \
+            'Error in ngbops.filter2d(numpy.array) (returning wrong values)'
 
     def test_erode_dilate(self):
         """Test morphoDilate... and morphoErode...() functions and methods."""
