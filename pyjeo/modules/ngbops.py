@@ -796,8 +796,8 @@ class _NgbOps():
         :param oz: z coordinate
         :param trFlag: optional parameter (0 or 1)
         """
-        self._jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
-                                              ox, oy, oz, trFlag)
+        self._jim_object._set(self._jim_object._jipjim.morphoDilate(
+            sec_jim_object._jipjim, ox, oy, oz, trFlag))
 
     def morphoDilateDiamond(self):
         """Output the dilation of im using the elementary diamond shaped SE.
@@ -842,8 +842,8 @@ class _NgbOps():
         :param oz: z coordinate
         :param trFlag: optional parameter (0 or 1)
         """
-        self._jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
-                                             ox, oy, oz, trFlag)
+        self._jim_object._set(self._jim_object._jipjim.morphoErode(
+            sec_jim_object._jipjim, ox, oy, oz, trFlag))
 
     def morphoErodeDiamond(self):
         """Output the erosion of im using the elementary diamond shaped SE.
