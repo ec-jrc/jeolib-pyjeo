@@ -105,6 +105,34 @@ class BadCCOps(unittest.TestCase):
             'Error in Jim.ccops.distance2dEuclideanConstrained() ' \
             '(minimum value not 0 for Byte)'
 
+        # Test distanceInfluenceZones2dEuclidean
+        nrow = ncol = 500
+        jim = pj.Jim(nrow=nrow, ncol=ncol, otype='Byte', uniform=[0, 1])
+        for i in range(15):
+            jim[np.random.randint(0, 500), np.random.randint(0, 500)] = i
+
+        jim_byte = pj.Jim(jim)
+
+        distances = pj.ccops.distanceInfluenceZones2dEuclidean(jim_byte)
+        jim_byte.ccops.distanceInfluenceZones2dEuclidean()
+
+        stats = jim_byte.stats.getStats(['max', 'min'])
+
+        assert jim_byte.pixops.isEqual(distances), \
+            'Inconsistency in ccops.distanceInfluenceZones2dEuclidean() ' \
+            '(method returns different result than function)'
+
+        assert not jim.pixops.isEqual(distances), \
+            'Error in ccops.distanceInfluenceZones2dEuclidean() ' \
+            '(did not have any effect)'
+
+        assert stats['max'] == 14, \
+             'Error in Jim.ccops.distanceInfluenceZones2dEuclidean() ' \
+             '(maximum value not 255 for Byte)'
+        assert stats['min'] >= 1, \
+            'Error in Jim.ccops.distanceInfluenceZones2dEuclidean() ' \
+            '(minimum value not 1 for Byte)'
+
         # Test distanceGeodesic
 
         jim1 = pj.Jim(tiles[0])
