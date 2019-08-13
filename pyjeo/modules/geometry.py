@@ -7,24 +7,22 @@ import numpy
 from collections import Iterable
 
 
-def append(jvec1, jvec2, output, **kwargs):
-    """Append JimVect object with another JimVect object.
+# def append(jvec1, jvec2, output, **kwargs):
+#     """Append JimVect object with another JimVect object.
 
-    :param jvec1: first JimVect
-    :param jvec2: second JimVect to append
-    :param output: output filename of JimVect object that is returned.
-        Use /vsimem for in memory vectors
-    :param oformat: output vector dataset format
-    """
-    kwargs.update({'output': output})
-    if isinstance(jvec2, _pj.JimVect):
-        avect = _pj.JimVect(jvec1, **kwargs)
-        avect._jipjimvect.append(jvec2._jipjimvect)
-        pjvect = _pj.JimVect()
-        pjvect._set(avect)
-        return pjvect
-    else:
-        raise TypeError('Error: can only join with JimVect object')
+#     :param jvec1: first JimVect
+#     :param jvec2: second JimVect to append
+#     :param output: output filename of JimVect object that is returned.
+#         Use /vsimem for in memory vectors
+#     :param oformat: output vector dataset format
+#     """
+#     kwargs.update({'output': output})
+#     if isinstance(jvec2, _pj.JimVect):
+#         avect = _pj.JimVect(jvec1, **kwargs)
+#         avect._jipjimvect.append(jvec2._jipjimvect)
+#         return _pj.JimVect(avect)
+#     else:
+#         raise TypeError('Error: can only join with JimVect object')
 
 
 def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
