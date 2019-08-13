@@ -18,14 +18,16 @@ class BadNgbOps(unittest.TestCase):
         jim = pj.Jim(testFile)
         jim.geometry.cropBand(band=[0, 1, 2])
 
-        stats_max_jim=max(jim.stats.getStats('max', band=[0,1,2])['max'])
-        stats_min_jim=min(jim.stats.getStats('min', band=[0,1,2])['min'])
+        stats_max_jim = max(jim.stats.getStats('max', band=[0, 1, 2])['max'])
+        stats_min_jim = min(jim.stats.getStats('min', band=[0, 1, 2])['min'])
 
         min_jim = pj.ngbops.filter2d(jim, 'min', dx=3)
         jim.ngbops.filter2d('min', dx=3)
 
-        stats_max_min_jim = max(jim.stats.getStats('max', band=[0,1,2])['max'])
-        stats_min_min_jim = min(jim.stats.getStats('min', band=[0,1,2])['min'])
+        stats_max_min_jim = max(jim.stats.getStats('max',
+                                                   band=[0, 1, 2])['max'])
+        stats_min_min_jim = min(jim.stats.getStats('min',
+                                                   band=[0, 1, 2])['min'])
 
         assert min_jim.pixops.isEqual(jim), \
             'Inconsistency in ngbops.filter2d() ' \
@@ -39,8 +41,10 @@ class BadNgbOps(unittest.TestCase):
                                      otype='Int32')
         jim.ngbops.filter1d('max', dz=3, pad='zeros', otype='Int32')
 
-        stats_max_max_jim = max(jim.stats.getStats('max', band=[0,1,2])['max'])
-        stats_min_max_jim = min(jim.stats.getStats('min', band=[0,1,2])['min'])
+        stats_max_max_jim = max(jim.stats.getStats('max',
+                                                   band=[0, 1, 2])['max'])
+        stats_min_max_jim = min(jim.stats.getStats('min',
+                                                   band=[0, 1, 2])['min'])
 
         assert max_jim.pixops.isEqual(jim), \
             'Inconsistency in ngbops.filter1d() ' \
@@ -50,9 +54,16 @@ class BadNgbOps(unittest.TestCase):
         assert stats_min_max_jim >= stats_min_min_jim, \
             'Error in ngbops.filter1d() (wrong values)'
 
-        # TODO: Test numpy array as filter for filter2d()
-        #       (must wait until the bug #16 in filter2d() in jiplib will be
-        #       fixed)
+        filt = np.array([[2.0, 2.0, 2.0], [2.0, 2.0, 2.0], [2.0, 2.0, 2.0]])
+
+        double_jim = pj.ngbops.filter2d(jim, filter=filt)
+        jim.ngbops.filter2d(filter=filt)
+
+        assert jim.pixops.isEqual(double_jim), \
+            'Inconsistency in ngbops.filter2d(dx, dy, tap) ' \
+            '(method returns different result than function)'
+        assert jim[1, 1].np()[0, 0] == 2 * max_jim[0:3, 0:3].np().sum(), \
+            'Error in ngbops.filter2d(numpy.array) (returning wrong values)'
 
     def test_erode_dilate(self):
         """Test morphoDilate... and morphoErode...() functions and methods."""
@@ -60,6 +71,10 @@ class BadNgbOps(unittest.TestCase):
 
         arr = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]])
         jim[0:3, 0:3] = arr
+
+        jim_kernel = pj.Jim(nrow=3, ncol=3, otype='Byte')
+        arr_kernel = np.array([[0, 0, 0], [1, 1, 1], [0, 0, 0]])
+        jim_kernel[0:3, 0:3] = arr_kernel
 
         stats = jim.stats.getStats(band=0)
 
@@ -154,18 +169,18 @@ class BadNgbOps(unittest.TestCase):
         dilated = pj.ngbops.morphoErodeLine(jim, 1, 0, 3, 0)
         jim.ngbops.morphoErodeLine(1, 0, 3, 0)
 
-        stats_dilated = jim.stats.getStats(band=0)
+        stats_eroded = jim.stats.getStats(band=0)
 
         assert jim.pixops.isEqual(dilated), \
             'Inconsistency in ngbops.morphoErodeLine() ' \
             '(method returns different result than function)'
-        assert stats_dilated['max'] == 1, \
+        assert stats_eroded['max'] == 1, \
             'Error in ngbops.morphoErodeLine() ' \
             '(max value is not the same as of the original Jim)'
-        assert stats_dilated['min'] == 0, \
+        assert stats_eroded['min'] == 0, \
             'Error in ngbops.morphoErodeLine() ' \
             '(min value is not equal to 0)'
-        assert stats_dilated['mean'] < stats['mean'], \
+        assert stats_eroded['mean'] < stats['mean'], \
             'Error in ngbops.morphoErodeLine() ' \
             '(mean value is not lower than the one of the original Jim)'
         assert jim[0, 0] == jim[0, 1] == jim[0, 2] == jim[1, 1] == \
@@ -176,9 +191,63 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.morphoErodeLine() ' \
             '(value 1 not in left-right ngb of value 0 not equal to 1)'
 
-        # TODO: Test morphoErode() and morphoDilate()
-        #       (must wait until the issue #18 in jiplib will be
-        #       fixed)
+        # Test morphoDilate()
+        jim[0:3, 0:3] = arr
+        stats = stats_eroded
+
+        dilated = pj.ngbops.morphoDilate(jim, jim_kernel, 1, 1, 0)
+        jim.ngbops.morphoDilate(jim_kernel, 1, 1, 0)
+
+        stats_dilated = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(dilated), \
+            'Inconsistency in ngbops.morphoDilate() ' \
+            '(method returns different result than function)'
+        assert stats_dilated['max'] == 1, \
+            'Error in ngbops.morphoDilate() ' \
+            '(max value is not equal to 1)'
+        assert stats_dilated['min'] == 0, \
+            'Error in ngbops.morphoDilate() ' \
+            '(min value is not equal to 0)'
+        assert stats_dilated['mean'] > stats['mean'], \
+            'Error in ngbops.morphoDilate() ' \
+            '(mean value is not lower than the one of the original Jim)'
+        assert jim[0, 0] == jim[0, 1] == jim[0, 2] == jim[1, 1] == \
+               jim[1, 2] == jim[2, 0] == jim[2, 1] == jim[2, 2] == 0, \
+            'Error in ngbops.morphoDilate() ' \
+            '(values in left-right ngb of value 0 not equal to 0)'
+        assert jim[1, 0] == 1, \
+            'Error in ngbops.morphoDilate() ' \
+            '(value 1 not in left-right ngb of value 0 not equal to 1)'
+
+        # Test morphoErode()
+        jim[0:3, 0:3] = arr
+        stats = stats_dilated
+
+        eroded = pj.ngbops.morphoErode(jim, jim_kernel, 1, 1, 0)
+        jim.ngbops.morphoErode(jim_kernel, 1, 1, 0)
+
+        stats_eroded = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(eroded), \
+            'Inconsistency in ngbops.morphoErode() ' \
+            '(method returns different result than function)'
+        assert stats_eroded['max'] == 1, \
+            'Error in ngbops.morphoErode() ' \
+            '(max value is not the same as of the original Jim)'
+        assert stats_eroded['min'] == 0, \
+            'Error in ngbops.morphoErode() ' \
+            '(min value is not equal to 0)'
+        assert stats_eroded['mean'] < stats['mean'], \
+            'Error in ngbops.morphoErode() ' \
+            '(mean value is not lower than the one of the original Jim)'
+        assert jim[0, 0] == jim[0, 1] == jim[0, 2] == jim[1, 1] == \
+               jim[1, 2] == jim[2, 0] == jim[2, 1] == jim[2, 2] == 0, \
+            'Error in ngbops.morphoErode() ' \
+            '(values in left-right ngb of value 0 not equal to 0)'
+        assert jim[1, 0] == 1, \
+            'Error in ngbops.morphoErode() ' \
+            '(value 1 not in left-right ngb of value 0 not equal to 1)'
 
         # Test morphoGradientByDilationDiamond()
         jim_copy = pj.Jim(jim)

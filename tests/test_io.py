@@ -30,29 +30,44 @@ class BadIO(unittest.TestCase):
         assert nr_of_cols == 0, \
             'Error in closing a Jim object (nr of col not equal 0 afterwards)'
 
-# class BadIOVects(unittest.TestCase):
-#     """Test JimVect funcs and methods from io module."""
-#
-#     def test_write(self):
-#         """Test writing JimVect objects."""
-#         jimv = pj.JimVect(vector)
-#
-#         # TODO: Test write() without filename
-#
-#         output = os.path.join(
-#             '/tmp', ''.join(random.sample(string.ascii_letters, 5)))
-#         jimv.io.write(output)
-#
-#         assert os.path.isfile(output), \
-#             'Error in io.write(filename) (file does not exist after writing)'
-#
-#         jimv.io.close()
+
+class BadIOVects(unittest.TestCase):
+    """Test JimVect funcs and methods from io module."""
+
+    def test_write(self):
+        """Test writing JimVect objects."""
+        jimv = pj.JimVect(vector)
+
+        output = os.path.join(
+            '/tmp', ''.join(random.sample(string.ascii_letters, 5)))
+        jimv.io.write(output)
+
+        assert os.path.isfile(output), \
+            'Error in io.write(filename) (file does not exist after writing)'
+
+        output2 = os.path.join(
+            '/tmp', ''.join(random.sample(string.ascii_letters, 5)))
+
+        jimv_2 = jimv.geometry.convexHull(output=output2)
+
+        jimv_3 = pj.JimVect(output2)
+
+        jimv.io.close()
+        jimv_2.io.write()
+        jimv_2.io.close()
+        jimv_3.io.close()
+
+        jimv_3 = pj.JimVect(output2)
+        jimv_3.io.close()
+
+        assert jimv_3.properties.getFeatureCount() == 1, \
+            'Error in io.write() (changes not written to the original file)'
 
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
-    suite_list = [loader.loadTestsFromTestCase(BadIO)]#,
-                  # loader.loadTestsFromTestCase(BadIOVects)]
+    suite_list = [loader.loadTestsFromTestCase(BadIO),
+                  loader.loadTestsFromTestCase(BadIOVects)]
     return unittest.TestSuite(suite_list)

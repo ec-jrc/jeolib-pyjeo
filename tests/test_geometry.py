@@ -234,6 +234,180 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.image2geo()' \
             '(geo2image(0, 0) did not return original values divided by dX/dY)'
 
+    def test_image_frames(self):
+        """Test imageFrame...() functions and methods."""
+        nrow = ncol = 500
+        nband = nplane = 2
+        jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,
+                     otype='Byte', uniform=[0, 2], seed=0)
+
+        # Test imageFrameAdd()
+        #      (for 1-band Jim, see test below)
+
+        added = pj.geometry.imageFrameAdd(jim, 1, 2, 1, 2, 1, 2, 5)
+        jim.geometry.imageFrameAdd(1, 2, 1, 2, 1, 2, 5)
+
+        assert jim.pixops.isEqual(added), \
+            'Inconsistency in geometry.imageFrameAdd() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfCol() == ncol + 3, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of cols not raised or not raised to the right number)'
+        assert jim.properties.nrOfRow() == nrow + 3, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of rows not raised or not raised to the right number)'
+        assert jim.properties.nrOfPlane() == nplane + 3, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of planes not raised or not raised to the right number)'
+        assert jim.properties.nrOfBand() == nband, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of bands changed)'
+        assert jim[0, 100, 100].np() == 5, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(value not used for new planes)'
+        assert jim[1, 0, 0].np() == 5, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(value not used for the frame)'
+        assert 0 <= jim[1, 1, 1].np()[0] <= 1, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(values in the original image changed)'
+
+        # Test imageFrameSubtract()
+        #      (for 1-band Jim, see test below)
+
+        subtracted = pj.geometry.imageFrameSubtract(jim, 1, 2, 1, 2, 1, 2)
+        jim.geometry.imageFrameSubtract(1, 2, 1, 2, 1, 2)
+
+        assert jim.pixops.isEqual(subtracted), \
+            'Inconsistency in geometry.imageFrameSubtract() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of cols not raised or not raised to the right number)'
+        assert jim.properties.nrOfRow() == nrow, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of rows not raised or not raised to the right number)'
+        assert jim.properties.nrOfPlane() == nplane, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of planes not raised or not raised to the right number)'
+        assert jim.properties.nrOfBand() == nband, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of bands changed)'
+        assert (jim.np() == added.np()[1:3, 1:-2, 1:-2]).all(), \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(changed values in the original Jim)'
+
+        # Test imageFrameSet()
+
+        setted = pj.geometry.imageFrameSet(jim, 1, 2, 1, 2, 1, 0, 5)
+        jim.geometry.imageFrameSet(1, 2, 1, 2, 1, 0, 5)
+
+        assert jim.pixops.isEqual(setted), \
+            'Inconsistency in geometry.imageFrameSet() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of cols changed)'
+        assert jim.properties.nrOfRow() == nrow, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of rows changed)'
+        assert jim.properties.nrOfPlane() == nplane, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of planes changed)'
+        assert jim.properties.nrOfBand() == nband, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of bands changed)'
+        assert jim[1, 0, 0].np() == 5, \
+            'Error in geometry.imageFrameSet() ' \
+            '(value not used for the frame)'
+        assert 0 <= jim[1, 1, 1].np()[0] <= 1,\
+            'Error in geometry.imageFrameSet() ' \
+            '(values outside the frame changed)'
+
+        # Test imageFrameSet() with a specified band
+
+        setted = pj.geometry.imageFrameSet(jim, 1, 2, 1, 2, 0, 1, 10, band=0)
+        jim.geometry.imageFrameSet(1, 2, 1, 2, 0, 1, 10, band=0)
+
+        assert jim.pixops.isEqual(setted), \
+            'Inconsistency in geometry.imageFrameSet() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of cols changed)'
+        assert jim.properties.nrOfRow() == nrow, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of rows changed)'
+        assert jim.properties.nrOfPlane() == nplane, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of planes changed)'
+        assert jim.properties.nrOfBand() == nband, \
+            'Error in geometry.imageFrameSet() ' \
+            '(number of bands changed)'
+        assert jim[1, 0, 0].np() == 10, \
+            'Error in geometry.imageFrameSet() ' \
+            '(value not used for the frame)'
+        assert jim[0, 1, 1].np() == 5,\
+            'Error in geometry.imageFrameSet() ' \
+            '(values outside the frame changed)'
+
+        # Test imageFrameAdd() for 1-band Jim
+
+        jim.geometry.cropBand(0)
+        nband = 1
+
+        added = pj.geometry.imageFrameAdd(jim, 1, 2, 1, 2, 1, 2, 10)
+        jim.geometry.imageFrameAdd(1, 2, 1, 2, 1, 2, 10)
+
+        assert jim.pixops.isEqual(added), \
+            'Inconsistency in geometry.imageFrameAdd() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfCol() == ncol + 3, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of cols not raised or not raised to the right number)'
+        assert jim.properties.nrOfRow() == nrow + 3, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of rows not raised or not raised to the right number)'
+        assert jim.properties.nrOfPlane() == nplane + 3, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of planes not raised or not raised to the right number)'
+        assert jim.properties.nrOfBand() == nband, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(number of bands changed)'
+        assert jim[0, 100, 100].np() == 10, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(value not used for new planes)'
+        assert jim[1, 0, 0].np() == 10, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(value not used for the frame)'
+        assert jim[1, 2, 2].np() == 5, \
+            'Error in geometry.imageFrameAdd() ' \
+            '(values in the original image changed)'
+
+        # Test imageFrameSubtract() for 1-band Jim
+
+        subtracted = pj.geometry.imageFrameSubtract(jim, 1, 2, 1, 2, 1, 2)
+        jim.geometry.imageFrameSubtract(1, 2, 1, 2, 1, 2)
+
+        assert jim.pixops.isEqual(subtracted), \
+            'Inconsistency in geometry.imageFrameSubtract() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of cols not raised or not raised to the right number)'
+        assert jim.properties.nrOfRow() == nrow, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of rows not raised or not raised to the right number)'
+        assert jim.properties.nrOfPlane() == nplane, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of planes not raised or not raised to the right number)'
+        assert jim.properties.nrOfBand() == nband, \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(number of bands changed)'
+        assert (jim.np() == added.np()[1:3, 1:-2, 1:-2]).all(), \
+            'Error in geometry.imageFrameSubtract() ' \
+            '(changed values in the original Jim)'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""

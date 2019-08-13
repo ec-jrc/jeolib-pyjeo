@@ -61,7 +61,8 @@ class BadDEMOps(unittest.TestCase):
 
         assert destructive_object.pixops.isEqual(flowNew), \
             'Error in demops.flowNew()'
-        assert flowNew.stats.getStats(band=0)['min'] > 0, 'Error in demops.flowNew()'
+        assert flowNew.stats.getStats(band=0)['min'] > 0, \
+            'Error in demops.flowNew()'
         assert destructive_object.properties.getDataType() == \
                flowNew.properties.getDataType(), \
             'Error in demops.flowNew() (changed data type of object)'
@@ -152,7 +153,8 @@ class BadDEMOps(unittest.TestCase):
         inf = pj.demops.slopeDInf(jim)
         jim.demops.slopeDInf()
         assert jim.pixops.isEqual(inf), 'Error in demops.slopeDInf()'
-        assert inf.stats.getStats(band=0)['min'] >= 0, 'Error in demops.slopeDInf()'
+        assert inf.stats.getStats(band=0)['min'] >= 0, \
+            'Error in demops.slopeDInf()'
 
     def test_flood_dir(self):
         """Test floodDir() func and method."""

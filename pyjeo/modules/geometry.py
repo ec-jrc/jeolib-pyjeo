@@ -295,7 +295,7 @@ def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0):
                 returnJim._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
         return _pj.Jim(returnJim)
     else:
-        return _pj.Jim(jim_object._jipjim.d_imageFrameAdd(
+        return _pj.Jim(jim_object._jipjim.imageFrameAdd(
             [l, r, t, b, u, d], val))
 
 

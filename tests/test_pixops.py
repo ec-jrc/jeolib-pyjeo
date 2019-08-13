@@ -184,10 +184,9 @@ class BadPixOps(unittest.TestCase):
 
         levelled_stats = levelled.stats.getStats(band=0)
 
-        # TODO: Uncomment when bug #14 in jiplib will be solved
-        # assert jim.pixops.isEqual(levelled), \
-        #     'Inconsistency in pixops.setLevel() ' \
-        #     '(method returns different result than function)'
+        assert jim.pixops.isEqual(levelled), \
+            'Inconsistency in pixops.setLevel() ' \
+            '(method returns different result than function)'
         assert levelled_stats != stats, \
             'Error in pixops.setLevel() (object not changed)'
         assert levelled_stats['min'] == min, \
