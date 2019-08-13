@@ -20,4 +20,6 @@ setup(
                 'services/processing/jiplibhelp/',
     license='EUPL',
     packages=find_packages(exclude=['doc', 'tests']),
-    include_package_data=True)
+    include_package_data=True,
+    install_requires='numpy'
+)
