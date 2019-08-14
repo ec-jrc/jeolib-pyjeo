@@ -2,7 +2,7 @@
 
 import pyjeo as _pj
 import numpy
-from scipy import signal
+# from scipy import signal
 
 
 def catchmentBasinConfluence(jim_object, d8):
