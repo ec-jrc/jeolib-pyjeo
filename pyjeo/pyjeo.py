@@ -242,6 +242,9 @@ class Jim():
                                          '[seed, uniform, stdev] without '
                                          'specifying the geometry and otype '
                                          'of Jim.')
+        elif type(image) in [str, unicode]:
+            if not _os.path.isfile(image):
+                raise ValueError('File does not exist')
 
     def _checkNumberOfBands(self, another_jim):
         """Check if the number of bands matches for both Jim objects.
@@ -1302,6 +1305,8 @@ class JimVect():
         :param vector: Path to a vector dataset
         :return: a JimVect object
         """
+        self._checkInitParamsSense(vector, kwargs)
+
         self._jipjimvect = _ParentVect(vector, kwargs)
 
         self._all = all._AllVect()
@@ -1367,6 +1372,18 @@ class JimVect():
             methods.extend(treeStructure(module, queried_module))
 
         print('\n'.join(methods))
+
+    def _checkInitParamsSense(self, vector, kwargs):
+        """Check if the combination of (kw)args for Jim init makes sense.
+
+        :param image: path to a raster or another Jim object as a basis for
+            the Jim object
+        """
+        keys = kwargs.keys()
+
+        if type(vector) in [str, unicode]:
+            if not _os.path.isfile(vector):
+                raise ValueError('File does not exist')
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to parent VectorOgr instance.
