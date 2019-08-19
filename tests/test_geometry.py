@@ -85,6 +85,14 @@ class BadGeometry(unittest.TestCase):
         assert jimreduce.pixops.isEqual(jimstack), \
             'Error in geometry.reducePlane()'
 
+        # Test the band2plane method
+        jimband = pj.Jim(rasterfn, band=[0,1,2])
+        jimplane = pj.Jim(rasterfn, band=[0,1,2], band2plane=True)
+        jimband.geometry.band2plane()
+        assert jimband.pixops.isEqual(jimplane), \
+            'Error in geometry.band2plane() ' \
+            '(jimband not equal to jimsplane)'
+
     def test_warp(self):
         """Test the warp method."""
         jim0 = pj.Jim(rasterfn)
