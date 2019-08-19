@@ -2,8 +2,6 @@
 
 import pyjeo as _pj
 import numpy
-from scipy import signal
-from scipy import ndimage
 
 
 def edgeWeight(jim_object, dir=0, type=0):

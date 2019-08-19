@@ -1,6 +1,9 @@
 from .pyjeo import *
 
 
+__version__ = '0.5.0'
+
+
 def _check_graph(graph, allowed_values):
     """Check whether values used as graph are allowed.
 
