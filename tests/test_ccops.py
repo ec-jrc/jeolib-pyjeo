@@ -107,7 +107,7 @@ class BadCCOps(unittest.TestCase):
 
         # Test distanceInfluenceZones2dEuclidean
         nrow = ncol = 500
-        jim = pj.Jim(nrow=nrow, ncol=ncol, otype='Byte', uniform=[0, 1])
+        jim = pj.Jim(nrow=nrow, ncol=ncol, otype='Byte')
         for i in range(15):
             jim[np.random.randint(0, 500), np.random.randint(0, 500)] = i
 
