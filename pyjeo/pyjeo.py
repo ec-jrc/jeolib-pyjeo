@@ -11,7 +11,7 @@ try:
 except ImportError:
     from jeodpp import jiplib as _jl
 
-from modules import pjio as io, properties, pixops, ngbops, geometry, \
+from .modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, classify, demops, stats, all
 
 
