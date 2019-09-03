@@ -242,7 +242,7 @@ class Jim():
                                          '[seed, uniform, stdev] without '
                                          'specifying the geometry and otype '
                                          'of Jim.')
-        elif type(image) in [str, unicode]:
+        elif type(image) is str:
             if not _os.path.isfile(image):
                 raise ValueError('File does not exist')
 
@@ -1381,7 +1381,7 @@ class JimVect():
         """
         keys = kwargs.keys()
 
-        if type(vector) in [str, unicode]:
+        if type(vector) is str:
             if not _os.path.isfile(vector):
                 raise ValueError('File does not exist')
 
