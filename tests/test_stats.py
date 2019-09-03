@@ -27,7 +27,7 @@ class BadStats(unittest.TestCase):
 
         jim_min_dict = jim.stats.getStats(function='min', band=0)
 
-        for key, val in jim_min_dict.iteritems():
+        for key, val in jim_min_dict.items():
             assert val == min, \
                 'Error in getting statistics with stats.getStats()'
 
