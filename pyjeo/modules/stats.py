@@ -351,7 +351,7 @@ class _StatsList():
             {'rmse': 10.4638}
 
         """
-        keys = kwargs.keys()
+        keys = list(kwargs.keys())
 
         if not isinstance(function, list):
             function = function.split(',')
