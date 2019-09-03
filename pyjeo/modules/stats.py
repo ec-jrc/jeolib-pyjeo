@@ -374,10 +374,11 @@ class _StatsList():
         if not forceJiplib:
             for item in self._jim_list:
                 new_statDict = item.stats.getStats(function, **kwargs)
-                if 'min' in keys and (new_statDict['min'] < statDict['min']
-                                      or statDict['min'] is None):
+                if 'min' in keys and (statDict['min'] is None or
+                                      new_statDict['min'] < statDict['min']):
                     statDict['min'] = new_statDict['min']
-                if 'max' in keys and new_statDict['max'] > statDict['max']:
+                if 'max' in keys and (statDict['max'] is None or
+                                      new_statDict['max'] > statDict['max']):
                     statDict['max'] = new_statDict['max']
         else:
             kwargs.update({'function': function})
