@@ -1120,6 +1120,22 @@ class BadBasicMethods(unittest.TestCase):
 
         warnings.resetwarnings()
 
+    def test_checks(self):
+        """Test checks of arguments appearing behind the scene."""
+        jim1 = pj.Jim(tiles[0])
+        jim1.pixops.convert('Byte')
+
+        try:
+            _ = pj.ccops.labelConstrainedCCsVariance(jim1, 0, 0, 0, 0, 0, 0,
+                                                     graph=0)
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, 'Error in raising an error when an invalid value ' \
+                           'is passed as a graph in a function (for example ' \
+                           'ccops.labelConstrainedCCsVariance())'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
