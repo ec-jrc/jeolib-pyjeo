@@ -4,7 +4,11 @@ import pyjeo as pj
 import unittest
 
 import numpy as np
+import os
+import random
+import string
 import warnings
+import tempfile
 
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
@@ -107,6 +111,22 @@ class BadBasicMethods(unittest.TestCase):
 
         assert not failed, \
             'Error in catching a call of Jim creation with nonsense (kw)args'
+
+        random_string = str()
+        temp_dir = tempfile.gettempdir()
+        non_existing_path = os.path.join(temp_dir, random_string)
+        while os.path.isfile(non_existing_path):
+            random_string = random.sample(string.ascii_letters, 5)
+            non_existing_path = os.path.join(temp_dir, random_string)
+
+        try:
+            _ = pj.Jim(non_existing_path)
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of Jim creation with non-existing path'
 
     def test_numpy_conversions(self):
         """Test conversions to numpy and back."""
