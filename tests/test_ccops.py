@@ -196,6 +196,8 @@ class BadCCOps(unittest.TestCase):
         jim1.pixops.convert('Byte')
         jim2.pixops.convert('Byte')
 
+        # Test labelConstrainedCCsVariance()
+
         labelled = pj.ccops.labelConstrainedCCsVariance(
             jim1, 0, 0, 0, 0, 0, 0, 4)
         labelled_different = pj.ccops.labelConstrainedCCsVariance(
@@ -211,7 +213,7 @@ class BadCCOps(unittest.TestCase):
 
         assert not labelled.pixops.isEqual(labelled_different), \
             'Error in ccops.labelConstrainedCCsVariance() ' \
-            'created the same object for different alpha value)'
+            '(created the same object for different alpha value)'
 
         assert stats['min'] == 0, \
             'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
@@ -243,6 +245,47 @@ class BadCCOps(unittest.TestCase):
         assert non_zero1 > non_zero2, \
             'Error in Jim.ccops.labelConstrainedCCsVariance() ' \
             '(some of parameters ox, oy, oz not applied)'
+
+        # Test labelFlatZonesSeeded()
+        nr_of_col = nr_of_row = 20
+        jim = pj.Jim(jim1[0:nr_of_col, 0:nr_of_row])
+
+        ngb = pj.Jim(ncol=3, nrow=3, otype='Byte')
+        ngb[0, 1] = 1
+        ngb[1, 0] = 1
+        ngb[1, 2] = 1
+        ngb[2, 1] = 1
+
+        seeds = pj.Jim(ncol=nr_of_col,
+                       nrow=nr_of_row,
+                       uniform=[0, 2],
+                       otype='Byte')
+
+        labelled = pj.ccops.labelFlatZonesSeeded(jim, ngb, seeds,
+                                                 1, 1, 0)
+        jim.ccops.labelFlatZonesSeeded(ngb, seeds, 1, 1, 0)
+
+        labelled_different = pj.ccops.labelFlatZonesSeeded(
+            jim, ngb, seeds, 0, 0, 0)
+
+        stats = jim.stats.getStats(['min', 'max'])
+
+        assert jim.pixops.isEqual(labelled), \
+            'Inconsistency in ccops.labelFlatZonesSeeded() ' \
+            '(method returns different result than function)'
+        assert not labelled.pixops.isEqual(labelled_different), \
+            'Error in ccops.labelFlatZonesSeeded() ' \
+            '(created the same object for different ox and oy)'
+        assert stats['min'] == 0, \
+            'Error in Jim.ccops.labelFlatZonesSeeded() ' \
+            '(minimum value not equal to 0)'
+        assert labelled.np()[0, 0] == 0, \
+            'Error in Jim.ccops.labelFlatZonesSeeded() ' \
+            '(value at position [0, 0] with 3x3 jim_ngb not equal to 0)'
+        assert 0 < stats['max'] < nr_of_col * nr_of_row, \
+            'Error in Jim.ccops.labelFlatZonesSeeded() ' \
+            '(maximum value not smaller than nrOfCol * nrOfRow or ' \
+            'equal to 0)'
 
 
 def load_tests(loader=None, tests=None, pattern=None):
