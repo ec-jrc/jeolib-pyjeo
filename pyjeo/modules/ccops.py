@@ -97,7 +97,7 @@ def distanceGeodesic(mask, marker, graph, band=0):
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(mask._jipjim.distanceGeodesic(marker._jipjim, graph, band))
+    return _pj.Jim(jim._jipjim.jldistanceGeodesic(marker._jipjim, graph, band))
 
 
 def distanceInfluenceZones2dEuclidean(jim, band=0):
@@ -643,7 +643,7 @@ class _CCOps():
         :param graph: integer for connectivity
         :param band: List of band indices to crop (index is 0 based)
         """
-        self._jim_object._jipjim.d_distanceGeodesic(marker._jipjim, graph,
+        self._jim_object._jipjim.d_jldistanceGeodesic(marker._jipjim, graph,
                                                     band)
 
     def distanceInfluenceZones2dEuclidean(self, band=0):
