@@ -4,7 +4,11 @@ import pyjeo as pj
 import unittest
 
 import numpy as np
+import os
+import random
+import string
 import warnings
+import tempfile
 
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
@@ -107,6 +111,22 @@ class BadBasicMethods(unittest.TestCase):
 
         assert not failed, \
             'Error in catching a call of Jim creation with nonsense (kw)args'
+
+        random_string = str()
+        temp_dir = tempfile.gettempdir()
+        non_existing_path = os.path.join(temp_dir, random_string)
+        while os.path.isfile(non_existing_path):
+            random_string = random.sample(string.ascii_letters, 5)
+            non_existing_path = os.path.join(temp_dir, random_string)
+
+        try:
+            _ = pj.Jim(non_existing_path)
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of Jim creation with non-existing path'
 
     def test_numpy_conversions(self):
         """Test conversions to numpy and back."""
@@ -1119,6 +1139,22 @@ class BadBasicMethods(unittest.TestCase):
             '(the output Jim does not have the same number of bands)'
 
         warnings.resetwarnings()
+
+    def test_checks(self):
+        """Test checks of arguments appearing behind the scene."""
+        jim1 = pj.Jim(tiles[0])
+        jim1.pixops.convert('Byte')
+
+        try:
+            _ = pj.ccops.labelConstrainedCCsVariance(jim1, 0, 0, 0, 0, 0, 0,
+                                                     graph=0)
+            failed = True
+        except ValueError:
+            failed = False
+
+        assert not failed, 'Error in raising an error when an invalid value ' \
+                           'is passed as a graph in a function (for example ' \
+                           'ccops.labelConstrainedCCsVariance())'
 
 
 def load_tests(loader=None, tests=None, pattern=None):
