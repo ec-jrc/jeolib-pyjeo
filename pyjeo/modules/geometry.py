@@ -363,12 +363,9 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
     """
     bands = []
     if band is None:
-        bands = range(0, self._jim_object.properties.nrOfBand())
+        bands = range(0, jim_object.properties.nrOfBand())
     else:
-        try:
-            bands.extend(band)
-        except TypeError:
-            bands.append(band)
+        bands.extend(band)
 
     returnJim = None
 
@@ -378,7 +375,7 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
                 sec_jim_object._jipjim, x, y, z, band)
             returnJim.geometry.stackBand(jimband)
         else:
-            returnJim = returnJim._jipjim.imageInsert(
+            returnJim = jim_object._jipjim.imageInsert(
                 sec_jim_object._jipjim, x, y, z, band)
 
     return _pj.Jim(returnJim)
@@ -1956,10 +1953,8 @@ class _Geometry():
         if band is None:
             bands = range(0, self._jim_object.properties.nrOfBand())
         else:
-            try:
-                bands.extend(band)
-            except TypeError:
-                bands.append(band)
+            bands.extend(band)
+
         for band in bands:
             self._jim_object._jipjim.d_imageInsert(sec_jim_object._jipjim, x, y, z,
                                                    band)
