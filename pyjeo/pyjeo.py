@@ -1,4 +1,5 @@
-"""Basic file containing Jim, JimList and JimVect objects."""
+"""Basic file containing Jim, JimList and JimVect objects and functions for
+numpy conversions."""
 
 from __future__ import division
 import numpy
@@ -18,17 +19,6 @@ from .modules import pjio as io, properties, pixops, ngbops, geometry, \
 del _jl.Jim.__del__
 
 
-def np(aJim):
-    """Return a pointer to numpy representation of values in a Jim object.
-
-    The created pointer does not consume new memory.
-
-    :param aJim: Jim object with values to which will the pointer point
-    :return: a numpy representation of the Jim object
-    """
-    return _jl.np(aJim._jipjim)
-
-
 def jim2np(aJim, band=0, copyData=True):
     """Return a numpy representation of a Jim object.
 
@@ -39,6 +29,17 @@ def jim2np(aJim, band=0, copyData=True):
     :return: a numpy representation of the Jim object
     """
     return _jl.jim2np(aJim._jipjim, band, copyData)
+
+
+def np(aJim):
+    """Return a pointer to numpy representation of values in a Jim object.
+
+    The created pointer does not consume new memory.
+
+    :param aJim: Jim object with values to which will the pointer point
+    :return: a numpy representation of the Jim object
+    """
+    return _jl.np(aJim._jipjim)
 
 
 def np2jim(aNp):
