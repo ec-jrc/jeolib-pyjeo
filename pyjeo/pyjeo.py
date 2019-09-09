@@ -1368,7 +1368,9 @@ class JimVect():
                    module_methods
 
         methods = list()
-        for module in [classify._ClassifyVect, io._IOVect,
+        for module in [classify._ClassifyVect,
+                       geometry._GeometryVect,
+                       io._IOVect,
                        properties._PropertiesVect]:
             methods.extend(treeStructure(module, queried_module))
 
