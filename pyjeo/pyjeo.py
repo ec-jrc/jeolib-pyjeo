@@ -190,10 +190,11 @@ class Jim():
             if queried_module and queried_module not in str(module):
                 return ''
 
-            module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__',
-                                   '_set_caller']:
-                module_methods.remove(default_method)
+            mm = dir(module)
+            module_methods = list(mm)
+            for method in mm:
+                if method[0] == '_':
+                    module_methods.remove(method)
 
             for i in range(len(module_methods)):
                 module_methods[i] = module.__name__.lower()[1:] + '.' + \
@@ -1145,10 +1146,11 @@ class JimList(list):
             if queried_module and queried_module not in str(module):
                 return ''
 
-            module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__',
-                                   '_set_caller']:
-                module_methods.remove(default_method)
+            mm = dir(module)
+            module_methods = list(mm)
+            for method in mm:
+                if method[0] == '_':
+                    module_methods.remove(method)
 
             for i in range(len(module_methods)):
                 module_methods[i] = module.__name__.lower()[1:-4] + '.' + \
@@ -1352,10 +1354,11 @@ class JimVect():
             if queried_module and queried_module not in str(module):
                 return ''
 
-            module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__',
-                                   '_set_caller']:
-                module_methods.remove(default_method)
+            mm = dir(module)
+            module_methods = list(mm)
+            for method in mm:
+                if method[0] == '_':
+                    module_methods.remove(method)
 
             for i in range(len(module_methods)):
                 module_methods[i] = module.__name__.lower()[1:-4] + '.' + \
