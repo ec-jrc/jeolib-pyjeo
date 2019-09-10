@@ -410,10 +410,65 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.imageFrameSubtract() ' \
             '(changed values in the original Jim)'
 
+class BadGeometryVects(unittest.TestCase):
+    """Test functions and methods from geometry module."""
+
+    def test_intersect(self):
+        """Test the stack band method."""
+        jim = pj.Jim(rasterfn, band=0)
+        jimv = pj.JimVect(vectorfn)
+
+        bbox = jim.properties.getBBox()
+        new_ulx = (bbox[0] + bbox[2]) / 2.0
+        jim_cropped = pj.geometry.crop(jim, ulx=new_ulx, uly=bbox[1],
+                                       lrx=bbox[2], lry=bbox[3])
+
+        nr_of_features = jimv.properties.getFeatureCount()
+
+        non_existing_path = pj._get_random_path()
+
+        intersected = pj.geometry.intersect(jimv, jim_cropped,
+                                            non_existing_path)
+        jimv.geometry.intersect(jim_cropped)
+
+        intersected.io.write()
+        jimv.io.write()
+
+        feature_count_func = intersected.properties.getFeatureCount()
+        feature_count_meth = jimv.properties.getFeatureCount()
+
+        assert feature_count_func == feature_count_meth, \
+            'Inconsistency in geometry.intersect() ' \
+            '(method returns different result than function)'
+        assert jimv.properties.getFeatureCount() < nr_of_features, \
+            'Error in geometry.intersect() ' \
+            '(not less features on intersected area than on the whole)'
+
+        try:
+            _ = pj.geometry.intersect(jimv, jimv, pj._get_random_path())
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of geometry.intersect(Jim) ' \
+            'function where the argument is not an instance of a Jim object'
+
+        try:
+            _ = jimv.geometry.intersect(jimv)
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of geometry.intersect(Jim) method ' \
+            'where the argument is not an instance of a Jim object'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
-    suite_list = [loader.loadTestsFromTestCase(BadGeometry)]
+    suite_list = [loader.loadTestsFromTestCase(BadGeometry),
+                  loader.loadTestsFromTestCase(BadGeometryVects)]
     return unittest.TestSuite(suite_list)
