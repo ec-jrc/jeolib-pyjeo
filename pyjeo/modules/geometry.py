@@ -2729,3 +2729,43 @@ class _GeometryVect():
         pjvect._set(avect)
         #todo: do not return but overwrite self
         return pjvect
+
+    def intersect(self, jim, **kwargs):
+        """Intersect JimVect object with Jim object.
+
+        Keeps only those features with an intersect.
+
+        Modifies the instance on which the method was called.
+
+        :param jim: Jim object with which to intersect
+        :param output: output filename of JimVect object that is returned.
+            Use /vsimem for in memory vectors
+        :param kwargs: See table below
+        :return: intersected JimVect object
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+
+        Example: intersect a sample with a Jim object::
+
+          jim = pj.Jim('/path/to/raster.tif')
+          v = pj.JimVect('/path/to/vector.sqlite')
+          sampleintersect = pj.geometry.intersect(
+              v, jim, output='/vsimem/intersect', oformat='SQLite',
+              co=['OVERWRITE=YES'])
+          sampleintersect.io.write('/path/to/output.sqlite')
+
+        """
+        non_existing_path = _pj._get_random_path()
+
+        kwargs.update({'output': non_existing_path})
+        if isinstance(jim, _pj.Jim):
+            avect = self._jim_vect._jipjimvect.intersect(jim._jipjim, kwargs)
+            self._jim_vect._set(avect)
+        else:
+            raise TypeError('Error: can only intersect with Jim object')
