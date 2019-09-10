@@ -3,18 +3,12 @@
 import pyjeo as pj
 import unittest
 
-import random
-import string
-import os
-
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 
 rasterfn = 'tests/data/modis_ndvi_2010.tif'
 vectorfn = 'tests/data/modis_ndvi_training.sqlite'
-outputfn = os.path.join('/tmp',
-                        ''.join(random.sample(string.ascii_letters, 5)))
-warpedfn = os.path.join('/tmp',
-                        ''.join(random.sample(string.ascii_letters, 5)))
+outputfn = pj._get_random_path()
+warpedfn = pj._get_random_path()
 
 
 class BadGeometry(unittest.TestCase):
