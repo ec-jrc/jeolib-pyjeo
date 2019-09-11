@@ -464,6 +464,33 @@ class BadGeometryVects(unittest.TestCase):
             'Error in catching a call of geometry.intersect(Jim) method ' \
             'where the argument is not an instance of a Jim object'
 
+    def test_convexhull(self):
+        """Test the convexHull() function and method."""
+        jimv = pj.JimVect(vectorfn)
+
+        orig_bbox = jimv.properties.getBBox()
+
+        non_existing_path = pj._get_random_path()
+        hull = pj.geometry.convexHull(jimv, non_existing_path)
+        jimv.geometry.convexHull()
+
+        feature_count_func = hull.properties.getFeatureCount()
+        feature_count_meth = jimv.properties.getFeatureCount()
+
+        assert feature_count_func == feature_count_meth, \
+            'Inconsistency in geometry.convexHull() ' \
+            '(method returns different result than function)'
+        assert feature_count_meth == 1, \
+            'Error in geometry.convexHull() ' \
+            '(getFeatureCount != 1 for the output)'
+        assert feature_count_meth == 1, \
+            'Error in geometry.convexHull() ' \
+            '(getFeatureCount != 1 for the output)'
+        # TODO: Uncomment when bug #28 in jiplib is solved
+        # assert orig_bbox == jimv.properties.getBBox(), \
+        #     'Error in geometry.convexHull() ' \
+        #     '(BBox of hull is not the same as of the original JimVect)'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
