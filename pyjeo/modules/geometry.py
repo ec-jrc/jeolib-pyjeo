@@ -2763,8 +2763,6 @@ class _GeometryVect():
         Modifies the instance on which the method was called.
 
         :param jim: Jim object with which to intersect
-        :param output: output filename of JimVect object that is returned.
-            Use /vsimem for in memory vectors
         :param kwargs: See table below
         :return: intersected JimVect object
 
