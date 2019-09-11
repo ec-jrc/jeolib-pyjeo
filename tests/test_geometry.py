@@ -440,7 +440,7 @@ class BadGeometryVects(unittest.TestCase):
         assert feature_count_func == feature_count_meth, \
             'Inconsistency in geometry.intersect() ' \
             '(method returns different result than function)'
-        assert jimv.properties.getFeatureCount() < nr_of_features, \
+        assert feature_count_meth < nr_of_features, \
             'Error in geometry.intersect() ' \
             '(not less features on intersected area than on the whole)'
 
