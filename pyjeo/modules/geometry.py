@@ -2792,3 +2792,66 @@ class _GeometryVect():
             self._jim_vect._set(avect)
         else:
             raise TypeError('Error: can only intersect with Jim object')
+
+    def join(self, jvec2, **kwargs):
+        """Join JimVect object with another JimVect object.
+
+        A key field is used to find corresponding features in both objects.
+
+        :param jve2c: second JimVect object to join
+        :param kwargs: See table below
+        :return: joined JimVect object
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | key              | Key(s) used to join (default is fid)             |
+        +------------------+--------------------------------------------------+
+        | method           | Join method: "INNER","OUTER_LEFT","OUTER_RIGHT", |
+        |                  | "OUTER_FULL". (default is INNER)                 |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+
+        .. |inner| image:: figures/join_inner.png
+             :width: 20 %
+        .. |outer_left| image:: figures/join_outer_left.png
+             :width: 20 %
+        .. |outer_right| image:: figures/join_outer_right.png
+             :width: 20 %
+        .. |outer_full| image:: figures/join_outer_full.png
+             :width: 20 %
+
+        The join methods currently supported are:
+
+        INNER |inner|: join two JimVect objects, keeping only those features for \
+                       which identical keys in both objects are found
+
+        OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features \
+                                 from first object
+
+        OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features \
+                                   from second object
+
+        OUTER_FULL |outer_full|: join two JimVect objects, keeping all features \
+                                 from both objects
+
+        Example: join two vectors, based on the key 'id', which is a common field
+        shared between v1 and v2. Use OUTER_FULL as the join method::
+
+          v1 = pj.JimVect('/path/to/vector1.sqlite')
+          v2 = pj.JimVect('/path/to/vector2.sqlite')
+          v3 = pj.geometry.join(
+              v1, v2, '/tmp/test.sqlite', oformat='SQLite',
+              co=['OVERWRITE=YES'], key=['id'], method='OUTER_FULL')
+        """
+        non_existing_path = _pj._get_random_path()
+
+        kwargs.update({'output': non_existing_path})
+        if isinstance(jvec2, _pj.JimVect):
+            avect = self._jim_vect._jipjimvect.join(jvec2._jipjimvect, kwargs)
+            self._jim_vect._set(avect)
+        else:
+            raise TypeError('Error: can only join two JimVect objects')
