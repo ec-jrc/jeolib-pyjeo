@@ -1226,7 +1226,7 @@ class _Geometry():
            12
 
         """
-        self._jim_object._jipjim.band2plane()
+        self._jim_object._jipjim.d_band2plane()
 
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
              lrz=None, dx=None, dy=None, nogeo=False, **kwargs):

@@ -76,6 +76,29 @@ def filter2d(jim_object, filter, **kwargs):
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
+def savgolay(jim_object, **kwargs):
+    """Compute the Savitzky-Golay filter in the time-spectral domain
+
+    :param nl: Number of leftward (past) data points used in Savitzky-Golay filter)
+    :param nr: Number of rightward (future) data points used in Savitzky-Golay filter)
+    :param ld: order of the derivative desired in Savitzky-Golay filter (e.g., ld=0 for smoothed function)
+    :param m: order of the smoothing polynomial in Savitzky-Golay filter, also equal to the highest conserved moment; usual values are m = 2 or m = 4)
+
+    Example:
+
+    Perform a Savitzky-Golay filter to reconstruct a time series data set as suggested by `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
+
+    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+    jim.pixops.convert('GDT_Float64')
+
+    savgol=pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
+    for loop in range(0,10):
+        savgol[savgol<jim]=jim
+        savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
+    """
+    return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
+
+
 def getDissim(jimo, dissimType=0):
     """Compute the dissimilarities.
 
@@ -698,6 +721,28 @@ class _NgbOps():
         else:
             kwargs.update({'filter': filter})
         self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
+
+    def savgolay(self, **kwargs):
+        """Compute the Savitzky-Golay filter in the time-spectral domain
+
+        :param nl: Number of leftward (past) data points used in Savitzky-Golay filter)
+        :param nr: Number of rightward (future) data points used in Savitzky-Golay filter)
+        :param ld: order of the derivative desired in Savitzky-Golay filter (e.g., ld=0 for smoothed function)
+        :param m: order of the smoothing polynomial in Savitzky-Golay filter, also equal to the highest conserved moment; usual values are m = 2 or m = 4)
+
+        Example:
+
+        Perform a Savitzky-Golay filter to reconstruct a time series data set as suggested by `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
+
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
+
+        savgol=pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
+        for loop in range(0,10):
+           savgol[savgol<jim]=jim
+           savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
+        """
+        self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
     def getDissim(self, jimo=None, dissimType=0):
         """Compute the dissimilarities.
