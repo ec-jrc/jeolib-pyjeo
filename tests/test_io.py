@@ -48,7 +48,7 @@ class BadIOVects(unittest.TestCase):
         output2 = os.path.join(
             '/tmp', ''.join(random.sample(string.ascii_letters, 5)))
 
-        jimv_2 = jimv.geometry.convexHull(output=output2)
+        jimv_2 = pj.geometry.convexHull(jimv, output=output2)
 
         jimv_3 = pj.JimVect(output2)
 

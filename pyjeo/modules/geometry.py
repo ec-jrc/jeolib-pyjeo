@@ -25,6 +25,32 @@ from collections import Iterable
 #         raise TypeError('Error: can only join with JimVect object')
 
 
+def convexHull(jim_vect, output, **kwargs):
+    """Create the convex hull on a JimVect object.
+
+    :param jim_vect: JimVect object to be used for the hull generation
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
+    :param kwargs: See table below
+
+    +------------------+--------------------------------------------------+
+    | key              | value                                            |
+    +==================+==================================================+
+    | oformat          | Output vector dataset format                     |
+    +------------------+--------------------------------------------------+
+    | co               | Creation option for output vector dataset        |
+    +------------------+--------------------------------------------------+
+    """
+    kwargs.update({'output': output})
+
+    avect = jim_vect._jipjimvect.convexHull(kwargs)
+
+    pjvect = _pj.JimVect()
+    pjvect._set(avect)
+
+    return pjvect
+
+
 def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
          lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
     """Subset raster dataset.
@@ -363,12 +389,9 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
     """
     bands = []
     if band is None:
-        bands = range(0, self._jim_object.properties.nrOfBand())
+        bands = range(0, jim_object.properties.nrOfBand())
     else:
-        try:
-            bands.extend(band)
-        except TypeError:
-            bands.append(band)
+        bands.extend(band)
 
     returnJim = None
 
@@ -378,7 +401,7 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
                 sec_jim_object._jipjim, x, y, z, band)
             returnJim.geometry.stackBand(jimband)
         else:
-            returnJim = returnJim._jipjim.imageInsert(
+            returnJim = jim_object._jipjim.imageInsert(
                 sec_jim_object._jipjim, x, y, z, band)
 
     return _pj.Jim(returnJim)
@@ -1956,10 +1979,8 @@ class _Geometry():
         if band is None:
             bands = range(0, self._jim_object.properties.nrOfBand())
         else:
-            try:
-                bands.extend(band)
-            except TypeError:
-                bands.append(band)
+            bands.extend(band)
+
         for band in bands:
             self._jim_object._jipjim.d_imageInsert(sec_jim_object._jipjim, x, y, z,
                                                    band)
@@ -2713,11 +2734,11 @@ class _GeometryVect():
     #     else:
     #         raise TypeError('Error: can only join with JimVect object')
 
-    def convexHull(self, output, **kwargs):
+    def convexHull(self, **kwargs):
         """Create the convex hull on a JimVect object.
 
-        :param output: output filename of JimVect object that is returned.
-            Use /vsimem for in memory vectors
+        Modifies the instance on which the method was called.
+
         :param kwargs: See table below
 
         +------------------+--------------------------------------------------+
@@ -2728,9 +2749,46 @@ class _GeometryVect():
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
         """
-        kwargs.update({'output': output})
+        non_existing_path = _pj._get_random_path()
+
+        kwargs.update({'output': non_existing_path})
         avect = self._jim_vect._jipjimvect.convexHull(kwargs)
-        pjvect = _pj.JimVect()
-        pjvect._set(avect)
-        #todo: do not return but overwrite self
-        return pjvect
+        self._jim_vect._set(avect)
+
+    def intersect(self, jim, **kwargs):
+        """Intersect JimVect object with Jim object.
+
+        Keeps only those features with an intersect.
+
+        Modifies the instance on which the method was called.
+
+        :param jim: Jim object with which to intersect
+        :param kwargs: See table below
+        :return: intersected JimVect object
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+
+        Example: intersect a sample with a Jim object::
+
+          jim = pj.Jim('/path/to/raster.tif')
+          v = pj.JimVect('/path/to/vector.sqlite')
+          sampleintersect = pj.geometry.intersect(
+              v, jim, output='/vsimem/intersect', oformat='SQLite',
+              co=['OVERWRITE=YES'])
+          sampleintersect.io.write('/path/to/output.sqlite')
+
+        """
+        non_existing_path = _pj._get_random_path()
+
+        kwargs.update({'output': non_existing_path})
+        if isinstance(jim, _pj.Jim):
+            avect = self._jim_vect._jipjimvect.intersect(jim._jipjim, kwargs)
+            self._jim_vect._set(avect)
+        else:
+            raise TypeError('Error: can only intersect with Jim object')

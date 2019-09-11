@@ -1,4 +1,5 @@
-"""Basic file containing Jim, JimList and JimVect objects."""
+"""Basic file containing Jim, JimList and JimVect objects and functions for
+numpy conversions."""
 
 from __future__ import division
 import numpy
@@ -18,17 +19,6 @@ from .modules import pjio as io, properties, pixops, ngbops, geometry, \
 del _jl.Jim.__del__
 
 
-def np(aJim):
-    """Return a pointer to numpy representation of values in a Jim object.
-
-    The created pointer does not consume new memory.
-
-    :param aJim: Jim object with values to which will the pointer point
-    :return: a numpy representation of the Jim object
-    """
-    return _jl.np(aJim._jipjim)
-
-
 def jim2np(aJim, band=0, copyData=True):
     """Return a numpy representation of a Jim object.
 
@@ -39,6 +29,17 @@ def jim2np(aJim, band=0, copyData=True):
     :return: a numpy representation of the Jim object
     """
     return _jl.jim2np(aJim._jipjim, band, copyData)
+
+
+def np(aJim):
+    """Return a pointer to numpy representation of values in a Jim object.
+
+    The created pointer does not consume new memory.
+
+    :param aJim: Jim object with values to which will the pointer point
+    :return: a numpy representation of the Jim object
+    """
+    return _jl.np(aJim._jipjim)
 
 
 def np2jim(aNp):
@@ -190,10 +191,11 @@ class Jim():
             if queried_module and queried_module not in str(module):
                 return ''
 
-            module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__',
-                                   '_set_caller']:
-                module_methods.remove(default_method)
+            mm = dir(module)
+            module_methods = list(mm)
+            for method in mm:
+                if method[0] == '_':
+                    module_methods.remove(method)
 
             for i in range(len(module_methods)):
                 module_methods[i] = module.__name__.lower()[1:] + '.' + \
@@ -1145,10 +1147,11 @@ class JimList(list):
             if queried_module and queried_module not in str(module):
                 return ''
 
-            module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__',
-                                   '_set_caller']:
-                module_methods.remove(default_method)
+            mm = dir(module)
+            module_methods = list(mm)
+            for method in mm:
+                if method[0] == '_':
+                    module_methods.remove(method)
 
             for i in range(len(module_methods)):
                 module_methods[i] = module.__name__.lower()[1:-4] + '.' + \
@@ -1352,10 +1355,11 @@ class JimVect():
             if queried_module and queried_module not in str(module):
                 return ''
 
-            module_methods = dir(module)
-            for default_method in ['__init__', '__module__', '__doc__',
-                                   '_set_caller']:
-                module_methods.remove(default_method)
+            mm = dir(module)
+            module_methods = list(mm)
+            for method in mm:
+                if method[0] == '_':
+                    module_methods.remove(method)
 
             for i in range(len(module_methods)):
                 module_methods[i] = module.__name__.lower()[1:-4] + '.' + \
@@ -1365,7 +1369,9 @@ class JimVect():
                    module_methods
 
         methods = list()
-        for module in [classify._ClassifyVect, io._IOVect,
+        for module in [classify._ClassifyVect,
+                       geometry._GeometryVect,
+                       io._IOVect,
                        properties._PropertiesVect]:
             methods.extend(treeStructure(module, queried_module))
 

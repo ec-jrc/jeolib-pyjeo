@@ -189,12 +189,35 @@ class BadCCOps(unittest.TestCase):
             '(mean value for graph=8 not smaller than for graph=4)'
 
     def test_labelling(self):
-        """Test the distance functions and methods."""
+        """Test the labelling functions and methods."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])
 
         jim1.pixops.convert('Byte')
         jim2.pixops.convert('Byte')
+
+        labelled = pj.ccops.dissimToAlphaCCs(jim1, jim2, 0)
+        labelled_different = pj.ccops.dissimToAlphaCCs(jim1, jim2, 5)
+        jim1_copy = pj.Jim(jim1)
+        jim1_copy.ccops.dissimToAlphaCCs(jim2, 0)
+
+        stats = labelled.stats.getStats()
+
+        assert jim1_copy.pixops.isEqual(labelled), \
+            'Inconsistency in ccops.dissimToAlphaCCs() ' \
+            '(method returns different result than function)'
+
+        assert not labelled.pixops.isEqual(labelled_different), \
+            'Error in ccops.dissimToAlphaCCs() ' \
+            'created the same object for different alpha value)'
+
+        assert stats['min'] == 0, \
+            'Error in Jim.ccops.dissimToAlphaCCs() ' \
+            '(minimum value not equal to 0)'
+        assert 0 < stats['max'] < jim1.properties.nrOfCol() * \
+               jim1.properties.nrOfRow(), \
+            'Error in Jim.ccops.dissimToAlphaCCs() ' \
+            '(maximum value not smaller than nrOfCol * nrOfRow or equal to 0)'
 
         # Test labelConstrainedCCsVariance()
 
