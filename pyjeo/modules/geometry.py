@@ -25,6 +25,32 @@ from collections import Iterable
 #         raise TypeError('Error: can only join with JimVect object')
 
 
+def convexHull(jim_vect, output, **kwargs):
+    """Create the convex hull on a JimVect object.
+
+    :param jim_vect: JimVect object to be used for the hull generation
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
+    :param kwargs: See table below
+
+    +------------------+--------------------------------------------------+
+    | key              | value                                            |
+    +==================+==================================================+
+    | oformat          | Output vector dataset format                     |
+    +------------------+--------------------------------------------------+
+    | co               | Creation option for output vector dataset        |
+    +------------------+--------------------------------------------------+
+    """
+    kwargs.update({'output': output})
+
+    avect = jim_vect._jipjimvect.convexHull(kwargs)
+
+    pjvect = _pj.JimVect()
+    pjvect._set(avect)
+
+    return pjvect
+
+
 def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
          lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
     """Subset raster dataset.
@@ -2708,11 +2734,11 @@ class _GeometryVect():
     #     else:
     #         raise TypeError('Error: can only join with JimVect object')
 
-    def convexHull(self, output, **kwargs):
+    def convexHull(self, **kwargs):
         """Create the convex hull on a JimVect object.
 
-        :param output: output filename of JimVect object that is returned.
-            Use /vsimem for in memory vectors
+        Modifies the instance on which the method was called.
+
         :param kwargs: See table below
 
         +------------------+--------------------------------------------------+
@@ -2723,12 +2749,11 @@ class _GeometryVect():
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
         """
-        kwargs.update({'output': output})
+        non_existing_path = _pj._get_random_path()
+
+        kwargs.update({'output': non_existing_path})
         avect = self._jim_vect._jipjimvect.convexHull(kwargs)
-        pjvect = _pj.JimVect()
-        pjvect._set(avect)
-        #todo: do not return but overwrite self
-        return pjvect
+        self._jim_vect._set(avect)
 
     def intersect(self, jim, **kwargs):
         """Intersect JimVect object with Jim object.
