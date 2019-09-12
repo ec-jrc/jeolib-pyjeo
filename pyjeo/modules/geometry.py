@@ -561,13 +561,16 @@ def magnify(jim_object, n):
         returnJim = None
         for band in range(0, jim_object.properties.nrOfBand()):
             if returnJim:
-                jimband = _pj.geometry.cropBand(jim_object, band=band)
-                returnJim.geometry.stackBand(jimband._jipjim.imageMagnify(n))
-            else:
-                returnJim = _pj.geometry.cropBand(
-                    jim_object, band=band)._jipjim.imageMagnify(n)
+                jimband = _pj.geometry.cropBand(jim_object,
+                                                band=band)
+                jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
 
-            return returnJim
+                returnJim.geometry.stackBand(jimband)
+            else:
+                returnJim = _pj.Jim(_pj.geometry.cropBand(
+                    jim_object, band=band)._jipjim.imageMagnify(n))
+
+        return returnJim
     else:
         return _pj.Jim(jim_object._jipjim.imageMagnify(n))
 
@@ -2024,11 +2027,12 @@ class _Geometry():
                 if returnJim:
                     jimband = _pj.geometry.cropBand(self._jim_object,
                                                     band=band)
-                    returnJim.geometry.stackBand(
-                        jimband._jipjim.imageMagnify(n))
+                    jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
+
+                    returnJim.geometry.stackBand(jimband)
                 else:
-                    returnJim = _pj.geometry.cropBand(
-                        self._jim_object, band=band)._jipjim.imageMagnify(n)
+                    returnJim = _pj.Jim(_pj.geometry.cropBand(
+                        self._jim_object, band=band)._jipjim.imageMagnify(n))
             self._jim_object._set(returnJim._jipjim)
         else:
             self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
