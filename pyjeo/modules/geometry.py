@@ -2081,6 +2081,8 @@ class _Geometry():
     def polygonize(self, output, **kwargs):
         """Polygonize Jim object based on GDALPolygonize.
 
+        Returns a new JimVect object.
+
         :param output: output filename of JimVect object that is returned.
             Use /vsimem for in memory vectors
         :param kwargs: See table below

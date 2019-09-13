@@ -410,6 +410,36 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.imageFrameSubtract() ' \
             '(changed values in the original Jim)'
 
+    def test_polygonize(self):
+        """Test the polygonize() function."""
+        jim = pj.Jim(tiles[0])
+
+        sub = int(jim.properties.nrOfCol() / 2 - 3)
+
+        jim.geometry.imageFrameSubtract(sub, sub, sub, sub)
+
+        jim[0, 0] = 1
+        jim[0, 1] = 1
+
+        pol1 = pj.geometry.polygonize(jim, pj._get_random_path())
+        pol2 = jim.geometry.polygonize(pj._get_random_path())
+
+        feature_count_func = pol1.properties.getFeatureCount()
+        feature_count_meth = pol2.properties.getFeatureCount()
+
+        nr_of_cells = jim.properties.nrOfCol() * jim.properties.nrOfRow()
+
+        assert feature_count_func == feature_count_meth, \
+            'Inconsistency in geometry.polygonize() ' \
+            '(method returns different result than function)'
+        assert pol1.properties.getBBox() == jim.properties.getBBox(), \
+            'Error in geometry.polygonize() ' \
+            '(BBox changed)'
+        assert pol1.properties.getFeatureCount() < nr_of_cells, \
+            'Error in geometry.polygonize() ' \
+            '(not less features in polygons than cells in raster)'
+
+
 class BadGeometryVects(unittest.TestCase):
     """Test functions and methods from geometry module."""
 
