@@ -1254,6 +1254,35 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_band2plane()
 
+    def plane2band(self):
+        """Convert 3-dimensional single-band object to a 2-dimensional multi-band object.
+
+        The result will be a multi-band single plane object
+
+        Example: convert a single band object with 12 planes to a 2-dimensional
+        multi-band object with 1 plane::
+
+           jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+           jim.properties.nrOfBand()
+           1
+           jim.properties.nrOfPlane()
+           12
+           jim.geometry.plane2band()
+           jim.properties.nrOfPlane()
+           1
+           jim.properties.nrOfBand()
+           12
+
+        """
+        result=None
+        for iplane in range(0,self._jim_object.properties.nrOfPlane()):
+            jim_plane=_pj.geometry.cropPlane(self._jim_object,iplane)
+            if result is None:
+                result=jim_plane
+            else:
+                result.geometry.stackBand(jim_plane)
+        self._jim_object._set(result._jipjim)
+
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
              lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
         """Subset raster dataset.

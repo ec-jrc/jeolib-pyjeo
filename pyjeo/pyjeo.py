@@ -472,7 +472,7 @@ class Jim():
         """
         jim = Jim(self)
         for iband in range(0, self.properties.nrOfBand()):
-            jim.np(iband)[:] = abs(jim.np(iband))
+            jim.np(iband)[:] = numpy.abs(jim.np(iband))
         return jim
 
     def __neg__(self):

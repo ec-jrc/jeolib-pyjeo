@@ -79,10 +79,12 @@ def filter2d(jim_object, filter, **kwargs):
 def savgolay(jim_object, **kwargs):
     """Compute the Savitzky-Golay filter in the time-spectral domain
 
+    :param jim_object: a Jim object of data type GDT_Float64
     :param nl: Number of leftward (past) data points used in Savitzky-Golay filter)
     :param nr: Number of rightward (future) data points used in Savitzky-Golay filter)
     :param ld: order of the derivative desired in Savitzky-Golay filter (e.g., ld=0 for smoothed function)
     :param m: order of the smoothing polynomial in Savitzky-Golay filter, also equal to the highest conserved moment; usual values are m = 2 or m = 4)
+    :return: filtered Jim object
 
     Example:
 
@@ -97,6 +99,44 @@ def savgolay(jim_object, **kwargs):
         savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
     """
     return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
+
+
+def dwt1d(jim_object, **kwargs):
+    """Compute the discrete wavelet transform in the time-spectral domain
+
+    :param jim_object: a Jim object of data type GDT_Float64
+    :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+    :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+    :return: filtered Jim object
+
+    Example:
+
+    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+    jim.pixops.convert('GDT_Float64')
+
+    dwt=pj.ngbops.dwt1d(jim)
+    dwt.ngbops.dwti1d()
+    """
+    return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
+
+
+def dwti1d(jim_object, **kwargs):
+    """Compute the inverse discrete wavelet transform in the time-spectral domain
+
+    :param jim_object: a Jim object of data type GDT_Float64
+    :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+    :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+    :return: filtered Jim object
+
+    Example:
+
+    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+    jim.pixops.convert('GDT_Float64')
+
+    dwt=pj.ngbops.dwt1d(jim)
+    dwt.ngbops.dwti1d()
+    """
+    return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
 
 
 def getDissim(jimo, dissimType=0):
@@ -743,6 +783,98 @@ class _NgbOps():
            savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
         """
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
+
+    def dwt1d(self, **kwargs):
+        """Compute the discrete wavelet transform in the time-spectral domain
+
+        :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+        :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+        :return: filtered Jim object
+
+        Example:
+
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
+
+        jim.ngbops.dwt1d()
+        jim.ngbops.dwti1d()
+        Example:
+
+        Perform a Savitzky-Golay filter to reconstruct a time series data set as suggested by `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
+
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
+
+        savgol=pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
+        for loop in range(0,10):
+           savgol[savgol<jim]=jim
+           savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
+        """
+        self._jim_object._jipjim.d_dwt1d(kwargs)
+
+    def dwti1d(self, **kwargs):
+        """Compute the inverse discrete wavelet transform in the time-spectral domain
+
+        :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+        :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+        :return: filtered Jim object
+
+        Example::
+
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
+
+        jim.ngbops.dwt1d()
+        jim.ngbops.dwti1d()
+
+        Approximate a 3D image by setting all wavelet coefficients below some percentile value (e.g., 10) to 0::
+
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
+
+        jim.ngbops.dwt1d()
+        jim.ngbops.dwti1d()
+        jimabs=pj.Jim(jim)
+        jimabs=abs(jimabs)
+        thresholds=np.percentile(jimabs.np(),90,axis=0)
+        jim[jimabs<thresholds]=0
+        jim.ngbops.dwti1d()
+        """
+        self._jim_object._jipjim.d_dwti1d(kwargs)
+
+    def dwt2d(self, **kwargs):
+        """Compute the discrete wavelet transform in the spatial domain
+
+        :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+        :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+        :return: filtered Jim object
+
+        Example::
+
+        jim=pj.Jim('/path/to/image.tif')
+        jim.pixops.convert('GDT_Float64')
+
+        jim.ngbops.dwt2d()
+        jim.ngbops.dwti2d()
+        """
+        self._jim_object._jipjim.d_dwt2d(kwargs)
+
+    def dwti2d(self, **kwargs):
+        """Compute the inverse discrete wavelet transform in the spatial domain
+
+        :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+        :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+        :return: filtered Jim object
+
+        Example::
+
+        jim=pj.Jim('/path/to/image.tif')
+        jim.pixops.convert('GDT_Float64')
+
+        jim.ngbops.dwt2d()
+        jim.ngbops.dwti2d()
+        """
+        self._jim_object._jipjim.d_dwti2d(kwargs)
 
     def getDissim(self, jimo=None, dissimType=0):
         """Compute the dissimilarities.
