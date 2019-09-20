@@ -53,7 +53,7 @@ def reclass(jim_object, classes, reclasses, otype=None):
     return retJim
 
 
-def sml(jim_object, **kwargs):
+def sml(jim_object, reflist, **kwargs):
     """Perform supervised classification of a Jim object using SML.
 
     For training, one or more reference raster datasets with categorical
@@ -62,26 +62,16 @@ def sml(jim_object, **kwargs):
     be classified. Unlike the Jim.classify(), the training is performed not
     prior to the classification, but in the same process as the classification.
 
-    Modifies the instance on which the method was called.
-
     :param jim_object: a Jim object
-    :param kwargs: See below
-    :return: multi-band Jim object, where each band represents the
-        probability for each class
-
-    :keyword arguments:
-        :band: Band index (starting from 0). The band order must correspond
-            to the band names defined in the model. Leave empty to use all
-            bands
-        :classes: List of classes to extract from the reference. Leave empty
-            to extract two classes only (1 against rest)
+    :param reflist: JimVect object with reference classes
+    :param classes: List of classes to extract from the reference (leave empty to extract all classes in reference)
+    :return: multi-band Jim object, where each band represents the probability for each class
 
     see :py:meth:`~_Classify.sml` for an example how to use this function
     """
-    kwargs.update({'method': 'sml'})
     if 'classes' in kwargs:
         kwargs.update({'class': kwargs.pop('classes')})
-    return _pj.Jim(jim_object._jipjim.classify(kwargs))
+    return _pj.Jim(jim_object._jipjim.classifySML(reflist, kwargs))
 
 
 class _Classify():
@@ -118,12 +108,12 @@ class _Classify():
         Perform a SVM classification using the model obtained
         via :py:meth:`~_ClassifyVect.train`::
 
-          jim_sml=pj.classify.classify('svm', jim,model='/path/to/model.txt')
+          jim_svm=pj.classify.classify('svm', jim,model='/path/to/model.txt')
 
         Perform an ANN classification using the model obtained
         via :py:meth:`~_ClassifyVect.train`::
 
-          jim_sml=pj.classify.classify('ann', jim,model='/path/to/model.txt')
+          jim_ann=pj.classify.classify('ann', jim,model='/path/to/model.txt')
         """
         kwargs.update({'method': method, 'model': model})
         self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
@@ -148,33 +138,22 @@ class _Classify():
             kwargs.update({'otype': otype})
         self._jim_object._jipjim.d_reclass(kwargs)
 
-    def sml(self, **kwargs):
+    def sml(self, reflist, **kwargs):
         """Perform supervised classification of a Jim object using SML.
 
         For training, one or more reference raster datasets with categorical
         values is expected as a JimList. The reference raster dataset is
-        typically at a lower spatial resolution than the input raster dataset
-        to be classified. Unlike the Jim.classify(), the training is performed
-        not prior to the classification, but in the same process as
-        the classification.
+        typically at a lower spatial resolution than the input raster dataset to
+        be classified. Unlike the Jim.classify(), the training is performed not
+        prior to the classification, but in the same process as the classification.
 
         Modifies the instance on which the method was called.
 
-        :param kwargs: See below
-        :return: multi-band Jim object, where each band represents the
-            probability for each class
+        :param jim_object: a Jim object
+        :param reflist: JimVect object with reference classes
+        :param classes: List of classes to extract from the reference.
 
-        :keyword arguments:
-            :band: Band index (starting from 0). The band order must correspond
-                to the band names defined in the model. Leave empty to use all
-                bands
-            :classes: List of classes to extract from the reference. Leave
-                empty to extract two classes only (1 against rest)
-
-        Perform a SML classification using the model obtained
-        via :py:meth:`~_Classify.trainSML`::
-
-          jim_sml=pj.classify.sml(jim,model='/path/to/model.txt')
+          jim_sml=pj.classify.sml(reference, classes=[0,1,2], jim)
 
         The result is a multi-band :py:class`Jim` object where the number of
         bands equals the number of classes and each band represents
@@ -182,21 +161,17 @@ class _Classify():
         classification result, based on the maximum probability for each
         class::
 
-          jim_sml._jipjim.band2plane()
-          smlclassnp=np.argmax(jim_sml.np(),axis=0).astype(np.uint8)
-          sml_class=pj.np2jim(smlclassnp)
-          sml_class.properties.setProjection(jim.properties.getProjection())
-          sml_class.properties.setGeoTransform(jim.properties.getGeoTransform())
+          jim_sml.geometry.band2plane()
+          jim_sml.np()[0]=np.argmax(jim_sml.np(),axis=0)
+          jim_sml.geometry.cropPlane(0)
 
         The result contains the indices in the range(0,number of classes).
         Use :py:meth:`~_Classify.reclass` to convert the indices to the actual
         class numbers.
-
         """
-        kwargs.update({'method': 'sml'})
         if 'classes' in kwargs:
             kwargs.update({'class': kwargs.pop('classes')})
-        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
+        self._jim_object._set(self._jim_object._jipjim.classifySML(reflist._jipjimlist, kwargs))
 
     def trainSML(self, reference, output=None, **kwargs):
         """Train a supervised symbolic machine learning (SML) classifier.
@@ -243,16 +218,16 @@ class _Classify():
 
         """
         # convert list of Jim to JimList
-        if not isinstance(jimlist, _pj.JimList):
-            jimlist = _pj.JimList(jimlist)
+        if not isinstance(reference, _pj.JimList):
+            reference = _pj.JimList(reference)
         kwargs.update({'method': "sml"})
         if 'classes' in kwargs:
             kwargs.update({'class': kwargs.pop('classes')})
         if output:
             kwargs.update({'model': output})
-            self._jim_object._jipjim.train(jimlist._jipjimlist, kwargs)
+            self._jim_object._jipjim.train(reference._jipjimlist, kwargs)
         else:
-            self._jim_object._jipjim.trainSML(jimlist._jipjimlist, kwargs)
+            self._jim_object._jipjim.trainSML(reference._jipjimlist, kwargs)
 
 
 class _ClassifyList():

@@ -56,8 +56,8 @@ class BadNgbOps(unittest.TestCase):
 
         filt = np.array([[2.0, 2.0, 2.0], [2.0, 2.0, 2.0], [2.0, 2.0, 2.0]])
 
-        double_jim = pj.ngbops.filter2d(jim, filter=filt)
-        jim.ngbops.filter2d(filter=filt)
+        double_jim = pj.ngbops.firfilter2d(jim, taps=filt)
+        jim.ngbops.firfilter2d(taps=filt)
 
         assert jim.pixops.isEqual(double_jim), \
             'Inconsistency in ngbops.filter2d(dx, dy, tap) ' \

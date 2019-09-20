@@ -19,61 +19,27 @@ def edgeWeight(jim_object, dir=0, type=0):
     return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
 
-def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
-    """Subset raster dataset in spectral/temporal domain.
+def firfilter1d(jim_object, taps, **kwargs):
+    """Compute the finite impulse response filter in time-spectral domain
 
-    Filter Jim object in spectral/temporal domain performed on multi-band
-    raster dataset.
-
-    :param jim_object: a Jim object
-    :param filter: filter function (see values for different filter
-        types :ref:`supported filters <filters1d>`)
-    :param dz: filter kernel size in z (spectral/temporal dimension), must be
-        odd (example: 3)
-    :param pad: Padding method for filtering (how to handle edge effects).
-        Possible values are: symmetric (default), replicate, circular,
-        zero (pad with 0)
-    :param otype: Data type for output image
+    :param jim_object: a Jim object (the same data type will be used for output)
+    :param taps: 1D array of filter taps
+    :param pad: Padding method for filtering (how to handle edge effects). Choose between: symmetric, replicate, circular, zero (pad with 0)
     :return: filtered Jim object
 
-    see the corresponding method :py:meth:`.filter1d` for more information
+    Example:
+
+    jim=pj.Jim('/path/to/image.tif')
+
+    filtered=pj.ngbops.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
     """
-    kwargs.update({'filter': filter})
-    if dz:
-        kwargs.update({'dz': dz})
-    if pad:
-        kwargs.update({'pad': pad})
-    if otype:
-        kwargs.update({'otype': otype})
-    return _pj.Jim(jim_object._jipjim.filter1d(kwargs))
-
-
-def filter2d(jim_object, filter, **kwargs):
-    """Subset raster dataset in spectral/temporal domain.
-
-    Filter Jim object in spatial domain performed on single or multi-band
-    raster dataset.
-
-    :param jim_object: a Jim object
-    :param filter: filter function (see values for different filter
-        types :ref:`supported filters <filters2d>`)
-    :param dx: filter kernel size in x, use odd values only (default is 3)
-    :param dy: filter kernel size in y, use odd values only (default is 3)
-    :param pad: Padding method for filtering (how to handle edge effects).
-        Possible values are: symmetric (default), replicate, circular,
-        zero (pad with 0)
-    :param otype: Data type for output image
-    :return: filtered Jim object
-
-    see the corresponding method :py:meth:`.filter2d` for more information
-    """
-    if isinstance(filter, numpy.ndarray):
-        kwargs.update({'dy': filter.shape[0]})
-        kwargs.update({'dx': filter.shape[1]})
-        kwargs.update({'tap': filter.flatten().tolist()})
-    else:
-        kwargs.update({'filter': filter})
-    return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
+    if taps is None:
+        raise AttributeError('Error: no taps provided')
+    if len(taps.shape) != 1:
+        raise ValueError('Error: taps should be 1D array')
+    taps = numpy.array(taps).tolist()
+    kwargs.update({'taps':taps})
+    return _pj.Jim(jim_object._jipjim.firfilter1d(kwargs))
 
 
 def savgolay(jim_object, **kwargs):
@@ -102,7 +68,7 @@ def savgolay(jim_object, **kwargs):
 
 
 def dwt1d(jim_object, **kwargs):
-    """Compute the discrete wavelet transform in the time-spectral domain
+    """Compute the discrete forward wavelet transform in the time-spectral domain
 
     :param jim_object: a Jim object of data type GDT_Float64
     :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
@@ -137,6 +103,129 @@ def dwti1d(jim_object, **kwargs):
     dwt.ngbops.dwti1d()
     """
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
+
+
+def dwt2d(jim_object, **kwargs):
+    """Compute the discrete forward wavelet transform in the spatial domain
+
+    :param jim_object: a Jim object of data type GDT_Float64
+    :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+    :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+    :return: filtered Jim object
+
+    Example:
+
+    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+    jim.pixops.convert('GDT_Float64')
+
+    dwt=pj.ngbops.dwt2d(jim)
+    dwt.ngbops.dwti2d()
+    """
+    return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
+
+
+def dwti2d(jim_object, **kwargs):
+    """Compute the inverse discrete wavelet transform in the spatial domain
+
+    :param jim_object: a Jim object of data type GDT_Float64
+    :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
+    :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)
+    :return: filtered Jim object
+
+    Example:
+
+    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+    jim.pixops.convert('GDT_Float64')
+
+    dwt=pj.ngbops.dwt2d(jim)
+    dwt.ngbops.dwti2d()
+    """
+    return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
+
+
+def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
+    """Subset raster dataset in spectral/temporal domain.
+    This function is deprecated
+
+    Filter Jim object in spectral/temporal domain performed on multi-band
+    raster dataset.
+
+    :param jim_object: a Jim object
+    :param filter: filter function (see values for different filter
+        types :ref:`supported filters <filters1d>`)
+    :param dz: filter kernel size in z (spectral/temporal dimension), must be
+        odd (example: 3)
+    :param pad: Padding method for filtering (how to handle edge effects).
+        Possible values are: symmetric (default), replicate, circular,
+        zero (pad with 0)
+    :param otype: Data type for output image
+    :return: filtered Jim object
+
+    see the corresponding method :py:meth:`.filter1d` for more information
+    """
+    kwargs.update({'filter': filter})
+    if dz:
+        kwargs.update({'dz': dz})
+    if pad:
+        kwargs.update({'pad': pad})
+    if otype:
+        kwargs.update({'otype': otype})
+    return _pj.Jim(jim_object._jipjim.filter1d(kwargs))
+
+
+def firfilter2d(jim_object, taps, **kwargs):
+    """Compute the finite impulse response filter in spatial domain
+
+    :param jim_object: a Jim object (the same data type will be used for output)
+    :param taps: 2D array of filter taps
+    :param nodata: list of no data values not to take into account when calculating the filter response
+    :param norm: normalize tap values
+    :return: filtered Jim object
+
+    Example:
+
+    jim=pj.Jim('/path/to/image.tif')
+
+    filtered=pj.ngbops.fifilter1d(jim, taps=[1, 2, 1], norm=True, pad='symmetric')
+    """
+    if taps is None:
+        raise AttributeError('Error: no taps provided')
+    if len(taps.shape) != 2:
+        raise ValueError('Error: taps should be 2D array')
+    taps = numpy.array(taps)
+    kwargs.update({'taps':taps.flatten().tolist()})
+    kwargs.update({'dimx':taps.shape[1]})
+    kwargs.update({'dimy':taps.shape[0]})
+    return _pj.Jim(jim_object._jipjim.firfilter2d(kwargs))
+
+
+def filter2d(jim_object, filter, **kwargs):
+    """Subset raster dataset in spectral/temporal domain.
+    #This function is deprecated
+
+    Filter Jim object in spatial domain performed on single or multi-band
+    raster dataset.
+
+    :param jim_object: a Jim object
+    :param filter: filter function (see values for different filter
+        types :ref:`supported filters <filters2d>`)
+    :param dx: filter kernel size in x, use odd values only (default is 3)
+    :param dy: filter kernel size in y, use odd values only (default is 3)
+    :param pad: Padding method for filtering (how to handle edge effects).
+        Possible values are: symmetric (default), replicate, circular,
+        zero (pad with 0)
+    :param otype: Data type for output image
+    :return: filtered Jim object
+
+    see the corresponding method :py:meth:`.filter2d` for more information
+    """
+    if isinstance(filter, numpy.ndarray):
+        taps=kwargs.pop('filter')
+        kwargs.update({'taps': taps})
+        return firfilter2d(jim_object,kwargs)
+    else:
+        kwargs.update({'filter': filter})
+    return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
 def getDissim(jimo, dissimType=0):
@@ -350,6 +439,7 @@ class _NgbOps():
 
     def filter1d(self, filter, dz=None, pad=None, otype=None, **kwargs):
         """Subset raster dataset in spectral/temporal domain.
+        This function is deprecated
 
         Filter Jim image in spectral/temporal domain performed on multi-band
         raster dataset.
@@ -582,6 +672,7 @@ class _NgbOps():
 
     def filter2d(self, filter, **kwargs):
         """Subset raster dataset in spectral/temporal domain.
+        This function is deprecated
 
         Filter Jim object in spatial domain performed on single or multi-band
         raster dataset.
@@ -755,12 +846,38 @@ class _NgbOps():
             jim_multitemp.convert(otype='Byte')
         """
         if isinstance(filter, numpy.ndarray):
-            kwargs.update({'dy': filter.shape[0]})
-            kwargs.update({'dx': filter.shape[1]})
-            kwargs.update({'tap': filter.flatten().tolist()})
+            taps=kwargs.pop('filter',None)
+            kwargs.update({'taps': taps})
+            self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
+            self.firfilter2d(kwargs)
+            # kwargs.update({'dy': filter.shape[0]})
+            # kwargs.update({'dx': filter.shape[1]})
+            # kwargs.update({'tap': filter.flatten().tolist()})
         else:
             kwargs.update({'filter': filter})
-        self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
+            self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
+
+    def firfilter1d(self, taps, **kwargs):
+        """Compute the finite impulse response filter in time-spectral domain
+
+        :param jim_object: a Jim object (the same data type will be used for output)
+        :param taps: 1D array of filter taps
+        :param pad: Padding method for filtering (how to handle edge effects). Choose between: symmetric, replicate, circular, zero (pad with 0)
+        :return: filtered Jim object
+
+        Example:
+
+        jim=pj.Jim('/path/to/image.tif')
+
+        jim.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
+        """
+        if taps is None:
+            raise AttributeError('Error: no taps provided')
+        if len(taps.shape) != 1:
+            raise ValueError('Error: taps should be 1D array')
+        taps = numpy.array(taps).tolist()
+        kwargs.update({'taps':taps})
+        self._jim_object._set(self._jim_object._jipjim.firfilter1d(kwargs))
 
     def savgolay(self, **kwargs):
         """Compute the Savitzky-Golay filter in the time-spectral domain
@@ -798,17 +915,6 @@ class _NgbOps():
 
         jim.ngbops.dwt1d()
         jim.ngbops.dwti1d()
-        Example:
-
-        Perform a Savitzky-Golay filter to reconstruct a time series data set as suggested by `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
-
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-        jim.pixops.convert('GDT_Float64')
-
-        savgol=pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
-        for loop in range(0,10):
-           savgol[savgol<jim]=jim
-           savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
         """
         self._jim_object._jipjim.d_dwt1d(kwargs)
 
@@ -833,7 +939,6 @@ class _NgbOps():
         jim.pixops.convert('GDT_Float64')
 
         jim.ngbops.dwt1d()
-        jim.ngbops.dwti1d()
         jimabs=pj.Jim(jim)
         jimabs=abs(jimabs)
         thresholds=np.percentile(jimabs.np(),90,axis=0)
@@ -842,8 +947,34 @@ class _NgbOps():
         """
         self._jim_object._jipjim.d_dwti1d(kwargs)
 
+    def firfilter2d(self, taps, **kwargs):
+        """Compute the finite impulse response filter in spatial domain
+
+        :param jim_object: a Jim object (the same data type will be used for output)
+        :param taps: 2D array of filter taps
+        :param nodata: list of no data values not to take into account when calculating the filter response
+        :param norm: normalize tap values
+        :return: filtered Jim object
+
+        Example:
+
+        jim=pj.Jim('/path/to/image.tif')
+
+        jim.ngbops.fifilter2d(taps=[1, 2, 1], norm=True, pad='symmetric')
+        """
+        if taps is None:
+            raise AttributeError('Error: no taps provided')
+        if len(taps.shape) != 2:
+            raise ValueError('Error: taps should be 2D array')
+        taps = numpy.array(taps)
+        kwargs.update({'taps':taps.flatten().tolist()})
+        kwargs.update({'dimx':taps.shape[1]})
+        kwargs.update({'dimy':taps.shape[0]})
+
+        self._jim_object._set(self._jim_object._jipjim.firfilter2d(kwargs))
+
     def dwt2d(self, **kwargs):
-        """Compute the discrete wavelet transform in the spatial domain
+        """Compute the forward discrete wavelet transform in the spatial domain
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar, haar_centered, bspline, bspline_centered
         :param family: wavelet family (vanishing moment, see also http://www.gnu.org/software/gsl/manual/html_node/DWT-Initialization.html)

@@ -229,12 +229,14 @@ def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
        jim_object.properties.getDataType() != 'Float64':
         jimdx.pixops.convert(otype="Float32")
         jimdy.pixops.convert(otype="Float32")
-    jimdx.ngbops.filter2d(tapsdx, nodata=jim_object.properties.getNoDataVals(),
-                          abs=True, norm=True)
+    jimdx.ngbops.firfilter2d(tapsdx, nodata=jim_object.properties.getNoDataVals(),
+                             norm=True)
+    jimdx=abs(jimdx)
     jimdx /= jimdx.properties.getDeltaX() * scale
     jimdx *= jimdx
-    jimdy.ngbops.filter2d(tapsdy, nodata=jim_object.properties.getNoDataVals(),
-                          abs=True, norm=True)
+    jimdy.ngbops.firfilter2d(tapsdy, nodata=jim_object.properties.getNoDataVals(),
+                             norm=True)
+    jimdy=abs(jimdy)
     jimdy /= jimdy.properties.getDeltaX()*scale
     jimdy *= jimdy
     rad2deg = 180.0 / numpy.pi
