@@ -521,6 +521,86 @@ class BadGeometryVects(unittest.TestCase):
         #     'Error in geometry.convexHull() ' \
         #     '(BBox of hull is not the same as of the original JimVect)'
 
+    def test_join(self):
+        """Test the join() function and method."""
+        jimv = pj.JimVect(vectorfn)
+        jimr = pj.Jim(rasterfn)
+
+        non_existing_path0 = pj._get_random_path()
+        non_existing_path1 = pj._get_random_path()
+        non_existing_path_joined = pj._get_random_path()
+
+        jimr0 = pj.geometry.cropBand(jimr, 0)
+        jimr1 = pj.geometry.cropBand(jimr, 1)
+
+        vect0 = jimr0.geometry.extractOgr(jimv,
+                                          rule='mean',
+                                          output=non_existing_path0,
+                                          bandname='B0',
+                                          fid='fid')
+        vect1 = jimr1.geometry.extractOgr(jimv,
+                                          rule='mean',
+                                          output=non_existing_path1,
+                                          bandname='B1',
+                                          fid='fid')
+        vect0.io.write()
+        vect1.io.write()
+
+        vect0_field_names = vect0.properties.getFieldNames()
+        vect1_field_names = vect1.properties.getFieldNames()
+
+        joined = pj.geometry.join(vect0, vect1,
+                                  output=non_existing_path_joined, fid=['fid'])
+        vect0.geometry.join(vect1, output=non_existing_path_joined,
+                            fid=['fid'])
+
+        joined.io.write()
+        vect0.io.write()
+
+        feature_count_func = joined.properties.getFeatureCount()
+        feature_count_meth = vect0.properties.getFeatureCount()
+        bbox_func = joined.properties.getBBox()
+        bbox_meth = vect0.properties.getBBox()
+        joined_field_names = vect0.properties.getFieldNames()
+
+        assert feature_count_func == feature_count_meth, \
+            'Inconsistency in geometry.join() ' \
+            '(method returns different result than function)'
+        assert bbox_func == bbox_meth, \
+            'Inconsistency in geometry.join() ' \
+            '(method returns different result than function)'
+        assert feature_count_meth == vect1.properties.getFeatureCount(), \
+            'Error in geometry.join() (feature count changed)'
+        assert len(joined_field_names) > len(vect0_field_names), \
+            'Error in geometry.join() ' \
+            '(number of fields not raised after join)'
+        assert all([i in joined_field_names for i in
+                    vect0_field_names + vect1_field_names]), \
+            'Error in geometry.join() ' \
+            '(not containing all the fields of vectors used for the join)'
+
+        # Test catching wrong calls
+        try:
+            _ = pj.geometry.join(jimv, jimr, output=non_existing_path_joined)
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of geometry.join(JimVect, Jim) ' \
+            'function where one of the arguments is not an instance of a ' \
+            'JimVect object'
+
+        try:
+            _ = jimv.geometry.join(jimr, output=non_existing_path_joined)
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of geometry.join(Jim) method ' \
+            'where the argument is not an instance of a JimVect object'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
