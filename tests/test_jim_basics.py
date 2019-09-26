@@ -24,6 +24,11 @@ class BadBasicMethods(unittest.TestCase):
         assert jim1.pixops.isEqual(jim2), 'Error in creating Jim object'
         assert not jim1.pixops.isEqual(jim3), 'Error in creating Jim object'
 
+        jim1 = pj.Jim(u'tests/data/red1.tif')
+
+        assert jim1.pixops.isEqual(jim2), \
+            'Error in creating Jim object with unicode path'
+
         jim4 = pj.Jim(jim1, nrow=5)
 
         assert jim1.pixops.isEqual(jim4), 'Error in ignoring kwargs when ' \
