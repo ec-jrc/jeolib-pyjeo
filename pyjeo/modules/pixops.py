@@ -794,7 +794,6 @@ class _PixOpsList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
-    #todo: write Python function
     def composite(self, crule='overwrite', **kwargs):
         """Composite Jims in a JimList using a composite rule."""
         kwargs.update({'crule': crule})

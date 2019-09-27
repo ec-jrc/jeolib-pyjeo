@@ -1147,6 +1147,29 @@ class BadBasicMethods(unittest.TestCase):
                            'is passed as a graph in a function (for example ' \
                            'ccops.labelConstrainedCCsVariance())'
 
+    def test_args_different_formats(self):
+        """Test the parsing of arguments as bytes, unicode, etc."""
+        jim0 = pj.Jim(tiles[0])
+        jim1 = pj.Jim(u'tests/data/red1.tif')
+        jim2 = pj.Jim(b'tests/data/red1.tif')
+
+        assert jim1.pixops.isEqual(jim0), \
+            'Error in creating Jim object with unicode path'
+        assert jim2.pixops.isEqual(jim0), \
+            'Error in creating Jim object with byte path'
+
+        jim0 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
+                      seed=0)
+        jim1 = pj.Jim(nrow=500, ncol=500, otype=u'Float32', uniform=[0, 2],
+                      seed=0)
+        jim1 = pj.Jim(nrow=500, ncol=500, otype=b'Float32', uniform=[0, 2],
+                      seed=0)
+
+        assert jim1.pixops.isEqual(jim0), \
+            'Error in the usage of unicode strings inside arguments'
+        assert jim2.pixops.isEqual(jim0), \
+            'Error in the usage of byte strings inside arguments'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
