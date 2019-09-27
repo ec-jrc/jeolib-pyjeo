@@ -14,6 +14,22 @@ warpedfn = pj._get_random_path()
 class BadGeometry(unittest.TestCase):
     """Test functions and methods from geometry module."""
 
+    def test_band2plane(self):
+        """Test the band2plane method."""
+        jim3d = pj.Jim(rasterfn, band2plane=True)
+        jim2d = pj.Jim(rasterfn, band2plane=False)
+        jim2d.geometry.band2plane()
+        assert jim2d.pixops.isEqual(jim3d), \
+            'Error in geometry.band2plane() ' \
+            '(read as 3d is not equal to convert to 3d)'
+        jim2d.geometry.plane2band()
+        assert pj.geometry.plane2band(jim3d).pixops.isEqual(jim2d), \
+            'Error in geometry.plane2band() ' \
+            '(function is not equal to method)'
+        assert pj.geometry.band2plane(jim2d).pixops.isEqual(jim3d), \
+            'Error in geometry.band2plane() ' \
+            '(function is not equal to method)'
+
     def test_stack(self):
         """Test the stack band method."""
         jim0 = pj.Jim(rasterfn, band=0)

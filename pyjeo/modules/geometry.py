@@ -25,6 +25,40 @@ from collections import Iterable
 #         raise TypeError('Error: can only join with JimVect object')
 
 
+def band2plane(jim):
+    """Convert 2-dimensional multi-band object to a 3-dimensional.
+
+    The result will be a single band multi-plane object
+
+    Example: convert a multi-band object with 12 bands to a 3-dimensional
+    single band object with 12 planes::
+
+        jim2d=pj.Jim('/path/to/multi/band/image.tif')
+        jim2d.properties.nrOfBand()
+        12
+        jim2d.properties.nrOfPlane()
+        1
+        jim3d=pj.geometry.band2plane(jim2d)
+        jim3d.properties.nrOfPlane()
+        12
+        jim3d.properties.nrOfBand()
+        1
+
+    Notice that a multi-band image can also be read directly as
+    a multi-plane object::
+
+        jim3d=pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
+        jim3d.properties.nrOfBand()
+        1
+        jim3d.properties.nrOfPlane()
+        12
+
+    """
+    result = _pj.Jim(jim)
+    result.geometry.band2plane()
+    return result
+
+
 def convexHull(jim_vect, output, **kwargs):
     """Create the convex hull on a JimVect object.
 
@@ -574,6 +608,36 @@ def magnify(jim_object, n):
     else:
         return _pj.Jim(jim_object._jipjim.imageMagnify(n))
 
+
+def plane2band(jim):
+    """Convert 3-dimensional single-band object to a 2-dimensional
+    multi-band object.
+
+    The result will be a multi-band single plane object
+
+    Example: convert a single band object with 12 planes to a 2-dimensional
+    multi-band object with 1 plane::
+
+        jim3d=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+        jim3d.properties.nrOfBand()
+        1
+        jim3d.properties.nrOfPlane()
+        12
+        jim2d=pj.geometry.plane2band(jim3d)
+        jim2d.properties.nrOfPlane()
+        1
+        jim2d.properties.nrOfBand()
+        12
+
+    """
+    result=None
+    for iplane in range(0,jim.properties.nrOfPlane()):
+        jim_plane=_pj.geometry.cropPlane(jim,iplane)
+        if result is None:
+            result=jim_plane
+        else:
+            result.geometry.stackBand(jim_plane)
+    return result
 
 
 def plotLine(jim_object, x1, y1, x2, y2, val):
@@ -1254,35 +1318,6 @@ class _Geometry():
         """
         self._jim_object._jipjim.d_band2plane()
 
-    def plane2band(self):
-        """Convert 3-dimensional single-band object to a 2-dimensional multi-band object.
-
-        The result will be a multi-band single plane object
-
-        Example: convert a single band object with 12 planes to a 2-dimensional
-        multi-band object with 1 plane::
-
-           jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
-           jim.properties.nrOfBand()
-           1
-           jim.properties.nrOfPlane()
-           12
-           jim.geometry.plane2band()
-           jim.properties.nrOfPlane()
-           1
-           jim.properties.nrOfBand()
-           12
-
-        """
-        result=None
-        for iplane in range(0,self._jim_object.properties.nrOfPlane()):
-            jim_plane=_pj.geometry.cropPlane(self._jim_object,iplane)
-            if result is None:
-                result=jim_plane
-            else:
-                result.geometry.stackBand(jim_plane)
-        self._jim_object._set(result._jipjim)
-
     def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
              lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
         """Subset raster dataset.
@@ -1307,7 +1342,8 @@ class _Geometry():
         Crop bounding box in georeferenced coordinates::
 
             jim=pj.Jim('/path/to/raster.tif')
-            jim.crop(ulx=1000000,uly=5000000,lrx=2000000,lry=4000000,dx=1000,dy=1000)
+            jim.crop(ulx=1000000,uly=5000000,lrx=2000000,lry=4000000,
+                     dx=1000,dy=1000)
 
         Crop bounding box in image coordinates (starting from upper left pixel
         coordinate 0, 0). For instance, get first 10 columns in first 10 rows::
@@ -1324,7 +1360,8 @@ class _Geometry():
         to add a border of one pixel use::
 
             jim=pj.Jim('/path/to/raster.tif')
-            jim.geometry.crop(ulx=-1,uly=-1,lrx=jim.properties.nrOfCol()+1,lry=jim.properties.nrOfRow()+1,nogeo=True)
+            jim.geometry.crop(ulx=-1,uly=-1,lrx=jim.properties.nrOfCol()+1,
+                              lry=jim.properties.nrOfRow()+1,nogeo=True)
 
         """
         if ulz is not None or lrz is not None:
@@ -1630,10 +1667,16 @@ class _Geometry():
             classes=[2,12,25,41,50]
             thresholds=['20%','25%','25%','10%','5%']
 
-            jvec=pj.Jim('/path/to/multiband.tif','dx'=jim.getDeltaX(),'dy'=jim.getDeltaY(),'ulx'=jim.getUlx(),'uly'=jim.getUly(),'lrx'=jim.getLrx(),'lry'=jim.getLry())
+            jvec=pj.Jim('/path/to/multiband.tif',
+                        dx=jim.getDeltaX(),dy=jim.getDeltaY(),
+                        ulx=jim.getUlx(),uly=jim.getUly(),
+                        lrx=jim.getLrx(),lry=jim.getLry())
 
             outputfn='/path/to/output.sqlite'
-            sample=jim.extractImg(jvec,srcnodata=[0],output=outputfn,class=classes,threshold=thresholds,bandname=['B02','B03','B04','B08'],band=[0,1,2,3])
+            sample=jim.extractImg(jvec,srcnodata=[0],output=outputfn,
+                                  class=classes,threshold=thresholds,
+                                  bandname=['B02','B03','B04','B08'],
+                                  band=[0,1,2,3])
         """
         kwargs.update({'output': output})
         if 'threshold' in kwargs:
@@ -1990,7 +2033,7 @@ class _Geometry():
                     jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
                     returnJim.geometry.stackBand(jimband)
                 else:
-                    returnJim = _pj.geometry.cropBand(self._jim_object, band=band)
+                    returnJim=_pj.geometry.cropBand(self._jim_object,band=band)
                     returnJim._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
             self._jim_object._set(returnJim._jipjim)
         else:
@@ -2014,8 +2057,8 @@ class _Geometry():
             bands.extend(band)
 
         for band in bands:
-            self._jim_object._jipjim.d_imageInsert(sec_jim_object._jipjim, x, y, z,
-                                                   band)
+            self._jim_object._jipjim.d_imageInsert(sec_jim_object._jipjim,
+                                                   x, y, z, band)
 
     def imageInsertCompose(self, imlbl, im2, x, y, z, val, band=None):
         """Merge Jim instance with values of im2 if val of imlbl == val.
@@ -2065,6 +2108,36 @@ class _Geometry():
             self._jim_object._set(returnJim._jipjim)
         else:
             self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
+
+    def plane2band(self):
+        """Convert 3-dimensional single-band object to a 2-dimensional
+        multi-band object.
+
+        The result will be a multi-band single plane object
+
+        Example: convert a single band object with 12 planes to a 2-dimensional
+        multi-band object with 1 plane::
+
+           jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+           jim.properties.nrOfBand()
+           1
+           jim.properties.nrOfPlane()
+           12
+           jim.geometry.plane2band()
+           jim.properties.nrOfPlane()
+           1
+           jim.properties.nrOfBand()
+           12
+
+        """
+        result=None
+        for iplane in range(0,self._jim_object.properties.nrOfPlane()):
+            jim_plane=_pj.geometry.cropPlane(self._jim_object,iplane)
+            if result is None:
+                result=jim_plane
+            else:
+                result.geometry.stackBand(jim_plane)
+        self._jim_object._set(result._jipjim)
 
     def plotLine(self, x1, y1, x2, y2, val):
         """Draw a line from [x1, y1] to [x2, y2] by setting pixels to a value.
@@ -2127,7 +2200,9 @@ class _Geometry():
     # def rasterize(self, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
     #     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
-    # CPLErr Jim::rasterizeBuf(VectorOgr& ogrReader, double burnValue, const std::vector<std::string>& eoption, const std::vector<std::string>& layernames ){
+    # CPLErr Jim::rasterizeBuf(VectorOgr& ogrReader, double burnValue,
+    #                          const std::vector<std::string>& eoption,
+    #                          const std::vector<std::string>& layernames ){
 
     #     :param jim_vect: JimVect object that needs to be polygonized
     #     :param burnValue: burn value
@@ -2181,7 +2256,7 @@ class _Geometry():
                                                       'GDT_Float64'):
                 self._jim_object.pixops.convert(otype='GDT_Float32')
             if band is not None:
-                mask = _pj.geometry.cropBand(self._jim_object, band=band)
+                mask = _pj.geometry.cropBand(self._jim_object, band = band)
             if rule == 'mean' or rule == 'avg':
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
@@ -2360,7 +2435,8 @@ class _Geometry():
         (epsg:4326). Then warp the raster dataset to the target spatial
         reference system (epsg:3035)::
 
-            jim=pj.Jim('/path/to/file.tif',t_srs='epsg:3035',ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
+            jim=pj.Jim('/path/to/file.tif',t_srs='epsg:3035',
+                       ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
             jim.warp('epsg:3035',s_srs='epsg:4326')
 
         """

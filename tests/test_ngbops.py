@@ -54,16 +54,104 @@ class BadNgbOps(unittest.TestCase):
         assert stats_min_max_jim >= stats_min_min_jim, \
             'Error in ngbops.filter1d() (wrong values)'
 
+
+        jim3d = pj.Jim(testFile,band2plane=True)
+        jim3d.pixops.convert(otype='UInt16')
+        jimorig = pj.Jim(jim3d)
+        filt = np.array([2.0, 2.0, 2.0])
+
+        filtered = pj.ngbops.firfilter1d(jim3d, taps=filt)
+        jim3d.ngbops.firfilter1d(taps=filt)
+
+        assert jim3d.pixops.isEqual(filtered), \
+            'Inconsistency in ngbops.filter1d(taps) ' \
+            '(method returns different result than function)'
+
+        assert jim3d[1].pixops.isEqual(2*jimorig[0]+2*jimorig[1]+2*jimorig[2]), \
+            'Error in ngbops.filter1d(numpy.array) (returning wrong values)'
+
+        jim2d = pj.Jim(testFile)
+        jimorig = pj.Jim(jim2d)
         filt = np.array([[2.0, 2.0, 2.0], [2.0, 2.0, 2.0], [2.0, 2.0, 2.0]])
 
-        double_jim = pj.ngbops.firfilter2d(jim, taps=filt)
-        jim.ngbops.firfilter2d(taps=filt)
+        filtered = pj.ngbops.firfilter2d(jim2d, taps=filt)
+        jim2d.ngbops.firfilter2d(taps=filt)
 
-        assert jim.pixops.isEqual(double_jim), \
-            'Inconsistency in ngbops.filter2d(dx, dy, tap) ' \
+        assert jim2d.pixops.isEqual(filtered), \
+            'Inconsistency in ngbops.filter2d(taps) ' \
             '(method returns different result than function)'
-        assert jim[1, 1].np()[0, 0] == 2 * max_jim[0:3, 0:3].np().sum(), \
+
+        assert jim2d[1,1].np().sum() == 2*np.sum(jimorig[0:3,0:3].np()), \
             'Error in ngbops.filter2d(numpy.array) (returning wrong values)'
+
+        jim = pj.Jim(testFile,band2plane=True)
+        smoothed=pj.ngbops.smoothNoData1d(jim,0)
+        assert smoothed.stats.getStats('mean')['mean'] > jim.stats.getStats('mean')['mean'], \
+            'Error in ngbops.smoothNoData1d (wrong values)'
+
+        jim.ngbops.smoothNoData1d(0)
+        assert smoothed.pixops.isEqual(jim), \
+            'Inconsistency in smoothNoData1d ' \
+            '(method returns different result than function'
+        # jimorig = pj.Jim(jim)
+        # filt = np.array([2.0, 2.0, 2.0])
+
+        # double_jim = pj.ngbops.firfilter1d(jim, taps=filt)
+        # jim.ngbops.firfilter1d(taps=filt)
+
+        # assert jim.pixops.isEqual(double_jim), \
+        #     'Inconsistency in ngbops.filter1d(taps) ' \
+        #     '(method returns different result than function)'
+        # assert jim[1].np() == 2*jimorig[0].np()+2*jimorig[1].np()+2*jimorig[2].np(), \
+        #     'Error in ngbops.filter1d(numpy.array) (returning wrong values)'
+
+        # jim = pj.Jim(jimorig)
+        # filt = np.array([[2.0, 2.0, 2.0], [2.0, 2.0, 2.0], [2.0, 2.0, 2.0]])
+
+        # double_jim = pj.ngbops.firfilter2d(jim, taps=filt)
+        # jim.ngbops.firfilter2d(taps=filt)
+
+        # assert jim.pixops.isEqual(double_jim), \
+        #     'Inconsistency in ngbops.filter2d(taps) ' \
+        #     '(method returns different result than function)'
+        # assert jim[1, 1].np()[0, 0] == 2 * max_jim[0:3, 0:3].np().sum(), \
+        #     'Error in ngbops.filter2d(numpy.array) (returning wrong values)'
+
+    def test_dwt(self):
+        """Test dwt() and dwti() functions and methods."""
+        jim = pj.Jim(testFile,band2plane=True)
+
+        jim.pixops.convert('GDT_Float64')
+        dwt=pj.ngbops.dwt1d(jim)
+        dwt.ngbops.dwti1d()
+
+        dwt6=pj.geometry.cropPlane(dwt,6)
+        jim6=pj.geometry.cropPlane(jim,6)
+        assert np.max((abs((jim6-dwt6))).np()) < 1e-10, \
+            'Inconsistency in dwt2d() ' \
+            '(method returns different result than function or dwt+dwti!=id)'
+
+        jim = pj.Jim(testFile,band=0)
+        jim.pixops.convert('GDT_Float64')
+        dwt=pj.ngbops.dwt2d(jim)
+        dwt.ngbops.dwti2d()
+        assert np.max((abs((dwt.np()-jim.np())))) < 1e-10, \
+            'Inconsistency in dwt2d() ' \
+            '(method returns different result than function or dwt+dwti!=id)'
+
+    def test_smoothNoData1d(self):
+        """Test smoothNoData1d functions and methods."""
+
+        jim = pj.Jim(testFile,band2plane=True)
+        smoothed=pj.ngbops.smoothNoData1d(jim,0)
+        assert smoothed.stats.getStats('mean')['mean'] > \
+        jim.stats.getStats('mean')['mean'], \
+            'Error in ngbops.smoothNoData1d (wrong values)'
+        jim.ngbops.smoothNoData1d(0)
+
+        assert smoothed.pixops.isEqual(jim), \
+            'Inconsistency in smoothNoData1d ' \
+            '(method returns different result than function'
 
     def test_erode_dilate(self):
         """Test morphoDilate... and morphoErode...() functions and methods."""
