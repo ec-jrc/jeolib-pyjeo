@@ -76,11 +76,16 @@ class _ParentJim(_jl.Jim):
                     super(_ParentJim, self).__init__(kwargs)
             else:
                 super(_ParentJim, self).__init__(kwargs)
-        else:
+        elif image:
             if isinstance(image, Jim):
                 super(_ParentJim, self).__init__(image._jipjim)
-            else:
+            elif isinstance(image, _jl.Jim):
                 super(_ParentJim, self).__init__(image)
+            else:
+                super(_ParentJim, self).__init__({'filename': image})
+        else:
+            super(_ParentJim, self).__init__(image)
+
 
 
 class Jim():
