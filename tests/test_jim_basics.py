@@ -1162,7 +1162,7 @@ class BadBasicMethods(unittest.TestCase):
                       seed=0)
         jim1 = pj.Jim(nrow=500, ncol=500, otype=u'Float32', uniform=[0, 2],
                       seed=0)
-        jim1 = pj.Jim(nrow=500, ncol=500, otype=b'Float32', uniform=[0, 2],
+        jim2 = pj.Jim(nrow=500, ncol=500, otype=b'Float32', uniform=[0, 2],
                       seed=0)
 
         assert jim1.pixops.isEqual(jim0), \
