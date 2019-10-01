@@ -96,8 +96,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.reducePlane()'
 
         # Test the band2plane method
-        jimband = pj.Jim(rasterfn, band=[0,1,2])
-        jimplane = pj.Jim(rasterfn, band=[0,1,2], band2plane=True)
+        jimband = pj.Jim(rasterfn, band=[0, 1, 2])
+        jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
         jimband.geometry.band2plane()
         assert jimband.pixops.isEqual(jimplane), \
             'Error in geometry.band2plane() ' \
@@ -427,7 +427,7 @@ class BadGeometry(unittest.TestCase):
             '(changed values in the original Jim)'
 
     def test_polygonize(self):
-        """Test the polygonize() function."""
+        """Test the polygonize() function and method."""
         jim = pj.Jim(tiles[0])
 
         sub = int(jim.properties.nrOfCol() / 2 - 3)
