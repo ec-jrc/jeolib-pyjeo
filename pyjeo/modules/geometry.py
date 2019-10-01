@@ -685,7 +685,8 @@ def polygonize(jim_object, output, **kwargs):
         mask = kwargs.pop('mask', None)
         if mask is not None:
             if isinstance(mask, _pj.Jim):
-                avect = jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+                avect = jim_object._jipjim.polygonize(kwargs,
+                                                      mask._jipjim)
             else:
                 raise TypeError('Error: mask should be of Jim type')
         else:
@@ -2199,7 +2200,8 @@ class _Geometry():
         mask = kwargs.pop('mask', None)
         if mask is not None:
             if isinstance(mask, _pj.Jim):
-                avect = self._self._jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+                avect = self._jim_object._jipjim.polygonize(kwargs,
+                                                            mask._jipjim)
             else:
                 raise TypeError('Error: mask should be of Jim type')
         else:
