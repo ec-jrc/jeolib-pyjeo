@@ -675,13 +675,23 @@ def polygonize(jim_object, output, **kwargs):
     +------------------+------------------------------------------------------+
     | nodata           | Disgard this nodata value when creating polygons     |
     +------------------+------------------------------------------------------+
+    | mask             | mask with identical geometry as input raster object  |
+    |                  | (zero is invalid, non-zero is valid)                 |
+    +------------------+------------------------------------------------------+
     """
     kwargs.update({'output': output})
 
     if isinstance(jim_object, _pj.Jim):
         mask = kwargs.pop('mask', None)
-        if isinstance(mask, _pj.Jim):
-            avect = jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+        if mask is not None:
+            if isinstance(mask, _pj.Jim):
+                if(mask.properties.nrOfCol()!=jim_object.properties.nrOfCol()):
+                    raise TypeError('Error: mask geometry must be identical to input Jim object')
+                if(mask.properties.nrOfRow()!=jim_object.properties.nrOfRow()):
+                    raise TypeError('Error: mask geometry must be identical to input Jim object')
+                avect = jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+            else:
+                raise TypeError('Error: mask should be of Jim type')
         else:
             avect = jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
@@ -2161,19 +2171,22 @@ class _Geometry():
         :param kwargs: See table below
         :return: JimVect object with polygons
 
-        +------------------+-------------------------------------------------+
-        | key              | value                                           |
-        +==================+=================================================+
-        | ln               | Output layer name                               |
-        +------------------+-------------------------------------------------+
-        | oformat          | Output vector dataset format                    |
-        +------------------+-------------------------------------------------+
-        | co               | Creation option for output vector dataset       |
-        +------------------+-------------------------------------------------+
-        | name             | Field name of the output layer (default is DN)  |
-        +------------------+-------------------------------------------------+
-        | nodata           | Discard this nodata value when creating polygons|
-        +------------------+-------------------------------------------------+
+        +------------------+------------------------------------------------------+
+        | key              | value                                                |
+        +==================+======================================================+
+        | ln               | Output layer name                                    |
+        +------------------+------------------------------------------------------+
+        | oformat          | Output vector dataset format                         |
+        +------------------+------------------------------------------------------+
+        | co               | Creation option for output vector dataset            |
+        +------------------+------------------------------------------------------+
+        | name             | Field name of the output layer (default is DN)       |
+        +------------------+------------------------------------------------------+
+        | nodata           | Discard this nodata value when creating polygons     |
+        +------------------+------------------------------------------------------+
+        | mask             | mask with identical geometry as input raster object  |
+        |                  | (zero is invalid, non-zero is valid)                 |
+        +------------------+------------------------------------------------------+
 
         Example: create a polygon vector file from a Sentinel-2 classification
         raster dataset, where clouds are represented by the pixel value 9::
@@ -2188,8 +2201,15 @@ class _Geometry():
         """
         kwargs.update({'output': output})
         mask = kwargs.pop('mask', None)
-        if isinstance(mask, _pj.Jim):
-            avect = self._jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+        if mask is not None:
+            if isinstance(mask, _pj.Jim):
+                if(mask.properties.nrOfCol()!=self._jim_object.properties.nrOfCol()):
+                    raise TypeError('Error: mask geometry must be identical to input Jim object')
+                if(mask.properties.nrOfRow()!=self._jim_object.properties.nrOfRow()):
+                    raise TypeError('Error: mask geometry must be identical to input Jim object')
+                avect = self._self._jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+            else:
+                raise TypeError('Error: mask should be of Jim type')
         else:
             avect = self._jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
