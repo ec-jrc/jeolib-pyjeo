@@ -685,10 +685,6 @@ def polygonize(jim_object, output, **kwargs):
         mask = kwargs.pop('mask', None)
         if mask is not None:
             if isinstance(mask, _pj.Jim):
-                if(mask.properties.nrOfCol()!=jim_object.properties.nrOfCol()):
-                    raise TypeError('Error: mask geometry must be identical to input Jim object')
-                if(mask.properties.nrOfRow()!=jim_object.properties.nrOfRow()):
-                    raise TypeError('Error: mask geometry must be identical to input Jim object')
                 avect = jim_object._jipjim.polygonize(kwargs, mask._jipjim)
             else:
                 raise TypeError('Error: mask should be of Jim type')
@@ -2203,10 +2199,6 @@ class _Geometry():
         mask = kwargs.pop('mask', None)
         if mask is not None:
             if isinstance(mask, _pj.Jim):
-                if(mask.properties.nrOfCol()!=self._jim_object.properties.nrOfCol()):
-                    raise TypeError('Error: mask geometry must be identical to input Jim object')
-                if(mask.properties.nrOfRow()!=self._jim_object.properties.nrOfRow()):
-                    raise TypeError('Error: mask geometry must be identical to input Jim object')
                 avect = self._self._jim_object._jipjim.polygonize(kwargs, mask._jipjim)
             else:
                 raise TypeError('Error: mask should be of Jim type')
