@@ -448,12 +448,72 @@ class BadGeometry(unittest.TestCase):
         assert feature_count_func == feature_count_meth, \
             'Inconsistency in geometry.polygonize() ' \
             '(method returns different result than function)'
-        assert pol1.properties.getBBox() == jim.properties.getBBox(), \
+        assert pol1.properties.getBBox() == pol2.properties.getBBox() == \
+               jim.properties.getBBox(), \
             'Error in geometry.polygonize() ' \
             '(BBox changed)'
-        assert pol1.properties.getFeatureCount() < nr_of_cells, \
+        assert feature_count_func < nr_of_cells, \
             'Error in geometry.polygonize() ' \
             '(not less features in polygons than cells in raster)'
+
+        # Test with the mask parameter
+        mask = pj.Jim(jim, copyData=False)
+        mask[0, 0] = 1
+        mask[0, 1] = 1
+        mask[2, 2] = 1
+
+        pol1_mask = pj.geometry.polygonize(jim, pj._get_random_path(),
+                                           mask=mask)
+        pol2_mask = jim.geometry.polygonize(pj._get_random_path(), mask=mask)
+
+        feature_count_func_mask = pol1_mask.properties.getFeatureCount()
+        feature_count_meth_mask = pol2_mask.properties.getFeatureCount()
+
+        assert feature_count_func_mask == feature_count_meth_mask, \
+            'Inconsistency in geometry.polygonize() ' \
+            '(method returns different result than function when mask ' \
+            'argument used)'
+        assert pol1_mask.properties.getBBox() == \
+               pol2_mask.properties.getBBox() == \
+               jim[:3, :3].properties.getBBox(), \
+            'Error in geometry.polygonize() ' \
+            '(BBox not changed or changed wrongly when mask argument used)'
+        assert 2 <= feature_count_func_mask < feature_count_func, \
+            'Error in geometry.polygonize() ' \
+            '(not less features in polygons when mask argument used)'
+
+        # Test wrong calls
+        try:
+            _ = pj.geometry.polygonize(1, pj._get_random_path())
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of geometry.polygonize(jim, path) ' \
+            'function where the jim argument is not an instance of a Jim ' \
+            'object'
+
+        try:
+            _ = pj.geometry.polygonize(jim, pj._get_random_path(), mask=5)
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of geometry.polygonize(jim, path, ' \
+            'mask) function where the mask argument is not an instance of a ' \
+            'Jim object'
+
+        try:
+            _ = jim.geometry.polygonize(pj._get_random_path(), mask='spam')
+            failed = True
+        except TypeError:
+            failed = False
+
+        assert not failed, \
+            'Error in catching a call of geometry.polygonize(path, mask) ' \
+            'method where the mask argument is not an instance of a Jim object'
 
 
 class BadGeometryVects(unittest.TestCase):
