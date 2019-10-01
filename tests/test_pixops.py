@@ -291,11 +291,11 @@ class BadPixOps(unittest.TestCase):
 
         try:
             jim.pixops.convert('string')
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in checks for non-supported data types in pixops.convert()'
 
         a = pj.pixops.convert(jim, 'Byte')
@@ -358,11 +358,11 @@ class BadPixOps(unittest.TestCase):
 
         try:
             pj.pixops.convert(a, 'string')
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in checks for non-supported data types in pixops.convert()'
 
     def test_histoCompress(self):

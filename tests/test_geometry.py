@@ -485,33 +485,33 @@ class BadGeometry(unittest.TestCase):
         # Test wrong calls
         try:
             _ = pj.geometry.polygonize(1, pj._get_random_path())
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.polygonize(jim, path) ' \
             'function where the jim argument is not an instance of a Jim ' \
             'object'
 
         try:
             _ = pj.geometry.polygonize(jim, pj._get_random_path(), mask=5)
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.polygonize(jim, path, ' \
             'mask) function where the mask argument is not an instance of a ' \
             'Jim object'
 
         try:
             _ = jim.geometry.polygonize(pj._get_random_path(), mask='spam')
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.polygonize(path, mask) ' \
             'method where the mask argument is not an instance of a Jim object'
 
@@ -552,21 +552,21 @@ class BadGeometryVects(unittest.TestCase):
 
         try:
             _ = pj.geometry.intersect(jimv, jimv, pj._get_random_path())
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.intersect(Jim) ' \
             'function where the argument is not an instance of a Jim object'
 
         try:
             _ = jimv.geometry.intersect(jimv)
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.intersect(Jim) method ' \
             'where the argument is not an instance of a Jim object'
 
@@ -658,22 +658,22 @@ class BadGeometryVects(unittest.TestCase):
         # Test catching wrong calls
         try:
             _ = pj.geometry.join(jimv, jimr, output=non_existing_path_joined)
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.join(JimVect, Jim) ' \
             'function where one of the arguments is not an instance of a ' \
             'JimVect object'
 
         try:
             _ = jimv.geometry.join(jimr, output=non_existing_path_joined)
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.join(Jim) method ' \
             'where the argument is not an instance of a JimVect object'
 

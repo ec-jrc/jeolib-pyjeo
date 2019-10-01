@@ -82,31 +82,31 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = pj.JimVect(vect)
-            failed = True
+            raised = False
         except AttributeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching wrong parameters for JimVect creation ' \
             '(no output, but initial vector)'
 
         try:
             _ = pj.JimVect(vect, ln='milano')
-            failed = True
+            raised = False
         except AttributeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching wrong parameters for JimVect creation ' \
             '(no output, but initial vector and kwargs)'
 
         try:
             _ = pj.JimVect(ulx=0, uly=1, lrx=1, lry=0, output=out_path)
-            failed = True
+            raised = False
         except AttributeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching non-existing output without defining ' \
             'a JimVect template'
 
