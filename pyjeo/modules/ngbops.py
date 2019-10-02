@@ -171,11 +171,11 @@ def firfilter1d(jim_object, taps, **kwargs):
     Choose between: symmetric, replicate, circular, zero (pad with 0)
     :return: filtered Jim object
 
-    Example:
+    Example::
 
-    jim=pj.Jim('/path/to/image.tif')
+        jim = pj.Jim('/path/to/image.tif')
 
-    filtered=pj.ngbops.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
+        filtered = pj.ngbops.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
     """
     if taps is None:
         raise AttributeError('Error: no taps provided')
@@ -196,11 +196,11 @@ def firfilter2d(jim_object, taps, **kwargs):
     :param norm: normalize tap values
     :return: filtered Jim object
 
-    Example:
+    Example::
 
-    jim=pj.Jim('/path/to/image.tif')
+        jim = pj.Jim('/path/to/image.tif')
 
-    filtered=pj.ngbops.firfilter1d(jim, taps=[1, 2, 1], norm=True)
+        filtered = pj.ngbops.firfilter2d(jim, taps=[1, 2, 1], norm=True)
     """
     if taps is None:
         raise AttributeError('Error: no taps provided')
@@ -984,11 +984,11 @@ class _NgbOps():
         Choose between: symmetric, replicate, circular, zero (pad with 0)
         :return: filtered Jim object
 
-        Example:
+        Example::
 
-        jim=pj.Jim('/path/to/image.tif')
+            jim = pj.Jim('/path/to/image.tif')
 
-        jim.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
+            jim.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
         """
         if taps is None:
             raise AttributeError('Error: no taps provided')
@@ -1007,11 +1007,11 @@ class _NgbOps():
         :param norm: normalize tap values
         :return: filtered Jim object
 
-        Example:
+        Example::
 
-        jim=pj.Jim('/path/to/image.tif')
+            jim = pj.Jim('/path/to/image.tif')
 
-        jim.ngbops.firfilter2d(taps=[1, 2, 1], norm=True, pad='symmetric')
+            jim.ngbops.firfilter2d(taps=[1, 2, 1], norm=True, pad='symmetric')
         """
         if taps is None:
             raise AttributeError('Error: no taps provided')
