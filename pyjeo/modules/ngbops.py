@@ -433,12 +433,12 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
     :param interpolationType: type of interpolation for spectral filtering
     (see https://www.gnu.org/software/gsl/doc/html/interp.html)
 
-    Example:
+    Example::
 
-    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-    jim.pixops.convert('GDT_Float64')
+        jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
+        jim.pixops.convert('GDT_Float64')
 
-    pj.ngbops.smoothNoData1d(jim,0)
+        pj.ngbops.smoothNoData1d(jim, 0)
     """
     kwargs.update({'nodata': nodata})
     return _pj.Jim(jim_object._jipjim.smoothNoData1d(kwargs))
@@ -1252,12 +1252,12 @@ class _NgbOps():
         :param interpolationType: type of interpolation for spectral filtering
         (see https://www.gnu.org/software/gsl/doc/html/interp.html)
 
-        Example:
+        Example::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-        jim.pixops.convert('GDT_Float64')
+            jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
+            jim.pixops.convert('GDT_Float64')
 
-        jim.ngbops.smoothNoData1d(0)
+            jim.ngbops.smoothNoData1d(0)
         """
         kwargs.update({'nodata': nodata})
         self._jim_object._set(self._jim_object._jipjim.smoothNoData1d(kwargs))
