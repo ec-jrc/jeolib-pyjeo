@@ -182,7 +182,7 @@ def firfilter1d(jim_object, taps, **kwargs):
     if len(taps.shape) != 1:
         raise ValueError('Error: taps should be 1D array')
     taps = numpy.array(taps).tolist()
-    kwargs.update({'taps':taps})
+    kwargs.update({'taps': taps})
     return _pj.Jim(jim_object._jipjim.firfilter1d(kwargs))
 
 
@@ -207,9 +207,9 @@ def firfilter2d(jim_object, taps, **kwargs):
     if len(taps.shape) != 2:
         raise ValueError('Error: taps should be 2D array')
     taps = numpy.array(taps)
-    kwargs.update({'taps':taps.flatten().tolist()})
-    kwargs.update({'dimx':taps.shape[1]})
-    kwargs.update({'dimy':taps.shape[0]})
+    kwargs.update({'taps': taps.flatten().tolist()})
+    kwargs.update({'dimx': taps.shape[1]})
+    kwargs.update({'dimy': taps.shape[0]})
     return _pj.Jim(jim_object._jipjim.firfilter2d(kwargs))
 
 
@@ -995,7 +995,7 @@ class _NgbOps():
         if len(taps.shape) != 1:
             raise ValueError('Error: taps should be 1D array')
         taps = numpy.array(taps).tolist()
-        kwargs.update({'taps':taps})
+        kwargs.update({'taps': taps})
         self._jim_object._set(self._jim_object._jipjim.firfilter1d(kwargs))
 
     def firfilter2d(self, taps, **kwargs):
@@ -1018,9 +1018,9 @@ class _NgbOps():
         if len(taps.shape) != 2:
             raise ValueError('Error: taps should be 2D array')
         taps = numpy.array(taps)
-        kwargs.update({'taps':taps.flatten().tolist()})
-        kwargs.update({'dimx':taps.shape[1]})
-        kwargs.update({'dimy':taps.shape[0]})
+        kwargs.update({'taps': taps.flatten().tolist()})
+        kwargs.update({'dimx': taps.shape[1]})
+        kwargs.update({'dimy': taps.shape[0]})
 
         self._jim_object._set(self._jim_object._jipjim.firfilter2d(kwargs))
 
