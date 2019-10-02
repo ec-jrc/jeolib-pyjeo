@@ -440,7 +440,7 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
 
     pj.ngbops.smoothNoData1d(jim,0)
     """
-    kwargs.update({'nodata':nodata})
+    kwargs.update({'nodata': nodata})
     return _pj.Jim(jim_object._jipjim.smoothNoData1d(kwargs))
 
 
@@ -1259,7 +1259,7 @@ class _NgbOps():
 
         jim.ngbops.smoothNoData1d(0)
         """
-        kwargs.update({'nodata':nodata})
+        kwargs.update({'nodata': nodata})
         self._jim_object._set(self._jim_object._jipjim.smoothNoData1d(kwargs))
 
 
