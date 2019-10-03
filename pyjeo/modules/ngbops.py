@@ -169,7 +169,7 @@ def firfilter1d(jim_object, taps, **kwargs):
         (the same data type will be used for output)
     :param taps: 1D array of filter taps
     :param pad: Padding method for filtering (how to handle edge effects).
-    Choose between: symmetric, replicate, circular, zero (pad with 0)
+        Choose between: symmetric, replicate, circular, zero (pad with 0)
     :return: filtered Jim object
 
     Example::
@@ -194,7 +194,7 @@ def firfilter2d(jim_object, taps, **kwargs):
         (the same data type will be used for output)
     :param taps: 2D array of filter taps
     :param nodata: list of no data values not to take into account when
-    calculating the filter response
+        calculating the filter response
     :param norm: normalize tap values
     :return: filtered Jim object
 
@@ -984,7 +984,7 @@ class _NgbOps():
 
         :param taps: 1D array of filter taps
         :param pad: Padding method for filtering (how to handle edge effects).
-        Choose between: symmetric, replicate, circular, zero (pad with 0)
+            Choose between: symmetric, replicate, circular, zero (pad with 0)
         :return: filtered Jim object
 
         Example::
@@ -1006,7 +1006,7 @@ class _NgbOps():
 
         :param taps: 2D array of filter taps
         :param nodata: list of no data values not to take into account when
-        calculating the filter response
+            calculating the filter response
         :param norm: normalize tap values
         :return: filtered Jim object
 

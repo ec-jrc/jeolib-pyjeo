@@ -159,9 +159,11 @@ class _Classify():
         :param classes: List of classes to extract from the reference.
             (leave empty to extract all classes in reference)
 
-          jim_sml=pj.classify.sml(reference, classes=[0,1,2], jim)
+        ::
 
-        The result is a multi-band :py:class`Jim` object where the number of
+          jim_sml = pj.classify.sml(reference, classes=[0,1,2], jim)
+
+        The result is a multi-band :py:class:`Jim` object where the number of
         bands equals the number of classes and each band represents
         the probability for the respective class. To create a discrete
         classification result, based on the maximum probability for each

@@ -555,17 +555,15 @@ def join(jvec1, jvec2, output, **kwargs):
 
     The join methods currently supported are:
 
-    INNER |inner|: join two JimVect objects, keeping only those features for \
-                   which identical keys in both objects are found
-
-    OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features \
-                             from first object
-
-    OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features \
-                               from second object
-
-    OUTER_FULL |outer_full|: join two JimVect objects, keeping all features \
-                             from both objects
+        :INNER |inner|: join two JimVect objects, keeping only those \
+                        features for which identical keys in both objects \
+                        are found
+        :OUTER_LEFT |outer_left|: join two JimVect objects, keeping all \
+                                  features from first object
+        :OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all \
+                                    features from second object
+        :OUTER_FULL |outer_full|: join two JimVect objects, keeping all \
+                                  features from both objects
 
     Example: join two vectors, based on the key 'id', which is a common
     field shared between v1 and v2. Use OUTER_FULL as the join method::
@@ -2955,20 +2953,18 @@ class _GeometryVect():
 
         The join methods currently supported are:
 
-        INNER |inner|: join two JimVect objects, keeping only those features for \
-                       which identical keys in both objects are found
+            :INNER |inner|: join two JimVect objects, keeping only those \
+                            features for which identical keys in both objects \
+                            are found
+            :OUTER_LEFT |outer_left|: join two JimVect objects, keeping all \
+                                      features from first object
+            :OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all \
+                                        features from second object
+            :OUTER_FULL |outer_full|: join two JimVect objects, keeping all \
+                                      features from both objects
 
-        OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features \
-                                 from first object
-
-        OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features \
-                                   from second object
-
-        OUTER_FULL |outer_full|: join two JimVect objects, keeping all features \
-                                 from both objects
-
-        Example: join two vectors, based on the key 'id', which is a common field
-        shared between v1 and v2. Use OUTER_FULL as the join method::
+        Example: join two vectors, based on the key 'id', which is a common
+        field shared between v1 and v2. Use OUTER_FULL as the join method::
 
           v1 = pj.JimVect('/path/to/vector1.sqlite')
           v2 = pj.JimVect('/path/to/vector2.sqlite')
