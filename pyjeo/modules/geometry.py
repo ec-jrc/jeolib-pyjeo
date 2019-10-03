@@ -397,11 +397,13 @@ def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
         returnJim = None
         for band in range(0, jim_object.properties.nrOfBand()):
             if returnJim:
-                jimband = _pj.geometry.cropBand(jim_object, band=band)
+                jimband = _pj.geometry.cropBand(jim_object,
+                                                band=band)
                 jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
                 returnJim.geometry.stackBand(jimband)
             else:
-                returnJim = _pj.geometry.cropBand(jim_object, band=band)
+                returnJim = _pj.geometry.cropBand(jim_object,
+                                                  band=band)
                 returnJim._jipjim.d_imageFrameSubtract(
                     [l, r, t, b, u, d])
         return _pj.Jim(returnJim)
@@ -565,8 +567,8 @@ def join(jvec1, jvec2, output, **kwargs):
     OUTER_FULL |outer_full|: join two JimVect objects, keeping all features \
                              from both objects
 
-    Example: join two vectors, based on the key 'id', which is a common field
-    shared between v1 and v2. Use OUTER_FULL as the join method::
+    Example: join two vectors, based on the key 'id', which is a common
+    field shared between v1 and v2. Use OUTER_FULL as the join method::
 
       v1 = pj.JimVect('/path/to/vector1.sqlite')
       v2 = pj.JimVect('/path/to/vector2.sqlite')
@@ -630,11 +632,11 @@ def plane2band(jim):
         12
 
     """
-    result=None
-    for iplane in range(0,jim.properties.nrOfPlane()):
-        jim_plane=_pj.geometry.cropPlane(jim,iplane)
+    result = None
+    for iplane in range(0, jim.properties.nrOfPlane()):
+        jim_plane = _pj.geometry.cropPlane(jim, iplane)
         if result is None:
-            result=jim_plane
+            result = jim_plane
         else:
             result.geometry.stackBand(jim_plane)
     return result
@@ -1693,7 +1695,7 @@ class _Geometry():
                 kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
 
-    #deprecated: use aggregate_vector instead
+    # deprecated: use aggregate_vector instead
     def extractOgr(self, jvec, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
@@ -2036,11 +2038,13 @@ class _Geometry():
             returnJim = None
             for band in range(0, self._jim_object.properties.nrOfBand()):
                 if returnJim:
-                    jimband = _pj.geometry.cropBand(self._jim_object, band=band)
+                    jimband = _pj.geometry.cropBand(self._jim_object,
+                                                    band=band)
                     jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
                     returnJim.geometry.stackBand(jimband)
                 else:
-                    returnJim=_pj.geometry.cropBand(self._jim_object,band=band)
+                    returnJim = _pj.geometry.cropBand(self._jim_object,
+                                                      band=band)
                     returnJim._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
             self._jim_object._set(returnJim._jipjim)
         else:
@@ -2137,11 +2141,11 @@ class _Geometry():
            12
 
         """
-        result=None
-        for iplane in range(0,self._jim_object.properties.nrOfPlane()):
-            jim_plane=_pj.geometry.cropPlane(self._jim_object,iplane)
+        result = None
+        for iplane in range(0, self._jim_object.properties.nrOfPlane()):
+            jim_plane = _pj.geometry.cropPlane(self._jim_object, iplane)
             if result is None:
-                result=jim_plane
+                result = jim_plane
             else:
                 result.geometry.stackBand(jim_plane)
         self._jim_object._set(result._jipjim)
@@ -2168,22 +2172,22 @@ class _Geometry():
         :param kwargs: See table below
         :return: JimVect object with polygons
 
-        +------------------+------------------------------------------------------+
-        | key              | value                                                |
-        +==================+======================================================+
-        | ln               | Output layer name                                    |
-        +------------------+------------------------------------------------------+
-        | oformat          | Output vector dataset format                         |
-        +------------------+------------------------------------------------------+
-        | co               | Creation option for output vector dataset            |
-        +------------------+------------------------------------------------------+
-        | name             | Field name of the output layer (default is DN)       |
-        +------------------+------------------------------------------------------+
-        | nodata           | Discard this nodata value when creating polygons     |
-        +------------------+------------------------------------------------------+
-        | mask             | mask with identical geometry as input raster object  |
-        |                  | (zero is invalid, non-zero is valid)                 |
-        +------------------+------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | ln               | Output layer name                                |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+        | name             | Field name of the output layer (default is DN)   |
+        +------------------+--------------------------------------------------+
+        | nodata           | Discard this nodata value when creating polygons |
+        +------------------+--------------------------------------------------+
+        | mask             | mask with identical geometry as input raster     |
+        |                  | object (zero is invalid, non-zero is valid)      |
+        +------------------+--------------------------------------------------+
 
         Example: create a polygon vector file from a Sentinel-2 classification
         raster dataset, where clouds are represented by the pixel value 9::
@@ -2270,7 +2274,7 @@ class _Geometry():
                                                       'GDT_Float64'):
                 self._jim_object.pixops.convert(otype='GDT_Float32')
             if band is not None:
-                mask = _pj.geometry.cropBand(self._jim_object, band = band)
+                mask = _pj.geometry.cropBand(self._jim_object, band=band)
             if rule == 'mean' or rule == 'avg':
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:

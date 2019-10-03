@@ -1,5 +1,4 @@
-"""Basic file containing Jim, JimList and JimVect objects and functions for
-numpy conversions."""
+"""Basic file containing Jim* objects and functions for numpy conversions."""
 
 from __future__ import division
 import numpy
@@ -85,7 +84,6 @@ class _ParentJim(_jl.Jim):
                 super(_ParentJim, self).__init__({'filename': image})
         else:
             super(_ParentJim, self).__init__(image)
-
 
 
 class Jim():
@@ -290,20 +288,21 @@ class Jim():
                     raise AttributeError(
                         'The list parsed as the uniform argument must be '
                         'in the form [min, max + 1]')
-                for band in range(0,self.properties.nrOfBand()):
-                    self.np(band)[:] = numpy.random.uniform(uniform[0], uniform[1],
-                                                        self.np(band).shape)
+                for band in range(0, self.properties.nrOfBand()):
+                    self.np(band)[:] = numpy.random.uniform(
+                        uniform[0], uniform[1], self.np(band).shape)
             else:
-                for band in range(0,self.properties.nrOfBand()):
-                    self.np(band)[:] = numpy.random.uniform(0, uniform,
-                                                            self.np(band).shape)
+                for band in range(0, self.properties.nrOfBand()):
+                    self.np(band)[:] = numpy.random.uniform(
+                        0, uniform, self.np(band).shape)
         else:
             if stdev is None:
                 stdev = 1
             if mean is None:
                 mean = 0
-            for band in range(0,self.properties.nrOfBand()):
-                self.np(band)[:] = numpy.random.normal(mean, stdev, self.np(band).shape)
+            for band in range(0, self.properties.nrOfBand()):
+                self.np(band)[:] = numpy.random.normal(
+                    mean, stdev, self.np(band).shape)
 
     def _set(self, modified_object):
         """Apply changes done in modified_object to the parent Jim instance.

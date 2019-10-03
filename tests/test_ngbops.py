@@ -143,7 +143,6 @@ class BadNgbOps(unittest.TestCase):
 
     def test_smoothNoData1d(self):
         """Test smoothNoData1d functions and methods."""
-
         jim = pj.Jim(testFile, band2plane=True)
         smoothed = pj.ngbops.smoothNoData1d(jim, 0)
         assert smoothed.stats.getStats('mean')['mean'] > \

@@ -154,9 +154,9 @@ def filter2d(jim_object, filter, **kwargs):
     see the corresponding method :py:meth:`.filter2d` for more information
     """
     if isinstance(filter, numpy.ndarray):
-        taps=kwargs.pop('filter')
+        taps = kwargs.pop('filter')
         kwargs.update({'taps': taps})
-        return firfilter2d(jim_object,kwargs)
+        return firfilter2d(jim_object, kwargs)
     else:
         kwargs.update({'filter': filter})
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
@@ -165,7 +165,8 @@ def filter2d(jim_object, filter, **kwargs):
 def firfilter1d(jim_object, taps, **kwargs):
     """Compute the finite impulse response filter in time-spectral domain
 
-    :param jim_object: a Jim object (the same data type will be used for output)
+    :param jim_object: a Jim object
+        (the same data type will be used for output)
     :param taps: 1D array of filter taps
     :param pad: Padding method for filtering (how to handle edge effects).
     Choose between: symmetric, replicate, circular, zero (pad with 0)
@@ -189,7 +190,8 @@ def firfilter1d(jim_object, taps, **kwargs):
 def firfilter2d(jim_object, taps, **kwargs):
     """Compute the finite impulse response filter in spatial domain
 
-    :param jim_object: a Jim object (the same data type will be used for output)
+    :param jim_object: a Jim object
+        (the same data type will be used for output)
     :param taps: 2D array of filter taps
     :param nodata: list of no data values not to take into account when
     calculating the filter response
@@ -413,15 +415,16 @@ def savgolay(jim_object, **kwargs):
 
     Example:
 
-    Perform a Savitzky-Golay filter to reconstruct a time series data set as
-    in `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
+    Perform a Savitzky-Golay filter to reconstruct a time series data set
+    as in `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
         jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
         jim.pixops.convert('GDT_Float64')
 
-        savgol=pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
-        for loop in range(0,10):
-            savgol[savgol<jim]=jim
-            savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
+        savgol = pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
+        for loop in range(0, 10):
+            savgol[savgol<jim] = jim
+            savgol = pj.ngbops.savgolay(
+                savgol, nl=4, nr=4, m=6, pad='replicate')
     """
     return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
 
@@ -965,7 +968,7 @@ class _NgbOps():
             jim_multitemp.convert(otype='Byte')
         """
         if isinstance(filter, numpy.ndarray):
-            taps=kwargs.pop('filter',None)
+            taps = kwargs.pop('filter', None)
             kwargs.update({'taps': taps})
             self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
             self.firfilter2d(kwargs)
@@ -1233,15 +1236,16 @@ class _NgbOps():
 
         Example:
 
-        Perform a Savitzky-Golay filter to reconstruct a time series data set as
-        in `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
+        Perform a Savitzky-Golay filter to reconstruct a time series data set
+        as in `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
             jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
             jim.pixops.convert('GDT_Float64')
 
-            savgol=pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
-            for loop in range(0,10):
-               savgol[savgol<jim]=jim
-               savgol=pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6, pad='replicate')
+            savgol = pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
+            for loop in range(0, 10):
+                savgol[savgol<jim] = jim
+                savgol = pj.ngbops.savgolay(
+                    savgol, nl=4, nr=4, m=6, pad='replicate')
         """
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
