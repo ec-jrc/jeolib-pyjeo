@@ -1193,7 +1193,7 @@ class _Geometry():
             if self._jim_object.properties.nrOfPlane() == 1:
                 avect = self._jim_object.geometry.extractOgr(jvec, **kwargs)
             else:
-                avect = pj.geometry.cropPlane(
+                avect = _pj.geometry.cropPlane(
                     self, plane[0])._jim_object.geometry.extractOgr(jvec,
                                                                     **kwargs)
             avect.io.write()
