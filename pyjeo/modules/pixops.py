@@ -204,7 +204,9 @@ def isEqual(first_jim, second_jim):
     """
     if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
         if first_jim.properties.nrOfPlane() != \
-                second_jim.properties.nrOfPlane():
+                second_jim.properties.nrOfPlane() or \
+                first_jim.properties.nrOfBand() != \
+                second_jim.properties.nrOfBand():
             return False
         if first_jim.properties.nrOfPlane() == 1:
             for iband in range(0, first_jim.properties.nrOfBand()):
@@ -574,7 +576,9 @@ class _PixOps():
         """
         if isinstance(other, _pj.Jim):
             if self._jim_object.properties.nrOfPlane() != \
-                    other.properties.nrOfPlane():
+                    other.properties.nrOfPlane() or \
+                    self._jim_object.properties.nrOfBand() != \
+                    other.properties.nrOfBand():
                 return False
             if self._jim_object.properties.nrOfPlane() == 1:
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
