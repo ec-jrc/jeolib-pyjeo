@@ -5,85 +5,98 @@ import numpy
 
 
 def dwt1d(jim_object, **kwargs):
-    """Compute the discrete forward wavelet transform in the time-spectral domain
+    """Compute discrete forward wavelet transform in time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
     :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-    haar_centered, bspline, bspline_centered
+        haar_centered, bspline, bspline_centered
     :param family: wavelet family,
-    see also https://www.gnu.org/software/gsl/doc/html/dwt.html
+        see also https://www.gnu.org/software/gsl/doc/html/dwt.html
     :return: filtered Jim object
 
-    Example:
+    Example::
 
-    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-    jim.pixops.convert('GDT_Float64')
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
 
-    dwt=pj.ngbops.dwt1d(jim)
-    dwt.ngbops.dwti1d()
+        dwt=pj.ngbops.dwt1d(jim)
+        dwt.ngbops.dwti1d()
     """
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
 
 
 def dwt2d(jim_object, **kwargs):
-    """Compute the discrete forward wavelet transform in the spatial domain
+    """Compute forward discrete wavelet transform in the spatial domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
     :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-    haar_centered, bspline, bspline_centered
+        haar_centered, bspline, bspline_centered
     :param family: wavelet family, see also
-    https://www.gnu.org/software/gsl/doc/html/dwt.html
+        https://www.gnu.org/software/gsl/doc/html/dwt.html
     :return: filtered Jim object
 
-    Example:
+    Example::
 
-    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-    jim.pixops.convert('GDT_Float64')
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
 
-    dwt=pj.ngbops.dwt2d(jim)
-    dwt.ngbops.dwti2d()
+        dwt=pj.ngbops.dwt2d(jim)
+        dwt.ngbops.dwti2d()
     """
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
 
 
 def dwti1d(jim_object, **kwargs):
-    """Compute the inverse discrete wavelet transform in the time-spectral domain
+    """Compute inverse discrete wavelet transform in time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
     :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-    haar_centered, bspline, bspline_centered
+        haar_centered, bspline, bspline_centered
     :param family: wavelet family, see also
-    https://www.gnu.org/software/gsl/doc/html/dwt.html
+        https://www.gnu.org/software/gsl/doc/html/dwt.html
     :return: filtered Jim object
 
-    Example:
+    Example::
 
-    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-    jim.pixops.convert('GDT_Float64')
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
 
-    dwt=pj.ngbops.dwt1d(jim)
-    dwt.ngbops.dwti1d()
+        dwt=pj.ngbops.dwt1d(jim)
+        dwt.ngbops.dwti1d()
+
+    Approximate a 3D image by setting all wavelet coefficients below
+    some percentile value (e.g., 10) to 0::
+
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
+
+        jim.ngbops.dwt1d()
+        jimabs=pj.Jim(jim)
+        jimabs=abs(jimabs)
+        thresholds=np.percentile(jimabs.np(),90,axis=0)
+        jim[jimabs<thresholds]=0
+        jim.ngbops.dwti1d()
     """
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
 
 
 def dwti2d(jim_object, **kwargs):
-    """Compute the inverse discrete wavelet transform in the spatial domain
+    """Compute inverse discrete wavelet transform in the spatial domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
     :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-    haar_centered, bspline, bspline_centered
+        haar_centered, bspline, bspline_centered
     :param family: wavelet family, see also
-    https://www.gnu.org/software/gsl/doc/html/dwt.html
+        https://www.gnu.org/software/gsl/doc/html/dwt.html
     :return: filtered Jim object
 
-    Example:
+    Example::
 
-    jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-    jim.pixops.convert('GDT_Float64')
+        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim.pixops.convert('GDT_Float64')
 
-    dwt=pj.ngbops.dwt2d(jim)
-    dwt.ngbops.dwti2d()
+        dwt=pj.ngbops.dwt2d(jim)
+        dwt.ngbops.dwti2d()
     """
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
 
@@ -105,6 +118,7 @@ def edgeWeight(jim_object, dir=0, type=0):
 
 def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
     """Subset raster dataset in spectral/temporal domain.
+
     This function is deprecated
 
     Filter Jim object in spectral/temporal domain performed on multi-band
@@ -135,6 +149,7 @@ def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
 
 def filter2d(jim_object, filter, **kwargs):
     """Subset raster dataset in spectral/temporal domain.
+
     #This function is deprecated
 
     Filter Jim object in spatial domain performed on single or multi-band
@@ -458,88 +473,87 @@ class _NgbOps():
         self._jim_object = caller
 
     def dwt1d(self, **kwargs):
-        """Compute the discrete wavelet transform in the time-spectral domain
+        """Compute discrete forward wavelet transform in time-spectral domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-        haar_centered, bspline, bspline_centered
+            haar_centered, bspline, bspline_centered
         :param family: wavelet family, see also
-        https://www.gnu.org/software/gsl/doc/html/dwt.html
+            https://www.gnu.org/software/gsl/doc/html/dwt.html
 
-        Example:
+        Example::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-        jim.pixops.convert('GDT_Float64')
+            jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+            jim.pixops.convert('GDT_Float64')
 
-        jim.ngbops.dwt1d()
-        jim.ngbops.dwti1d()
+            jim.ngbops.dwt1d()
+            jim.ngbops.dwti1d()
         """
         self._jim_object._jipjim.d_dwt1d(kwargs)
 
     def dwt2d(self, **kwargs):
-        """Compute the forward discrete wavelet transform in the spatial domain
+        """Compute forward discrete wavelet transform in the spatial domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-        haar_centered, bspline, bspline_centered
+            haar_centered, bspline, bspline_centered
         :param family: wavelet family, see also
-        https://www.gnu.org/software/gsl/doc/html/dwt.html
+            https://www.gnu.org/software/gsl/doc/html/dwt.html
 
         Example::
 
-        jim=pj.Jim('/path/to/image.tif')
-        jim.pixops.convert('GDT_Float64')
+            jim=pj.Jim('/path/to/image.tif')
+            jim.pixops.convert('GDT_Float64')
 
-        jim.ngbops.dwt2d()
-        jim.ngbops.dwti2d()
+            jim.ngbops.dwt2d()
+            jim.ngbops.dwti2d()
         """
         self._jim_object._jipjim.d_dwt2d(kwargs)
 
     def dwti1d(self, **kwargs):
-        """Compute the inverse discrete wavelet transform in the
-        time-spectral domain
+        """Compute inverse discrete wavelet transform in time-spectral domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-        haar_centered, bspline, bspline_centered
+            haar_centered, bspline, bspline_centered
         :param family: wavelet family, see also
-        https://www.gnu.org/software/gsl/doc/html/dwt.html
+            https://www.gnu.org/software/gsl/doc/html/dwt.html
 
         Example::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-        jim.pixops.convert('GDT_Float64')
+            jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+            jim.pixops.convert('GDT_Float64')
 
-        jim.ngbops.dwt1d()
-        jim.ngbops.dwti1d()
+            jim.ngbops.dwt1d()
+            jim.ngbops.dwti1d()
 
         Approximate a 3D image by setting all wavelet coefficients below
         some percentile value (e.g., 10) to 0::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
-        jim.pixops.convert('GDT_Float64')
+            jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+            jim.pixops.convert('GDT_Float64')
 
-        jim.ngbops.dwt1d()
-        jimabs=pj.Jim(jim)
-        jimabs=abs(jimabs)
-        thresholds=np.percentile(jimabs.np(),90,axis=0)
-        jim[jimabs<thresholds]=0
-        jim.ngbops.dwti1d()
+            jim.ngbops.dwt1d()
+            jimabs=pj.Jim(jim)
+            jimabs=abs(jimabs)
+            thresholds=np.percentile(jimabs.np(),90,axis=0)
+            jim[jimabs<thresholds]=0
+            jim.ngbops.dwti1d()
         """
         self._jim_object._jipjim.d_dwti1d(kwargs)
 
     def dwti2d(self, **kwargs):
-        """Compute the inverse discrete wavelet transform in the spatial domain
+        """Compute inverse discrete wavelet transform in the spatial domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
-        haar_centered, bspline, bspline_centered
+            haar_centered, bspline, bspline_centered
         :param family: wavelet family, see also
-        https://www.gnu.org/software/gsl/doc/html/dwt.html
+            https://www.gnu.org/software/gsl/doc/html/dwt.html
 
         Example::
 
-        jim=pj.Jim('/path/to/image.tif')
-        jim.pixops.convert('GDT_Float64')
+            jim=pj.Jim('/path/to/image.tif')
+            jim.pixops.convert('GDT_Float64')
 
-        jim.ngbops.dwt2d()
-        jim.ngbops.dwti2d()
+            jim.ngbops.dwt2d()
+            jim.ngbops.dwti2d()
         """
         self._jim_object._jipjim.d_dwti2d(kwargs)
 
@@ -561,6 +575,7 @@ class _NgbOps():
 
     def filter1d(self, filter, dz=None, pad=None, otype=None, **kwargs):
         """Subset raster dataset in spectral/temporal domain.
+
         This function is deprecated
 
         Filter Jim image in spectral/temporal domain performed on multi-band
@@ -794,6 +809,7 @@ class _NgbOps():
 
     def filter2d(self, filter, **kwargs):
         """Subset raster dataset in spectral/temporal domain.
+
         This function is deprecated
 
         Filter Jim object in spatial domain performed on single or multi-band
