@@ -458,7 +458,7 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
     """
     bands = []
     if band is None:
-        bands = range(0, self._jim_object.properties.nrOfBand())
+        bands = range(0, jim_object.properties.nrOfBand())
     else:
         try:
             bands.extend(band)
