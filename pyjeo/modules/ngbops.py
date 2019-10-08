@@ -429,6 +429,7 @@ def savgolay(jim_object, **kwargs):
 def smoothNoData1d(jim_object, nodata=0, **kwargs):
     """Smooth nodata in spectral/temporal domain
 
+    :param jim_object: input Jim object
     :param nodata: no data value to interpolate
     :param interpolationType: type of interpolation for spectral filtering
     (see https://www.gnu.org/software/gsl/doc/html/interp.html)
@@ -443,6 +444,28 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
     kwargs.update({'nodata':nodata})
     return _pj.Jim(jim_object._jipjim.smoothNoData1d(kwargs))
 
+
+# works but slower than directly in Numpy:  jim.np()[0]=jim.np().min(axis=0)
+# def stats1d(jim_object, method, nodata=0, **kwargs):
+#     """Calculate statistics for each pixel in the spectral/temporal domain
+
+#     :param jim_object: input Jim object
+#     :param method: (list of) methods to calculate
+#     :param nodata: no data value to interpolate
+#     :return: Jim object with statistics
+
+#     Example:
+
+#     jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+
+#     jimstats=pj.ngbops.stats1d(jim,method=['min','max])
+#     """
+
+#     kwargs.update({'method': method})
+#     kwargs.update({'nodata':nodata})
+#     print("method is: {}".format(method))
+#     print("kwargs is: {}".format(kwargs))
+#     return _pj.Jim(jim_object._jipjim.stats1d(kwargs))
 
 class _NgbOps():
     """Define all NgbOps methods."""
@@ -1262,6 +1285,24 @@ class _NgbOps():
         """
         kwargs.update({'nodata':nodata})
         self._jim_object._set(self._jim_object._jipjim.smoothNoData1d(kwargs))
+
+    # works but slower than directly in Numpy:  jim.np()[0]=jim.np().min(axis=0)
+    # def stats1d(self, method, nodata=0, **kwargs):
+    #     """Calculate statistics for each pixel in the spectral/temporal domain
+
+    #     :param method: (list of) methods to calculate
+    #     :param nodata: no data value to interpolate
+
+    #     Example:
+
+    #     jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+
+    #     jim.ngbops.stats1d()
+    #     """
+
+    #     kwargs.update({'method': method})
+    #     kwargs.update({'nodata':nodata})
+    #     self._jim_object._set(self._jim_object._jipjim.stats1d(kwargs))
 
 
 class _NgbOpsList():
