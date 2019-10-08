@@ -58,20 +58,24 @@ def sml(jim_object, reflist, **kwargs):
 
     For training, one or more reference raster datasets with categorical
     values is expected as a JimList. The reference raster dataset is
-    typically at a lower spatial resolution than the input raster dataset to
-    be classified. Unlike the Jim.classify(), the training is performed not
-    prior to the classification, but in the same process as the classification.
+    typically at a lower spatial resolution than the input raster dataset
+    to be classified. Unlike the Jim.classify(), the training is
+    performed not prior to the classification, but in the same process as
+    the classification.
 
     :param jim_object: a Jim object
     :param reflist: JimVect object with reference classes
-    :param classes: List of classes to extract from the reference (leave empty to extract all classes in reference)
-    :return: multi-band Jim object, where each band represents the probability for each class
+    :param classes: List of classes to extract from the reference
+        (leave empty to extract all classes in reference)
+    :return: multi-band Jim object, where each band represents the probability
+        for each class
 
     see :py:meth:`~_Classify.sml` for an example how to use this function
     """
     if 'classes' in kwargs:
         kwargs.update({'class': kwargs.pop('classes')})
-    return _pj.Jim(jim_object._jipjim.classifySML(reflist, kwargs))
+    return _pj.Jim(jim_object._jipjim.classifySML(
+        reflist, kwargs))
 
 
 class _Classify():
@@ -143,35 +147,40 @@ class _Classify():
 
         For training, one or more reference raster datasets with categorical
         values is expected as a JimList. The reference raster dataset is
-        typically at a lower spatial resolution than the input raster dataset to
-        be classified. Unlike the Jim.classify(), the training is performed not
-        prior to the classification, but in the same process as the classification.
+        typically at a lower spatial resolution than the input raster dataset
+        to be classified. Unlike the Jim.classify(), the training is
+        performed not prior to the classification, but in the same process as
+        the classification.
 
         Modifies the instance on which the method was called.
 
         :param jim_object: a Jim object
         :param reflist: JimVect object with reference classes
         :param classes: List of classes to extract from the reference.
+            (leave empty to extract all classes in reference)
 
-          jim_sml=pj.classify.sml(reference, classes=[0,1,2], jim)
+        ::
 
-        The result is a multi-band :py:class`Jim` object where the number of
+          jim_sml = pj.classify.sml(reference, classes=[0,1,2], jim)
+
+        The result is a multi-band :py:class:`Jim` object where the number of
         bands equals the number of classes and each band represents
         the probability for the respective class. To create a discrete
         classification result, based on the maximum probability for each
         class::
 
           jim_sml.geometry.band2plane()
-          jim_sml.np()[0]=np.argmax(jim_sml.np(),axis=0)
+          jim_sml.np()[0] = np.argmax(jim_sml.np(), axis=0)
           jim_sml.geometry.cropPlane(0)
 
-        The result contains the indices in the range(0,number of classes).
+        The result contains the indices in the range(0, number of classes).
         Use :py:meth:`~_Classify.reclass` to convert the indices to the actual
         class numbers.
         """
         if 'classes' in kwargs:
             kwargs.update({'class': kwargs.pop('classes')})
-        self._jim_object._set(self._jim_object._jipjim.classifySML(reflist._jipjimlist, kwargs))
+        self._jim_object._set(self._jim_object._jipjim.classifySML(
+            reflist._jipjimlist, kwargs))
 
     def trainSML(self, reference, output=None, **kwargs):
         """Train a supervised symbolic machine learning (SML) classifier.

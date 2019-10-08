@@ -96,8 +96,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.reducePlane()'
 
         # Test the band2plane method
-        jimband = pj.Jim(rasterfn, band=[0,1,2])
-        jimplane = pj.Jim(rasterfn, band=[0,1,2], band2plane=True)
+        jimband = pj.Jim(rasterfn, band=[0, 1, 2])
+        jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
         jimband.geometry.band2plane()
         assert jimband.pixops.isEqual(jimplane), \
             'Error in geometry.band2plane() ' \
@@ -427,7 +427,7 @@ class BadGeometry(unittest.TestCase):
             '(changed values in the original Jim)'
 
     def test_polygonize(self):
-        """Test the polygonize() function."""
+        """Test the polygonize() function and method."""
         jim = pj.Jim(tiles[0])
 
         sub = int(jim.properties.nrOfCol() / 2 - 3)
@@ -448,12 +448,72 @@ class BadGeometry(unittest.TestCase):
         assert feature_count_func == feature_count_meth, \
             'Inconsistency in geometry.polygonize() ' \
             '(method returns different result than function)'
-        assert pol1.properties.getBBox() == jim.properties.getBBox(), \
+        assert pol1.properties.getBBox() == pol2.properties.getBBox() == \
+               jim.properties.getBBox(), \
             'Error in geometry.polygonize() ' \
             '(BBox changed)'
-        assert pol1.properties.getFeatureCount() < nr_of_cells, \
+        assert feature_count_func < nr_of_cells, \
             'Error in geometry.polygonize() ' \
             '(not less features in polygons than cells in raster)'
+
+        # Test with the mask parameter
+        mask = pj.Jim(jim, copyData=False)
+        mask[0, 0] = 1
+        mask[0, 1] = 1
+        mask[2, 2] = 1
+
+        pol1_mask = pj.geometry.polygonize(jim, pj._get_random_path(),
+                                           mask=mask)
+        pol2_mask = jim.geometry.polygonize(pj._get_random_path(), mask=mask)
+
+        feature_count_func_mask = pol1_mask.properties.getFeatureCount()
+        feature_count_meth_mask = pol2_mask.properties.getFeatureCount()
+
+        assert feature_count_func_mask == feature_count_meth_mask, \
+            'Inconsistency in geometry.polygonize() ' \
+            '(method returns different result than function when mask ' \
+            'argument used)'
+        assert pol1_mask.properties.getBBox() == \
+               pol2_mask.properties.getBBox() == \
+               jim[:3, :3].properties.getBBox(), \
+            'Error in geometry.polygonize() ' \
+            '(BBox not changed or changed wrongly when mask argument used)'
+        assert 2 <= feature_count_func_mask < feature_count_func, \
+            'Error in geometry.polygonize() ' \
+            '(not less features in polygons when mask argument used)'
+
+        # Test wrong calls
+        try:
+            _ = pj.geometry.polygonize(1, pj._get_random_path())
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.polygonize(jim, path) ' \
+            'function where the jim argument is not an instance of a Jim ' \
+            'object'
+
+        try:
+            _ = pj.geometry.polygonize(jim, pj._get_random_path(), mask=5)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.polygonize(jim, path, ' \
+            'mask) function where the mask argument is not an instance of a ' \
+            'Jim object'
+
+        try:
+            _ = jim.geometry.polygonize(pj._get_random_path(), mask='spam')
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.polygonize(path, mask) ' \
+            'method where the mask argument is not an instance of a Jim object'
 
 
 class BadGeometryVects(unittest.TestCase):
@@ -492,21 +552,21 @@ class BadGeometryVects(unittest.TestCase):
 
         try:
             _ = pj.geometry.intersect(jimv, jimv, pj._get_random_path())
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.intersect(Jim) ' \
             'function where the argument is not an instance of a Jim object'
 
         try:
             _ = jimv.geometry.intersect(jimv)
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.intersect(Jim) method ' \
             'where the argument is not an instance of a Jim object'
 
@@ -598,22 +658,22 @@ class BadGeometryVects(unittest.TestCase):
         # Test catching wrong calls
         try:
             _ = pj.geometry.join(jimv, jimr, output=non_existing_path_joined)
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.join(JimVect, Jim) ' \
             'function where one of the arguments is not an instance of a ' \
             'JimVect object'
 
         try:
             _ = jimv.geometry.join(jimr, output=non_existing_path_joined)
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of geometry.join(Jim) method ' \
             'where the argument is not an instance of a JimVect object'
 

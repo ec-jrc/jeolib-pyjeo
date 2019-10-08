@@ -66,11 +66,11 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = pj.Jim(nrow=5, ncol=5, otype='Float32', uniform=[0, 0, 0])
-            failed = True
+            raised = False
         except AttributeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of Jim creation with wrong value ' \
             'parsed as the uniform argument (three values parsed)'
 
@@ -101,22 +101,22 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = pj.Jim(seed=5)
-            failed = True
+            raised = False
         except AttributeError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of Jim creation with nonsense (kw)args'
 
         non_existing_path = pj._get_random_path()
 
         try:
             _ = pj.Jim(non_existing_path)
-            failed = True
+            raised = False
         except ValueError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of Jim creation with non-existing path'
 
     def test_numpy_conversions(self):
@@ -145,11 +145,11 @@ class BadBasicMethods(unittest.TestCase):
         try:
             jim_empty = pj.Jim()
             _ = jim_empty.np()
-            failed = True
+            raised = False
         except ValueError:
-            failed = False
+            raised = True
 
-        assert not failed, \
+        assert raised, \
             'Error in catching a call of Jim.np() for non-dimensional Jims'
 
         band0 = ajim.np(nr_of_band - 1)
@@ -161,12 +161,12 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = ajim.np(ajim.properties.nrOfBand())
-            failed = True
+            raised = False
         except ValueError:
-            failed = False
+            raised = True
 
-        assert not failed, 'Error in catching a call of Jim.np(band) with ' \
-                           'band value greater than number of bands'
+        assert raised, 'Error in catching a call of Jim.np(band) with ' \
+                       'band value greater than number of bands'
 
     def test_getters_setters(self):
         """Test getters and setters."""
@@ -203,18 +203,18 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = jim1['a', 'a']
-            failed = True
+            raised = False
         except IndexError:
-            failed = False
-        assert not failed, \
+            raised = True
+        assert raised, \
             'Error in catching wrong indices in jim[index, index]'
 
         try:
             _ = jim1[1, 'a']
-            failed = True
+            raised = False
         except IndexError:
-            failed = False
-        assert not failed, \
+            raised = True
+        assert raised, \
             'Error in catching wrong indices in jim[index, index]'
 
         jim1 = pj.Jim(ncol=256, nrow=256, nband=2, nplane=2)
@@ -283,10 +283,10 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = jim1[0, 0, 'a']
-            failed = True
+            raised = False
         except IndexError:
-            failed = False
-        assert not failed, \
+            raised = True
+        assert raised, \
             'Error in catching wrong indices in jim[index, index]'
 
         # last = jim1[-1, -1, -2:-1:1, -2:-1:1]
@@ -304,19 +304,19 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = jim1[vect]
-            failed = True
+            raised = False
         except ValueError:
-            failed = False
-        assert not failed, 'Error in catching a JimVect used as an index ' \
-                           'for a multiplanar Jim (get item)'
+            raised = True
+        assert raised, 'Error in catching a JimVect used as an index ' \
+                       'for a multiplanar Jim (get item)'
 
         try:
             jim1[vect] = 5
-            failed = True
+            raised = False
         except ValueError:
-            failed = False
-        assert not failed, 'Error in catching a JimVect used as an index ' \
-                           'for a multiplanar Jim (set item)'
+            raised = True
+        assert raised, 'Error in catching a JimVect used as an index ' \
+                       'for a multiplanar Jim (set item)'
 
         modis = pj.Jim(testFile)
         modis.properties.clearNoData()
@@ -327,7 +327,7 @@ class BadBasicMethods(unittest.TestCase):
         bbox_vect = vect.properties.getBBox()
         bbox_clipped = modis_clipped.properties.getBBox()
 
-        failed = False
+        raised = True
         for i in range(len(bbox_vect)):
             if i % 2 == 0:
                 delta = modis_clipped.properties.getDeltaX()
@@ -335,10 +335,10 @@ class BadBasicMethods(unittest.TestCase):
                 delta = modis_clipped.properties.getDeltaY()
 
             if abs(bbox_vect[i] - bbox_clipped[i]) > delta:
-                failed = True
+                raised = False
                 break
 
-        assert not failed, 'Error in clipping a Jim by JimVect (Jim[JimVect])'
+        assert raised, 'Error in clipping a Jim by JimVect (Jim[JimVect])'
 
         assert modis_clipped.properties.getNoDataVals() == \
                modis_clipped2.properties.getNoDataVals() == [0], \
@@ -377,11 +377,11 @@ class BadBasicMethods(unittest.TestCase):
         # Test a nonsense argument in [gs]etters
         try:
             rand_jim['a'] = 5
-            failed = True
+            raised = False
         except ValueError:
-            failed = False
+            raised = True
 
-        assert not failed, 'Error in catching wrong indices like Jim["string"]'
+        assert raised, 'Error in catching wrong indices like Jim["string"]'
 
     def test_operators(self):
         """Test basic operators (+, -, *, /, =, abs(), ~)."""
@@ -526,11 +526,11 @@ class BadBasicMethods(unittest.TestCase):
 
             try:
                 _ = jim_one / 2
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching the error from dividing an int Jim'
 
             minus_ones.pixops.convert('float32')
@@ -686,38 +686,38 @@ class BadBasicMethods(unittest.TestCase):
 
             try:
                 _ = test << 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of << operation'
 
             try:
                 _ = test >> 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of >> operation'
 
             try:
                 test <<= 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of <<= operation'
 
             try:
                 test >>= 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of >>= operation'
 
             # Test |
@@ -744,29 +744,29 @@ class BadBasicMethods(unittest.TestCase):
 
             try:
                 _ = ones | 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of | operation'
 
             try:
                 ones |= 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of |= operation'
 
             try:
                 _ = 'a' | ones
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong left side of | operation'
 
             # Test ^
@@ -792,29 +792,29 @@ class BadBasicMethods(unittest.TestCase):
 
             try:
                 _ = ones ^ 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of ^ operation'
 
             try:
                 ones ^= 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of ^= operation'
 
             try:
                 _ = 'a' ^ ones
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong left side of ^ operation'
 
             # Test &
@@ -841,29 +841,29 @@ class BadBasicMethods(unittest.TestCase):
 
             try:
                 _ = ones & 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of & operation'
 
             try:
                 ones &= 'a'
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong right side of &= operation'
 
             try:
                 _ = 'a' & ones
-                failed = True
+                raised = False
             except TypeError:
-                failed = False
+                raised = True
 
-            assert not failed, \
+            assert raised, \
                 'Error in catching wrong left side of & operation'
 
     def test_pixel_wise_conditions(self):
@@ -1103,22 +1103,22 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             jim_threebands == jim_twobands
-            failed = True
+            raised = False
         except IndexError:
-            failed = False
+            raised = True
 
-        assert not failed, 'Error in raising an error when left Jim has ' \
-                           'more bands than the right one for basic conditions'
+        assert raised, 'Error in raising an error when left Jim has ' \
+                       'more bands than the right one for basic conditions'
 
         warnings.filterwarnings('error', category=Warning)
         try:
             jim_twobands == jim_threebands
-            failed = True
+            raised = False
         except Warning:
-            failed = False
+            raised = True
 
-        assert not failed, 'Error in raising a warning when left Jim has ' \
-                           'less bands than the right one for basic conditions'
+        assert raised, 'Error in raising a warning when left Jim has ' \
+                       'less bands than the right one for basic conditions'
 
         warnings.resetwarnings()
         warnings.filterwarnings('ignore', category=Warning)
@@ -1139,13 +1139,13 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = pj.ccops.labelConstrainedCCsVariance(jim1, 0, 0, 0, 0, 0, 0,
                                                      graph=0)
-            failed = True
+            raised = False
         except ValueError:
-            failed = False
+            raised = True
 
-        assert not failed, 'Error in raising an error when an invalid value ' \
-                           'is passed as a graph in a function (for example ' \
-                           'ccops.labelConstrainedCCsVariance())'
+        assert raised, 'Error in raising an error when an invalid value ' \
+                       'is passed as a graph in a function (for example ' \
+                       'ccops.labelConstrainedCCsVariance())'
 
     def test_args_different_formats(self):
         """Test the parsing of arguments as bytes, unicode, etc."""

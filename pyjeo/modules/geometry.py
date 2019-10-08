@@ -397,11 +397,13 @@ def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
         returnJim = None
         for band in range(0, jim_object.properties.nrOfBand()):
             if returnJim:
-                jimband = _pj.geometry.cropBand(jim_object, band=band)
+                jimband = _pj.geometry.cropBand(jim_object,
+                                                band=band)
                 jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
                 returnJim.geometry.stackBand(jimband)
             else:
-                returnJim = _pj.geometry.cropBand(jim_object, band=band)
+                returnJim = _pj.geometry.cropBand(jim_object,
+                                                  band=band)
                 returnJim._jipjim.d_imageFrameSubtract(
                     [l, r, t, b, u, d])
         return _pj.Jim(returnJim)
@@ -456,7 +458,7 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
     """
     bands = []
     if band is None:
-        bands = range(0, self._jim_object.properties.nrOfBand())
+        bands = range(0, jim_object.properties.nrOfBand())
     else:
         try:
             bands.extend(band)
@@ -553,20 +555,18 @@ def join(jvec1, jvec2, output, **kwargs):
 
     The join methods currently supported are:
 
-    INNER |inner|: join two JimVect objects, keeping only those features for \
-                   which identical keys in both objects are found
+        :INNER |inner|: join two JimVect objects, keeping only those \
+                        features for which identical keys in both objects \
+                        are found
+        :OUTER_LEFT |outer_left|: join two JimVect objects, keeping all \
+                                  features from first object
+        :OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all \
+                                    features from second object
+        :OUTER_FULL |outer_full|: join two JimVect objects, keeping all \
+                                  features from both objects
 
-    OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features \
-                             from first object
-
-    OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features \
-                               from second object
-
-    OUTER_FULL |outer_full|: join two JimVect objects, keeping all features \
-                             from both objects
-
-    Example: join two vectors, based on the key 'id', which is a common field
-    shared between v1 and v2. Use OUTER_FULL as the join method::
+    Example: join two vectors, based on the key 'id', which is a common
+    field shared between v1 and v2. Use OUTER_FULL as the join method::
 
       v1 = pj.JimVect('/path/to/vector1.sqlite')
       v2 = pj.JimVect('/path/to/vector2.sqlite')
@@ -630,11 +630,11 @@ def plane2band(jim):
         12
 
     """
-    result=None
-    for iplane in range(0,jim.properties.nrOfPlane()):
-        jim_plane=_pj.geometry.cropPlane(jim,iplane)
+    result = None
+    for iplane in range(0, jim.properties.nrOfPlane()):
+        jim_plane = _pj.geometry.cropPlane(jim, iplane)
         if result is None:
-            result=jim_plane
+            result = jim_plane
         else:
             result.geometry.stackBand(jim_plane)
     return result
@@ -685,7 +685,8 @@ def polygonize(jim_object, output, **kwargs):
         mask = kwargs.pop('mask', None)
         if mask is not None:
             if isinstance(mask, _pj.Jim):
-                avect = jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+                avect = jim_object._jipjim.polygonize(kwargs,
+                                                      mask._jipjim)
             else:
                 raise TypeError('Error: mask should be of Jim type')
         else:
@@ -1192,7 +1193,7 @@ class _Geometry():
             if self._jim_object.properties.nrOfPlane() == 1:
                 avect = self._jim_object.geometry.extractOgr(jvec, **kwargs)
             else:
-                avect = pj.geometry.cropPlane(
+                avect = _pj.geometry.cropPlane(
                     self, plane[0])._jim_object.geometry.extractOgr(jvec,
                                                                     **kwargs)
             avect.io.write()
@@ -1692,7 +1693,7 @@ class _Geometry():
                 kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
 
-    #deprecated: use aggregate_vector instead
+    # deprecated: use aggregate_vector instead
     def extractOgr(self, jvec, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
@@ -2035,11 +2036,13 @@ class _Geometry():
             returnJim = None
             for band in range(0, self._jim_object.properties.nrOfBand()):
                 if returnJim:
-                    jimband = _pj.geometry.cropBand(self._jim_object, band=band)
+                    jimband = _pj.geometry.cropBand(self._jim_object,
+                                                    band=band)
                     jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
                     returnJim.geometry.stackBand(jimband)
                 else:
-                    returnJim=_pj.geometry.cropBand(self._jim_object,band=band)
+                    returnJim = _pj.geometry.cropBand(self._jim_object,
+                                                      band=band)
                     returnJim._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
             self._jim_object._set(returnJim._jipjim)
         else:
@@ -2136,11 +2139,11 @@ class _Geometry():
            12
 
         """
-        result=None
-        for iplane in range(0,self._jim_object.properties.nrOfPlane()):
-            jim_plane=_pj.geometry.cropPlane(self._jim_object,iplane)
+        result = None
+        for iplane in range(0, self._jim_object.properties.nrOfPlane()):
+            jim_plane = _pj.geometry.cropPlane(self._jim_object, iplane)
             if result is None:
-                result=jim_plane
+                result = jim_plane
             else:
                 result.geometry.stackBand(jim_plane)
         self._jim_object._set(result._jipjim)
@@ -2167,22 +2170,22 @@ class _Geometry():
         :param kwargs: See table below
         :return: JimVect object with polygons
 
-        +------------------+------------------------------------------------------+
-        | key              | value                                                |
-        +==================+======================================================+
-        | ln               | Output layer name                                    |
-        +------------------+------------------------------------------------------+
-        | oformat          | Output vector dataset format                         |
-        +------------------+------------------------------------------------------+
-        | co               | Creation option for output vector dataset            |
-        +------------------+------------------------------------------------------+
-        | name             | Field name of the output layer (default is DN)       |
-        +------------------+------------------------------------------------------+
-        | nodata           | Discard this nodata value when creating polygons     |
-        +------------------+------------------------------------------------------+
-        | mask             | mask with identical geometry as input raster object  |
-        |                  | (zero is invalid, non-zero is valid)                 |
-        +------------------+------------------------------------------------------+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | ln               | Output layer name                                |
+        +------------------+--------------------------------------------------+
+        | oformat          | Output vector dataset format                     |
+        +------------------+--------------------------------------------------+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+        | name             | Field name of the output layer (default is DN)   |
+        +------------------+--------------------------------------------------+
+        | nodata           | Discard this nodata value when creating polygons |
+        +------------------+--------------------------------------------------+
+        | mask             | mask with identical geometry as input raster     |
+        |                  | object (zero is invalid, non-zero is valid)      |
+        +------------------+--------------------------------------------------+
 
         Example: create a polygon vector file from a Sentinel-2 classification
         raster dataset, where clouds are represented by the pixel value 9::
@@ -2199,7 +2202,8 @@ class _Geometry():
         mask = kwargs.pop('mask', None)
         if mask is not None:
             if isinstance(mask, _pj.Jim):
-                avect = self._self._jim_object._jipjim.polygonize(kwargs, mask._jipjim)
+                avect = self._jim_object._jipjim.polygonize(kwargs,
+                                                            mask._jipjim)
             else:
                 raise TypeError('Error: mask should be of Jim type')
         else:
@@ -2268,7 +2272,7 @@ class _Geometry():
                                                       'GDT_Float64'):
                 self._jim_object.pixops.convert(otype='GDT_Float32')
             if band is not None:
-                mask = _pj.geometry.cropBand(self._jim_object, band = band)
+                mask = _pj.geometry.cropBand(self._jim_object, band=band)
             if rule == 'mean' or rule == 'avg':
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
@@ -2949,20 +2953,18 @@ class _GeometryVect():
 
         The join methods currently supported are:
 
-        INNER |inner|: join two JimVect objects, keeping only those features for \
-                       which identical keys in both objects are found
+            :INNER |inner|: join two JimVect objects, keeping only those \
+                            features for which identical keys in both objects \
+                            are found
+            :OUTER_LEFT |outer_left|: join two JimVect objects, keeping all \
+                                      features from first object
+            :OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all \
+                                        features from second object
+            :OUTER_FULL |outer_full|: join two JimVect objects, keeping all \
+                                      features from both objects
 
-        OUTER_LEFT |outer_left|: join two JimVect objects, keeping all features \
-                                 from first object
-
-        OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all features \
-                                   from second object
-
-        OUTER_FULL |outer_full|: join two JimVect objects, keeping all features \
-                                 from both objects
-
-        Example: join two vectors, based on the key 'id', which is a common field
-        shared between v1 and v2. Use OUTER_FULL as the join method::
+        Example: join two vectors, based on the key 'id', which is a common
+        field shared between v1 and v2. Use OUTER_FULL as the join method::
 
           v1 = pj.JimVect('/path/to/vector1.sqlite')
           v2 = pj.JimVect('/path/to/vector2.sqlite')

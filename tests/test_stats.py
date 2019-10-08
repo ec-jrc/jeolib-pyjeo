@@ -102,11 +102,11 @@ class BadStats(unittest.TestCase):
         # Test getHistoCumulative
         try:
             _ = jim1.stats.getHistoCumulative()
-            failed = True
+            raised = False
         except TypeError:
-            failed = False
-        assert not failed, 'Error in catching wrong data type in ' \
-                           'stats.getHistoCumulative()'
+            raised = True
+        assert raised, 'Error in catching wrong data type in ' \
+                       'stats.getHistoCumulative()'
 
         # histo_cumul = pj.pixops.convert(jim1, 4).stats.getHistoCumulative()
         jim2 = pj.pixops.convert(jim1, 'Int32')
