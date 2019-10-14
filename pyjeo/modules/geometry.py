@@ -2266,9 +2266,9 @@ class _Geometry():
         Stack planes of two single plane jim objects, then reduce by taking
         the means::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim1=pj.Jim('/path/to/raster1.tif')
-            jim_stacked=pj.geometry.stackPlane(jim0,jim1)
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
+            jim_stacked = pj.geometry.stackPlane(jim0, jim1)
             jim_stacked.geometry.reducePlane('mean')
         """
         if self._jim_object.properties.nrOfPlane() < 2:
