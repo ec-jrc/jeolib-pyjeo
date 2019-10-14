@@ -861,14 +861,23 @@ def stackBand(jim_object, jim_other=None, band=None):
             retJim = _pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
         else:
             retJim = _pj.Jim(jim_object._jipjimlist.stackBand())
+
         if isinstance(jim_other, _pj.Jim):
             if band:
                 return retJim.geometry.stackBand(jim_other, band=band)
             else:
                 retJim.geometry.stackBand(jim_other)
-                return retJim
-        else:
-            return retJim
+        elif isinstance(jim_other, list):
+            if band:
+                jim_to_stack = _pj.Jim(
+                    jim_other._jipjimlist.stackBand({'band': band}))
+            else:
+                jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
+
+            retJim = _pj.Jim(retJim._jipjim.stackBand(
+                jim_to_stack._jipjim))
+
+        return retJim
     elif isinstance(jim_object, _pj.Jim):
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
@@ -2477,7 +2486,7 @@ class _GeometryList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
-    def stackBand(self, band=None):
+    def stackBand(self, jim_other=None, band=None):
         """Stack bands from raster datasets into new multiband Jim object.
 
         :param band: List of band indices to stack (index is 0 based)
@@ -2499,10 +2508,27 @@ class _GeometryList():
             jim_stacked=jimlist.geometry.stackBand([0,2])
         """
         if band:
-            return _pj.Jim(
+            retJim = _pj.Jim(
                 self._jim_list._jipjimlist.stackBand({'band': band}))
         else:
-            return _pj.Jim(self._jim_list._jipjimlist.stackBand())
+            retJim = _pj.Jim(self._jim_list._jipjimlist.stackBand())
+
+        if isinstance(jim_other, _pj.Jim):
+            if band:
+                return retJim.geometry.stackBand(jim_other, band=band)
+            else:
+                retJim.geometry.stackBand(jim_other)
+        elif isinstance(jim_other, list):
+            if band:
+                jim_to_stack = _pj.Jim(
+                    jim_other._jipjimlist.stackBand({'band': band}))
+            else:
+                jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
+
+            retJim = _pj.Jim(retJim._jipjim.stackBand(
+                jim_to_stack._jipjim))
+
+        return retJim
 
     def stackPlane(self):
         """Stack planes from raster datasets into new multiplane Jim object.
