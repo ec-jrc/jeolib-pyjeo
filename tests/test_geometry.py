@@ -31,37 +31,52 @@ class BadGeometry(unittest.TestCase):
             '(function is not equal to method)'
 
     def test_stack(self):
-        """Test the stack band method."""
-        jim0 = pj.Jim(rasterfn, band=0)
-        jim1 = pj.Jim(rasterfn, band=1)
-        jim2 = pj.Jim(rasterfn, band=2)
-        jimlist = pj.JimList([jim0, jim1, jim2])
-        jimliststack = pj.geometry.stackBand(jimlist)
-        jimstack = pj.geometry.stackBand(pj.geometry.stackBand(jim0, jim1),
-                                         jim2)
-        assert jimliststack.pixops.isEqual(jimstack), \
-            'Error in geometry.stackBand() ' \
-            '(jimliststack not equal to jimstack)'
-        jimliststack = pj.geometry.stackBand(jimlist, jim0)
-        jimliststack.geometry.cropBand([0, 1, 2])
-        assert jimliststack.pixops.isEqual(jimstack), \
-            'Error in geometry.stackBand() ' \
-            '(jimliststack not equal to jimstack after crop)'
-        jim3 = pj.JimList([jim0, jim1, jim2]).geometry.stackBand()
-        jim3.geometry.cropBand([0, 1])
-        assert pj.geometry.cropBand(jim3, 0).pixops.isEqual(jim0), \
-            'Error jim3 not equal to jim0'
-        jim4 = pj.JimList([jim0, jim1, jim2]).geometry.stackBand()
-        jim4.geometry.cropBand([1, 2])
-        assert pj.geometry.cropBand(jim4, 0).pixops.isEqual(jim1), \
-            'Error jim3 not equal to jim1'
-        jim = pj.JimList([jim3, jim4]).geometry.stackBand([0, 1])
-        jim.geometry.cropBand([1, 2])
-        jim.geometry.cropBand(0)
-        assert jim.pixops.isEqual(jim1), \
-            'Error jim not equal to jim1'
+        """Test the stackBand and stackPlane methods."""
+        jim = pj.Jim(rasterfn)
 
-        # Test the stack plane method
+        # Test stackBand()
+        jim0to11 = pj.geometry.cropBand(jim,
+                                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        jim12 = pj.geometry.cropBand(jim, 11)
+
+        jim_stacked = pj.geometry.stackBand(jim0to11, jim12)
+        assert jim_stacked.properties.nrOfBand() == \
+               jim0to11.properties.nrOfBand() + jim12.properties.nrOfBand(), \
+            'Error in geometry.stackBand() ' \
+            '(number of bands after stack not equal to the sum of number of ' \
+            'bands of parameters)'
+
+        jim0to11.geometry.stackBand(jim12)
+
+        assert jim_stacked.pixops.isEqual(jim0to11), \
+            'Inconsistency in geometry.stackBand() ' \
+            '(method returns different result than function)'
+        assert jim_stacked.pixops.isEqual(jim), \
+            'Error in geometry.stackBand() ' \
+            '(stacked bands are not equal to an object from which they were ' \
+            'cropped)'
+
+        # Test stackBand() with band specified
+        jim0to11 = pj.geometry.cropBand(jim,
+                                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+        jim_stacked = pj.geometry.stackBand(jim0to11, jim, band=11)
+        assert jim_stacked.properties.nrOfBand() == \
+               jim.properties.nrOfBand(), \
+            'Error in geometry.stackBand(band) ' \
+            '(number of bands after stack not equal to the expected one)'
+
+        jim0to11.geometry.stackBand(jim, band=11)
+
+        assert jim_stacked.pixops.isEqual(jim0to11), \
+            'Inconsistency in geometry.stackBand(band) ' \
+            '(method returns different result than function)'
+        assert jim_stacked.pixops.isEqual(jim), \
+            'Error in geometry.stackBand(band) ' \
+            '(stacked bands are not equal to an object from which they were ' \
+            'cropped)'
+
+        # Test the stackPlane() method
         jim0 = pj.Jim(rasterfn, band=0)
         jim1 = pj.Jim(rasterfn, band=1)
         jim2 = pj.Jim(rasterfn, band=2)
@@ -86,7 +101,7 @@ class BadGeometry(unittest.TestCase):
         assert jim.pixops.isEqual(jim1), \
             'Error jim not equal to jim1'
 
-        # Test the reduce plane method
+        # Test the reducePlane() method
         jimstack = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
         jimreduce = pj.geometry.reducePlane(jimstack, rule='max')
         assert jimreduce.properties.nrOfPlane() == 1
@@ -95,7 +110,7 @@ class BadGeometry(unittest.TestCase):
         assert jimreduce.pixops.isEqual(jimstack), \
             'Error in geometry.reducePlane()'
 
-        # Test the band2plane method
+        # Test the band2plane() method
         jimband = pj.Jim(rasterfn, band=[0, 1, 2])
         jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
         jimband.geometry.band2plane()

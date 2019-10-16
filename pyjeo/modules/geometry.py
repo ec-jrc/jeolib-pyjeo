@@ -729,12 +729,13 @@ def polygonize(jim_object, output, **kwargs):
 #     return ajim
 
 
-def reducePlane(jim, rule='max', band=None, nodata=None):
+def reducePlane(jim, rule='max', ref_band=None, nodata=None):
     """Reduce planes of Jim object.
 
     :param jim: jim object on which to reduce planes
     :param rule: rule to reduce (max, min, mean, median)
-    :param band: band on which to apply rule (default is to check all bands)
+    :param ref_band: band on which to apply rule
+        (default is to check all bands)
     :param nodata: value to ignore when applying rule
     :return: reduced single plane jim object
     """
@@ -748,12 +749,12 @@ def reducePlane(jim, rule='max', band=None, nodata=None):
         if nodata is not None and theType not in ('GDT_Float32',
                                                   'GDT_Float64'):
             jim.pixops.convert(otype='GDT_Float32')
-        if band is not None:
-            mask = _pj.geometry.cropBand(jim, band=band)
+        if ref_band is not None:
+            mask = _pj.geometry.cropBand(jim, band=ref_band)
         if rule == 'mean' or rule == 'avg':
             for iband in range(0, jim.properties.nrOfBand()):
                 if nodata is not None:
-                    if band is None:
+                    if ref_band is None:
                         jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmean(jim.np(iband),
                                                                 axis=0)
@@ -768,7 +769,7 @@ def reducePlane(jim, rule='max', band=None, nodata=None):
         if rule == 'median':
             for iband in range(0, jim.properties.nrOfBand()):
                 if nodata is not None:
-                    if band is None:
+                    if ref_band is None:
                         jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmedian(
                             jim.np(iband), axis=0)
@@ -786,38 +787,38 @@ def reducePlane(jim, rule='max', band=None, nodata=None):
                 jimreduced.pixops.convert(otype=theType)
                 jim.pixops.convert(otype=theType)
     else:
-        if band is not None:
-            maskreduced = _pj.geometry.cropBand(jimreduced, band)
+        if ref_band is not None:
+            maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
     for iplane in range(1, jim.properties.nrOfPlane()):
         jimplane = _pj.geometry.cropPlane(jim, iplane)
-        if band is not None:
-            maskplane = _pj.geometry.cropBand(jimplane, band)
+        if ref_band is not None:
+            maskplane = _pj.geometry.cropBand(jimplane, ref_band)
         if rule == 'max':
             if nodata is not None:
-                if band is not None:
+                if ref_band is not None:
                     themask = ((maskreduced < maskplane) |
                                (maskreduced == nodata)) & (maskplane != nodata)
                     jimreduced[themask] = jimplane
                     maskreduced[themask] = maskplane
                 else:
-                    raise Exception('Error: use band option for nodata')
+                    raise Exception('Error: use ref_band option for nodata')
             else:
-                if band is not None:
+                if ref_band is not None:
                     jimreduced[maskreduced < maskplane] = jimplane
                     maskreduced[maskreduced < maskplane] = maskplane
                 else:
                     jimreduced[jimreduced < jimplane] = jimplane
         elif rule == 'min':
             if nodata is not None:
-                if band is not None:
+                if ref_band is not None:
                     themask = ((maskreduced > maskplane) |
                                (maskreduced == nodata)) & (maskplane != nodata)
                     jimreduced[themask] = jimplane
                     maskreduced[themask] = maskplane
                 else:
-                    raise Exception('Error: use band option for nodata')
+                    raise Exception('Error: use ref_band option for nodata')
             else:
-                if band is not None:
+                if ref_band is not None:
                     jimreduced[maskreduced > maskplane] = jimplane
                     maskreduced[maskreduced > maskplane] = maskplane
                 else:
@@ -861,14 +862,23 @@ def stackBand(jim_object, jim_other=None, band=None):
             retJim = _pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
         else:
             retJim = _pj.Jim(jim_object._jipjimlist.stackBand())
+
         if isinstance(jim_other, _pj.Jim):
             if band:
                 return retJim.geometry.stackBand(jim_other, band=band)
             else:
                 retJim.geometry.stackBand(jim_other)
-                return retJim
-        else:
-            return retJim
+        elif isinstance(jim_other, list):
+            if band:
+                jim_to_stack = _pj.Jim(
+                    jim_other._jipjimlist.stackBand({'band': band}))
+            else:
+                jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
+
+            retJim = _pj.Jim(retJim._jipjim.stackBand(
+                jim_to_stack._jipjim))
+
+        return retJim
     elif isinstance(jim_object, _pj.Jim):
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
@@ -2244,11 +2254,11 @@ class _Geometry():
     #     kwargs.update({'ln':ln})
     #     self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
 
-    def reducePlane(self, rule='max', band=None, nodata=None):
+    def reducePlane(self, rule='max', ref_band=None, nodata=None):
         """Reduce planes of Jim object.
 
         :param rule: rule to reduce (max, min, mean, median)
-        :param band: band on which to apply rule
+        :param ref_band: band on which to apply rule
             (default is to check all bands)
         :param nodata: value to ignore when applying rule
 
@@ -2256,9 +2266,9 @@ class _Geometry():
         Stack planes of two single plane jim objects, then reduce by taking
         the means::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim1=pj.Jim('/path/to/raster1.tif')
-            jim_stacked=pj.geometry.stackPlane(jim0,jim1)
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
+            jim_stacked = pj.geometry.stackPlane(jim0, jim1)
             jim_stacked.geometry.reducePlane('mean')
         """
         if self._jim_object.properties.nrOfPlane() < 2:
@@ -2271,12 +2281,12 @@ class _Geometry():
             if nodata is not None and theType not in ('GDT_Float32',
                                                       'GDT_Float64'):
                 self._jim_object.pixops.convert(otype='GDT_Float32')
-            if band is not None:
-                mask = _pj.geometry.cropBand(self._jim_object, band=band)
+            if ref_band is not None:
+                mask = _pj.geometry.cropBand(self._jim_object, band=ref_band)
             if rule == 'mean' or rule == 'avg':
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
-                        if band is None:
+                        if ref_band is None:
                             self._jim_object.np(iband)[self._jim_object.np(
                                 iband) == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmean(
@@ -2296,7 +2306,7 @@ class _Geometry():
             elif rule == 'median':
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
-                        if band is None:
+                        if ref_band is None:
                             self._jim_object.np(iband)[self._jim_object.np(
                                 iband) == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmedian(
@@ -2318,15 +2328,15 @@ class _Geometry():
                     jimreduced.pixops.convert(otype=theType)
                     self._jim_object.pixops.convert(otype=theType)
         else:
-            if band is not None:
-                maskreduced = _pj.geometry.cropBand(jimreduced, band)
+            if ref_band is not None:
+                maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
             for iplane in range(1, self._jim_object.properties.nrOfPlane()):
                 jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
-                if band is not None:
-                    maskplane = _pj.geometry.cropBand(jimplane, band)
+                if ref_band is not None:
+                    maskplane = _pj.geometry.cropBand(jimplane, ref_band)
                 if rule == 'max':
                     if nodata is not None:
-                        if band is not None:
+                        if ref_band is not None:
                             themask = ((maskreduced < maskplane) |
                                        (maskreduced == nodata)) & \
                                       (maskplane != nodata)
@@ -2334,16 +2344,16 @@ class _Geometry():
                             maskreduced[themask] = maskplane
                         else:
                             raise AttributeError(
-                                'Error: use band option for nodata')
+                                'Error: use ref_band option for nodata')
                     else:
-                        if band is not None:
+                        if ref_band is not None:
                             jimreduced[maskreduced < maskplane] = jimplane
                             maskreduced[maskreduced < maskplane] = maskplane
                         else:
                             jimreduced[jimreduced < jimplane] = jimplane
                 elif rule == 'min':
                     if nodata is not None:
-                        if band is not None:
+                        if ref_band is not None:
                             themask = ((maskreduced > maskplane) |
                                        (maskreduced == nodata)) & \
                                       (maskplane != nodata)
@@ -2351,13 +2361,14 @@ class _Geometry():
                             maskreduced[themask] = maskplane
                         else:
                             raise AttributeError(
-                                'Error: use band option for nodata')
+                                'Error: use ref_band option for nodata')
                     else:
-                        if band is not None:
+                        if ref_band is not None:
                             jimreduced[maskreduced > maskplane] = jimplane
                             maskreduced[maskreduced > maskplane] = maskplane
                         else:
                             jimreduced[jimreduced > jimplane] = jimplane
+
         self._jim_object._set(jimreduced._jipjim)
 
     def stackBand(self, jim_other, band=None):
@@ -2477,7 +2488,7 @@ class _GeometryList():
     def _set_caller(self, caller):
         self._jim_list = caller
 
-    def stackBand(self, band=None):
+    def stackBand(self, jim_other=None, band=None):
         """Stack bands from raster datasets into new multiband Jim object.
 
         :param band: List of band indices to stack (index is 0 based)
@@ -2499,10 +2510,27 @@ class _GeometryList():
             jim_stacked=jimlist.geometry.stackBand([0,2])
         """
         if band:
-            return _pj.Jim(
+            retJim = _pj.Jim(
                 self._jim_list._jipjimlist.stackBand({'band': band}))
         else:
-            return _pj.Jim(self._jim_list._jipjimlist.stackBand())
+            retJim = _pj.Jim(self._jim_list._jipjimlist.stackBand())
+
+        if isinstance(jim_other, _pj.Jim):
+            if band:
+                return retJim.geometry.stackBand(jim_other, band=band)
+            else:
+                retJim.geometry.stackBand(jim_other)
+        elif isinstance(jim_other, list):
+            if band:
+                jim_to_stack = _pj.Jim(
+                    jim_other._jipjimlist.stackBand({'band': band}))
+            else:
+                jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
+
+            retJim = _pj.Jim(retJim._jipjim.stackBand(
+                jim_to_stack._jipjim))
+
+        return retJim
 
     def stackPlane(self):
         """Stack planes from raster datasets into new multiplane Jim object.
