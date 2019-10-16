@@ -748,7 +748,7 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
         theType = jim.properties.getDataType()
         if nodata is not None and theType not in ('GDT_Float32',
                                                   'GDT_Float64'):
-            jim.pixops.convert(otype='GDT_Float32')
+            jim = _pj.pixops.convert(jim, otype='GDT_Float32')
         if ref_band is not None:
             mask = _pj.geometry.cropBand(jim, band=ref_band)
         if rule == 'mean' or rule == 'avg':
