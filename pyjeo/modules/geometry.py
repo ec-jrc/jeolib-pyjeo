@@ -1163,7 +1163,7 @@ class _Geometry():
                 0, self._jim_object.properties.nrOfPlane())]
 
         if jvec is None:
-            raise Exception('Error: missing jvec option')
+            raise AttributeError('Error: missing jvec option')
 
         if self._jim_object.properties.nrOfPlane() > 1:
             plane = kwargs.pop('plane', None)
@@ -1172,14 +1172,14 @@ class _Geometry():
             else:
                 for iplane in plane:
                     if iplane >= self._jim_object.properties.nrOfPlane():
-                        raise Exception(
+                        raise AttributeError(
                             'Error: illegal plane {}'.format(iplane))
             if len(planenames) != self._jim_object.properties.nrOfPlane():
-                raise Exception(
+                raise AttributeError(
                     'Error: number of planes does not correspond to planename')
 
             if jvec.properties.getLayerCount() > 1:
-                raise Exception(
+                raise AttributeError(
                     'Error: multiple layers not supported when aggregating '
                     'vectors over multi-plane raster datasets, please use '
                     'single layer vector object')
@@ -1209,7 +1209,7 @@ class _Geometry():
             co=['OVERWRITE=YES'])
         if sampleintersect.properties.isEmpty():
             sampleintersect.io.close()
-            raise Exception('intersect is empty')
+            raise ValueError('intersect is empty')
         else:
             sampleintersect.io.write()
 
@@ -1292,7 +1292,7 @@ class _Geometry():
             return v
         else:
             print("Error: joinfn is None, no valid features found")
-            raise Exception('Error: joinfn is None, no valid features found')
+            raise ValueError('Error: joinfn is None, no valid features found')
 
     def band2plane(self):
         """Convert 2-dimensional multi-band object to a 3-dimensional.
@@ -2333,7 +2333,7 @@ class _Geometry():
                             jimreduced[themask] = jimplane
                             maskreduced[themask] = maskplane
                         else:
-                            raise Exception(
+                            raise AttributeError(
                                 'Error: use band option for nodata')
                     else:
                         if band is not None:
@@ -2350,7 +2350,7 @@ class _Geometry():
                             jimreduced[themask] = jimplane
                             maskreduced[themask] = maskplane
                         else:
-                            raise Exception(
+                            raise AttributeError(
                                 'Error: use band option for nodata')
                     else:
                         if band is not None:

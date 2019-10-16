@@ -437,6 +437,7 @@ def savgolay(jim_object, **kwargs):
 
         savgol = pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
         for loop in range(0, 10):
+            savgol.pixops.convert(otype=jim.properties.getDataType())
             savgol[savgol<jim] = jim
             savgol = pj.ngbops.savgolay(
                 savgol, nl=4, nr=4, m=6, pad='replicate')
@@ -1282,6 +1283,7 @@ class _NgbOps():
 
             savgol = pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
             for loop in range(0, 10):
+                savgol.pixops.convert(otype=jim.properties.getDataType())
                 savgol[savgol<jim] = jim
                 savgol = pj.ngbops.savgolay(
                     savgol, nl=4, nr=4, m=6, pad='replicate')
