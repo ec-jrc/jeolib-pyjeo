@@ -769,10 +769,26 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
             for iband in range(0, jim.properties.nrOfBand()):
                 if nodata is not None:
                     if ref_band is None:
+                        planes = [
+                            jim.np(iband)[i] for i in range(
+                                jim.properties.nrOfPlane())]
+                        stacked_planes = numpy.vstack(planes)
+                        nr_of_row = jim.properties.nrOfRow()
+                        nr_of_col = jim.properties.nrOfCol()
+                        same_values = numpy.reshape(
+                            numpy.diff(
+                                numpy.vstack(planes).reshape(len(planes),
+                                                             -1),
+                                axis=0) == 0,
+                            (nr_of_row, nr_of_col))
+
+                        nodata_mask = same_values & (
+                                jim.np(iband)[0] == nodata)
+
                         jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmean(jim.np(iband),
                                                                 axis=0)
-                        jim.np(iband)[jim.np(iband) == numpy.nan] = nodata
+                        jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         jim.np(iband)[mask.np() == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmean(jim.np(iband),
@@ -784,10 +800,26 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
             for iband in range(0, jim.properties.nrOfBand()):
                 if nodata is not None:
                     if ref_band is None:
+                        planes = [
+                            jim.np(iband)[i] for i in range(
+                                jim.properties.nrOfPlane())]
+                        stacked_planes = numpy.vstack(planes)
+                        nr_of_row = jim.properties.nrOfRow()
+                        nr_of_col = jim.properties.nrOfCol()
+                        same_values = numpy.reshape(
+                            numpy.diff(
+                                numpy.vstack(planes).reshape(len(planes),
+                                                             -1),
+                                axis=0) == 0,
+                            (nr_of_row, nr_of_col))
+
+                        nodata_mask = same_values & (
+                                jim.np(iband)[0] == nodata)
+
                         jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmedian(
                             jim.np(iband), axis=0)
-                        jim.np(iband)[jim.np(iband) == numpy.nan] = nodata
+                        jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         jim.np(iband)[mask.np() == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmedian(
@@ -2321,12 +2353,27 @@ class _Geometry():
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
                         if ref_band is None:
+                            planes = [
+                                self._jim_object.np(iband)[i] for i in range(
+                                    self._jim_object.properties.nrOfPlane())]
+                            stacked_planes = numpy.vstack(planes)
+                            nr_of_row = self._jim_object.properties.nrOfRow()
+                            nr_of_col = self._jim_object.properties.nrOfCol()
+                            same_values = numpy.reshape(
+                                numpy.diff(
+                                    numpy.vstack(planes).reshape(len(planes),
+                                                                 -1),
+                                    axis=0) == 0,
+                                (nr_of_row, nr_of_col))
+
+                            nodata_mask = same_values & (
+                                    self._jim_object.np(iband)[0] == nodata)
+
                             self._jim_object.np(iband)[self._jim_object.np(
                                 iband) == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmean(
                                 self._jim_object.np(iband), axis=0)
-                            self._jim_object.np(iband)[self._jim_object.np(
-                                iband) == numpy.nan] = nodata
+                            jimreduced.np(iband)[nodata_mask] = nodata
                         else:
                             self._jim_object.np(iband)[mask.np() == nodata] = \
                                 numpy.nan
@@ -2340,12 +2387,27 @@ class _Geometry():
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
                         if ref_band is None:
+                            planes = [
+                                self._jim_object.np(iband)[i] for i in range(
+                                    self._jim_object.properties.nrOfPlane())]
+                            stacked_planes = numpy.vstack(planes)
+                            nr_of_row = self._jim_object.properties.nrOfRow()
+                            nr_of_col = self._jim_object.properties.nrOfCol()
+                            same_values = numpy.reshape(
+                                numpy.diff(
+                                    numpy.vstack(planes).reshape(len(planes),
+                                                                 -1),
+                                    axis=0) == 0,
+                                (nr_of_row, nr_of_col))
+
+                            nodata_mask = same_values & (
+                                    self._jim_object.np(iband)[0] == nodata)
+
                             self._jim_object.np(iband)[self._jim_object.np(
-                                iband) == nodata] = numpy.nan
+                                    iband) == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmedian(
                                 self._jim_object.np(iband), axis=0)
-                            self._jim_object.np(iband)[self._jim_object.np(
-                                iband) == numpy.nan] = nodata
+                            jimreduced.np(iband)[nodata_mask] = nodata
                         else:
                             self._jim_object.np(iband)[mask.np() == nodata] = \
                                 numpy.nan
