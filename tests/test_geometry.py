@@ -530,6 +530,660 @@ class BadGeometry(unittest.TestCase):
             'Error in catching a call of geometry.polygonize(path, mask) ' \
             'method where the mask argument is not an instance of a Jim object'
 
+    def test_reducePlane(self):
+        """Test the reducePlane() function and method."""
+        nr_of_row = nr_of_col = 10
+        min = 0
+        max = 10
+        nodata = int((max + min) / 2)
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2, otype='Byte',
+                     uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        # Test with default rule (max)
+        reduced = pj.geometry.reducePlane(jim)
+        jim.geometry.reducePlane()
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == 10, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="max" did not return max value for all the planes)'
+        assert stats_reduced['min'] >= stats['min'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the minimum value of returned object is not >=' \
+            ' the minimum of the original object)'
+        assert stats_reduced['max'] == stats['max'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the maximum value of returned object is not ' \
+            'equal to the maximum of the original object)'
+        assert stats_reduced['mean'] > stats['mean'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the mean value of returned object is not > ' \
+            'the mean of the original object)'
+
+        # Test with default rule (max) and multibands
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim)
+        jim.geometry.reducePlane()
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == 10, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="max" did not return max value for all the planes)'
+        assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the minimum value of returned object is not >=' \
+            ' the minimum of the original object)'
+        assert all(stats_reduced['max'][i] == stats['max'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the maximum value of returned object is not ' \
+            'equal to the maximum of the original object)'
+        assert all(stats_reduced['mean'][i] > stats['mean'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the mean value of returned object is not > ' \
+            'the mean of the original object)'
+
+        # Test with default rule (max) and band specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, ref_band=0)
+        jim.geometry.reducePlane(ref_band=0)
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == max, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="max" did not return max value for all the planes)'
+        assert jim.np(1)[0, 0] == 2 * max, \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="max", the used indices of max values are not he ones' \
+            ' from the ref_band)'
+        assert stats_reduced['min'][0] >= stats['min'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the minimum value of returned object is not >=' \
+            ' the minimum of the original object)'
+        assert stats_reduced['mean'][0] > stats['mean'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the mean value of returned object is not > ' \
+            'the mean of the original object)'
+
+        # Test with default rule (max) and nodata and band specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim[:, 2, 2] = nodata
+        jim.np(1)[:, 2, 2] = nodata + 1
+        jim[0, 3, 3] = nodata
+        jim[1, 3, 3] = nodata + 1
+        jim.np(1)[0, 3, 3] = nodata + 1
+        jim.np(1)[1, 3, 3] = nodata
+        jim0133 = jim.np()[1, 3, 3]
+        jim1133 = jim.np(1)[1, 3, 3]
+        jim.np(0)[0, 4, 4] = nodata + 1
+        jim.np(1)[0, 4, 4] = nodata
+        jim.np(1)[1, 4, 4] = nodata
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, ref_band=0, nodata=nodata)
+        jim.geometry.reducePlane(ref_band=0, nodata=nodata)
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == max, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="max" did not return max value for all the planes)'
+        assert jim.np(1)[0, 0] == 2 * max, \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="max", the used indices of max values are not he ones' \
+            ' from the ref_band)'
+        assert jim.np(0)[3, 3] == jim0133, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(not ignoring the nodata values)'
+        assert jim.np(1)[3, 3] == jim1133, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(not ignoring the values with indices of nodata from the ' \
+            'ref_band for other bands)'
+        assert jim.np(1)[4, 4] == nodata, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(ignoring also the nodata values in other bands than ref_band)'
+        assert jim.np(0)[2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(the returned object not containing nodata on a place where ' \
+            'nodata was in all planes)'
+        assert jim.np(1)[2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(the returned object not containing nodata in all bands on a ' \
+            'place where nodata was in all planes in the ref_band)'
+        assert stats_reduced['min'][0] >= stats['min'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the minimum value of returned object is not >=' \
+            ' the minimum of the original object)'
+        assert stats_reduced['mean'][0] > stats['mean'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the mean value of returned object is not > ' \
+            'the mean of the original object)'
+
+        # Test with rule == 'min'
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2, otype='Byte',
+                     uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, rule='min')
+        jim.geometry.reducePlane(rule='min')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == min, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="min" did not return max value for all the planes)'
+        assert stats_reduced['max'] <= stats['max'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the maximum value of returned object is not <=' \
+            ' the maximum of the original object)'
+        assert stats_reduced['min'] == stats['min'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the minimum value of returned object is not ' \
+            'equal to the minimum of the original object)'
+        assert stats_reduced['mean'] < stats['mean'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the mean value of returned object is not < ' \
+            'the mean of the original object)'
+
+        # Test with rule == 'min' and multibands
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, rule='min')
+        jim.geometry.reducePlane(rule='min')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == min, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="min" did not return min value for all the planes)'
+        assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the maximum value of returned object is not <=' \
+            ' the maximum of the original object)'
+        assert all(stats_reduced['min'][i] == stats['min'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the minimum value of returned object is not ' \
+            'equal to the minimum of the original object)'
+        assert all(stats_reduced['mean'][i] < stats['mean'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="max", the mean value of returned object is not < ' \
+            'the mean of the original object)'
+
+        # Test with rule == 'min' and band specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, ref_band=0, rule='min')
+        jim.geometry.reducePlane(ref_band=0, rule='min')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == min, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="min" did not return min value for all the planes)'
+        assert jim.np(1)[0, 0] == 3 * max, \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="min", the used indices of max values are not he ones' \
+            ' from the ref_band)'
+        assert stats_reduced['max'][0] <= stats['max'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the maximum value of returned object is not <=' \
+            ' the maximum of the original object)'
+        assert stats_reduced['mean'][0] < stats['mean'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the mean value of returned object is not < ' \
+            'the mean of the original object)'
+
+        # Test with rule == 'min' and nodata and ref_band specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim[:, 2, 2] = nodata
+        jim.np(1)[:, 2, 2] = nodata + 1
+        jim[0, 3, 3] = nodata
+        jim[1, 3, 3] = nodata + 1
+        jim.np(1)[0, 3, 3] = nodata + 1
+        jim.np(1)[1, 3, 3] = nodata
+        jim0133 = jim.np()[1, 3, 3]
+        jim1133 = jim.np(1)[1, 3, 3]
+        jim.np(0)[0, 4, 4] = nodata + 1
+        jim.np(1)[0, 4, 4] = nodata
+        jim.np(1)[1, 4, 4] = nodata
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(
+            jim, ref_band=0, nodata=nodata, rule='min')
+        jim.geometry.reducePlane(ref_band=0, nodata=nodata, rule='min')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == min, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="max" did not return max value for all the planes)'
+        assert jim.np(1)[0, 0] == 3 * max, \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="min", the used indices of max values are not he ones' \
+            ' from the ref_band)'
+        assert jim.np(0)[3, 3] == jim0133, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(not ignoring the nodata values)'
+        assert jim.np(1)[3, 3] == jim1133, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(not ignoring the values with indices of nodata from the ' \
+            'ref_band for other bands)'
+        assert jim.np(1)[4, 4] == nodata, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(ignoring also the nodata values in other bands than ref_band)'
+        assert jim.np(0)[2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(the returned object not containing nodata on a place where ' \
+            'nodata was in all planes)'
+        assert jim.np(1)[2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(the returned object not containing nodata in all bands on a ' \
+            'place where nodata was in all planes in the ref_band)'
+        assert stats_reduced['max'][0] <= stats['max'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the maximum value of returned object is not <=' \
+            ' the maximum of the original object)'
+        assert stats_reduced['mean'][0] < stats['mean'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the mean value of returned object is not < ' \
+            'the mean of the original object)'
+
+        # Test with rule == 'mean'
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2, otype='Byte',
+                     uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, rule='mean')
+        jim.geometry.reducePlane(rule='mean')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == (max + min) / 2, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="mean" did not return mean value for all the planes)'
+        assert stats_reduced['max'] <= stats['max'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="mean", the maximum value of returned object is not ' \
+            '<= the maximum of the original object)'
+        assert stats_reduced['min'] >= stats['min'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="mean", the minimum value of returned object is not ' \
+            '>= the minimum of the original object)'
+
+        # Test with rule == 'mean' and multibands
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, rule='mean')
+        jim.geometry.reducePlane(rule='mean')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == (max + min) / 2, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="mean" did not return mean value for all the planes)'
+        assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="mean", the maximum value of returned object is not ' \
+            '<= the maximum of the original object)'
+        assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="mean", the minimum value of returned object is not ' \
+            '>= the minimum of the original object)'
+
+        # Test with rule == 'mean' and band specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, ref_band=0, rule='mean')
+        jim.geometry.reducePlane(ref_band=0, rule='mean')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == (max + min) / 2, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="min" did not return min value for all the planes)'
+        assert jim.np(1)[0, 0] == 5 * max / 2, \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="min", the used indices of max values are not he ones' \
+            ' from the ref_band)'
+        assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the maximum value of returned object is not <=' \
+            ' the maximum of the original object)'
+        assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the min value of returned object is not >= ' \
+            'the mean of the original object)'
+
+        # Test with rule == 'mean' and nodata and ref_band specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim[:, 2, 2] = nodata
+        jim.np(1)[:, 2, 2] = nodata + 1
+        jim[0, 3, 3] = nodata
+        jim[1, 3, 3] = nodata + 1
+        jim.np(1)[0, 3, 3] = nodata + 1
+        jim.np(1)[1, 3, 3] = nodata
+        jim0133 = jim.np()[1, 3, 3]
+        jim1133 = jim.np(1)[1, 3, 3]
+        jim.np(0)[0, 4, 4] = nodata + 1
+        jim.np(1)[0, 4, 4] = nodata
+        jim.np(1)[1, 4, 4] = nodata
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(
+            jim, ref_band=0, nodata=nodata, rule='mean')
+        jim.geometry.reducePlane(ref_band=0, nodata=nodata, rule='mean')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == nodata, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="mean" did not return mean value for all the planes)'
+        assert jim.np(1)[0, 0] == 5 * max / 2, \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="mean", the used indices of max values are not he ones' \
+            ' from the ref_band)'
+        assert jim.np(0)[3, 3] == jim0133, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(not ignoring the nodata values)'
+        assert jim.np(1)[3, 3] == jim1133, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(not ignoring the values with indices of nodata from the ' \
+            'ref_band for other bands)'
+        assert jim.np(1)[4, 4] == nodata, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(ignoring also the nodata values in other bands than ref_band)'
+        assert jim.np(0)[2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(the returned object not containing nodata on a place where ' \
+            'nodata was in all planes)'
+        assert jim.np(1)[2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata, ref_band) ' \
+            '(the returned object not containing nodata in all bands on a ' \
+            'place where nodata was in all planes in the ref_band)'
+        assert stats_reduced['max'][0] <= stats['max'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="mean", the maximum value of returned object is not <=' \
+            ' the maximum of the original object)'
+        assert stats_reduced['min'][0] >= stats['min'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="mean", the mean value of returned object is not >= ' \
+            'the mean of the original object)'
+
+        # Test with rule == 'mean' and nodata specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim[:, 2, 2] = nodata
+        jim.np(1)[:, 2, 2] = nodata + 1
+        jim[0, 3, 3] = nodata
+        jim[1, 3, 3] = nodata + 1
+        jim.np(1)[0, 3, 3] = nodata + 1
+        jim.np(1)[1, 3, 3] = nodata
+        jim0133 = jim.np()[1, 3, 3]
+        jim1033 = jim.np(1)[0, 3, 3]
+        jim.np(0)[0, 4, 4] = nodata + 1
+        jim.np(1)[0, 4, 4] = nodata
+        jim.np(1)[1, 4, 4] = nodata
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, nodata=nodata, rule='mean')
+        jim.geometry.reducePlane(nodata=nodata, rule='mean')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == nodata, \
+            'Error in geometry.reducePlane() ' \
+            '(rule="mean" did not return mean value for all the planes)'
+        assert jim.np(1)[0, 0] == 5 * max / 2, \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="mean", the used indices of max values are not he ones' \
+            ' from the ref_band)'
+        assert jim.np(0)[3, 3] == jim0133, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(not ignoring the nodata values)'
+        assert jim.np(1)[3, 3] == jim1033, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(not ignoring the nodata values for other bands than band 0)'
+        assert jim.np(1)[4, 4] == nodata, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(ignoring also the nodata values in other bands than ref_band)'
+        assert jim.np(0)[2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(the returned object not containing nodata on a place where ' \
+            'nodata was in all planes)'
+        assert jim.np(1)[2, 2] == nodata + 1, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(the returned object not containing nodata in all bands on a ' \
+            'place where nodata was in all planes in the ref_band)'
+        assert stats_reduced['max'][0] <= stats['max'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the maximum value of returned object is not <=' \
+            ' the maximum of the original object)'
+        assert stats_reduced['mean'][0] < stats['mean'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="min", the mean value of returned object is not < ' \
+            'the mean of the original object)'
+
 
 class BadGeometryVects(unittest.TestCase):
     """Test functions and methods from geometry module."""
