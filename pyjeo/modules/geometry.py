@@ -751,6 +751,20 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
             jim = _pj.pixops.convert(jim, otype='GDT_Float32')
         if ref_band is not None:
             mask = _pj.geometry.cropBand(jim, band=ref_band)
+
+            planes = [
+                mask.np()[i] for i in range(
+                    jim.properties.nrOfPlane())]
+            stacked_planes = numpy.vstack(planes)
+            nr_of_row = jim.properties.nrOfRow()
+            nr_of_col = jim.properties.nrOfCol()
+            same_values = numpy.reshape(
+                numpy.diff(numpy.vstack(planes).reshape(len(planes), -1),
+                           axis=0) == 0,
+                (nr_of_row, nr_of_col))
+
+            nodata_mask = same_values & (mask.np()[0] == nodata)
+
         if rule == 'mean' or rule == 'avg':
             for iband in range(0, jim.properties.nrOfBand()):
                 if nodata is not None:
@@ -763,7 +777,7 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
                         jim.np(iband)[mask.np() == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmean(jim.np(iband),
                                                                 axis=0)
-                        jim.np(iband)[mask.np() == nodata] = nodata
+                        jimreduced.np(iband)[nodata_mask] = nodata
                 else:
                     jimreduced.np(iband)[:] = numpy.mean(jim.np(iband), axis=0)
         if rule == 'median':
@@ -778,7 +792,7 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
                         jim.np(iband)[mask.np() == nodata] = numpy.nan
                         jimreduced.np(iband)[:] = numpy.nanmedian(
                             jim.np(iband), axis=0)
-                        jim.np(iband)[mask.np() == nodata] = nodata
+                        jimreduced.np(iband)[nodata_mask] = nodata
                 else:
                     jimreduced.np(iband)[:] = numpy.median(jim.np(iband),
                                                            axis=0)
@@ -799,6 +813,9 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
                     themask = ((maskreduced < maskplane) |
                                (maskreduced == nodata)) & (maskplane != nodata)
                     jimreduced[themask] = jimplane
+                    nodata_mask = (maskreduced == nodata) & \
+                                  (maskplane == nodata)
+                    jimreduced[nodata_mask] = nodata
                     maskreduced[themask] = maskplane
                 else:
                     raise Exception('Error: use ref_band option for nodata')
@@ -814,6 +831,9 @@ def reducePlane(jim, rule='max', ref_band=None, nodata=None):
                     themask = ((maskreduced > maskplane) |
                                (maskreduced == nodata)) & (maskplane != nodata)
                     jimreduced[themask] = jimplane
+                    nodata_mask = (maskreduced == nodata) & \
+                                  (maskplane == nodata)
+                    jimreduced[nodata_mask] = nodata
                     maskreduced[themask] = maskplane
                 else:
                     raise Exception('Error: use ref_band option for nodata')
@@ -2283,6 +2303,20 @@ class _Geometry():
                 self._jim_object.pixops.convert(otype='GDT_Float32')
             if ref_band is not None:
                 mask = _pj.geometry.cropBand(self._jim_object, band=ref_band)
+
+                planes = [
+                    mask.np()[i] for i in range(
+                        self._jim_object.properties.nrOfPlane())]
+                stacked_planes = numpy.vstack(planes)
+                nr_of_row = self._jim_object.properties.nrOfRow()
+                nr_of_col = self._jim_object.properties.nrOfCol()
+                same_values = numpy.reshape(
+                    numpy.diff(stacked_planes.reshape(len(planes), -1),
+                               axis=0) == 0,
+                    (nr_of_row, nr_of_col))
+
+                nodata_mask = same_values & (mask.np()[0] == nodata)
+
             if rule == 'mean' or rule == 'avg':
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
                     if nodata is not None:
@@ -2298,8 +2332,7 @@ class _Geometry():
                                 numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmean(
                                 self._jim_object.np(iband), axis=0)
-                            self._jim_object.np(iband)[mask.np() == nodata] = \
-                                nodata
+                            jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         jimreduced.np(iband)[:] = numpy.mean(
                             self._jim_object.np(iband), axis=0)
@@ -2318,8 +2351,7 @@ class _Geometry():
                                 numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmedian(
                                 self._jim_object.np(iband), axis=0)
-                            self._jim_object.np(iband)[mask.np() == nodata] = \
-                                nodata
+                            jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         jimreduced.np(iband)[:] = numpy.median(
                             self._jim_object.np(iband), axis=0)
@@ -2341,6 +2373,9 @@ class _Geometry():
                                        (maskreduced == nodata)) & \
                                       (maskplane != nodata)
                             jimreduced[themask] = jimplane
+                            nodata_mask = (maskreduced == nodata) & \
+                                          (maskplane == nodata)
+                            jimreduced[nodata_mask] = nodata
                             maskreduced[themask] = maskplane
                         else:
                             raise AttributeError(
@@ -2358,6 +2393,9 @@ class _Geometry():
                                        (maskreduced == nodata)) & \
                                       (maskplane != nodata)
                             jimreduced[themask] = jimplane
+                            nodata_mask = (maskreduced == nodata) & \
+                                          (maskplane == nodata)
+                            jimreduced[nodata_mask] = nodata
                             maskreduced[themask] = maskplane
                         else:
                             raise AttributeError(
