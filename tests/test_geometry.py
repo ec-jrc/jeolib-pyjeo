@@ -542,7 +542,7 @@ class BadGeometry(unittest.TestCase):
         jim[0, 0, 0] = min
         stats = jim.stats.getStats()
 
-        # Test with rule (max)
+        # Test with rule == 'max'
         reduced = pj.geometry.reducePlane(jim,'max')
         jim.geometry.reducePlane('max')
 
@@ -574,7 +574,7 @@ class BadGeometry(unittest.TestCase):
             '(for rule="max", the mean value of returned object is not > ' \
             'the mean of the original object)'
 
-        # Test with default rule (max) and multibands
+        # Test with rule == 'max' and multibands
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[1, 0, 0] = max
@@ -615,7 +615,7 @@ class BadGeometry(unittest.TestCase):
             '(for rule="max", the mean value of returned object is not > ' \
             'the mean of the original object)'
 
-        # Test with default rule (max) and band specified
+        # Test with rule == 'max' and band specified
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[1, 0, 0] = max
@@ -658,7 +658,7 @@ class BadGeometry(unittest.TestCase):
             '(for rule="max", the mean value of returned object is not > ' \
             'the mean of the original object)'
 
-        # Test with default rule (max) and nodata and band specified
+        # Test with rule == 'max' and nodata and band specified
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[1, 0, 0] = max
