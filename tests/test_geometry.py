@@ -542,9 +542,9 @@ class BadGeometry(unittest.TestCase):
         jim[0, 0, 0] = min
         stats = jim.stats.getStats()
 
-        # Test with default rule (max)
-        reduced = pj.geometry.reducePlane(jim)
-        jim.geometry.reducePlane()
+        # Test with rule (max)
+        reduced = pj.geometry.reducePlane(jim,'max')
+        jim.geometry.reducePlane('max')
 
         stats_reduced = jim.stats.getStats()
 
@@ -581,8 +581,8 @@ class BadGeometry(unittest.TestCase):
         jim[0, 0, 0] = min
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim)
-        jim.geometry.reducePlane()
+        reduced = pj.geometry.reducePlane(jim, 'max')
+        jim.geometry.reducePlane('max')
 
         stats_reduced = jim.stats.getStats()
 
@@ -624,8 +624,8 @@ class BadGeometry(unittest.TestCase):
         jim.np(1)[1, 0, 0] = 2 * max
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, ref_band=0)
-        jim.geometry.reducePlane(ref_band=0)
+        reduced = pj.geometry.reducePlane(jim, 'max', ref_band=0)
+        jim.geometry.reducePlane('max', ref_band=0)
 
         stats_reduced = jim.stats.getStats()
 
@@ -678,8 +678,8 @@ class BadGeometry(unittest.TestCase):
         jim.np(1)[1, 0, 0] = 2 * max
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, ref_band=0, nodata=nodata)
-        jim.geometry.reducePlane(ref_band=0, nodata=nodata)
+        reduced = pj.geometry.reducePlane(jim, 'max', ref_band=0, nodata=nodata)
+        jim.geometry.reducePlane('max', ref_band=0, nodata=nodata)
 
         stats_reduced = jim.stats.getStats()
 
