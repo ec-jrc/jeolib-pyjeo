@@ -192,7 +192,7 @@ def infimum(jim, *args):
     for newJim in args:
         infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
 
-    return _pj.Jim(infimum)
+    return infimum
 
 
 def isEqual(first_jim, second_jim):
@@ -378,7 +378,7 @@ def supremum(jim, *args):
     for newJim in args:
         supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
 
-    return _pj.Jim(supremum)
+    return supremum
 
 
 class _PixOps():
