@@ -2601,7 +2601,7 @@ class _Geometry():
         Read a raster dataset from disk and warp to the target spatial
         reference system::
 
-            jim=pj.Jim('/path/to/file.tif')
+            jim = pj.Jim('/path/to/file.tif')
             jim.warp('epsg:3035')
 
         Read a raster dataset from disk that is in lat lon (epsg:4326), select
@@ -2610,8 +2610,8 @@ class _Geometry():
         (epsg:4326). Then warp the raster dataset to the target spatial
         reference system (epsg:3035)::
 
-            jim=pj.Jim('/path/to/file.tif',t_srs='epsg:3035',
-                       ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
+            jim = pj.Jim('/path/to/file.tif',t_srs='epsg:3035',
+                         ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
             jim.warp('epsg:3035',s_srs='epsg:4326')
 
         """
@@ -2644,18 +2644,18 @@ class _GeometryList():
 
         Create a multiband Jim object from a list of two Jim objects::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim1=pj.Jim('/path/to/raster1.tif')
-            jim_stacked=pj.JimList([jim0,jim1]).geometry.stackBand()
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
+            jim_stacked = pj.JimList([jim0, jim1]).geometry.stackBand()
 
         Create a multiband Jim object from a JimList object, selecting
         the first and third band::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim1=pj.Jim('/path/to/raster1.tif')
-            jim2=pj.Jim('/path/to/raster2.tif')
-            jimlist=pj.JimList([jim0,jim1,jim2])
-            jim_stacked=jimlist.geometry.stackBand([0,2])
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
+            jim2 = pj.Jim('/path/to/raster2.tif')
+            jimlist = pj.JimList([jim0, jim1, jim2])
+            jim_stacked = jimlist.geometry.stackBand([0, 2])
         """
         if band:
             retJim = _pj.Jim(
