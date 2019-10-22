@@ -733,7 +733,8 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
     """Reduce planes of Jim object.
 
     :param jim: jim object on which to reduce planes
-    :param rule: rule to reduce (mean, median, min or max) or callback function
+    :param rule: rule to reduce (mean, median, min or max)
+        or callback function
     :param ref_band: band on which to apply rule
         (default is to check all bands,
          not supported when rule is callback function)
@@ -741,6 +742,7 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
         (not supported when rule is callback function)
     :return: reduced single plane jim object
     """
+    nr_of_planes = jim.properties.nrOfPlane()
     if jim.properties.nrOfPlane() < 2:
         print("Warning: single plane, no reduction is performed")
         return None
@@ -748,20 +750,22 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
     jimreduced = _pj.geometry.cropPlane(jim, 0)
 
     if isinstance(rule, str):
+        nr_of_row = jim.properties.nrOfRow()
+        nr_of_col = jim.properties.nrOfCol()
+
         if rule in ('mean', 'avg', 'median'):
             theType = jim.properties.getDataType()
+            nr_of_bands = jim.properties.nrOfBand()
             if nodata is not None and theType not in ('GDT_Float32',
                                                       'GDT_Float64'):
                 jim = _pj.pixops.convert(jim, otype='GDT_Float32')
             if ref_band is not None:
-                mask = _pj.geometry.cropBand(jim, band=ref_band)
+                mask = _pj.geometry.cropBand(jim,
+                                             band=ref_band)
 
                 planes = [
-                    mask.np()[i] for i in range(
-                        jim.properties.nrOfPlane())]
+                    mask.np()[i] for i in range(nr_of_planes)]
                 stacked_planes = numpy.vstack(planes)
-                nr_of_row = jim.properties.nrOfRow()
-                nr_of_col = jim.properties.nrOfCol()
                 same_values = numpy.reshape(
                     numpy.diff(numpy.vstack(planes).reshape(len(planes), -1),
                                axis=0) == 0,
@@ -770,31 +774,29 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
                 nodata_mask = same_values & (mask.np()[0] == nodata)
 
             if rule == 'mean' or rule == 'avg':
-                for iband in range(0, jim.properties.nrOfBand()):
+                for iband in range(0, nr_of_bands):
                     if nodata is not None:
                         if ref_band is None:
-                            planes = [
-                                jim.np(iband)[i] for i in range(
-                                    jim.properties.nrOfPlane())]
+                            planes = [jim.np(iband)[i] for i
+                                      in range(nr_of_planes)]
                             stacked_planes = numpy.vstack(planes)
-                            nr_of_row = jim.properties.nrOfRow()
-                            nr_of_col = jim.properties.nrOfCol()
                             same_values = numpy.reshape(
                                 numpy.diff(
-                                    numpy.vstack(planes).reshape(len(planes),
-                                                                 -1),
+                                    numpy.vstack(planes).reshape(
+                                        len(planes), -1),
                                     axis=0) == 0,
                                 (nr_of_row, nr_of_col))
 
                             nodata_mask = same_values & (
-                                    jim.np(iband)[0] == nodata)
+                                jim.np(iband)[0] == nodata)
 
                             jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmean(
                                 jim.np(iband), axis=0)
                             jimreduced.np(iband)[nodata_mask] = nodata
                         else:
-                            jim.np(iband)[mask.np() == nodata] = numpy.nan
+                            jim.np(iband)[
+                                mask.np() == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmean(
                                 jim.np(iband), axis=0)
                             jimreduced.np(iband)[nodata_mask] = nodata
@@ -802,31 +804,29 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
                         jimreduced.np(iband)[:] = numpy.mean(jim.np(iband),
                                                              axis=0)
             if rule == 'median':
-                for iband in range(0, jim.properties.nrOfBand()):
+                for iband in range(0, nr_of_bands):
                     if nodata is not None:
                         if ref_band is None:
-                            planes = [
-                                jim.np(iband)[i] for i in range(
-                                    jim.properties.nrOfPlane())]
+                            planes = [jim.np(iband)[i] for i
+                                      in range(nr_of_planes)]
                             stacked_planes = numpy.vstack(planes)
-                            nr_of_row = jim.properties.nrOfRow()
-                            nr_of_col = jim.properties.nrOfCol()
                             same_values = numpy.reshape(
                                 numpy.diff(
-                                    numpy.vstack(planes).reshape(len(planes),
-                                                                 -1),
+                                    numpy.vstack(planes).reshape(
+                                        len(planes), -1),
                                     axis=0) == 0,
                                 (nr_of_row, nr_of_col))
 
                             nodata_mask = same_values & (
-                                    jim.np(iband)[0] == nodata)
+                                jim.np(iband)[0] == nodata)
 
                             jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmedian(
                                 jim.np(iband), axis=0)
                             jimreduced.np(iband)[nodata_mask] = nodata
                         else:
-                            jim.np(iband)[mask.np() == nodata] = numpy.nan
+                            jim.np(iband)[
+                                mask.np() == nodata] = numpy.nan
                             jimreduced.np(iband)[:] = numpy.nanmedian(
                                 jim.np(iband), axis=0)
                             jimreduced.np(iband)[nodata_mask] = nodata
@@ -850,7 +850,7 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
 
             if ref_band is not None:
                 maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
-            for iplane in range(1, jim.properties.nrOfPlane()):
+            for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(jim, iplane)
 
                 if nodata is not None and ref_band is None:
@@ -875,10 +875,10 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
                     jimreduced[nodata_mask] = nodata
     else:
         if nodata is not None or ref_band is not None:
-            raise AttributeError(
-                'Error: nodata and ref_band are not supported for this rule')
+            raise AttributeError('Error: nodata and ref_band are not '
+                                 'supported for this rule')
         jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
-        for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+        for iplane in range(1, nr_of_planes):
             jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
             jimreduced = rule(jimreduced, jimplane)
     return jimreduced
@@ -2314,7 +2314,8 @@ class _Geometry():
     def reducePlane(self, rule, ref_band=None, nodata=None):
         """Reduce planes of Jim object
 
-        :param rule: rule to reduce (mean, median, min or max) or callback function
+        :param rule: rule to reduce (mean, median, min or max)
+            or callback function
         :param ref_band: band on which to apply rule
             (default is to check all bands,
              not supported when rule is callback function)
@@ -2340,53 +2341,52 @@ class _Geometry():
             jim_stacked.geometry._reducePlaneSimple(getMax)
 
         """
-        if self._jim_object.properties.nrOfPlane() < 2:
+        nr_of_planes = self._jim_object.properties.nrOfPlane()
+        if nr_of_planes < 2:
             print("Warning: single plane, no reduction is performed")
             return None
 
         jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
         if isinstance(rule, str):
+            nr_of_row = self._jim_object.properties.nrOfRow()
+            nr_of_col = self._jim_object.properties.nrOfCol()
+
             if rule in ('mean', 'avg', 'median'):
                 theType = self._jim_object.properties.getDataType()
+                nr_of_bands = self._jim_object.properties.nrOfBand()
                 if nodata is not None and theType not in ('GDT_Float32',
-                                                        'GDT_Float64'):
+                                                          'GDT_Float64'):
                     self._jim_object.pixops.convert(otype='GDT_Float32')
                 if ref_band is not None:
-                    mask = _pj.geometry.cropBand(self._jim_object, band=ref_band)
+                    mask = _pj.geometry.cropBand(self._jim_object,
+                                                 band=ref_band)
 
                     planes = [
-                        mask.np()[i] for i in range(
-                            self._jim_object.properties.nrOfPlane())]
+                        mask.np()[i] for i in range(nr_of_planes)]
                     stacked_planes = numpy.vstack(planes)
-                    nr_of_row = self._jim_object.properties.nrOfRow()
-                    nr_of_col = self._jim_object.properties.nrOfCol()
                     same_values = numpy.reshape(
                         numpy.diff(stacked_planes.reshape(len(planes), -1),
-                                axis=0) == 0,
+                                   axis=0) == 0,
                         (nr_of_row, nr_of_col))
 
                     nodata_mask = same_values & (mask.np()[0] == nodata)
 
-
                 if rule == 'mean' or rule == 'avg':
-                    for iband in range(0, self._jim_object.properties.nrOfBand()):
+                    for iband in range(0, nr_of_bands):
                         if nodata is not None:
                             if ref_band is None:
-                                planes = [
-                                    self._jim_object.np(iband)[i] for i in range(
-                                        self._jim_object.properties.nrOfPlane())]
+                                planes = [self._jim_object.np(iband)[i] for i
+                                          in range(nr_of_planes)]
                                 stacked_planes = numpy.vstack(planes)
-                                nr_of_row = self._jim_object.properties.nrOfRow()
-                                nr_of_col = self._jim_object.properties.nrOfCol()
                                 same_values = numpy.reshape(
                                     numpy.diff(
-                                        numpy.vstack(planes).reshape(len(planes),
-                                                                    -1),
+                                        numpy.vstack(planes).reshape(
+                                            len(planes), -1),
                                         axis=0) == 0,
                                     (nr_of_row, nr_of_col))
 
                                 nodata_mask = same_values & (
-                                        self._jim_object.np(iband)[0] == nodata)
+                                    self._jim_object.np(iband)[0] == nodata)
 
                                 self._jim_object.np(iband)[self._jim_object.np(
                                     iband) == nodata] = numpy.nan
@@ -2394,8 +2394,8 @@ class _Geometry():
                                     self._jim_object.np(iband), axis=0)
                                 jimreduced.np(iband)[nodata_mask] = nodata
                             else:
-                                self._jim_object.np(iband)[mask.np() == nodata] = \
-                                    numpy.nan
+                                self._jim_object.np(iband)[
+                                    mask.np() == nodata] = numpy.nan
                                 jimreduced.np(iband)[:] = numpy.nanmean(
                                     self._jim_object.np(iband), axis=0)
                                 jimreduced.np(iband)[nodata_mask] = nodata
@@ -2403,24 +2403,21 @@ class _Geometry():
                             jimreduced.np(iband)[:] = numpy.mean(
                                 self._jim_object.np(iband), axis=0)
                 elif rule == 'median':
-                    for iband in range(0, self._jim_object.properties.nrOfBand()):
+                    for iband in range(0, nr_of_bands):
                         if nodata is not None:
                             if ref_band is None:
-                                planes = [
-                                    self._jim_object.np(iband)[i] for i in range(
-                                        self._jim_object.properties.nrOfPlane())]
+                                planes = [self._jim_object.np(iband)[i] for i
+                                          in range(nr_of_planes)]
                                 stacked_planes = numpy.vstack(planes)
-                                nr_of_row = self._jim_object.properties.nrOfRow()
-                                nr_of_col = self._jim_object.properties.nrOfCol()
                                 same_values = numpy.reshape(
                                     numpy.diff(
-                                        numpy.vstack(planes).reshape(len(planes),
-                                                                    -1),
+                                        numpy.vstack(planes).reshape(
+                                            len(planes), -1),
                                         axis=0) == 0,
                                     (nr_of_row, nr_of_col))
 
                                 nodata_mask = same_values & (
-                                        self._jim_object.np(iband)[0] == nodata)
+                                    self._jim_object.np(iband)[0] == nodata)
 
                                 self._jim_object.np(iband)[self._jim_object.np(
                                         iband) == nodata] = numpy.nan
@@ -2428,8 +2425,8 @@ class _Geometry():
                                     self._jim_object.np(iband), axis=0)
                                 jimreduced.np(iband)[nodata_mask] = nodata
                             else:
-                                self._jim_object.np(iband)[mask.np() == nodata] = \
-                                    numpy.nan
+                                self._jim_object.np(iband)[
+                                    mask.np() == nodata] = numpy.nan
                                 jimreduced.np(iband)[:] = numpy.nanmedian(
                                     self._jim_object.np(iband), axis=0)
                                 jimreduced.np(iband)[nodata_mask] = nodata
@@ -2443,15 +2440,15 @@ class _Geometry():
                 self._jim_object._set(jimreduced._jipjim)
             else:
                 if rule == 'max':
-                    def rule(reduced,plane):
-                        return reduced<plane
+                    def rule(reduced, plane):
+                        return reduced < plane
                 elif rule == 'min':
-                    def rule(reduced,plane):
-                        return reduced>plane
+                    def rule(reduced, plane):
+                        return reduced > plane
                 else:
                     raise AttributeError('Error: rule not supported')
                 maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
-                for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+                for iplane in range(1, nr_of_planes):
                     jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
 
                     if nodata is not None and ref_band is None:
@@ -2460,16 +2457,15 @@ class _Geometry():
 
                     if ref_band is not None:
                         maskplane = _pj.geometry.cropBand(jimplane, ref_band)
-                        themask=rule(maskreduced,maskplane)
+                        themask = rule(maskreduced, maskplane)
                         if nodata is not None:
                             themask |= maskreduced == nodata
                             themask &= maskplane != nodata
                         maskreduced[themask] = maskplane
                     else:
-                        themask=rule(jimreduced,jimplane)
+                        themask = rule(jimreduced, jimplane)
 
                     jimreduced[themask] = jimplane
-
 
                     if nodata is not None:
                         nodata_mask = (maskreduced == nodata) & \
@@ -2479,20 +2475,22 @@ class _Geometry():
                 self._jim_object._set(jimreduced._jipjim)
         else:
             if nodata is not None or ref_band is not None:
-                raise AttributeError(
-                    'Error: nodata and ref_band are not supported for this rule')
+                raise AttributeError('Error: nodata and ref_band are not '
+                                     'supported for this rule')
             jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
-            for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+            for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
-                jimreduced=rule(jimreduced,jimplane)
+                jimreduced = rule(jimreduced, jimplane)
             self._jim_object._set(jimreduced._jipjim)
 
-
     def _reducePlaneSimple(self, rule):
-        """Reduce planes of Jim object using callback function without nodata (for performance reasons).
+        """Reduce planes of Jim object using callback function without nodata.
+
+        (for performance reasons)
 
         :param rule: rule to reduce (mean, median) or callback function
-            (e.g., for max composite, use callBack(jimreduced, jimplane): return jimreduced<jimplane)
+            (e.g., for max composite,
+            use callBack(jimreduced, jimplane): return jimreduced < jimplane)
 
         Stack planes of two single plane jim objects, then reduce by taking
         the maximum::
@@ -2504,22 +2502,21 @@ class _Geometry():
                 return pj.pixops.supremum(reduced, plane)
             jim_stacked.geometry._reducePlaneSimple(getMax)
 
-
         """
         if self._jim_object.properties.nrOfPlane() < 2:
             print("Warning: single plane, no reduction is performed")
             return None
 
         if rule == 'max':
-            def rule(reduced,plane):
-                return _pj.pixops.supremum(reduced,plane)
+            def rule(reduced, plane):
+                return _pj.pixops.supremum(reduced, plane)
         elif rule == 'min':
-            def rule(reduced,plane):
-                return _pj.pixops.infimum(reduced,plane)
+            def rule(reduced, plane):
+                return _pj.pixops.infimum(reduced, plane)
         jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
         for iplane in range(1, self._jim_object.properties.nrOfPlane()):
             jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
-            jimreduced=rule(jimreduced,jimplane)
+            jimreduced = rule(jimreduced, jimplane)
         self._jim_object._set(jimreduced._jipjim)
 
     def stackBand(self, jim_other, band=None):
