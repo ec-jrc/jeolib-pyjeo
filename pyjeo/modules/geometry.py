@@ -2687,13 +2687,11 @@ class _GeometryList():
 
         Stack planes from another raster dataset to current raster dataset.
 
-        :return: multiplane Jim object
-
         Create a multiplane Jim object from a list of two Jim objects::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim1=pj.Jim('/path/to/raster1.tif')
-            jim_stacked=pj.JimList([jim0,jim1]).geometry.stackPlane()
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
+            jim_stacked = pj.JimList([jim0, jim1]).geometry.stackPlane()
         """
         return _pj.Jim(self._jim_list._jipjimlist.stackPlane())
 
