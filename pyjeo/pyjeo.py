@@ -5,11 +5,9 @@ import numpy
 import gc as _gc
 import warnings as _warnings
 import os as _os
+from osgeo import gdal, ogr, osr
 
-try:
-    import jiplib as _jl
-except ImportError:
-    from jeodpp import jiplib as _jl
+import jiplib as _jl
 
 from .modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, classify, demops, stats, all
@@ -1273,6 +1271,28 @@ class _ParentVect(_jl.VectorOgr):
                 else:
                     kwargs.update({'filename': vector})
                     super(_ParentVect, self).__init__(kwargs)
+            elif 'wkt' in kwargs:
+                geom = ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
+                wkt_srs = ogr.osr.SpatialReference()
+                wkt_srs.ImportFromEPSG(4326)
+                # Create the output Driver
+                out_driver = ogr.GetDriverByName("SQLite")
+                # Create the output sqlite file
+                kwargs.update({'filename': kwargs.pop('output', None)})
+                out_dataset = out_driver.CreateDataSource(kwargs['filename'])
+                out_layer = out_dataset.CreateLayer(kwargs['filename'], wkt_srs,
+                                                    geom_type=ogr.wkbPolygon)
+                # Set the output layer's feature definition
+                feature_defn = out_layer.GetLayerDefn()
+                # Create a new feature
+                out_feature = ogr.Feature(feature_defn)
+                # Set new geometry
+                out_feature.SetGeometry(geom)
+                # Add new feature to output layer
+                out_layer.CreateFeature(out_feature)
+                out_feature = None
+                out_dataset = None
+                super(_ParentVect, self).__init__(kwargs)
             else:
                 kwargs.update({'filename': kwargs.pop('output', None)})
                 super(_ParentVect, self).__init__(kwargs)
@@ -1290,7 +1310,7 @@ class _ParentVect(_jl.VectorOgr):
         """
         keys = kwargs.keys()
 
-        if isinstance(vector, JimVect):
+        if isinstance(vector, JimVect) or 'wkt' in keys:
             if 'output' not in keys:
                 raise AttributeError(
                     "Parameter output required for copy constructor")

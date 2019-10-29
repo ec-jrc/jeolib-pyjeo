@@ -1,10 +1,7 @@
 """Module for pixel-wise operations."""
 
 import pyjeo as _pj
-try:
-    import jiplib as _jl
-except ImportError:
-    from jeodpp import jiplib as _jl
+import jiplib as _jl
 
 import numpy
 

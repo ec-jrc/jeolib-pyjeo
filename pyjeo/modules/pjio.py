@@ -1,11 +1,7 @@
 """Module for input-output operations."""
 
 import pyjeo as _pj
-try:
-    import jiplib as _jl
-except ImportError:
-    from jeodpp import jiplib as _jl
-
+import jiplib as _jl
 
 # def createJim(filename=None, **kwargs):
 #     """

@@ -1202,14 +1202,18 @@ class _Geometry():
             v = jim0.geometry.aggregateVector(
                 reference, buffer=-10, rule=['mean'],
                 output='/vsimem/temp.sqlite', oformat='SQLite')
-            v.write('/path/to/output.sqlite)
+            v.io.write('/path/to/output.sqlite)
 
         """
         # make list of rules
         rules = []
-        if rule:
-            for irule in rule:
-                rules.append(irule)
+        if isinstance(rule,list):
+            rules=rule
+        else:
+            rules=[rule]
+        # if rule:
+        #     for irule in rule:
+        #         rules.append(irule)
 
         kwargs.update({'output': output})
         kwargs.update({'rule': rules})
@@ -2443,8 +2447,11 @@ class _Geometry():
                     def rule(reduced, plane):
                         return reduced < plane
                 elif rule == 'min':
-                    def rule(reduced, plane):
-                        return reduced > plane
+                    def rule(reduced,plane):
+                        return reduced>plane
+                elif rule == 'overwrite':
+                    def rule(reduced,plane):
+                        return _pj.pixops.setData(plane,1)
                 else:
                     raise AttributeError('Error: rule not supported')
                 maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
@@ -2459,6 +2466,7 @@ class _Geometry():
                         maskplane = _pj.geometry.cropBand(jimplane, ref_band)
                         themask = rule(maskreduced, maskplane)
                         if nodata is not None:
+                            themask.pixops.convert('GDT_Byte')
                             themask |= maskreduced == nodata
                             themask &= maskplane != nodata
                         maskreduced[themask] = maskplane
