@@ -63,8 +63,8 @@ def sml(jim_object, reflist, **kwargs):
     performed not prior to the classification, but in the same process as
     the classification.
 
-    :param jim_object: a Jim object
-    :param reflist: JimVect object with reference classes
+    :param jim_object: a multi-plane Jim object
+    :param reflist: JimList of reference raster datasets containing with reference classes
     :param classes: List of classes to extract from the reference
         (leave empty to extract all classes in reference)
     :return: multi-band Jim object, where each band represents the probability
@@ -154,9 +154,8 @@ class _Classify():
 
         Modifies the instance on which the method was called.
 
-        :param jim_object: a Jim object
-        :param reflist: JimVect object with reference classes
-        :param classes: List of classes to extract from the reference.
+        :param reflist: JimList of reference raster datasets containing with reference classes
+        :param classes: list of classes to extract from the reference.
             (leave empty to extract all classes in reference)
 
         ::
@@ -234,9 +233,11 @@ class _Classify():
             kwargs.update({'class': kwargs.pop('classes')})
         if output:
             kwargs.update({'model': output})
-            self._jim_object._jipjim.train(reference._jipjimlist, kwargs)
-        else:
             self._jim_object._jipjim.trainSML(reference._jipjimlist, kwargs)
+        else:
+            raise ValueError(
+                'Error: output for model not set')
+            # self._jim_object._jipjim.trainSML2d(reference._jipjimlist, kwargs)
 
 
 class _ClassifyList():
