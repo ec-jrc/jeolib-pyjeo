@@ -1207,13 +1207,10 @@ class _Geometry():
         """
         # make list of rules
         rules = []
-        if isinstance(rule,list):
-            rules=rule
+        if isinstance(rule, list):
+            rules = rule
         else:
-            rules=[rule]
-        # if rule:
-        #     for irule in rule:
-        #         rules.append(irule)
+            rules = [rule]
 
         kwargs.update({'output': output})
         kwargs.update({'rule': rules})
@@ -2447,11 +2444,11 @@ class _Geometry():
                     def rule(reduced, plane):
                         return reduced < plane
                 elif rule == 'min':
-                    def rule(reduced,plane):
-                        return reduced>plane
+                    def rule(reduced, plane):
+                        return reduced > plane
                 elif rule == 'overwrite':
-                    def rule(reduced,plane):
-                        return _pj.pixops.setData(plane,1)
+                    def rule(reduced, plane):
+                        return _pj.pixops.setData(plane, 1)
                 else:
                     raise AttributeError('Error: rule not supported')
                 maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)

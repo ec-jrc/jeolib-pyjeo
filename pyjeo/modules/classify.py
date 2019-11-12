@@ -235,9 +235,7 @@ class _Classify():
             kwargs.update({'model': output})
             self._jim_object._jipjim.trainSML(reference._jipjimlist, kwargs)
         else:
-            raise ValueError(
-                'Error: output for model not set')
-            # self._jim_object._jipjim.trainSML2d(reference._jipjimlist, kwargs)
+            raise ValueError('Error: output for model not set')
 
 
 class _ClassifyList():
