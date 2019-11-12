@@ -5,7 +5,7 @@ import numpy
 import gc as _gc
 import warnings as _warnings
 import os as _os
-from osgeo import gdal, ogr, osr
+from osgeo import ogr
 
 import jiplib as _jl
 
