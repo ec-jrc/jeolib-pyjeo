@@ -1280,7 +1280,8 @@ class _ParentVect(_jl.VectorOgr):
                 # Create the output sqlite file
                 kwargs.update({'filename': kwargs.pop('output', None)})
                 out_dataset = out_driver.CreateDataSource(kwargs['filename'])
-                out_layer = out_dataset.CreateLayer(kwargs['filename'], wkt_srs,
+                out_layer = out_dataset.CreateLayer(kwargs['filename'],
+                                                    wkt_srs,
                                                     geom_type=ogr.wkbPolygon)
                 # Set the output layer's feature definition
                 feature_defn = out_layer.GetLayerDefn()
