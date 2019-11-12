@@ -1024,21 +1024,21 @@ class BadGeometry(unittest.TestCase):
             '(number of rows or number of columns changed)'
         assert jim.np()[0, 0] == (max + min) / 2, \
             'Error in geometry.reducePlane() ' \
-            '(rule="min" did not return min value for all the planes)'
+            '(rule="mean" did not return mean value for all the planes)'
         assert jim.np(1)[0, 0] == 5 * max / 2, \
             'Error in geometry.reducePlane(ref_band) ' \
-            '(for rule="min", the used indices of max values are not he ones' \
-            ' from the ref_band)'
+            '(for rule="mean", the used indices of max values are not the ' \
+            'ones from the ref_band)'
         assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="min", the maximum value of returned object is not <=' \
+            '(for rule="mean", the maximum value of returned object is not <=' \
             ' the maximum of the original object)'
         assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="min", the min value of returned object is not >= ' \
-            'the mean of the original object)'
+            '(for rule="mean", the min value of returned object is not >= ' \
+            'the min of the original object)'
 
         # Test with rule == 'mean' and nodata and ref_band specified
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
