@@ -31,7 +31,13 @@ python -W ignore -m unittest -v tests
 
 # Build documentation
 
+Dependencies for the documentation build:
+ * python3-sphinx
+ * sphinx-rtd-theme
+ * sphinxcontrib-bibtex
+
 Go to directory `doc` and run `make html`.
+
 ```
 cd doc
 make html
