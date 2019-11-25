@@ -1702,7 +1702,7 @@ class _Geometry():
         |                  | (see list of                                     |
         |                  | :ref:`supported rules <extract_rules>`)          |
         +------------------+--------------------------------------------------+
-        | class            | List of classes to extract from the raster sample|
+        | classes          | List of classes to extract from the raster sample|
         |                  | dataset.                                         |
         |                  | Leave empty to extract all valid data pixels from|
         |                  | thee sample                                      |
@@ -1766,29 +1766,33 @@ class _Geometry():
         Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
         41 (water) and an aggregated (rest) class 50::
 
-            jvec=pj.Jim('/path/to/landcovermap.tif')
+            reference=pj.Jim('/path/to/landcovermap.tif')
 
             classes=[2,12,25,41,50]
             thresholds=['20%','25%','25%','10%','5%']
 
-            jvec=pj.Jim('/path/to/multiband.tif',
-                        dx=jim.getDeltaX(),dy=jim.getDeltaY(),
-                        ulx=jim.getUlx(),uly=jim.getUly(),
-                        lrx=jim.getLrx(),lry=jim.getLry())
+            jim=pj.Jim('/path/to/s2_multiband.tif')
 
             outputfn='/path/to/output.sqlite'
-            sample=jim.extractImg(jvec,srcnodata=[0],output=outputfn,
+            sample=jim.extractImg(reference,srcnodata=[0],output=outputfn,
                                   class=classes,threshold=thresholds,
                                   bandname=['B02','B03','B04','B08'],
                                   band=[0,1,2,3])
         """
         kwargs.update({'output': output})
+
+        if 'classes' in kwargs:
+            kwargs['class']=kwargs.pop('classes')
         if 'threshold' in kwargs:
-            if '%' in kwargs['threshold']:
-                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+            if '%' in ''.join(kwargs['threshold']):
+                kwargs['threshold'] = [ float(x.strip('%')) for x in kwargs['threshold']]
             else:
-                kwargs['threshold'] = -kwargs['threshold']
-        return self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
+                kwargs['threshold'] = [ -x for x in kwargs['threshold']]
+
+        avect = self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
+        pjvect = _pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
 
     # deprecated: use aggregate_vector instead
     def extractOgr(self, jvec, rule, output, **kwargs):
