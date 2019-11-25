@@ -444,8 +444,7 @@ class _PropertiesVect():
         """Get the projection for this dataset in well known text (wkt) format.
 
         :param layer: The layer to get the projection from, index starting
-        from 0
-            (default is 0: first layer)
+            from 0 (default is 0: first layer)
         :return: The projection string in well known text format.
         """
         return self._jim_vect._jipjimvect.getProjection(layer)
