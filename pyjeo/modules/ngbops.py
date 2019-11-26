@@ -239,11 +239,12 @@ def getDissim(jimo, dissimType=0):
     :param jimo: a list of grey level Jim objects with the same
         definition domain. The dissimilarities are calculated for each
         image separately and composed using the point-wise maximum rule.
-    :param dissimType: integer value indicating the type of dissimilarity
-                          measure
-                       0 (default) for absolute difference
-                       1 for dissimilarity measure countering the chaining
-                          effect as described in :cite:`soille2011ismm`
+    :param dissimType: integer value indicating the type of dissimilarity \
+                           measure.
+                       0 (default) for absolute difference.
+                       1 for dissimilarity measure countering \
+                         the chaining effect as described in \
+                         :cite:`soille2011ismm`
     :return: a list of 2 Jim objects holding the horizontal and vertical
         dissimilarities respectively
     """
@@ -1076,11 +1077,12 @@ class _NgbOps():
         :param jimo: a list of grey level Jim objects with the same
             definition domain. The dissimilarities are calculated for each
             image separately and composed using the point-wise maximum rule.
-        :param dissimType: integer value indicating the type of dissimilarity
-                              measure
-                           0 (default) for absolute difference
-                           1 for dissimilarity measure countering the chaining
-                              effect as described in :cite:`soille2011ismm`
+        :param dissimType: integer value indicating the type of dissimilarity \
+                               measure.
+                           0 (default) for absolute difference.
+                           1 for dissimilarity measure countering \
+                             the chaining effect as described in \
+                             :cite:`soille2011ismm`.
         """
         DIR_HORI = 0
         DIR_VERT = 1
