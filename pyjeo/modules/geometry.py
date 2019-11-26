@@ -1782,12 +1782,16 @@ class _Geometry():
         kwargs.update({'output': output})
 
         if 'classes' in kwargs:
-            kwargs['class']=kwargs.pop('classes')
+            kwargs['class'] = kwargs.pop('classes')
         if 'threshold' in kwargs:
             if '%' in ''.join(kwargs['threshold']):
-                kwargs['threshold'] = [ float(x.strip('%')) for x in kwargs['threshold']]
+                kwargs['threshold'] = [
+                    float(x.strip('%')) for x in kwargs['threshold']
+                ]
             else:
-                kwargs['threshold'] = [ -x for x in kwargs['threshold']]
+                kwargs['threshold'] = [
+                    -x for x in kwargs['threshold']
+                ]
 
         avect = self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
         pjvect = _pj.JimVect()
