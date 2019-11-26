@@ -1785,13 +1785,13 @@ class _Geometry():
             kwargs['class'] = kwargs.pop('classes')
         if 'threshold' in kwargs:
             if not isinstance(kwargs['threshold'], list):
-                kwargs['threshold']=[kwargs['threshold']]
+                kwargs['threshold'] = [kwargs['threshold']]
             for index, threshold in enumerate(kwargs['threshold']):
-                if isinstance(threshold,str):
-                    threshold=float(threshold.strip('%'))
+                if isinstance(threshold, str):
+                    threshold = float(threshold.strip('%'))
                 else:
-                    threshold=-threshold
-                kwargs['threshold'][index]=threshold
+                    threshold = -threshold
+                kwargs['threshold'][index] = threshold
 
         avect = self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
         pjvect = _pj.JimVect()
