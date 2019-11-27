@@ -426,22 +426,23 @@ def savgolay(jim_object, **kwargs):
         (e.g., ld=0 for smoothed function)
     :param m: order of the smoothing polynomial in Savitzky-Golay filter,
         also equal to the highest conserved moment; usual values are
-        m = 2 or m = 4)
+        m=2 or m=4)
     :return: filtered Jim object
 
     Example:
 
     Perform a Savitzky-Golay filter to reconstruct a time series data set
     as in `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+
+        jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
         jim.pixops.convert('GDT_Float64')
 
         savgol = pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
         for loop in range(0, 10):
             savgol.pixops.convert(otype=jim.properties.getDataType())
-            savgol[savgol<jim] = jim
-            savgol = pj.ngbops.savgolay(
-                savgol, nl=4, nr=4, m=6, pad='replicate')
+            savgol[savgol < jim] = jim
+            savgol = pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6,
+                                        pad='replicate')
     """
     return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
 
@@ -1274,21 +1275,22 @@ class _NgbOps():
             (e.g., ld=0 for smoothed function)
         :param m: order of the smoothing polynomial in Savitzky-Golay filter,
             also equal to the highest conserved moment; usual values are
-            m = 2 or m = 4)
+            m=2 or m=4)
 
         Example:
 
         Perform a Savitzky-Golay filter to reconstruct a time series data set
         as in `J. Chen 2004 <https://doi.org/10.1016/j.rse.2004.03.014>`_::
-            jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+
+            jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
             jim.pixops.convert('GDT_Float64')
 
             savgol = pj.ngbops.savgolay(jim, nl=7, nr=7, m=2, pad='replicate')
             for loop in range(0, 10):
                 savgol.pixops.convert(otype=jim.properties.getDataType())
-                savgol[savgol<jim] = jim
-                savgol = pj.ngbops.savgolay(
-                    savgol, nl=4, nr=4, m=6, pad='replicate')
+                savgol[savgol < jim] = jim
+                savgol = pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6,
+                                            pad='replicate')
         """
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
