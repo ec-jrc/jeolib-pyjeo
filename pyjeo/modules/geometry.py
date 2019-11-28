@@ -544,26 +544,27 @@ def join(jvec1, jvec2, output, **kwargs):
     | co               | Creation option for output vector dataset        |
     +------------------+--------------------------------------------------+
 
-    .. |inner| image:: figures/join_inner.png
+    .. |inner_func| image:: figures/join_inner.png
          :width: 20 %
-    .. |outer_left| image:: figures/join_outer_left.png
+    .. |outer_left_func| image:: figures/join_outer_left.png
          :width: 20 %
-    .. |outer_right| image:: figures/join_outer_right.png
+    .. |outer_right_func| image:: figures/join_outer_right.png
          :width: 20 %
-    .. |outer_full| image:: figures/join_outer_full.png
+    .. |outer_full_func| image:: figures/join_outer_full.png
          :width: 20 %
 
     The join methods currently supported are:
 
-        :INNER |inner|: join two JimVect objects, keeping only those \
-                        features for which identical keys in both objects \
-                        are found
-        :OUTER_LEFT |outer_left|: join two JimVect objects, keeping all \
-                                  features from first object
-        :OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all \
-                                    features from second object
-        :OUTER_FULL |outer_full|: join two JimVect objects, keeping all \
-                                  features from both objects
+        :INNER |inner_func|: join two JimVect objects, keeping only those \
+                             features for which identical keys in both \
+                             objects are found
+        :OUTER_LEFT |outer_left_func|: join two JimVect objects, keeping \
+                                       all features from first object
+        :OUTER_RIGHT |outer_right_func|: join two JimVect objects, \
+                                         keeping all features from second \
+                                         object
+        :OUTER_FULL |outer_full_func|: join two JimVect objects, keeping \
+                                       all features from both objects
 
     Example: join two vectors, based on the key 'id', which is a common
     field shared between v1 and v2. Use OUTER_FULL as the join method::
@@ -737,7 +738,7 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
         or callback function
     :param ref_band: band on which to apply rule
         (default is to check all bands,
-         not supported when rule is callback function)
+        not supported when rule is callback function)
     :param nodata: value to ignore when applying rule
         (not supported when rule is callback function)
     :return: reduced single plane jim object
@@ -1209,7 +1210,7 @@ class _Geometry():
         +------------------+--------------------------------------------------+
         | mskband          | Use the the specified band of the mask file      |
         |                  | defined                                          |
-        +------------------+------------------------------------------------  +
+        +------------------+--------------------------------------------------+
         | msknodata        | List of mask values not to extract               |
         +------------------+--------------------------------------------------+
         | threshold        | Maximum number of features to extract. Use       |
@@ -1230,9 +1231,9 @@ class _Geometry():
             jim0 = pj.Jim('/path/to/raster.tif')
             v = jim0.geometry.aggregateVector(
                 reference, buffer=-10, rule=['mean'],
-                output='/vsimem/temp.sqlite', oformat='SQLite')
-            v.io.write('/path/to/output.sqlite)
-
+                output='/vsimem/temp.sqlite', oformat='SQLite'
+            )
+            v.io.write('/path/to/output.sqlite')
         """
         # make list of rules
         rules = []
@@ -1843,7 +1844,7 @@ class _Geometry():
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
 
-        .. _extract_rules:
+        .. extract_rules:
 
         :Supported rules to extract:
 
@@ -1894,9 +1895,9 @@ class _Geometry():
 
         .. note::
             To ignore some pixels from the extraction process, see list
-            of :ref:`mask <extract_mask>` key values:
+            of :ref:`mask key values <extract_mask>`
 
-        .. _extract_mask:
+        .. extract_mask:
 
         :Supported key values to mask pixels that must be ignored in \
         the extraction process:
@@ -1916,7 +1917,7 @@ class _Geometry():
         +------------------+--------------------------------------------------+
         | mskband          | Use the the specified band of the mask file      |
         |                  | defined                                          |
-        +------------------+------------------------------------------------  +
+        +------------------+--------------------------------------------------+
         | msknodata        | List of mask values not to extract               |
         +------------------+--------------------------------------------------+
         | threshold        | Maximum number of features to extract. Use       |
@@ -2356,7 +2357,7 @@ class _Geometry():
             or callback function
         :param ref_band: band on which to apply rule
             (default is to check all bands,
-             not supported when rule is callback function)
+            not supported when rule is callback function)
         :param nodata: value to ignore when applying rule
             (not supported when rule is callback function)
 
@@ -2820,7 +2821,7 @@ class _GeometryList():
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
 
-        .. _extract_rules:
+        .. extract_rules:
 
         :Supported rules to extract:
 
@@ -2871,9 +2872,9 @@ class _GeometryList():
 
         .. note::
             To ignore some pixels from the extraction process, see list
-            of :ref:`mask <extract_mask>` key values:
+            of :ref:`mask key values <extract_mask>`:
 
-        .. _extract_mask:
+        .. extract_mask:
 
         :Supported key values to mask pixels that must be ignored in \
             the extraction process:
@@ -3191,26 +3192,27 @@ class _GeometryVect():
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
 
-        .. |inner| image:: figures/join_inner.png
+        .. |inner_meth| image:: figures/join_inner.png
              :width: 20 %
-        .. |outer_left| image:: figures/join_outer_left.png
+        .. |outer_left_meth| image:: figures/join_outer_left.png
              :width: 20 %
-        .. |outer_right| image:: figures/join_outer_right.png
+        .. |outer_right_meth| image:: figures/join_outer_right.png
              :width: 20 %
-        .. |outer_full| image:: figures/join_outer_full.png
+        .. |outer_full_meth| image:: figures/join_outer_full.png
              :width: 20 %
 
         The join methods currently supported are:
 
-            :INNER |inner|: join two JimVect objects, keeping only those \
-                            features for which identical keys in both objects \
-                            are found
-            :OUTER_LEFT |outer_left|: join two JimVect objects, keeping all \
-                                      features from first object
-            :OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all \
-                                        features from second object
-            :OUTER_FULL |outer_full|: join two JimVect objects, keeping all \
-                                      features from both objects
+            :INNER |inner_meth|: join two JimVect objects, keeping only those \
+                                 features for which identical keys in both \
+                                 objects are found
+            :OUTER_LEFT |outer_left_meth|: join two JimVect objects, keeping \
+                                           all features from first object
+            :OUTER_RIGHT |outer_right_meth|: join two JimVect objects, \
+                                             keeping all features from second \
+                                             object
+            :OUTER_FULL |outer_full_meth|: join two JimVect objects, keeping \
+                                           all features from both objects
 
         Example: join two vectors, based on the key 'id', which is a common
         field shared between v1 and v2. Use OUTER_FULL as the join method::
