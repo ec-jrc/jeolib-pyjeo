@@ -453,7 +453,7 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
     :param jim_object: input Jim object
     :param nodata: no data value to interpolate
     :param interpolationType: type of interpolation for spectral filtering
-    (see https://www.gnu.org/software/gsl/doc/html/interp.html)
+        (see https://www.gnu.org/software/gsl/doc/html/interp.html)
 
     Example::
 
@@ -1299,7 +1299,7 @@ class _NgbOps():
 
         :param nodata: no data value to interpolate
         :param interpolationType: type of interpolation for spectral filtering
-        (see https://www.gnu.org/software/gsl/doc/html/interp.html)
+            (see https://www.gnu.org/software/gsl/doc/html/interp.html)
 
         Example::
 
