@@ -1,35 +1,37 @@
 # pyJEO
 
+## Description
+
 pyJEO is a library for image processing for geospatial data implemented in 
 JRC Ispra. 
 
-# License
+## License
 
 pyJEO is released under an
 [EUPL](https://joinup.ec.europa.eu/collection/eupl) license (see
 [LICENSE.txt](LICENSE.txt))
 
-# Dependencies
+## Dependencies
 
  * mialib
  * jiplib
  * numpy
 
-# Install
+## Install
 
 From the directory of the repository, run:
 ```
 sudo python setup.py install
 ```
 
-# Test the installation
+## Test the installation
 
 From the directory of the repository, run:
 ```
 python -W ignore -m unittest -v tests
 ```
 
-# Build documentation
+## Build documentation
 
 Dependencies for the documentation build:
  * python3-sphinx
@@ -43,7 +45,7 @@ cd doc
 make html
 ```
 
-# See the code coverage
+## See the code coverage
 
 ```
 python -W ignore -m coverage run --source=pyjeo -m unittest tests
