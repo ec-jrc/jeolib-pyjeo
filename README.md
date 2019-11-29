@@ -20,6 +20,7 @@ pyJEO is released under an
 ## Install
 
 From the directory of the repository, run:
+
 ```
 sudo python setup.py install
 ```
@@ -27,6 +28,7 @@ sudo python setup.py install
 ## Test the installation
 
 From the directory of the repository, run:
+
 ```
 python -W ignore -m unittest -v tests
 ```
