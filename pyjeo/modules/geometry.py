@@ -3,6 +3,7 @@
 import pyjeo as _pj
 import os
 import numpy
+import warnings as _warnings
 
 from collections import Iterable
 
@@ -744,7 +745,9 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
     """
     nr_of_planes = jim.properties.nrOfPlane()
     if jim.properties.nrOfPlane() < 2:
-        print("Warning: single plane, no reduction is performed")
+        _warnings.warn(
+            'Single-plane Jim: No plane reduction performed', SyntaxWarning
+        )
         return None
 
     jimreduced = _pj.geometry.cropPlane(jim, 0)
@@ -2381,7 +2384,9 @@ class _Geometry():
         """
         nr_of_planes = self._jim_object.properties.nrOfPlane()
         if nr_of_planes < 2:
-            print("Warning: single plane, no reduction is performed")
+            _warnings.warn(
+                'Single-plane Jim: No plane reduction performed', SyntaxWarning
+            )
             return None
 
         jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
