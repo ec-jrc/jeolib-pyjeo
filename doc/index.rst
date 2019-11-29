@@ -30,8 +30,8 @@
 .. bibliography:: all.bib
 
 
-* :ref:`alpabetical-indexes`
-  
+.. * :ref:`alpabetical-indexes`
+
 * :ref:`modindex`
 
 * :ref:`search`
