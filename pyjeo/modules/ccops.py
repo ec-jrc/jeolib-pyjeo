@@ -71,9 +71,9 @@ def distance2dEuclideanConstrained(marker, mask, band=0):
 def distance2dEuclideanSquared(jim, band=0):
     """Compute the squared Euclidean distance transform of im.
 
-    Jim must be a 2-D binary image. Original algorihtm proposed by Saito
+    Jim must be a 2-D binary image. Original algorithm proposed by Saito
     and Toriwaki (1994) and then optimised independently by (Hirata,
-    1996) and (Meijster et al., 2000). See also *edt for the actual
+    1996) and (Meijster et al., 2000). Based on the
     Euclidean distance transform. Note that a temporary buffer of type
     UINT16 is used for sums along/lines and columns so that uncontrolled
     results will occur if an object shows more than 16 2 /2 foreground
@@ -106,7 +106,7 @@ def distanceInfluenceZones2dEuclidean(jim, band=0):
 
     Jim must be a 2-D image, its last bit being reserved (e.g., for a UCHAR
     images, authorized label values range from 1 to 127). Algorithm based
-    on *edt.
+    on the Euclidean distance transform.
 
     :param jim: a Jim object
     :param band: List of band indices to crop (index is 0 based)
@@ -180,9 +180,9 @@ def labelConstrainedCCsDissim(jimo, localRange, globalRange, dissimType=0):
     :param globalRange: integer value indicating maximum global difference
         (difference between the maximum and minimum values of each resulting
         connected component)
-    :param dissimType: integer value indicating type of dissimilarity measure
-                       0 (default) for absolute difference
-                       1 for dissimilarity measure countering the chaining
+    :param dissimType: int value indicating type of dissimilarity measure. \
+                       0 (default) for absolute difference. \
+                       1 for dissimilarity measure countering the chaining \
                          effect as described in :cite:`soille2011ismm`
     :return: labeled Jim object
     """
@@ -618,9 +618,9 @@ class _CCOps():
     def distance2dEuclideanSquared(self, band=0):
         """Compute the squared Euclidean distance transform.
 
-        im must be a 2-D binary image. Original algorihtm proposed by Saito
+        im must be a 2-D binary image. Original algorithm proposed by Saito
         and Toriwaki (1994) and then optimised independently by (Hirata,
-        1996) and (Meijster et al., 2000). See also *edt for the actual
+        1996) and (Meijster et al., 2000). Based on the
         Euclidean distance transform. Note that a temporary buffer of type
         UINT16 is used for sums along/lines and columns so that uncontrolled
         results will occur if an object shows more than 16 2 /2 foreground
