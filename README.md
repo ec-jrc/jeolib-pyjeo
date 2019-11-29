@@ -13,9 +13,9 @@ pyJEO is released under an
 
 ## Dependencies
 
- * mialib
- * jiplib
- * numpy
+* mialib
+* jiplib
+* numpy
 
 ## Install
 
@@ -34,9 +34,10 @@ python -W ignore -m unittest -v tests
 ## Build documentation
 
 Dependencies for the documentation build:
- * python3-sphinx
- * sphinx-rtd-theme
- * sphinxcontrib-bibtex
+
+* python3-sphinx
+* sphinx-rtd-theme
+* sphinxcontrib-bibtex
 
 Go to directory `doc` and run `make html`.
 
