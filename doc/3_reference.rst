@@ -268,7 +268,7 @@ Set Jim items
           jim=pj.Jim(ifn)
           v=pj.JimVect(cfn)
           jim[v]=255
-   
+
 *********
 Operators
 *********
@@ -611,7 +611,7 @@ Native neighborhood operation methods on Jim
 
 .. autoclass:: _NgbOps
    :members:
-     
+
 
 *******************
 Geometry operations
@@ -623,7 +623,7 @@ Geometry operation functions
 
 .. automodule:: geometry
    :members:
-   :exclude-members: imageInsert, imageInsertCompose, imageFrameSet, imageFrameAdd, magnify 
+   :exclude-members: imageInsert, imageInsertCompose, imageFrameSet, imageFrameAdd, magnify
 
 =================================
 Geometry operation methods on Jim
@@ -631,7 +631,7 @@ Geometry operation methods on Jim
 
 .. autoclass:: _Geometry
    :members:
-   :exclude-members: imageInsert, imageInsertCompose, imageFrameSet, imageFrameAdd, magnify 
+   :exclude-members: imageInsert, imageInsertCompose, imageFrameSet, imageFrameAdd, magnify
 
 =====================================
 Geometry operation methods on JimVect
@@ -719,9 +719,10 @@ Statistical methods on Jim
 
 .. autoclass:: _Stats
    :members:
-=============================
+
+==============================
 Statistical methods on JimList
-=============================
+==============================
 
 .. autoclass:: _StatsList
    :members:
