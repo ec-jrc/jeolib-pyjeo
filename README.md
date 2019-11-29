@@ -2,8 +2,8 @@
 
 ## Description
 
-pyJEO is a library for image processing for geospatial data implemented in 
-JRC Ispra. 
+pyJEO is a library for image processing for geospatial data implemented in
+JRC Ispra.
 
 ## License
 
