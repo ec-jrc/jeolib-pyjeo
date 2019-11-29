@@ -2,6 +2,7 @@
 
 import pyjeo as pj
 import unittest
+import warnings
 
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 
@@ -1245,6 +1246,31 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.reducePlane() ' \
             '(for rule="min", the mean value of returned object is not < ' \
             'the mean of the original object)'
+
+        # Test wrong call with one-plane Jim
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=1, otype='Byte',
+                     uniform=[min, max])
+
+        warnings.filterwarnings('error', category=Warning)
+        try:
+            _ = pj.geometry.reducePlane(jim, 'mean')
+            raised = False
+        except Warning:
+            raised = True
+
+        assert raised, 'Error in raising a warning when performing ' \
+                       'reducePlane function on an object with one plane'
+
+        try:
+            jim.geometry.reducePlane('mean')
+            raised = False
+        except Warning:
+            raised = True
+
+        assert raised, 'Error in raising a warning when performing ' \
+                       'reducePlane method on an object with one plane'
+
+        warnings.resetwarnings()
 
 
 class BadGeometryVects(unittest.TestCase):
