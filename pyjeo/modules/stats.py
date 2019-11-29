@@ -296,7 +296,7 @@ class _StatsList():
             (default is ['min', 'max', 'mean'])
         :return: a dictionary with requested statistics
 
-        .. _statFunctions:
+        .. _statFunctions_list:
 
         :statistical functions:
 
