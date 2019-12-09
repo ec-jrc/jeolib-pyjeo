@@ -1292,7 +1292,6 @@ class _ParentVect(_jl.VectorOgr):
                 # Add new feature to output layer
                 out_layer.CreateFeature(out_feature)
                 out_feature = None
-                out_dataset = None
                 super(_ParentVect, self).__init__(kwargs)
             else:
                 kwargs.update({'filename': kwargs.pop('output', None)})
