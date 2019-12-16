@@ -69,6 +69,20 @@ class BadBasicMethods(unittest.TestCase):
 
         # Test with parent vector
 
+        jsonstring='{"polygons": {"type": "FeatureCollection", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": [{"type": "Feature", "properties": {"label": 1}, "geometry": {"type": "Polygon", "coordinates": [[[ 16.296883885037882, 48.07125730037879 ], [ 16.29418254261364, 47.787616345833342 ], [ 16.518393963825762, 47.814629770075761 ], [ 16.413041609280306, 48.04424387613637 ], [ 16.296883885037882, 48.07125730037879 ]]]}}]}}'
+
+        vect = pj.JimVect(jsonstring)
+
+        assert not vect.properties.isEmpty(), \
+            'Error in creating JimVect object based on json string' \
+            '(JimVect empty)'
+        assert vect.properties.getLayerCount() == 1, \
+            'Error in creating JimVect object based on json string' \
+            '(wrong number of layers)'
+        assert vect.properties.getFeatureCount() == 1, \
+            'Error in creating JimVect object based on json string' \
+            '(wrong number of features)'
+
         vect = pj.JimVect(output=vector)
 
         assert not vect.properties.isEmpty(), \
