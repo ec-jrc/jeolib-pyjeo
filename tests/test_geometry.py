@@ -681,7 +681,8 @@ class BadGeometry(unittest.TestCase):
         jim.np(1)[1, 0, 0] = 2 * max
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, 'max', ref_band=0, nodata=nodata)
+        reduced = pj.geometry.reducePlane(jim, 'max', ref_band=0,
+                                          nodata=nodata)
         jim.geometry.reducePlane('max', ref_band=0, nodata=nodata)
 
         stats_reduced = jim.stats.getStats()
@@ -1039,8 +1040,8 @@ class BadGeometry(unittest.TestCase):
         assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="mean", the maximum value of returned object is not <=' \
-            ' the maximum of the original object)'
+            '(for rule="mean", the maximum value of returned object is ' \
+            'not <= the maximum of the original object)'
         assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
@@ -1089,8 +1090,8 @@ class BadGeometry(unittest.TestCase):
         assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="mean", the maximum value of returned object is not <=' \
-            ' the maximum of the original object for more than 2-planes Jim)'
+            '(for rule="mean", the maximum value of returned object is not ' \
+            '<= the maximum of the original object for more than 2-planes Jim)'
         assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
@@ -1144,8 +1145,8 @@ class BadGeometry(unittest.TestCase):
             '(rule="mean" did not return mean value for all the planes)'
         assert jim.np(1)[0, 0] == int((5 * max + nodata + 1) / 3), \
             'Error in geometry.reducePlane(ref_band) ' \
-            '(for rule="mean", the used indices of max values are not he ones' \
-            ' from the ref_band)'
+            '(for rule="mean", the used indices of max values are not ' \
+            'the ones from the ref_band)'
         assert jim.np(0)[3, 3] == int(nodata + 1 + max) / 2, \
             'Error in geometry.reducePlane(nodata) ' \
             '(not ignoring the nodata values)'
@@ -1166,8 +1167,8 @@ class BadGeometry(unittest.TestCase):
             'place where nodata was in all planes in the ref_band)'
         assert stats_reduced['max'][0] <= stats['max'][0], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="mean", the maximum value of returned object is not <=' \
-            ' the maximum of the original object)'
+            '(for rule="mean", the maximum value of returned object is ' \
+            'not <= the maximum of the original object)'
         assert stats_reduced['min'][0] >= stats['min'][0], \
             'Error in geometry.reducePlane() ' \
             '(for rule="mean", the mean value of returned object is not >= ' \
@@ -1219,8 +1220,8 @@ class BadGeometry(unittest.TestCase):
             '(rule="mean" did not return mean value for all the planes)'
         assert jim.np(1)[0, 0] == 5 * max / 2, \
             'Error in geometry.reducePlane(ref_band) ' \
-            '(for rule="mean", the used indices of max values are not he ones' \
-            ' from the ref_band)'
+            '(for rule="mean", the used indices of max values are not ' \
+            'the ones from the ref_band)'
         assert jim.np(0)[3, 3] == int((nodata + 1 + nodata + 2) / 2), \
             'Error in geometry.reducePlane(nodata) ' \
             '(not ignoring the nodata values)'
