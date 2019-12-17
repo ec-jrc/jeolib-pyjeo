@@ -64,7 +64,8 @@ def sml(jim_object, reflist, **kwargs):
     the classification.
 
     :param jim_object: a multi-plane Jim object
-    :param reflist: JimList of reference raster datasets containing with reference classes
+    :param reflist: JimList of reference raster datasets containing with
+        reference classes
     :param classes: List of classes to extract from the reference
         (leave empty to extract all classes in reference)
     :return: multi-band Jim object, where each band represents the probability
@@ -154,7 +155,8 @@ class _Classify():
 
         Modifies the instance on which the method was called.
 
-        :param reflist: JimList of reference raster datasets containing with reference classes
+        :param reflist: JimList of reference raster datasets containing with
+            reference classes
         :param classes: list of classes to extract from the reference.
             (leave empty to extract all classes in reference)
 
