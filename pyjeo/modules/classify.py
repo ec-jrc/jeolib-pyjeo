@@ -1,6 +1,9 @@
 """Module for operations connected to classification."""
 
 import pyjeo as _pj
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def classify(jim_object, method, model, **kwargs):
@@ -79,14 +82,8 @@ def sml(jim_object, reflist, **kwargs):
         reflist, kwargs))
 
 
-class _Classify():
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
+class _Classify(_JimModuleBase):
+    """Define all classification methods for Jims."""
 
     def classify(self, method, model, **kwargs):
         """Supervised classification of a raster dataset.
@@ -240,24 +237,14 @@ class _Classify():
             raise ValueError('Error: output for model not set')
 
 
-class _ClassifyList():
+class _ClassifyList(_JimListModuleBase):
+    """Define all classification methods for JimLists."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
+    pass
 
 
-class _ClassifyVect():
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
+class _ClassifyVect(_JimVectModuleBase):
+    """Define all classification methods for JimVects."""
 
     def classify(self, method, model, **kwargs):
         """Supervised classification of a raster dataset.

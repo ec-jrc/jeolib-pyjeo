@@ -1,6 +1,9 @@
 """Module for connected-component operations."""
 
 import pyjeo as _pj
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 
 # TODO: Test
@@ -542,15 +545,8 @@ def watershed(ajim, graph=8):
     return _pj.Jim(ajim._jipjim.segmentationWatershed(ajim._jipjim, graph))
 
 
-class _CCOps():
+class _CCOps(_JimModuleBase):
     """Define all CCOps methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     # TODO: Test
     def alphaTreeDissim(self, dissimv, alpha):
@@ -844,23 +840,13 @@ class _CCOps():
         self._jim_object._set(marker)
 
 
-class _CCOpsList():
+class _CCOpsList(_JimListModuleBase):
     """Define all CCOps methods for JimLists."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
+    pass
 
 
-class _CCOpsVect():
+class _CCOpsVect(_JimVectModuleBase):
     """Define all CCOps methods for JimVects."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
+    pass

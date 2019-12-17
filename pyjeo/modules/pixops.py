@@ -1,9 +1,12 @@
 """Module for pixel-wise operations."""
 
+import numpy
+
 import pyjeo as _pj
 import jiplib as _jl
-
-import numpy
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 
 # def blank(jim_object, val):
@@ -378,15 +381,8 @@ def supremum(jim, *args):
     return supremum
 
 
-class _PixOps():
+class _PixOps(_JimModuleBase):
     """Define all PixOps methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     # def blank(self, val):
     #     """Set all pixels to val
@@ -785,15 +781,8 @@ class _PixOps():
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
 
 
-class _PixOpsList():
+class _PixOpsList(_JimListModuleBase):
     """Define all PixOps methods for JimLists."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
 
     def composite(self, crule='overwrite', **kwargs):
         """Composite Jims in a JimList using a composite rule."""
@@ -801,12 +790,7 @@ class _PixOpsList():
         return _pj.Jim(self._jim_list._jipjimlist.composite(kwargs))
 
 
-class _PixOpsVect():
+class _PixOpsVect(_JimVectModuleBase):
     """Define all PixOps methods for JimVects."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
+    pass

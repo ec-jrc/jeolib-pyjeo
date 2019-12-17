@@ -1,8 +1,11 @@
 """Module for operations connected to digital elevation models."""
 
-import pyjeo as _pj
 import numpy
-# from scipy import signal
+
+import pyjeo as _pj
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def catchmentBasinConfluence(jim_object, d8):
@@ -323,15 +326,8 @@ def strahler(jim_object):
     return _pj.Jim(jim_object._jipjim.demStrahlerOrder())
 
 
-class _DEMOps():
+class _DEMOps(_JimModuleBase):
     """Define all DEMOps methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     def catchmentBasinConfluence(self, d8):
         """Compute the catchment basin confluence.
@@ -627,23 +623,13 @@ class _DEMOps():
         self._jim_object._jipjim.d_demStrahlerOrder()
 
 
-class _DEMOpsList():
+class _DEMOpsList(_JimListModuleBase):
     """Define all DEMOps methods for JimLists."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
+    pass
 
 
-class _DEMOpsVect():
+class _DEMOpsVect(_JimVectModuleBase):
     """Define all DEMOps methods for JimVects."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
+    pass

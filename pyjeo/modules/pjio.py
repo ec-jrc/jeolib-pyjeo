@@ -2,6 +2,9 @@
 
 import pyjeo as _pj
 import jiplib as _jl
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 # def createJim(filename=None, **kwargs):
 #     """
@@ -56,15 +59,8 @@ import jiplib as _jl
 #                                nBufXSize, nBufYSize))
 
 
-class _IO():
+class _IO(_JimModuleBase):
     """Define all IO methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     def close(self):
         """Close Jim object."""
@@ -137,30 +133,16 @@ class _IO():
         self._jim_object._jipjim.write(kwargs)
 
 
-class _IOList():
+class _IOList(_JimListModuleBase):
     """Define all IO methods for JimLists."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
 
     def close(self):
         """Close all Jim object in the JimList object."""
         self._jim_list._jipjimlist.close()
 
 
-class _IOVect():
+class _IOVect(_JimVectModuleBase):
     """Define all IO methods for JimVects."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
 
     def close(self):
         """Close JimVect object."""

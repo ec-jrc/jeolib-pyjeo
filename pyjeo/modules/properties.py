@@ -1,6 +1,9 @@
 """Module for accessing Jim attributes and geospatial informations."""
 
 import pyjeo as _pj
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 # def imageInfo(jim_object):
 #     """Return image information (number of lines, columns, etc.)
@@ -9,15 +12,8 @@ import pyjeo as _pj
 #     return _pj.Jim(jim_object._jipjim.imageInfo())
 
 
-class _Properties():
+class _Properties(_JimModuleBase):
     """Define all properties methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     def clearNoData(self):
         """Clear the list of no data values for this raster dataset."""
@@ -276,15 +272,8 @@ class _Properties():
         self._jim_object._jipjim.setProjection(*args)
 
 
-class _PropertiesList():
+class _PropertiesList(_JimListModuleBase):
     """Define all properties methods for JimLists."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
 
     def clearNoData(self):
         """Clear the list of no data values for this JimList object."""
@@ -378,15 +367,8 @@ class _PropertiesList():
         self._jim_list._set(self._jim_list)
 
 
-class _PropertiesVect():
+class _PropertiesVect(_JimVectModuleBase):
     """Define all properties methods for JimVects."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
 
     def getBBox(self):
         """Get the bounding box (georeferenced) coordinates of this dataset.

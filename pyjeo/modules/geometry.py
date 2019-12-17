@@ -1,11 +1,15 @@
 """Module for operations working with the geometry of the Jim objects."""
 
-import pyjeo as _pj
 import os
 import numpy
 import warnings as _warnings
 
 from collections import Iterable
+
+import pyjeo as _pj
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 
 # def append(jvec1, jvec2, output, **kwargs):
@@ -1078,15 +1082,8 @@ def warp(jim_object, t_srs, **kwargs):
     # return _pj.Jim(jim_object._jipjim.warp(kwargs))
 
 
-class _Geometry():
+class _Geometry(_JimModuleBase):
     """Define all Geometry methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     def aggregate_vector(self, jvec, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
@@ -2704,7 +2701,7 @@ class _Geometry():
         # self._jim_object._set(self._jim_object._jipjim.warp(kwargs))
 
 
-class _GeometryList():
+class _GeometryList(_JimListModuleBase):
     """Define all Geometry methods for JimLists."""
 
     def __init__(self):
@@ -3090,7 +3087,7 @@ class _GeometryList():
                             'of type JimVect')
 
 
-class _GeometryVect():
+class _GeometryVect(_JimVectModuleBase):
     """Define all Geometry methods for JimVects."""
 
     def __init__(self):

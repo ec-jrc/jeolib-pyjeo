@@ -1,7 +1,11 @@
 """Module for statistical functions and interpolations."""
 
-import pyjeo as _pj
 import numpy
+
+import pyjeo as _pj
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def getHisto1d(jim_object):
@@ -73,15 +77,8 @@ def stretch(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.stretch(kwargs))
 
 
-class _Stats():
+class _Stats(_JimModuleBase):
     """Define all statistical methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     def getHisto1d(self):
         """Compute the frequency distribution of the grey levels of im.
@@ -271,15 +268,8 @@ class _Stats():
         self._jim_object._set(self._jim_object._jipjim.stretch(kwargs))
 
 
-class _StatsList():
+class _StatsList(_JimListModuleBase):
     """Define all statistical methods for JimLists."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
 
     def getStatProfile(self, function, **kwargs):
         kwargs.update({'function': function})
@@ -389,12 +379,7 @@ class _StatsList():
         return statDict
 
 
-class _StatsVect():
+class _StatsVect(_JimVectModuleBase):
     """Define all statistical methods for JimVects."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
+    pass

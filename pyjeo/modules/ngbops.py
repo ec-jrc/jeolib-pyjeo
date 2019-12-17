@@ -1,7 +1,11 @@
 """Module for neighbourhood operations."""
 
-import pyjeo as _pj
 import numpy
+
+import pyjeo as _pj
+from . import JimModuleBase as _JimModuleBase
+from . import JimListModuleBase as _JimListModuleBase
+from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def dwt1d(jim_object, **kwargs):
@@ -488,15 +492,8 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
 #     print("kwargs is: {}".format(kwargs))
 #     return _pj.Jim(jim_object._jipjim.stats1d(kwargs))
 
-class _NgbOps():
+class _NgbOps(_JimModuleBase):
     """Define all NgbOps methods."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_object = caller
 
     def dwt1d(self, **kwargs):
         """Compute discrete forward wavelet transform in time-spectral domain.
@@ -1330,23 +1327,13 @@ class _NgbOps():
     #     self._jim_object._set(self._jim_object._jipjim.stats1d(kwargs))
 
 
-class _NgbOpsList():
+class _NgbOpsList(_JimListModuleBase):
     """Define all NgbOps methods for JimLists."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_list = caller
+    pass
 
 
-class _NgbOpsVect():
+class _NgbOpsVect(_JimVectModuleBase):
     """Define all NgbOps methods for JimVects."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self, caller):
-        self._jim_vect = caller
+    pass
