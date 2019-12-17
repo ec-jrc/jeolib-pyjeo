@@ -720,7 +720,6 @@ class _CCOps(_JimModuleBase):
 
         Modifies the instance on which the method was called.
 
-        :param jim_object: a Jim object holding a binary image
         :param graph: an integer holding for the graph connectivity
             (4 or 8 for 2-D images, default is 8)
         :return: labeled Jim object
