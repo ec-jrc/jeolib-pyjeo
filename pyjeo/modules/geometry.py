@@ -1345,7 +1345,7 @@ class _Geometry(_JimModuleBase):
                             bandname=ibandnames, copy=fieldnames, fid='fid')
                     if v.properties.isEmpty():
                         v.io.close()
-                except:
+                except SystemError:
                     print("no coverage for plane {}, continue with next "
                           "product".format(planenames[iplane]))
                     if v:
@@ -1377,7 +1377,7 @@ class _Geometry(_JimModuleBase):
                     v.io.close()
                 else:
                     v.io.close()
-            except:
+            except SystemError:
                 print("raised exception dataset in for plane {}".format(
                     planenames[iplane]))
                 continue
