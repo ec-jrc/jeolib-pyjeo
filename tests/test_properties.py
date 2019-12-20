@@ -201,7 +201,7 @@ class BadPropsVects(unittest.TestCase):
 
         projection = self.jimv.properties.getProjection()
 
-        assert projection.split('GEOGCS["')[1][:13] == 'GCS_ETRS_1989', \
+        assert projection.split('GEOGCS["')[1][:6] == 'ETRS89', \
             'Error in properties.getProjection() for JimVects (wrong GEOGCS)'
 
     def test_feature_layer_counts(self):
