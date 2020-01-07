@@ -245,9 +245,12 @@ class Jim():
                                          '[seed, uniform, stdev] without '
                                          'specifying the geometry and otype '
                                          'of Jim.')
-        # elif type(image) is str:
-            # if not _os.path.isfile(image):
-                # raise ValueError('File does not exist')
+        elif type(image) is str:
+            if ':' in image:
+                # non-standard path (e.g. HDF file) - skip the existence check
+                pass
+            elif not _os.path.isfile(image):
+                raise ValueError('File does not exist')
 
     def _checkNumberOfBands(self, another_jim):
         """Check if the number of bands matches for both Jim objects.
