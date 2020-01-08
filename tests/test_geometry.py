@@ -3,6 +3,7 @@
 import pyjeo as pj
 import unittest
 import warnings
+import numpy as np
 
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 
@@ -1247,6 +1248,123 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.reducePlane() ' \
             '(for rule="min", the mean value of returned object is not < ' \
             'the mean of the original object)'
+
+        # Test with rule == 'median'
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3, otype='Byte',
+                     uniform=[min, max])
+        jim[2, 0, 0] = nodata
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, rule='median')
+        jim.geometry.reducePlane(rule='median')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == np.median([min, max, nodata]), \
+            'Error in geometry.reducePlane() ' \
+            '(rule="median" did not return median value for all the planes)'
+        assert stats_reduced['max'] <= stats['max'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="median", the maximum value of returned object is not ' \
+            '<= the maximum of the original object)'
+        assert stats_reduced['min'] >= stats['min'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="median", the minimum value of returned object is not ' \
+            '>= the minimum of the original object)'
+
+        # Test with rule == 'median' and multibands
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[2, 0, 0] = nodata
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, rule='median')
+        jim.geometry.reducePlane(rule='median')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == np.median([min, max, nodata]), \
+            'Error in geometry.reducePlane() ' \
+            '(rule="median" did not return mean value for all the planes)'
+        assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="median", the maximum value of returned object is not' \
+            ' <= the maximum of the original object)'
+        assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="median", the minimum value of returned object is not' \
+            ' >= the minimum of the original object)'
+
+        # Test with rule == 'median' and band specified (2 planes)
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(jim, ref_band=0, rule='median')
+        jim.geometry.reducePlane(ref_band=0, rule='median')
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.pixops.isEqual(reduced), \
+            'Error in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0] == np.median([min, max]), \
+            'Error in geometry.reducePlane() ' \
+            '(rule="median" did not return mean value for all the planes)'
+        assert jim.np(1)[0, 0] == np.median([3 * max, 2 * max]), \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="median", the used indices of max values are not the ' \
+            'ones from the ref_band)'
+        assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="median", the maximum value of returned object is ' \
+            'not <= the maximum of the original object)'
+        assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
+            len(stats['max']))), \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="median", the min value of returned object is not >= ' \
+            'the min of the original object)'
 
         # Test wrong call with one-plane Jim
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=1, otype='Byte',
