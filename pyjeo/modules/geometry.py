@@ -1,7 +1,7 @@
 """Module for operations working with the geometry of the Jim objects."""
 
 import os
-import numpy
+import numpy as _np
 import warnings as _warnings
 
 from collections import Iterable
@@ -761,11 +761,11 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
 
         if rule in ('mean', 'avg', 'median'):
             if rule == 'median':
-                nan_func = numpy.nanmedian
-                func = numpy.median
+                nan_func = _np.nanmedian
+                func = _np.median
             else:
-                nan_func = numpy.nanmean
-                func = numpy.mean
+                nan_func = _np.nanmean
+                func = _np.mean
 
             theType = jim.properties.getDataType()
             nr_of_bands = jim.properties.nrOfBand()
@@ -780,18 +780,18 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
                 # create one-plane boolean mask containing True where
                 # nodata value is in all planes
                 planes = [mask.np()[i] for i in range(nr_of_planes)]
-                stacked_planes = numpy.vstack(planes)
+                stacked_planes = _np.vstack(planes)
 
-                diffs = numpy.abs(
-                    numpy.diff(stacked_planes.reshape(len(planes), -1),
-                               axis=0)) == 0
+                diffs = _np.abs(
+                    _np.diff(stacked_planes.reshape(len(planes), -1),
+                             axis=0)) == 0
 
                 same_values = diffs[0]
                 for i in range(1, len(diffs)):
-                    same_values = numpy.logical_and(same_values, diffs[i])
+                    same_values = _np.logical_and(same_values, diffs[i])
 
-                same_values = numpy.reshape(same_values,
-                                            (nr_of_row, nr_of_col))
+                same_values = _np.reshape(same_values,
+                                          (nr_of_row, nr_of_col))
 
                 nodata_mask = same_values & (mask.np()[0] == nodata)
 
@@ -802,32 +802,32 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
                         # where nodata value is in all planes
                         planes = [jim.np(iband)[i] for i
                                   in range(nr_of_planes)]
-                        stacked_planes = numpy.vstack(planes)
+                        stacked_planes = _np.vstack(planes)
 
-                        diffs = numpy.abs(
-                            numpy.diff(
+                        diffs = _np.abs(
+                            _np.diff(
                                 stacked_planes.reshape(len(planes), -1),
                                 axis=0)) == 0
 
                         same_values = diffs[0]
                         for i in range(1, len(diffs)):
-                            same_values = numpy.logical_and(same_values,
-                                                            diffs[i])
+                            same_values = _np.logical_and(same_values,
+                                                          diffs[i])
 
-                        same_values = numpy.reshape(same_values,
-                                                    (nr_of_row, nr_of_col))
+                        same_values = _np.reshape(same_values,
+                                                  (nr_of_row, nr_of_col))
 
                         nodata_mask = same_values & (
                             jim.np(iband)[0] == nodata)
 
                         # compute the reduction function
-                        jim.np(iband)[jim.np(iband) == nodata] = numpy.nan
+                        jim.np(iband)[jim.np(iband) == nodata] = _np.nan
                         jimreduced.np(iband)[:] = nan_func(
                             jim.np(iband), axis=0)
                         jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         jim.np(iband)[
-                            mask.np() == nodata] = numpy.nan
+                            mask.np() == nodata] = _np.nan
                         jimreduced.np(iband)[:] = nan_func(
                             jim.np(iband), axis=0)
                         jimreduced.np(iband)[nodata_mask] = nodata
@@ -2342,7 +2342,7 @@ class _Geometry(_JimModuleBase):
             jim_stacked = pj.geometry.stackPlane(jim0, jim1)
             def getMax(reduced, plane):
                 return pj.pixops.supremum(reduced, plane)
-            jim_stacked.geometry._reducePlaneSimple(getMax)
+            jim_stacked.geometry.reducePlane(getMax)
 
         """
         nr_of_planes = self._jim_object.properties.nrOfPlane()
@@ -2358,11 +2358,11 @@ class _Geometry(_JimModuleBase):
 
             if rule in ('mean', 'avg', 'median'):
                 if rule == 'median':
-                    nan_func = numpy.nanmedian
-                    func = numpy.median
+                    nan_func = _np.nanmedian
+                    func = _np.median
                 else:
-                    nan_func = numpy.nanmean
-                    func = numpy.mean
+                    nan_func = _np.nanmean
+                    func = _np.mean
 
                 theType = self._jim_object.properties.getDataType()
                 nr_of_bands = self._jim_object.properties.nrOfBand()
@@ -2377,18 +2377,18 @@ class _Geometry(_JimModuleBase):
                     # create one-plane boolean mask containing True where
                     # nodata value is in all planes
                     planes = [mask.np()[i] for i in range(nr_of_planes)]
-                    stacked_planes = numpy.vstack(planes)
+                    stacked_planes = _np.vstack(planes)
 
-                    diffs = numpy.abs(
-                        numpy.diff(stacked_planes.reshape(len(planes), -1),
-                                   axis=0)) == 0
+                    diffs = _np.abs(
+                        _np.diff(stacked_planes.reshape(len(planes), -1),
+                                 axis=0)) == 0
 
                     same_values = diffs[0]
                     for i in range(1, len(diffs)):
-                        same_values = numpy.logical_and(same_values, diffs[i])
+                        same_values = _np.logical_and(same_values, diffs[i])
 
-                    same_values = numpy.reshape(same_values,
-                                                (nr_of_row, nr_of_col))
+                    same_values = _np.reshape(same_values,
+                                              (nr_of_row, nr_of_col))
 
                     nodata_mask = same_values & (mask.np()[0] == nodata)
 
@@ -2399,33 +2399,33 @@ class _Geometry(_JimModuleBase):
                             # where nodata value is in all planes
                             planes = [self._jim_object.np(iband)[i] for i
                                       in range(nr_of_planes)]
-                            stacked_planes = numpy.vstack(planes)
+                            stacked_planes = _np.vstack(planes)
 
-                            diffs = numpy.abs(
-                                numpy.diff(
+                            diffs = _np.abs(
+                                _np.diff(
                                     stacked_planes.reshape(len(planes), -1),
                                     axis=0)) == 0
 
                             same_values = diffs[0]
                             for i in range(1, len(diffs)):
-                                same_values = numpy.logical_and(
+                                same_values = _np.logical_and(
                                     same_values, diffs[i])
 
-                            same_values = numpy.reshape(same_values,
-                                                        (nr_of_row, nr_of_col))
+                            same_values = _np.reshape(same_values,
+                                                      (nr_of_row, nr_of_col))
 
                             nodata_mask = same_values & (
                                 self._jim_object.np(iband)[0] == nodata)
 
                             # compute the reduction function
                             self._jim_object.np(iband)[self._jim_object.np(
-                                iband) == nodata] = numpy.nan
+                                iband) == nodata] = _np.nan
                             jimreduced.np(iband)[:] = nan_func(
                                 self._jim_object.np(iband), axis=0)
                             jimreduced.np(iband)[nodata_mask] = nodata
                         else:
                             self._jim_object.np(iband)[
-                                mask.np() == nodata] = numpy.nan
+                                mask.np() == nodata] = _np.nan
                             jimreduced.np(iband)[:] = nan_func(
                                 self._jim_object.np(iband), axis=0)
                             jimreduced.np(iband)[nodata_mask] = nodata

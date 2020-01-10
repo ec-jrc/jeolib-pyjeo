@@ -1,7 +1,7 @@
 """Basic file containing Jim* objects and functions for numpy conversions."""
 
 from __future__ import division
-import numpy
+import numpy as _np
 import gc as _gc
 import warnings as _warnings
 import os as _os
@@ -281,7 +281,7 @@ class Jim():
         mean = kwargs.pop('mean', None)
 
         if seed is not None:
-            numpy.random.seed(seed)
+            _np.random.seed(seed)
 
         if uniform:
             if isinstance(uniform, list):
@@ -290,11 +290,11 @@ class Jim():
                         'The list parsed as the uniform argument must be '
                         'in the form [min, max + 1]')
                 for band in range(0, self.properties.nrOfBand()):
-                    self.np(band)[:] = numpy.random.uniform(
+                    self.np(band)[:] = _np.random.uniform(
                         uniform[0], uniform[1], self.np(band).shape)
             else:
                 for band in range(0, self.properties.nrOfBand()):
-                    self.np(band)[:] = numpy.random.uniform(
+                    self.np(band)[:] = _np.random.uniform(
                         0, uniform, self.np(band).shape)
         else:
             if stdev is None:
@@ -302,7 +302,7 @@ class Jim():
             if mean is None:
                 mean = 0
             for band in range(0, self.properties.nrOfBand()):
-                self.np(band)[:] = numpy.random.normal(
+                self.np(band)[:] = _np.random.normal(
                     mean, stdev, self.np(band).shape)
 
     def _set(self, modified_object):
@@ -335,8 +335,8 @@ class Jim():
             mask = item > 0
             return Jim(self * mask)
         else:
-            npresult = numpy.array(self.np()[item], copy=True)
-            # npresult=numpy.array(self.np()[item])
+            npresult = _np.array(self.np()[item], copy=True)
+            # npresult=_np.array(self.np()[item])
             if len(npresult.shape) == 3:
                 nplane = npresult.shape[0]
                 nrow = npresult.shape[1]
@@ -477,7 +477,7 @@ class Jim():
         """
         jim = Jim(self)
         for iband in range(0, self.properties.nrOfBand()):
-            jim.np(iband)[:] = numpy.abs(jim.np(iband))
+            jim.np(iband)[:] = _np.abs(jim.np(iband))
         return jim
 
     def __neg__(self):
@@ -936,7 +936,7 @@ class Jim():
                 else:
                     jim.np(iband)[:] |= right.np(iband)
             return jim
-        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+        elif isinstance(right, int) or isinstance(right, _np.ndarray):
             jim = Jim(self)
             for iband in range(0, self.properties.nrOfBand()):
                 jim.np(iband)[:] |= right
@@ -955,7 +955,7 @@ class Jim():
                     self.np(iband)[:] |= right.np()
                 else:
                     self.np(iband)[:] |= right.np(iband)
-        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+        elif isinstance(right, int) or isinstance(right, _np.ndarray):
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] |= right
         else:
@@ -965,7 +965,7 @@ class Jim():
 
     def __ror__(self, left):
         """Pixel wise operation | where self is the right object."""
-        if isinstance(left, int) or isinstance(left, numpy.ndarray):
+        if isinstance(left, int) or isinstance(left, _np.ndarray):
             jim = Jim(self)
             for iband in range(0, self.properties.nrOfBand()):
                 jim.np(iband)[:] |= left
@@ -986,7 +986,7 @@ class Jim():
                 else:
                     jim.np(iband)[:] ^= right.np(iband)
             return jim
-        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+        elif isinstance(right, int) or isinstance(right, _np.ndarray):
             jim = Jim(self)
             for iband in range(0, self.properties.nrOfBand()):
                 jim.np(iband)[:] ^= right
@@ -1005,7 +1005,7 @@ class Jim():
                     self.np(iband)[:] ^= right.np()
                 else:
                     self.np(iband)[:] ^= right.np(iband)
-        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+        elif isinstance(right, int) or isinstance(right, _np.ndarray):
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] ^= right
         else:
@@ -1015,7 +1015,7 @@ class Jim():
 
     def __rxor__(self, left):
         """Pixel wise operation ^ where self is the right object."""
-        if isinstance(left, int) or isinstance(left, numpy.ndarray):
+        if isinstance(left, int) or isinstance(left, _np.ndarray):
             jim = Jim(self)
             for iband in range(0, self.properties.nrOfBand()):
                 jim.np(iband)[:] ^= left
@@ -1036,7 +1036,7 @@ class Jim():
                 else:
                     jim.np(iband)[:] &= right.np(iband)
             return jim
-        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+        elif isinstance(right, int) or isinstance(right, _np.ndarray):
             jim = Jim(self)
             for iband in range(0, self.properties.nrOfBand()):
                 jim.np(iband)[:] &= right
@@ -1055,7 +1055,7 @@ class Jim():
                     self.np(iband)[:] &= right.np()
                 else:
                     self.np(iband)[:] &= right.np(iband)
-        elif isinstance(right, int) or isinstance(right, numpy.ndarray):
+        elif isinstance(right, int) or isinstance(right, _np.ndarray):
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] &= right
         else:
@@ -1065,7 +1065,7 @@ class Jim():
 
     def __rand__(self, left):
         """Pixel wise operation & where self is the right object."""
-        if isinstance(left, int) or isinstance(left, numpy.ndarray):
+        if isinstance(left, int) or isinstance(left, _np.ndarray):
             jim = Jim(self)
             for iband in range(0, self.properties.nrOfBand()):
                 jim.np(iband)[:] &= left
