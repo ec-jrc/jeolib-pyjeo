@@ -9,17 +9,6 @@ from . import JimListModuleBase as _JimListModuleBase
 from . import JimVectModuleBase as _JimVectModuleBase
 
 
-# def blank(jim_object, val):
-#     """Set all pixels to val.
-
-#     :param val:  All pixels within [min,max] are set to val
-
-#     Modifies the instance on which the method was called.
-
-#     """
-#     return _pj.Jim(jim_object._jipjim.pointOpBlank(val))
-
-
 def composite(jim_list, crule='overwrite', **kwargs):
     """Composite Jims in a JimList using a composite rule."""
     kwargs.update({'crule': crule})
@@ -50,14 +39,14 @@ def convert(jim_object, otype, **kwargs):
 
     Convert data type of input image to byte using autoscale::
 
-        jim0=jl.io.createJim('/path/to/raster.tif')
-        jim0.convert(otype=Byte,autoscale=[0,255])
+        jim0 = jl.io.createJim('/path/to/raster.tif')
+        jim0.convert(otype=Byte, autoscale=[0, 255])
 
     Clip raster dataset between 0 and 255 (set all other values to 0),
     then convert data type to byte::
 
-        jim1=jl.io.createJim('/path/to/raster.tif')
-        jim1.setThreshold(min=0,max=255,nodata=0)
+        jim1 = jl.io.createJim('/path/to/raster.tif')
+        jim1.setThreshold(min=0, max=255, nodata=0)
         jim1.convert(Byte)
     """
     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
@@ -384,16 +373,6 @@ def supremum(jim, *args):
 class _PixOps(_JimModuleBase):
     """Define all PixOps methods."""
 
-    # def blank(self, val):
-    #     """Set all pixels to val
-
-    #     :param val:  All pixels are set to val
-
-    #      Modifies the instance on which the method was called.
-
-    #     """
-    #     self._jim_object._jipjim.d_pointOpBlank(val)
-
     def convert(self, otype, **kwargs):
         """Convert Jim image with respect to data type.
 
@@ -418,14 +397,14 @@ class _PixOps(_JimModuleBase):
 
         Convert data type of input image to byte using autoscale::
 
-            jim0=jl.io.createJim('/path/to/raster.tif')
-            jim0.convert(otype=Byte,autoscale=[0,255])
+            jim0 = jl.io.createJim('/path/to/raster.tif')
+            jim0.convert(otype=Byte, autoscale=[0, 255])
 
         Clip raster dataset between 0 and 255 (set all other values to 0),
         then convert data type to byte::
 
-            jim1=jl.io.createJim('/path/to/raster.tif')
-            jim1.setThreshold(min=0,max=255,nodata=0)
+            jim1 = jl.io.createJim('/path/to/raster.tif')
+            jim1.setThreshold(min=0, max=255, nodata=0)
             jim1.convert(Byte)
         """
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
