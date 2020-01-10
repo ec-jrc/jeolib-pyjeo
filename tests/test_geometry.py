@@ -1598,6 +1598,28 @@ class BadGeometry(unittest.TestCase):
 
         warnings.resetwarnings()
 
+        # Test call with a non-supported function
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2, otype='Byte',
+                     uniform=[min, max])
+
+        try:
+            _ = pj.geometry.reducePlane(jim, 'non-supported function')
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, 'Error in raising an error when performing ' \
+                       'reducePlane function with a non-supported function'
+
+        try:
+            jim.geometry.reducePlane('non-supported function')
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, 'Error in raising an error when performing ' \
+                       'reducePlane method with a non-supported function'
+
 
 class BadGeometryVects(unittest.TestCase):
     """Test functions and methods from geometry module."""
