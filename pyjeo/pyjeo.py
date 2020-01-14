@@ -5,7 +5,7 @@ import numpy as _np
 import gc as _gc
 import warnings as _warnings
 import os as _os
-from osgeo import ogr
+from osgeo import ogr as _ogr
 
 import jiplib as _jl
 
@@ -1275,21 +1275,21 @@ class _ParentVect(_jl.VectorOgr):
                     kwargs.update({'filename': vector})
                     super(_ParentVect, self).__init__(kwargs)
             elif 'wkt' in kwargs:
-                geom = ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
-                wkt_srs = ogr.osr.SpatialReference()
+                geom = _ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
+                wkt_srs = _ogr.osr.SpatialReference()
                 wkt_srs.ImportFromEPSG(4326)
                 # Create the output Driver
-                out_driver = ogr.GetDriverByName("SQLite")
+                out_driver = _ogr.GetDriverByName("SQLite")
                 # Create the output sqlite file
                 kwargs.update({'filename': kwargs.pop('output', None)})
                 out_dataset = out_driver.CreateDataSource(kwargs['filename'])
                 out_layer = out_dataset.CreateLayer(kwargs['filename'],
                                                     wkt_srs,
-                                                    geom_type=ogr.wkbPolygon)
+                                                    geom_type=_ogr.wkbPolygon)
                 # Set the output layer's feature definition
                 feature_defn = out_layer.GetLayerDefn()
                 # Create a new feature
-                out_feature = ogr.Feature(feature_defn)
+                out_feature = _ogr.Feature(feature_defn)
                 # Set new geometry
                 out_feature.SetGeometry(geom)
                 # Add new feature to output layer
