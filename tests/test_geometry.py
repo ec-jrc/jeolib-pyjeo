@@ -1620,6 +1620,30 @@ class BadGeometry(unittest.TestCase):
         assert raised, 'Error in raising an error when performing ' \
                        'reducePlane method with a non-supported function'
 
+        # Test call with max and nodata defined, but no ref_band defined
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2, otype='Byte',
+                     uniform=[min, max])
+
+        try:
+            _ = pj.geometry.reducePlane(jim, rule='max', nodata=nodata)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, 'Error in raising an error when performing ' \
+                       'reducePlane function with a max/min rule and only ' \
+                       'nodata without ref_band defined'
+
+        try:
+            jim.geometry.reducePlane(rule='max', nodata=nodata)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, 'Error in raising an error when performing ' \
+                       'reducePlane function with a max/min rule and only ' \
+                       'nodata without ref_band defined'
+
 
 class BadGeometryVects(unittest.TestCase):
     """Test functions and methods from geometry module."""
