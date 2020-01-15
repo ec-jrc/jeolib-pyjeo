@@ -898,22 +898,22 @@ def stackBand(jim_object, jim_other=None, band=None):
 
     Append all the bands of jim1 to jim0::
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jim_stacked=pj.geometry.stackBand(jim0,jim1)
+        jim0 = pj.Jim('/path/to/raster0.tif')
+        jim1 = pj.Jim('/path/to/raster1.tif')
+        jim_stacked = pj.geometry.stackBand(jim0, jim1)
 
     Stack all bands of the JimList, returning a multi-band Jim object::
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jimlist=pj.JimList([jim0,jim1])
-        jim_stacked=pj.geometry.stackBand(jimlist)
+        jim0 = pj.Jim('/path/to/raster0.tif')
+        jim1 = pj.Jim('/path/to/raster1.tif')
+        jimlist = pj.JimList([jim0, jim1])
+        jim_stacked = pj.geometry.stackBand(jimlist)
 
     Append the first three bands of raster dataset jim1 to the image jim0::
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jim_stacked=pj.geometry.stackBand(jim0,jim1,band=[0,1,2])
+        jim0 = pj.Jim('/path/to/raster0.tif')
+        jim1 = pj.Jim('/path/to/raster1.tif')
+        jim_stacked = pj.geometry.stackBand(jim0, jim1, band=[0, 1, 2])
 
     """
     if isinstance(jim_object, _pj.JimList):
