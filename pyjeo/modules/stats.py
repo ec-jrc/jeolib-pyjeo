@@ -1,6 +1,6 @@
 """Module for statistical functions and interpolations."""
 
-import numpy
+import numpy as _np
 
 import pyjeo as _pj
 from . import JimModuleBase as _JimModuleBase
@@ -234,10 +234,10 @@ class _Stats(_JimModuleBase):
                         statDict['max'].append(min_max[2])
                 if 'mean' in function:
                     statDict['mean'].append(
-                        numpy.mean(self._jim_object.np(band)).item())
+                        _np.mean(self._jim_object.np(band)).item())
                 if 'median' in function:
                     statDict['median'].append(
-                        numpy.median(self._jim_object.np(band)).item())
+                        _np.median(self._jim_object.np(band)).item())
 
             for f in statDict:
                 if len(statDict[f]) == 1:

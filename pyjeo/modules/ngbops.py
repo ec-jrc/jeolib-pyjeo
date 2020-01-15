@@ -1,6 +1,6 @@
 """Module for neighbourhood operations."""
 
-import numpy
+import numpy as _np
 
 import pyjeo as _pj
 from . import JimModuleBase as _JimModuleBase
@@ -172,7 +172,7 @@ def filter2d(jim_object, filter, **kwargs):
 
     see the corresponding method :py:meth:`.filter2d` for more information
     """
-    if isinstance(filter, numpy.ndarray):
+    if isinstance(filter, _np.ndarray):
         taps = kwargs.pop('filter')
         kwargs.update({'taps': taps})
         return firfilter2d(jim_object, kwargs)
@@ -201,7 +201,7 @@ def firfilter1d(jim_object, taps, **kwargs):
         raise AttributeError('Error: no taps provided')
     if len(taps.shape) != 1:
         raise ValueError('Error: taps should be 1D array')
-    taps = numpy.array(taps).tolist()
+    taps = _np.array(taps).tolist()
     kwargs.update({'taps': taps})
     return _pj.Jim(jim_object._jipjim.firfilter1d(kwargs))
 
@@ -227,7 +227,7 @@ def firfilter2d(jim_object, taps, **kwargs):
         raise AttributeError('Error: no taps provided')
     if len(taps.shape) != 2:
         raise ValueError('Error: taps should be 2D array')
-    taps = numpy.array(taps)
+    taps = _np.array(taps)
     kwargs.update({'taps': taps.flatten().tolist()})
     kwargs.update({'dimx': taps.shape[1]})
     kwargs.update({'dimy': taps.shape[0]})
@@ -1006,7 +1006,7 @@ class _NgbOps(_JimModuleBase):
             jim_multitemp[(jim_multitemp<0) | (jim_multitemp>255)]=0
             jim_multitemp.convert(otype='Byte')
         """
-        if isinstance(filter, numpy.ndarray):
+        if isinstance(filter, _np.ndarray):
             taps = kwargs.pop('filter', None)
             kwargs.update({'taps': taps})
             self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
@@ -1036,7 +1036,7 @@ class _NgbOps(_JimModuleBase):
             raise AttributeError('Error: no taps provided')
         if len(taps.shape) != 1:
             raise ValueError('Error: taps should be 1D array')
-        taps = numpy.array(taps).tolist()
+        taps = _np.array(taps).tolist()
         kwargs.update({'taps': taps})
         self._jim_object._set(self._jim_object._jipjim.firfilter1d(kwargs))
 
@@ -1059,7 +1059,7 @@ class _NgbOps(_JimModuleBase):
             raise AttributeError('Error: no taps provided')
         if len(taps.shape) != 2:
             raise ValueError('Error: taps should be 2D array')
-        taps = numpy.array(taps)
+        taps = _np.array(taps)
         kwargs.update({'taps': taps.flatten().tolist()})
         kwargs.update({'dimx': taps.shape[1]})
         kwargs.update({'dimy': taps.shape[0]})

@@ -1,6 +1,6 @@
 """Module for operations connected to digital elevation models."""
 
-import numpy
+import numpy as _np
 
 import pyjeo as _pj
 from . import JimModuleBase as _JimModuleBase
@@ -220,9 +220,9 @@ def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
     :param percent: if True, return value in percents, degrees otherwise
     :return: a Jim object representing the slope
     """
-    tapsdx = numpy.array(
+    tapsdx = _np.array(
         [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]])
-    tapsdy = numpy.array(
+    tapsdy = _np.array(
         [[-1.0, -2.0, -1.0], [0.0, 0.0, 0.0], [1.0, 2.0, 1.0]])
     tapsdx *= zscale
     tapsdy *= zscale
@@ -242,13 +242,13 @@ def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
     jimdy = abs(jimdy)
     jimdy /= jimdy.properties.getDeltaX()*scale
     jimdy *= jimdy
-    rad2deg = 180.0 / numpy.pi
+    rad2deg = 180.0 / _np.pi
     jimdx += jimdy
-    jimdx.np()[:] = numpy.sqrt(jimdx.np())
+    jimdx.np()[:] = _np.sqrt(jimdx.np())
     if percent:
         jimdx *= 100
     else:
-        jimdx.np()[:] = numpy.arctan(jimdx.np())
+        jimdx.np()[:] = _np.arctan(jimdx.np())
         jimdx *= rad2deg
     return jimdx
 
@@ -278,8 +278,8 @@ def slopeDInf(jim_object):
 # def slopenp(jim_object, scale=1.0, zscale=1.0, percent=False, nodata=None):
 #     if jim_object.properties.getNoDataVals() and not nodata:
 #         nodata=jim_object.properties.getNoDataVals()[0]
-#     tapsdx=numpy.array([[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]])
-#     tapsdy=numpy.array([[-1.0,-2.0,-1.0],[0.0,0.0,0.0],[1.0,2.0,1.0]])
+#     tapsdx=_np.array([[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]])
+#     tapsdy=_np.array([[-1.0,-2.0,-1.0],[0.0,0.0,0.0],[1.0,2.0,1.0]])
 #     tapsdx*=zscale
 #     tapsdy*=zscale
 #     jimdx=_pj.Jim(jim_object)
@@ -304,13 +304,13 @@ def slopeDInf(jim_object):
 #         jimdy.np()[:]=signal.convolve2d(jim_object.np(),tapsdy,boundary='symm',mode='same')
 #     jimdy/=8.0*jimdy.properties.getDeltaX()*scale
 #     jimdy*=jimdy
-#     rad2deg=180.0/numpy.pi
+#     rad2deg=180.0/_np.pi
 #     jimdx+=jimdy
-#     jimdx.np()[:]=numpy.sqrt(jimdx.np())
+#     jimdx.np()[:]=_np.sqrt(jimdx.np())
 #     if percent:
 #         jimdx*=100
 #     else:
-#         jimdx.np()[:]=numpy.arctan(jimdx.np())
+#         jimdx.np()[:]=_np.arctan(jimdx.np())
 #         jimdx*=rad2deg
 #         # jimdx=90-jimdx
 #     return jimdx

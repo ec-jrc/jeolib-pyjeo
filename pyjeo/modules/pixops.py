@@ -1,6 +1,6 @@
 """Module for pixel-wise operations."""
 
-import numpy
+import numpy as _np
 
 import pyjeo as _pj
 import jiplib as _jl
@@ -51,34 +51,34 @@ def convert(jim_object, otype, **kwargs):
     """
     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
         otype = 'GDT_Byte'
-        nptype = numpy.int8
+        nptype = _np.int8
     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
         otype = 'GDT_UInt16'
-        nptype = numpy.uint16
+        nptype = _np.uint16
     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
         otype = 'GDT_Int16'
-        nptype = numpy.int16
+        nptype = _np.int16
     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
         otype = 'GDT_UInt32'
-        nptype = numpy.uint32
+        nptype = _np.uint32
     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
         otype = 'GDT_Int32'
-        nptype = numpy.int32
+        nptype = _np.int32
     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
         otype = 'GDT_Float32'
-        nptype = numpy.float32
+        nptype = _np.float32
     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
         otype = 'GDT_Float64'
-        nptype = numpy.float64
+        nptype = _np.float64
     elif otype in ['int64', 'Int64', 'JDT_Int64']:
         otype = 'JDT_Int64'
-        nptype = numpy.int64
+        nptype = _np.int64
     elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
         otype = 'JDT_UInt64'
-        nptype = numpy.uint64
+        nptype = _np.uint64
     elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
         otype = 'JDT_UInt64'
-        nptype = numpy.uint64
+        nptype = _np.uint64
     else:
         raise TypeError("Output type {} not supported".format(otype))
     # TODO: Support CTypes
@@ -199,8 +199,8 @@ def isEqual(first_jim, second_jim):
             return False
         if first_jim.properties.nrOfPlane() == 1:
             for iband in range(0, first_jim.properties.nrOfBand()):
-                if not numpy.array_equal(first_jim.np(iband),
-                                         second_jim.np(iband)):
+                if not _np.array_equal(first_jim.np(iband),
+                                       second_jim.np(iband)):
                     return False
             return True
         else:
@@ -211,8 +211,8 @@ def isEqual(first_jim, second_jim):
                         second_plane.properties.nrOfBand():
                     return False
                 for iband in range(0, first_plane.properties.nrOfBand()):
-                    if not numpy.array_equal(first_plane.np(iband),
-                                             second_plane.np(iband)):
+                    if not _np.array_equal(first_plane.np(iband),
+                                           second_plane.np(iband)):
                         return False
             return True
     else:
@@ -410,36 +410,36 @@ class _PixOps(_JimModuleBase):
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
             otype = 'GDT_Byte'
-            nptype = numpy.int8
+            nptype = _np.int8
         elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
             otype = 'GDT_UInt16'
-            nptype = numpy.uint16
+            nptype = _np.uint16
         elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
             otype = 'GDT_Int16'
-            nptype = numpy.int16
+            nptype = _np.int16
         elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
             otype = 'GDT_UInt32'
-            nptype = numpy.uint32
+            nptype = _np.uint32
         elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
             otype = 'GDT_Int32'
-            nptype = numpy.int32
+            nptype = _np.int32
         elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
                        _jl.GDT_Float32]:
             otype = 'GDT_Float32'
-            nptype = numpy.float32
+            nptype = _np.float32
         elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
                        _jl.GDT_Float64]:
             otype = 'GDT_Float64'
-            nptype = numpy.float64
+            nptype = _np.float64
         elif otype in ['int64', 'Int64', 'JDT_Int64']:
             otype = 'JDT_Int64'
-            nptype = numpy.int64
+            nptype = _np.int64
         elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
             otype = 'JDT_UInt64'
-            nptype = numpy.uint64
+            nptype = _np.uint64
         elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
             otype = 'JDT_UInt64'
-            nptype = numpy.uint64
+            nptype = _np.uint64
         else:
             raise TypeError("Output type {} not supported".format(otype))
         # TODO: Support CTypes
@@ -554,8 +554,8 @@ class _PixOps(_JimModuleBase):
                 return False
             if self._jim_object.properties.nrOfPlane() == 1:
                 for iband in range(0, self._jim_object.properties.nrOfBand()):
-                    if not numpy.array_equal(self._jim_object.np(iband),
-                                             other.np(iband)):
+                    if not _np.array_equal(self._jim_object.np(iband),
+                                           other.np(iband)):
                         return False
                 return True
             else:
@@ -568,8 +568,8 @@ class _PixOps(_JimModuleBase):
                             second_plane.properties.nrOfBand():
                         return False
                     for iband in range(0, first_plane.properties.nrOfBand()):
-                        if not numpy.array_equal(first_plane.np(iband),
-                                                 second_plane.np(iband)):
+                        if not _np.array_equal(first_plane.np(iband),
+                                               second_plane.np(iband)):
                             return False
                 return True
         else:
