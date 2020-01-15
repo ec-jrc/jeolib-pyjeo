@@ -613,20 +613,19 @@ def magnify(jim_object, n):
 
 
 def plane2band(jim):
-    """Convert 3-dimensional single-band object to a 2-dimensional
-    multi-band object.
+    """Convert 3-dimensional 1-band Jim to a 2-dimensional multi-band one.
 
     The result will be a multi-band single plane object
 
     Example: convert a single band object with 12 planes to a 2-dimensional
     multi-band object with 1 plane::
 
-        jim3d=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+        jim3d = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
         jim3d.properties.nrOfBand()
         1
         jim3d.properties.nrOfPlane()
         12
-        jim2d=pj.geometry.plane2band(jim3d)
+        jim2d = pj.geometry.plane2band(jim3d)
         jim2d.properties.nrOfPlane()
         1
         jim2d.properties.nrOfBand()
@@ -2188,8 +2187,7 @@ class _Geometry(_JimModuleBase):
             self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
 
     def plane2band(self):
-        """Convert 3-dimensional single-band object to a 2-dimensional
-        multi-band object.
+        """Convert 3-dimensional 1-band Jim to a 2-dimensional multi-band one.
 
         The result will be a multi-band single plane object
 
@@ -2314,7 +2312,7 @@ class _Geometry(_JimModuleBase):
     #     self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
 
     def reducePlane(self, rule, ref_band=None, nodata=None):
-        """Reduce planes of Jim object
+        """Reduce planes of Jim object.
 
         :param rule: rule to reduce (mean, median, min or max)
             or callback function

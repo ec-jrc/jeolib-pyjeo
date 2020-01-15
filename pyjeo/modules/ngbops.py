@@ -20,10 +20,10 @@ def dwt1d(jim_object, **kwargs):
 
     Example::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
         jim.pixops.convert('GDT_Float64')
 
-        dwt=pj.ngbops.dwt1d(jim)
+        dwt = pj.ngbops.dwt1d(jim)
         dwt.ngbops.dwti1d()
     """
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
@@ -41,10 +41,10 @@ def dwt2d(jim_object, **kwargs):
 
     Example::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
         jim.pixops.convert('GDT_Float64')
 
-        dwt=pj.ngbops.dwt2d(jim)
+        dwt = pj.ngbops.dwt2d(jim)
         dwt.ngbops.dwti2d()
     """
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
@@ -62,23 +62,23 @@ def dwti1d(jim_object, **kwargs):
 
     Example::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
         jim.pixops.convert('GDT_Float64')
 
-        dwt=pj.ngbops.dwt1d(jim)
+        dwt = pj.ngbops.dwt1d(jim)
         dwt.ngbops.dwti1d()
 
     Approximate a 3D image by setting all wavelet coefficients below
     some percentile value (e.g., 10) to 0::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
         jim.pixops.convert('GDT_Float64')
 
         jim.ngbops.dwt1d()
-        jimabs=pj.Jim(jim)
-        jimabs=abs(jimabs)
-        thresholds=np.percentile(jimabs.np(),90,axis=0)
-        jim[jimabs<thresholds]=0
+        jimabs = pj.Jim(jim)
+        jimabs = abs(jimabs)
+        thresholds = np.percentile(jimabs.np(), 90, axis=0)
+        jim[jimabs < thresholds] = 0
         jim.ngbops.dwti1d()
     """
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
@@ -96,10 +96,10 @@ def dwti2d(jim_object, **kwargs):
 
     Example::
 
-        jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+        jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
         jim.pixops.convert('GDT_Float64')
 
-        dwt=pj.ngbops.dwt2d(jim)
+        dwt = pj.ngbops.dwt2d(jim)
         dwt.ngbops.dwti2d()
     """
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
@@ -182,7 +182,7 @@ def filter2d(jim_object, filter, **kwargs):
 
 
 def firfilter1d(jim_object, taps, **kwargs):
-    """Compute the finite impulse response filter in time-spectral domain
+    """Compute the finite impulse response filter in time-spectral domain.
 
     :param jim_object: a Jim object
         (the same data type will be used for output)
@@ -207,7 +207,7 @@ def firfilter1d(jim_object, taps, **kwargs):
 
 
 def firfilter2d(jim_object, taps, **kwargs):
-    """Compute the finite impulse response filter in spatial domain
+    """Compute the finite impulse response filter in spatial domain.
 
     :param jim_object: a Jim object
         (the same data type will be used for output)
@@ -419,7 +419,7 @@ def morphoGradientByErosionDiamond(jim_object):
 
 
 def savgolay(jim_object, **kwargs):
-    """Compute the Savitzky-Golay filter in the time-spectral domain
+    """Compute the Savitzky-Golay filter in the time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
     :param nl: Number of leftward (past) data points used in Savitzky-
@@ -452,7 +452,7 @@ def savgolay(jim_object, **kwargs):
 
 
 def smoothNoData1d(jim_object, nodata=0, **kwargs):
-    """Smooth nodata in spectral/temporal domain
+    """Smooth nodata in spectral/temporal domain.
 
     :param jim_object: input Jim object
     :param nodata: no data value to interpolate
@@ -1019,7 +1019,7 @@ class _NgbOps(_JimModuleBase):
             self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
     def firfilter1d(self, taps, **kwargs):
-        """Compute the finite impulse response filter in time-spectral domain
+        """Compute the finite impulse response filter in time-spectral domain.
 
         :param taps: 1D array of filter taps
         :param pad: Padding method for filtering (how to handle edge effects).
@@ -1041,7 +1041,7 @@ class _NgbOps(_JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.firfilter1d(kwargs))
 
     def firfilter2d(self, taps, **kwargs):
-        """Compute the finite impulse response filter in spatial domain
+        """Compute the finite impulse response filter in spatial domain.
 
         :param taps: 2D array of filter taps
         :param nodata: list of no data values not to take into account when
@@ -1262,7 +1262,7 @@ class _NgbOps(_JimModuleBase):
             self._jim_object._jipjim.morphoErodeNgb4(1, 1))
 
     def savgolay(self, **kwargs):
-        """Compute the Savitzky-Golay filter in the time-spectral domain
+        """Compute the Savitzky-Golay filter in the time-spectral domain.
 
         :param nl: Number of leftward (past) data points used in Savitzky-
             Golay filter)
@@ -1292,7 +1292,7 @@ class _NgbOps(_JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
     def smoothNoData1d(self, nodata=0, **kwargs):
-        """Smooth nodata in spectral/temporal domain
+        """Smooth nodata in spectral/temporal domain.
 
         :param nodata: no data value to interpolate
         :param interpolationType: type of interpolation for spectral filtering
