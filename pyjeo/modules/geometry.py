@@ -4,8 +4,6 @@ import os
 import numpy as _np
 import warnings as _warnings
 
-from collections import Iterable
-
 import pyjeo as _pj
 from . import JimModuleBase as _JimModuleBase
 from . import JimListModuleBase as _JimListModuleBase
