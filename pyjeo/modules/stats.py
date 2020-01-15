@@ -170,23 +170,23 @@ class _Stats(_JimModuleBase):
 
         Calculate min and max::
 
-            jim=pj.Jim('/path/to/raster.tif')
-            statDict=jim.stats.getStats(['min','max'])
+            jim = pj.Jim('/path/to/raster.tif')
+            statDict = jim.stats.getStats(['min', 'max'])
             print('max value is: {}".format(statDict['max']))
             print('min value is: {}".format(statDict['min']))
 
         Calculate the histogram
         (returning a dictionary with keys 'bin' and 'histogram')::
 
-            jim=pj.Jim('/path/to/raster.tif')
-            histDict=jim.stats.getStats('histogram')
+            jim = pj.Jim('/path/to/raster.tif')
+            histDict = jim.stats.getStats('histogram')
 
         Calculate the histogram, using 10 bins. Start reading from value 0 and
         stop reading up to value 100. Do not consider values equal to 0::
 
-            jim=pj.Jim('/path/to/raster.tif')
-            histDict=jim.stats.getStats('histogram', nbnin=10, src_min=0,
-                                        src_max=100, nodata=0)
+            jim = pj.Jim('/path/to/raster.tif')
+            histDict = jim.stats.getStats('histogram', nbnin=10, src_min=0,
+                                          src_max=100, nodata=0)
             histDict
             {'bin': [5.0, 15.0, 25.0, 35.0, 45.0,
                      55.0, 65.0, 75.0, 85.0, 95.0],
@@ -330,16 +330,16 @@ class _StatsList(_JimListModuleBase):
 
         Calculate regression between two Jim objects::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim1=pj.Jim('/path/to/raster1.tif')
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
             pj.JimList([jim0,jim1]).stats.getStats('regression)
             {'c0': 10.0102, 'c1': 0.633352, 'r2': 0.491198}
 
         Calculate root mean square error between two Jim objects::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim1=pj.Jim('/path/to/raster1.tif')
-            pj.JimList([jim0,jim1]).stats.getStats('rmse')
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim1 = pj.Jim('/path/to/raster1.tif')
+            pj.JimList([jim0, jim1]).stats.getStats('rmse')
             {'rmse': 10.4638}
 
         """
