@@ -1242,8 +1242,8 @@ class BadGeometry(unittest.TestCase):
             'place where nodata was in all planes in the ref_band)'
         assert stats_reduced['max'][0] <= stats['max'][0], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="mean", the maximum value of returned object is not <=' \
-            ' the maximum of the original object)'
+            '(for rule="mean", the maximum value of returned object is not ' \
+            '<= the maximum of the original object)'
         assert stats_reduced['mean'][0] < stats['mean'][0], \
             'Error in geometry.reducePlane() ' \
             '(for rule="mean", the mean value of returned object is not < ' \
@@ -1277,12 +1277,12 @@ class BadGeometry(unittest.TestCase):
             '(rule="median" did not return median value for all the planes)'
         assert stats_reduced['max'] <= stats['max'], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the maximum value of returned object is not ' \
-            '<= the maximum of the original object)'
+            '(for rule="median", the maximum value of returned object is not' \
+            ' <= the maximum of the original object)'
         assert stats_reduced['min'] >= stats['min'], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the minimum value of returned object is not ' \
-            '>= the minimum of the original object)'
+            '(for rule="median", the minimum value of returned object is not' \
+            ' >= the minimum of the original object)'
 
         # Test with rule == 'median' and multibands
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
@@ -1493,8 +1493,8 @@ class BadGeometry(unittest.TestCase):
             'not <= the maximum of the original object)'
         assert stats_reduced['min'][0] >= stats['min'][0], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the mean value of returned object is not >= ' \
-            'the mean of the original object)'
+            '(for rule="median", the mean value of returned object is not >=' \
+            ' the mean of the original object)'
 
         # Test with rule == 'median' and nodata specified
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
