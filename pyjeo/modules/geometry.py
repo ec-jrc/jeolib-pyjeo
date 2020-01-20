@@ -81,6 +81,7 @@ def convexHull(jim_vect, output, **kwargs):
     kwargs.update({'output': output})
 
     avect = jim_vect._jipjimvect.convexHull(kwargs)
+    avect.write()
 
     pjvect = _pj.JimVect()
     pjvect._set(avect)
@@ -3053,6 +3054,7 @@ class _GeometryVect(_JimVectModuleBase):
 
         kwargs.update({'output': non_existing_path})
         avect = self._jim_vect._jipjimvect.convexHull(kwargs)
+        avect.write()
         self._jim_vect._set(avect)
 
     def intersect(self, jim, **kwargs):

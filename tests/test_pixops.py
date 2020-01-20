@@ -122,22 +122,42 @@ class BadPixOps(unittest.TestCase):
                 max_ndvi[b > max_ndvi] = b
                 max_ndvi_func = pj.pixops.supremum(max_ndvi, b)
                 max_ndvi2.pixops.supremum(b)
+                max_ndvi3 = pj.pixops.supremum(pj.JimList([max_ndvi2,b]))
+                max_ndvi4 = pj.Jim(max_ndvi2)
+                max_ndvi4.pixops.supremum(pj.JimList([b,max_ndvi2]))
+                max_ndvi5 = pj.JimList([max_ndvi2,b]).pixops.supremum()
 
                 assert max_ndvi.pixops.isEqual(max_ndvi2), \
                     'Inconsistency in pixops.supremum() ' \
                     '(method returns different result than function)'
                 assert max_ndvi.pixops.isEqual(max_ndvi_func), \
                     'Error in pixops.supremum or jim[a>jim] = a'
+                assert max_ndvi.pixops.isEqual(max_ndvi3), \
+                    'Error in pixops.supremum JimList 3'
+                assert max_ndvi.pixops.isEqual(max_ndvi4), \
+                    'Error in pixops.supremum JimList 4'
+                assert max_ndvi.pixops.isEqual(max_ndvi5), \
+                    'Error in pixops.supremum JimList 5'
 
                 min_ndvi[b < min_ndvi] = b
                 min_ndvi_func = pj.pixops.infimum(min_ndvi, b)
                 min_ndvi2.pixops.infimum(b)
+                min_ndvi3 = pj.pixops.infimum(pj.JimList([min_ndvi2,b]))
+                min_ndvi4 = pj.Jim(min_ndvi2)
+                min_ndvi4.pixops.infimum(pj.JimList([b,min_ndvi2]))
+                min_ndvi5 = pj.JimList([min_ndvi2,b]).pixops.infimum()
 
                 assert min_ndvi.pixops.isEqual(min_ndvi2), \
                     'Inconsistency in pixops.infimum() ' \
                     '(method returns different result than function)'
                 assert min_ndvi.pixops.isEqual(min_ndvi_func), \
                     'Error in pixops.infimum or jim[a<jim] = a'
+                assert min_ndvi.pixops.isEqual(min_ndvi3), \
+                    'Error in pixops.infimum JimList 3'
+                assert min_ndvi.pixops.isEqual(min_ndvi4), \
+                    'Error in pixops.infimum JimList 4'
+                assert min_ndvi.pixops.isEqual(min_ndvi5), \
+                    'Error in pixops.infimum JimList 5'
             else:
                 max_ndvi = pj.pixops.NDVISeparateBands(jim4, jim8)
                 max_ndvi2 = pj.Jim(max_ndvi)

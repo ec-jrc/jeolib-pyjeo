@@ -175,12 +175,20 @@ def infimum(jim, *args):
 
     :param jim: Jim object (to be sure that at least one is provided)
     :param args: Jim objects
-    :return: Jim composed of biggest values from provided Jim objects
+    :return: Jim composed of smalles values from provided Jim objects
     """
-    infimum = _pj.Jim(jim)
+
+    if isinstance(jim, _pj.JimList):
+        infimum = None
+        for newJim in jim:
+            if infimum is None:
+                infimum = _pj.Jim(jim[0])
+            else:
+                infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
+    else:
+        infimum = _pj.Jim(jim)
     for newJim in args:
         infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
-
     return infimum
 
 
@@ -363,10 +371,18 @@ def supremum(jim, *args):
     :param args: Jim objects
     :return: Jim composed of biggest values from provided Jim objects
     """
-    supremum = _pj.Jim(jim)
+
+    if isinstance(jim, _pj.JimList):
+        supremum = None
+        for newJim in jim:
+            if supremum is None:
+                supremum = _pj.Jim(jim[0])
+            else:
+                supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
+    else:
+        supremum = _pj.Jim(jim)
     for newJim in args:
         supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
-
     return supremum
 
 
@@ -537,8 +553,13 @@ class _PixOps(_JimModuleBase):
 
         :param args: Jim objects
         """
+
         for jim in args:
-            self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 4)
+            if isinstance(jim, _pj.JimList):
+                for newJim in jim:
+                    self._jim_object._jipjim.d_pointOpArith(newJim._jipjim, 4)
+            else:
+                self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 4)
 
     def isEqual(self, other):
         """Check if the values of one Jim object are the same as in another.
@@ -756,9 +777,13 @@ class _PixOps(_JimModuleBase):
 
         :param args: Jim objects
         """
-        for jim in args:
-            self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
 
+        for jim in args:
+            if isinstance(jim, _pj.JimList):
+                for newJim in jim:
+                    self._jim_object._jipjim.d_pointOpArith(newJim._jipjim, 5)
+            else:
+                self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
 
 class _PixOpsList(_JimListModuleBase):
     """Define all PixOps methods for JimLists."""
@@ -768,6 +793,33 @@ class _PixOpsList(_JimListModuleBase):
         kwargs.update({'crule': crule})
         return _pj.Jim(self._jim_list._jipjimlist.composite(kwargs))
 
+    def infimum(self):
+        """Create Jim composed using minimum rule from Jim objects in JimList.
+
+        :return: Jim composed of smallest values from provided Jim objects
+        """
+
+        infimum = None
+        for newJim in self._jim_list:
+            if infimum is None:
+                infimum = _pj.Jim(self._jim_list[0])
+            else:
+                infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
+        return infimum
+
+    def supremum(self):
+        """Create Jim composed using maximum rule from Jim objects in JimList.
+
+        :return: Jim composed of bigest values from provided Jim objects
+        """
+
+        supremum = None
+        for newJim in self._jim_list:
+            if supremum is None:
+                supremum = _pj.Jim(self._jim_list[0])
+            else:
+                supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
+        return supremum
 
 class _PixOpsVect(_JimVectModuleBase):
     """Define all PixOps methods for JimVects."""
