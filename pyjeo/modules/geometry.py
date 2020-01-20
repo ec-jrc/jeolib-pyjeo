@@ -749,6 +749,7 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
         _warnings.warn(
             'Single-plane Jim: No plane reduction performed', SyntaxWarning
         )
+        return self
 
     jimreduced = _pj.geometry.cropPlane(jim, 0)
 
@@ -2346,6 +2347,7 @@ class _Geometry(_JimModuleBase):
             _warnings.warn(
                 'Single-plane Jim: No plane reduction performed', SyntaxWarning
             )
+            return None
 
         jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
         if isinstance(rule, str):
