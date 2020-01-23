@@ -589,13 +589,7 @@ The neighborhood operations from scipy ndimage can be applied to a :py:class:`Ji
 Perform a Gaussian filter using a standard deviation (sigma) of 2::
 
   jim=pj.Jim('/path/to/image.tif')
-  npfiltered=ndimage.gaussian_filter(jim.np(),2)
-  jim_filtered=pj.np2jim(npfiltered)
-
-The jim_filtered object does not contain projection and geotransform information. These can be easily obtained from the original jim object::
-
-  jim_filtered.properties.setProjection(jim.properties.getProjection())
-  jim_filtered.properties.setGeoTransform(jim.properties.getGeoTransform())
+  jim.np()[:]=ndimage.gaussian_filter(jim.np(),2)[:]
 
 
 =======================================

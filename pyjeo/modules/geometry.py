@@ -221,6 +221,11 @@ def cropBand(jim_object, band):
         jim3=pj.geometry.cropBand(jim,band=[0,1,2])
 
     """
+    if isinstance(band,list):
+        bands=band
+    else:
+        bands=[band]
+    band=[jim_object.properties.nrOfBand()+b if b < 0 else b for b in bands]
     return _pj.Jim(jim_object._jipjim.cropBand({'band': band}))
 
 
@@ -290,6 +295,11 @@ def cropPlane(jim_object, plane):
         jim3=pj.geometry.cropPlane(jim,plane=[0,1,2])
 
     """
+    if isinstance(plane,list):
+        planes=plane
+    else:
+        planes=[plane]
+    plane=[jim_object.properties.nrOfPlane()+b if b < 0 else b for b in planes]
     return _pj.Jim(jim_object._jipjim.cropPlane({'plane': plane}))
 
 
@@ -1577,6 +1587,11 @@ class _Geometry(_JimModuleBase):
             jim0.cropBand(band=[0,1,2])
 
         """
+        if isinstance(band,list):
+            bands=band
+        else:
+            bands=[band]
+        band=[self._jim_object.properties.nrOfBand()+b if b < 0 else b for b in bands]
         self._jim_object._jipjim.d_cropBand({'band': band})
 
     def cropOgr(self, extent, **kwargs):
@@ -1648,6 +1663,11 @@ class _Geometry(_JimModuleBase):
             jim0.cropPlane(plane=[0,1,2])
 
         """
+        if isinstance(plane,list):
+            planes=plane
+        else:
+            planes=[plane]
+        plane=[jim_object.properties.nrOfPlane()+b if b < 0 else b for b in planes]
         self._jim_object._jipjim.d_cropPlane({'plane': plane})
 
     def extractImg(self, reference, output, **kwargs):
