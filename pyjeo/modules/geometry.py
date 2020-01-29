@@ -663,6 +663,8 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     :param y2: an integer for y-coordinate of 2nd point
     :return: a Jim object
     """
+    if jim_object.properties.nrOfPlane() > 1:
+        raise TypeError('Error: plotLine does not support multi-plane Jim objects')
     return _pj.Jim(jim_object._jipjim.plotLine(x1, y1, x2, y2, val))
 
 
@@ -2247,6 +2249,8 @@ class _Geometry(_JimModuleBase):
         :param x2: an integer for x-coordinate of 2nd point
         :param y2: an integer for y-coordinate of 2nd point
         """
+        if self._jim_object.properties.nrOfPlane() > 1:
+            raise TypeError('Error: plotLine does not support multi-plane Jim objects')
         self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
 
     def polygonize(self, output, **kwargs):
