@@ -1676,7 +1676,7 @@ class _Geometry(_JimModuleBase):
             planes = plane
         else:
             planes = [plane]
-        plane = [jim_object.properties.nrOfPlane() + b if b < 0 else b
+        plane = [self._jim_object.properties.nrOfPlane() + b if b < 0 else b
                  for b in planes]
         self._jim_object._jipjim.d_cropPlane({'plane': plane})
 
