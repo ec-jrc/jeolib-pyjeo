@@ -122,10 +122,10 @@ class BadPixOps(unittest.TestCase):
                 max_ndvi[b > max_ndvi] = b
                 max_ndvi_func = pj.pixops.supremum(max_ndvi, b)
                 max_ndvi2.pixops.supremum(b)
-                max_ndvi3 = pj.pixops.supremum(pj.JimList([max_ndvi2,b]))
+                max_ndvi3 = pj.pixops.supremum(pj.JimList([max_ndvi2, b]))
                 max_ndvi4 = pj.Jim(max_ndvi2)
-                max_ndvi4.pixops.supremum(pj.JimList([b,max_ndvi2]))
-                max_ndvi5 = pj.JimList([max_ndvi2,b]).pixops.supremum()
+                max_ndvi4.pixops.supremum(pj.JimList([b, max_ndvi2]))
+                max_ndvi5 = pj.JimList([max_ndvi2, b]).pixops.supremum()
 
                 assert max_ndvi.pixops.isEqual(max_ndvi2), \
                     'Inconsistency in pixops.supremum() ' \
@@ -142,10 +142,10 @@ class BadPixOps(unittest.TestCase):
                 min_ndvi[b < min_ndvi] = b
                 min_ndvi_func = pj.pixops.infimum(min_ndvi, b)
                 min_ndvi2.pixops.infimum(b)
-                min_ndvi3 = pj.pixops.infimum(pj.JimList([min_ndvi2,b]))
+                min_ndvi3 = pj.pixops.infimum(pj.JimList([min_ndvi2, b]))
                 min_ndvi4 = pj.Jim(min_ndvi2)
-                min_ndvi4.pixops.infimum(pj.JimList([b,min_ndvi2]))
-                min_ndvi5 = pj.JimList([min_ndvi2,b]).pixops.infimum()
+                min_ndvi4.pixops.infimum(pj.JimList([b, min_ndvi2]))
+                min_ndvi5 = pj.JimList([min_ndvi2, b]).pixops.infimum()
 
                 assert min_ndvi.pixops.isEqual(min_ndvi2), \
                     'Inconsistency in pixops.infimum() ' \

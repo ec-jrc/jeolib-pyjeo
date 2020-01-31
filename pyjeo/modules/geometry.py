@@ -221,11 +221,12 @@ def cropBand(jim_object, band):
         jim3=pj.geometry.cropBand(jim,band=[0,1,2])
 
     """
-    if isinstance(band,list):
-        bands=band
+    if isinstance(band, list):
+        bands = band
     else:
-        bands=[band]
-    band=[jim_object.properties.nrOfBand()+b if b < 0 else b for b in bands]
+        bands = [band]
+    band = [jim_object.properties.nrOfBand() + b if b < 0 else b
+            for b in bands]
     return _pj.Jim(jim_object._jipjim.cropBand({'band': band}))
 
 
@@ -291,15 +292,16 @@ def cropPlane(jim_object, plane):
 
     Crop the first three planes from raster dataset jim::
 
-        jim=pj.Jim('/path/to/raster.tif')
-        jim3=pj.geometry.cropPlane(jim,plane=[0,1,2])
+        jim = pj.Jim('/path/to/raster.tif')
+        jim3 = pj.geometry.cropPlane(jim, plane=[0, 1, 2])
 
     """
-    if isinstance(plane,list):
-        planes=plane
+    if isinstance(plane, list):
+        planes = plane
     else:
-        planes=[plane]
-    plane=[jim_object.properties.nrOfPlane()+b if b < 0 else b for b in planes]
+        planes = [plane]
+    plane = [jim_object.properties.nrOfPlane() + b if b < 0 else b
+             for b in planes]
     return _pj.Jim(jim_object._jipjim.cropPlane({'plane': plane}))
 
 
@@ -656,6 +658,8 @@ def plane2band(jim):
 def plotLine(jim_object, x1, y1, x2, y2, val):
     """Draw a line from [x1, y1] to [x2, y2] by setting pixels of Jim to val.
 
+    Works only for 1-plane Jims.
+
     :param jim_object: a Jim object
     :param x1: an integer for x-coordinate of 1st point
     :param y1: an integer for y-coordinate of 1st point
@@ -664,7 +668,8 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     :return: a Jim object
     """
     if jim_object.properties.nrOfPlane() > 1:
-        raise TypeError('Error: plotLine does not support multi-plane Jim objects')
+        raise TypeError(
+            'Error: plotLine does not support multi-plane Jim objects')
     return _pj.Jim(jim_object._jipjim.plotLine(x1, y1, x2, y2, val))
 
 
@@ -862,6 +867,7 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
 
             if ref_band is not None:
                 maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
+
             for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(jim, iplane)
 
@@ -1589,11 +1595,12 @@ class _Geometry(_JimModuleBase):
             jim0.cropBand(band=[0,1,2])
 
         """
-        if isinstance(band,list):
-            bands=band
+        if isinstance(band, list):
+            bands = band
         else:
-            bands=[band]
-        band=[self._jim_object.properties.nrOfBand()+b if b < 0 else b for b in bands]
+            bands = [band]
+        band = [self._jim_object.properties.nrOfBand() + b if b < 0 else b
+                for b in bands]
         self._jim_object._jipjim.d_cropBand({'band': band})
 
     def cropOgr(self, extent, **kwargs):
@@ -1661,15 +1668,16 @@ class _Geometry(_JimModuleBase):
 
         Crop the first three planes from raster dataset jim0::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
-            jim0.cropPlane(plane=[0,1,2])
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim0.cropPlane(plane=[0, 1, 2])
 
         """
-        if isinstance(plane,list):
-            planes=plane
+        if isinstance(plane, list):
+            planes = plane
         else:
-            planes=[plane]
-        plane=[jim_object.properties.nrOfPlane()+b if b < 0 else b for b in planes]
+            planes = [plane]
+        plane = [jim_object.properties.nrOfPlane() + b if b < 0 else b
+                 for b in planes]
         self._jim_object._jipjim.d_cropPlane({'plane': plane})
 
     def extractImg(self, reference, output, **kwargs):
@@ -2242,6 +2250,8 @@ class _Geometry(_JimModuleBase):
     def plotLine(self, x1, y1, x2, y2, val):
         """Draw a line from [x1, y1] to [x2, y2] by setting pixels to a value.
 
+        Works only for 1-plane Jims.
+
         Modifies the instance on which the method was called.
 
         :param x1: an integer for x-coordinate of 1st point
@@ -2250,7 +2260,8 @@ class _Geometry(_JimModuleBase):
         :param y2: an integer for y-coordinate of 2nd point
         """
         if self._jim_object.properties.nrOfPlane() > 1:
-            raise TypeError('Error: plotLine does not support multi-plane Jim objects')
+            raise TypeError(
+                'Error: plotLine does not support multi-plane Jim objects')
         self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
 
     def polygonize(self, output, **kwargs):

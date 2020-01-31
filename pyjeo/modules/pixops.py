@@ -189,6 +189,7 @@ def infimum(jim, *args):
         infimum = _pj.Jim(jim)
     for newJim in args:
         infimum._jipjim.d_pointOpArith(newJim._jipjim, 4)
+
     return infimum
 
 
@@ -371,7 +372,6 @@ def supremum(jim, *args):
     :param args: Jim objects
     :return: Jim composed of biggest values from provided Jim objects
     """
-
     if isinstance(jim, _pj.JimList):
         supremum = None
         for newJim in jim:
@@ -383,6 +383,7 @@ def supremum(jim, *args):
         supremum = _pj.Jim(jim)
     for newJim in args:
         supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
+
     return supremum
 
 
@@ -553,7 +554,6 @@ class _PixOps(_JimModuleBase):
 
         :param args: Jim objects
         """
-
         for jim in args:
             if isinstance(jim, _pj.JimList):
                 for newJim in jim:
@@ -777,7 +777,6 @@ class _PixOps(_JimModuleBase):
 
         :param args: Jim objects
         """
-
         for jim in args:
             if isinstance(jim, _pj.JimList):
                 for newJim in jim:
@@ -798,7 +797,6 @@ class _PixOpsList(_JimListModuleBase):
 
         :return: Jim composed of smallest values from provided Jim objects
         """
-
         infimum = None
         for newJim in self._jim_list:
             if infimum is None:
@@ -810,9 +808,8 @@ class _PixOpsList(_JimListModuleBase):
     def supremum(self):
         """Create Jim composed using maximum rule from Jim objects in JimList.
 
-        :return: Jim composed of bigest values from provided Jim objects
+        :return: Jim composed of biggest values from provided Jim objects
         """
-
         supremum = None
         for newJim in self._jim_list:
             if supremum is None:

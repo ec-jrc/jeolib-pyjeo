@@ -639,7 +639,7 @@ class _NgbOps(_JimModuleBase):
         Perform a morphological dilation with a linear structural element
         of size 5::
 
-            jim_filtered=jim.ngbops.filter1d('dilate',dz=5)
+            jim_filtered = jim.ngbops.filter1d('dilate', dz=5)
 
         :Statistical filters:
 
@@ -682,7 +682,8 @@ class _NgbOps(_JimModuleBase):
         Smooth the 0 valued pixel values using a linear interpolation in
         a spectral/temporal neighborhood of 5 bands::
 
-            jim.ngbops.filter1d('smoothnodata',dz=5,nodata=0,interp='linear')
+            jim.ngbops.filter1d('smoothnodata', dz=5, nodata=0,
+                                interp='linear')
 
         :Wavelet filters:
 
@@ -730,7 +731,7 @@ class _NgbOps(_JimModuleBase):
         converted to a Byte dataset, making sure all values below 0 and
         above 255 are set to 0::
 
-            jim_multitemp.ngbops.filter1d('dwt_cut',threshold=20, otype=Int16)
+            jim_multitemp.ngbops.filter1d('dwt_cut', threshold=20, otype=Int16)
             jim_multitemp[(jim_multitemp<0) | (jim_multitemp>255)]=0
             jim_multitemp.convert(otype='Byte')
 
@@ -760,9 +761,10 @@ class _NgbOps(_JimModuleBase):
             # define the wavelenghts of the input raster dataset
 
             if len(wavelengths_in) == jim_hyperspectral.nrOfBand():
-                jim_hyperspectral.ngbops.filter1d(wavelengthIn=wavelenghts_in,
-                                           wavelengthOut=[650,510,475],
-                                           fwhm=[50,50,50])
+                jim_hyperspectral.ngbops.filter1d(
+                    wavelengthIn=wavelenghts_in,
+                    wavelengthOut=[650, 510, 475],
+                    fwhm=[50, 50, 50])
             else:
                 print("Error: number of input wavelengths must be equal to "
                       "number of bands in input raster dataset")
@@ -789,14 +791,13 @@ class _NgbOps(_JimModuleBase):
         as defined in the ASCII text files 'srf_red.txt', 'srf_green.txt',
         'srf_blue.txt'::
 
-            wavelengths_in=[]
-            #specify the wavelenghts of the input raster dataset
+            wavelengths_in = []
+            # specify the wavelenghts of the input raster dataset
 
             if len(wavelengths_in) == jim_hyperspectral.nrOfBand():
-                rgb=jim_hyperspectral.ngbops.filter1d(wavelengthIn=wavelenghts_in,
-                                               srf=['srf_red.txt',
-                                               'srf_green.txt',
-                                               'srf_blue.txt'])
+                rgb=jim_hyperspectral.ngbops.filter1d(
+                wavelengthIn=wavelenghts_in,
+                srf=['srf_red.txt', 'srf_green.txt', 'srf_blue.txt'])
             else:
                 print("Error: number of input wavelengths must be equal to "
                       "number of bands in input raster dataset")
@@ -819,7 +820,7 @@ class _NgbOps(_JimModuleBase):
         Perform a simple smoothing filter by defining three identical tap
         values::
 
-            jim.ngbops.filter1d(tapz=[1,1,1])
+            jim.ngbops.filter1d(tapz=[1, 1, 1])
         """
         kwargs.update({'filter': filter})
         if dz:
@@ -872,7 +873,7 @@ class _NgbOps(_JimModuleBase):
 
         Perform Sobel edge detection in both x and direction::
 
-            jim_filtered=jim.ngbops.filter2d('sobelxy')
+            jim_filtered = jim.ngbops.filter2d('sobelxy')
 
         **Morphological filters**
 
@@ -900,7 +901,7 @@ class _NgbOps(_JimModuleBase):
         Perform a morphological dilation using a circular kernel with size
         (diameter) of 5 pixels::
 
-            jim.ngbops.filter2d('dilate',dx=5,dy=5,circular=True)
+            jim.ngbops.filter2d('dilate', dx=5, dy=5, circular=True)
 
 
         .. note::
@@ -954,7 +955,7 @@ class _NgbOps(_JimModuleBase):
 
         Perform a median filter with kernel size of 3x3 pixels::
 
-            jim.ngbops.filter2d('median',dx=5, dy=5)
+            jim.ngbops.filter2d('median', dx=5, dy=5)
 
         **Wavelet filters**
 
@@ -1002,8 +1003,8 @@ class _NgbOps(_JimModuleBase):
         converted to a Byte dataset, making sure all values below 0 and above
         255 are set to 0::
 
-            jim_multitemp.ngbops.filter2d('dwt_cut',threshold=20, otype=Int16)
-            jim_multitemp[(jim_multitemp<0) | (jim_multitemp>255)]=0
+            jim_multitemp.ngbops.filter2d('dwt_cut', threshold=20, otype=Int16)
+            jim_multitemp[(jim_multitemp < 0) | (jim_multitemp > 255)] = 0
             jim_multitemp.convert(otype='Byte')
         """
         if isinstance(filter, _np.ndarray):
