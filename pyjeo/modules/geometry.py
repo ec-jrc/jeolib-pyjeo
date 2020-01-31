@@ -2482,7 +2482,10 @@ class _Geometry(_JimModuleBase):
                         return _pj.pixops.setData(plane, 1)
                 else:
                     raise AttributeError('Error: rule not supported')
-                maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
+
+                if ref_band is not None:
+                    maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
+
                 for iplane in range(1, nr_of_planes):
                     jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
 
