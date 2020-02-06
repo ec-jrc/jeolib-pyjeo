@@ -39,15 +39,15 @@ def convert(jim_object, otype, **kwargs):
 
     Convert data type of input image to byte using autoscale::
 
-        jim0 = jl.io.createJim('/path/to/raster.tif')
-        jim0.convert(otype=Byte, autoscale=[0, 255])
+        jim0 = pj.Jim('/path/to/raster.tif')
+        jim0.pixops.convert(otype=Byte, autoscale=[0, 255])
 
     Clip raster dataset between 0 and 255 (set all other values to 0),
     then convert data type to byte::
 
-        jim1 = jl.io.createJim('/path/to/raster.tif')
-        jim1.setThreshold(min=0, max=255, nodata=0)
-        jim1.convert(Byte)
+        jim1 = pj.Jim('/path/to/raster.tif')
+        jim1.pixops.setThreshold(min=0, max=255, nodata=0)
+        jim1.pixops.convert(Byte)
     """
     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
         otype = 'GDT_Byte'
@@ -123,13 +123,13 @@ def convert(jim_object, otype, **kwargs):
 
 #     Convert data type of input image to byte using autoscale::
 
-#         jim0=jl.io.createJim('/path/to/raster.tif')
+#         jim0=pj.Jim('/path/to/raster.tif')
 #         jim0.convert(Byte,autoscale=[0,255])
 
 #         Clip raster dataset between 0 and 255 (set all other values to 0),
 #         then convert data type to byte::
 
-#         jim1=jl.io.createJim('/path/to/raster.tif')
+#         jim1=pj.Jim('/path/to/raster.tif')
 #         jim1.setThreshold(min=0,max=255,nodata=0)
 #         jim1.convert('Byte')
 #     """
@@ -365,6 +365,49 @@ def simpleThreshold(jim_object, min, max, bg_val, fg_val):
     return _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
 
 
+def stretch(jim_object, **kwargs):
+    """Stretch pixel values
+
+    :param kwargs: See table below
+
+    Modifies the instance on which the method was called.
+
+    +---------------+--------------------------------------------------+
+    | key           | value                                            |
+    +==================+===============================================+
+    | nodata        | do not consider these values                     |
+    +---------------+--------------------------------------------------+
+    | src_min       | clip source below this minimum value             |
+    +---------------+--------------------------------------------------+
+    | src_max       | clip source above this maximum value             |
+    +---------------+--------------------------------------------------+
+    | dst_min       | mininum value in output image                    |
+    +---------------+--------------------------------------------------+
+    | dst_max       | maximum value in output image                    |
+    +---------------+--------------------------------------------------+
+    | cc_min        | cumulative count cut from                        |
+    +---------------+--------------------------------------------------+
+    | cc_max        | cumulative count cut to                          |
+    +---------------+--------------------------------------------------+
+    | band          | band to stretch                                  |
+    +---------------+--------------------------------------------------+
+    | eq            | Histogram equalization                           |
+    +---------------+--------------------------------------------------+
+    | otype        | Output data type                                 |
+    +---------------+--------------------------------------------------+
+
+    Example:
+
+    Convert data type of input image to byte with min 0 and max 255
+    while stretching between cumulative counts 2 and 98 pct::
+
+        jim = pj.Jim('/path/to/raster.tif')
+        jim_stretched=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,\
+    dst_max=255, cc_min=2, cc_max=98)
+    """
+
+    return _pj.Jim(jim_object._jipjim.stretch(kwargs))
+
 def supremum(jim, *args):
     """Create Jim composed using maximum rule from provided Jim objects.
 
@@ -414,15 +457,15 @@ class _PixOps(_JimModuleBase):
 
         Convert data type of input image to byte using autoscale::
 
-            jim0 = jl.io.createJim('/path/to/raster.tif')
-            jim0.convert(otype=Byte, autoscale=[0, 255])
+            jim0 = pj.Jim('/path/to/raster.tif')
+            jim0.pixops.convert(otype=Byte, autoscale=[0, 255])
 
         Clip raster dataset between 0 and 255 (set all other values to 0),
         then convert data type to byte::
 
-            jim1 = jl.io.createJim('/path/to/raster.tif')
+            jim1 = pj.Jim('/path/to/raster.tif')
             jim1.setThreshold(min=0, max=255, nodata=0)
-            jim1.convert(Byte)
+            jim1.pixips.convert(Byte)
         """
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
@@ -769,6 +812,52 @@ class _PixOps(_JimModuleBase):
         :param fg_val:  All pixels within [min,max] are set to fg_val
         """
         self._jim_object._jipjim.d_pointOpThresh(min, max, bg_val, fg_val)
+
+
+    def stretch(self, **kwargs):
+        """Stretch pixel values
+
+        Modifies the instance on which the method was called.
+
+        :param kwargs: See table below
+
+        Modifies the instance on which the method was called.
+
+        +---------------+--------------------------------------------------+
+        | key           | value                                            |
+        +==================+===============================================+
+        | nodata        | do not consider these values                     |
+        +---------------+--------------------------------------------------+
+        | src_min       | clip source below this minimum value             |
+        +---------------+--------------------------------------------------+
+        | src_max       | clip source above this maximum value             |
+        +---------------+--------------------------------------------------+
+        | dst_min       | mininum value in output image                    |
+        +---------------+--------------------------------------------------+
+        | dst_max       | maximum value in output image                    |
+        +---------------+--------------------------------------------------+
+        | cc_min        | cumulative count cut from                        |
+        +---------------+--------------------------------------------------+
+        | cc_max        | cumulative count cut to                          |
+        +---------------+--------------------------------------------------+
+        | band          | band to stretch                                  |
+        +---------------+--------------------------------------------------+
+        | eq            | Histogram equalization                           |
+        +---------------+--------------------------------------------------+
+        | otype        | Output data type                                 |
+        +---------------+--------------------------------------------------+
+
+        Example:
+
+        Convert data type of input image to byte with min 0 and max 255
+        while stretching between cumulative counts 2 and 98 pct::
+
+            jim = pj.Jim('/path/to/raster.tif')
+            jim_stretched=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,\
+        dst_max=255, cc_min=2, cc_max=98)
+        """
+
+        self._jim_object._set(self._jim_object._jipjim.stretch(kwargs))
 
     def supremum(self, *args):
         """Change values of Jim using maximum composition rule.

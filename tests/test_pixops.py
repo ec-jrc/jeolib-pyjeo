@@ -165,6 +165,31 @@ class BadPixOps(unittest.TestCase):
                 min_ndvi = pj.Jim(max_ndvi)
                 min_ndvi2 = pj.Jim(min_ndvi)
 
+    def test_stretch(self):
+        """Test stretch function."""
+        for tile in tiles:
+            jim = pj.Jim(tile)
+
+            stretched=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min = 0, \
+                                        dst_max = 255,cc_min = 2, cc_max = 98)
+            jim.pixops.stretch(otype = 'GDT_Byte', dst_min = 0, dst_max = 255, \
+                                cc_min = 2, cc_max=98)
+            assert jim.pixops.isEqual(stretched), \
+                'Inconsistency in pixops.stretch() ' \
+                '(method returns different result than function)'
+
+            stretched_eq=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min = 0, \
+                                        dst_max = 255,cc_min = 2, cc_max = 98, eq=True)
+            theStats = stretched_eq.stats.getStats(['min', 'max', 'histogram'], src_min=1, src_max=254);
+            assert theStats['min'] == 1, \
+                'Error in pixops.stretch(): min is not 1'
+            assert theStats['max'] == 254, \
+                'Error in pixops.stretch(): max is not 254'
+            assert max(theStats['histogram']) <= 1150, \
+                'Error in pixops.stretch(): max is not < 1150'
+            assert min(theStats['histogram']) >= 850, \
+                'Error in pixops.stretch(): max is not >= 850'
+
     def test_setFunctions(self):
         """Test setData, setLevel and setThreshold functions and methods."""
         jim = pj.Jim(testFile)
