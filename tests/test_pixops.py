@@ -172,14 +172,14 @@ class BadPixOps(unittest.TestCase):
 
             stretched=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min = 0, \
                                         dst_max = 255,cc_min = 2, cc_max = 98)
+            stretched_eq=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min = 0, \
+                                        dst_max = 255,cc_min = 2, cc_max = 98, eq=True)
             jim.pixops.stretch(otype = 'GDT_Byte', dst_min = 0, dst_max = 255, \
                                 cc_min = 2, cc_max=98)
             assert jim.pixops.isEqual(stretched), \
                 'Inconsistency in pixops.stretch() ' \
                 '(method returns different result than function)'
 
-            stretched_eq=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min = 0, \
-                                        dst_max = 255,cc_min = 2, cc_max = 98, eq=True)
             theStats = stretched_eq.stats.getStats(['min', 'max', 'histogram'], src_min=1, src_max=254);
             assert theStats['min'] == 1, \
                 'Error in pixops.stretch(): min is not 1'
