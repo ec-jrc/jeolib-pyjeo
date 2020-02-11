@@ -465,7 +465,7 @@ class _PixOps(_JimModuleBase):
 
             jim1 = pj.Jim('/path/to/raster.tif')
             jim1.setThreshold(min=0, max=255, nodata=0)
-            jim1.pixips.convert(Byte)
+            jim1.pixops.convert(Byte)
         """
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
