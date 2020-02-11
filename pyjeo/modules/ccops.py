@@ -20,64 +20,64 @@ def alphaTreeDissim(dissimh, dissimv, alpha):
 
 
 def convertRgbToHsx(jim, theType):
-    """ Returns the hue, saturation, and value, lightness, or intensity channels
-    of an input RGB colour image. The hue component is identical for all 3 models. The
-    luminance is equal to max(R,G,B) for HSV, (max-min)/2 for HSL and (R+G+B)/3 for
-    HSI. See specific formulae for the saturation at http://en.wikipedia.org/
-    wiki/HSL_and_HSV.
+    """Convert RGB to HSX.
+
+    Returns the hue, saturation, and value, lightness, or intensity channels
+    of an input RGB colour image. The hue component is identical for all 3
+    models. The luminance is equal to max(R,G,B) for HSV, (max-min)/2 for HSL
+    and (R+G+B)/3 for HSI. See specific formulae for the saturation at
+    http://en.wikipedia.org/wiki/HSL_and_HSV.
 
     :param jim: multi-band Jim with three bands
-    representing red, green and blue channels
-    :param type: string with key (”V” (default) for Value, ”L” for Lightness,
-    and ”I” for Intensity)
+        representing red, green and blue channels
+    :param type: string with key ('V' (default) for Value, 'L' for Lightness,
+        and 'I' for Intensity)
     :return: Jim with three bands containing the HSX channels
     """
-
-
-    assert jim.properties.nrOfBand()==3, \
+    assert jim.properties.nrOfBand() == 3, \
         'Error: input jim must be multi-band image with three bands (r, g, b)'
-    jimr=_pj.geometry.cropBand(jim, 0)
-    jimg=_pj.geometry.cropBand(jim, 1)
-    jimb=_pj.geometry.cropBand(jim, 2)
+    jimr =_pj.geometry.cropBand(jim, 0)
+    jimg =_pj.geometry.cropBand(jim, 1)
+    jimb =_pj.geometry.cropBand(jim, 2)
 
-    jimlist=_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
+    jimlist =_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
     return jimlist.geometry.stackBand()
 
 
 def convertHsiToRgb(jim):
-    """ takes the hue, saturation, and intensity channels of a colour image
+    """Convert HSI to RGB.
+
+    Takes the hue, saturation, and intensity channels of a colour image
     and returns an image node containing a colour RGB image.
 
     :param jim: multi-band Jim with three bands representing hue, saturation,
-    and intensity channels
+        and intensity channels
     :return: Jim with three bands containing the RGB channels
     """
-
-
-    assert jim.properties.nrOfBand()==3, \
+    assert jim.properties.nrOfBand() == 3, \
         'Error: input jim must be multi-band image with three bands (h, s, i)'
-    jimh=_pj.geometry.cropBand(jim, 0)
-    jims=_pj.geometry.cropBand(jim, 1)
-    jimi=_pj.geometry.cropBand(jim, 2)
+    jimh =_pj.geometry.cropBand(jim, 0)
+    jims =_pj.geometry.cropBand(jim, 1)
+    jimi =_pj.geometry.cropBand(jim, 2)
 
     return pj.Jim(jimh._jipjim.convertRgbToHsx(jims, jimi))
 
 
 def convertHlsToRgb(jim):
-    """ takes the hue, lightness, and saturation channels of a colour image
+    """Convert HLS to RGB.
+
+    Takes the hue, lightness, and saturation channels of a colour image
     and returns an image node containing a colour RGB image.
 
     :param jim: multi-band Jim with three bands representing hue, lightness,
-    and saturation channels
+        and saturation channels
     :return: Jim with three bands containing the RGB channels
     """
-
-
-    assert jim.properties.nrOfBand()==3,\
+    assert jim.properties.nrOfBand() == 3, \
         'Error: input jim must be multi-band image with three bands (h, s, i)'
-    jimh=_pj.geometry.cropBand(jim, 0)
-    jiml=_pj.geometry.cropBand(jim, 1)
-    jims=_pj.geometry.cropBand(jim, 2)
+    jimh =_pj.geometry.cropBand(jim, 0)
+    jiml =_pj.geometry.cropBand(jim, 1)
+    jims =_pj.geometry.cropBand(jim, 2)
 
     return pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
 
@@ -506,18 +506,19 @@ def morphoRemoveBorder(ajim, graph):
 
 
 def partitionSimilarity(jim1, jim2, graph):
-    """Create a list of 4 1-D images containing the following information:
-    correspondence table between the labels of im1 and im2, similarity measure between
-    these labels, correspondence table between the labels of im2 and im1, similarity mea-
-    sure between these labels.Create Jim holding the tree.
+    """Create a list of 4 1-D images.
+
+    They contain the following information: correspondence table between the
+    labels of im1 and im2, similarity measure between these labels,
+    correspondence table between the labels of im2 and im1, similarity measure
+    between these labels. Create Jim holding the tree.
 
     :param jim1: first image
     :param jim2: seconf image
     :param graph: an integer for connectivity
     :return: a list of images
     """
-
-    assert jim1.properties.getDataType()==jim2.properties.getDataType(),\
+    assert jim1.properties.getDataType() == jim2.properties.getDataType(),\
         'Error: inputs must have same data type'
 
     return _pj.JimList(jim1._jipjim.partitionSimilarity(jim2._jipjim, graph))
@@ -630,54 +631,66 @@ class _CCOps(_JimModuleBase):
     """Define all CCOps methods."""
 
     def convertRgbToHsx(self, theType, band):
-        """ Returns the hue, saturation, and value, lightness, or intensity channels
-        of an input RGB colour image. The hue component is identical for all 3 models. The
-        luminance is equal to max(R,G,B) for HSV, (max-min)/2 for HSL and (R+G+B)/3 for
-        HSI. See specific formulae for the saturation at http://en.wikipedia.org/
-        wiki/HSL_and_HSV.
+        """Convert RGB to HSX.
+
+        Returns the hue, saturation, and value, lightness, or intensity
+        channels of an input RGB colour image. The hue component is identical
+        for all 3 models. The luminance is equal to max(R,G,B) for HSV,
+        (max-min)/2 for HSL and (R+G+B)/3 for HSI. See specific formulae for
+        the saturation at http://en.wikipedia.org/wiki/HSL_and_HSV.
 
         Modifies the instance on which the method was called.
 
-        :param type: string with key (”V” (default) for Value, ”L” for Lightness, and ”I” for Intensity)
+        :param theType: string with key ('V' (default) for Value,
+            'L' for Lightness, and 'I' for Intensity)
         """
-        assert self._jim_object.properties.nrOfBand()==3, \
-            'Error: input jim must be multi-band image with three bands (r, g, b)'
-        jimr=_pj.geometry.cropBand(self._jim_object, 0)
-        jimg=_pj.geometry.cropBand(self._jim_object, 1)
-        jimb=_pj.geometry.cropBand(self._jim_object, 2)
+        assert self._jim_object.properties.nrOfBand() == 3, \
+            'Error: input jim must be multi-band image with three bands ' \
+            '(r, g, b)'
+        jimr =_pj.geometry.cropBand(self._jim_object, 0)
+        jimg =_pj.geometry.cropBand(self._jim_object, 1)
+        jimb =_pj.geometry.cropBand(self._jim_object, 2)
 
-        jimlist=_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
+        jimlist =_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
         self._jim_object._set(jimlist.geometry.stackBand())
 
     def convertHsiToRgb(self):
-        """ Takes the hue, saturation, and intensity channels of a colour image
+        """Convert HSI to RGB.
+
+        Takes the hue, saturation, and intensity channels of a colour image
         and returns an image node containing a colour RGB image.
 
-        :param jim: multi-band Jim with three bands representing hue, saturation,
-        and intensity channels
+        Modifies the instance on which the method was called.
+
+        :param jim: multi-band Jim with three bands representing hue,
+            saturation, and intensity channels
         :return: Jim with three bands containing the RGB channels
         """
-        assert jim.properties.nrOfBand()==3, \
-            'Error: input jim must be multi-band image with three bands (h, s, i)'
-        jimh=_pj.geometry.cropBand(self._jim_object, 0)
-        jims=_pj.geometry.cropBand(self._jim_object, 1)
-        jimi=_pj.geometry.cropBand(self._jim_object, 2)
+        assert jim.properties.nrOfBand() == 3, \
+            'Error: input jim must be multi-band image with three bands ' \
+            '(h, s, i)'
+        jimh =_pj.geometry.cropBand(self._jim_object, 0)
+        jims =_pj.geometry.cropBand(self._jim_object, 1)
+        jimi =_pj.geometry.cropBand(self._jim_object, 2)
 
         self._jim_object._set(jimh._jipjim.convertHsiToRgb(jims, jimi))
 
     def convertHlsToRgb(self):
-        """ takes the hue, lightness, and saturation channels of a colour image
+        """Convert HLS to RGB.
+
+        Takes the hue, lightness, and saturation channels of a colour image
         and returns an image node containing a colour RGB image.
 
         :param jim: multi-band Jim with three bands representing hue, saturation,
         and intensity channels
         :return: Jim with three bands containing the RGB channels
         """
-        assert jim.properties.nrOfBand()==3, \
-            'Error: input jim must be multi-band image with three bands (h, s, i)'
-        jimh=_pj.geometry.cropBand(jim, 0)
-        jiml=_pj.geometry.cropBand(jim, 1)
-        jims=_pj.geometry.cropBand(jim, 2)
+        assert jim.properties.nrOfBand() == 3, \
+            'Error: input jim must be multi-band image with three bands ' \
+            '(h, s, i)'
+        jimh =_pj.geometry.cropBand(jim, 0)
+        jiml =_pj.geometry.cropBand(jim, 1)
+        jims =_pj.geometry.cropBand(jim, 2)
 
         return pj.Jim(jimh._jipjim.convertHlsToRgb(jiml, jims))
 
