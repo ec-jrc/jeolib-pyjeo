@@ -393,7 +393,7 @@ def stretch(jim_object, **kwargs):
     +---------------+--------------------------------------------------+
     | eq            | Histogram equalization                           |
     +---------------+--------------------------------------------------+
-    | otype        | Output data type                                 |
+    | otype         | Output data type                                 |
     +---------------+--------------------------------------------------+
 
     Example:
@@ -402,8 +402,8 @@ def stretch(jim_object, **kwargs):
     while stretching between cumulative counts 2 and 98 pct::
 
         jim = pj.Jim('/path/to/raster.tif')
-        jim_stretched=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,\
-    dst_max=255, cc_min=2, cc_max=98)
+        jim_stretched = pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,
+                                          dst_max=255, cc_min=2, cc_max=98)
     """
 
     return _pj.Jim(jim_object._jipjim.stretch(kwargs))
@@ -844,7 +844,7 @@ class _PixOps(_JimModuleBase):
         +---------------+--------------------------------------------------+
         | eq            | Histogram equalization                           |
         +---------------+--------------------------------------------------+
-        | otype        | Output data type                                 |
+        | otype         | Output data type                                 |
         +---------------+--------------------------------------------------+
 
         Example:
@@ -853,8 +853,8 @@ class _PixOps(_JimModuleBase):
         while stretching between cumulative counts 2 and 98 pct::
 
             jim = pj.Jim('/path/to/raster.tif')
-            jim_stretched=pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,\
-        dst_max=255, cc_min=2, cc_max=98)
+            jim_stretched = pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,
+                                              dst_max=255, cc_min=2, cc_max=98)
         """
 
         self._jim_object._set(self._jim_object._jipjim.stretch(kwargs))
