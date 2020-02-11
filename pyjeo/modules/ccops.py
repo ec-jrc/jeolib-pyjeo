@@ -36,9 +36,9 @@ def convertRgbToHsx(jim, theType):
     """
     assert jim.properties.nrOfBand() == 3, \
         'Error: input jim must be multi-band image with three bands (r, g, b)'
-    jimr =_pj.geometry.cropBand(jim, 0)
-    jimg =_pj.geometry.cropBand(jim, 1)
-    jimb =_pj.geometry.cropBand(jim, 2)
+    jimr = _pj.geometry.cropBand(jim, 0)
+    jimg = _pj.geometry.cropBand(jim, 1)
+    jimb = _pj.geometry.cropBand(jim, 2)
 
     jimlist =_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
     return jimlist.geometry.stackBand()
@@ -56,9 +56,9 @@ def convertHsiToRgb(jim):
     """
     assert jim.properties.nrOfBand() == 3, \
         'Error: input jim must be multi-band image with three bands (h, s, i)'
-    jimh =_pj.geometry.cropBand(jim, 0)
-    jims =_pj.geometry.cropBand(jim, 1)
-    jimi =_pj.geometry.cropBand(jim, 2)
+    jimh = _pj.geometry.cropBand(jim, 0)
+    jims = _pj.geometry.cropBand(jim, 1)
+    jimi = _pj.geometry.cropBand(jim, 2)
 
     return pj.Jim(jimh._jipjim.convertRgbToHsx(jims, jimi))
 
@@ -75,9 +75,9 @@ def convertHlsToRgb(jim):
     """
     assert jim.properties.nrOfBand() == 3, \
         'Error: input jim must be multi-band image with three bands (h, s, i)'
-    jimh =_pj.geometry.cropBand(jim, 0)
-    jiml =_pj.geometry.cropBand(jim, 1)
-    jims =_pj.geometry.cropBand(jim, 2)
+    jimh = _pj.geometry.cropBand(jim, 0)
+    jiml = _pj.geometry.cropBand(jim, 1)
+    jims = _pj.geometry.cropBand(jim, 2)
 
     return pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
 
@@ -647,9 +647,9 @@ class _CCOps(_JimModuleBase):
         assert self._jim_object.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
             '(r, g, b)'
-        jimr =_pj.geometry.cropBand(self._jim_object, 0)
-        jimg =_pj.geometry.cropBand(self._jim_object, 1)
-        jimb =_pj.geometry.cropBand(self._jim_object, 2)
+        jimr = _pj.geometry.cropBand(self._jim_object, 0)
+        jimg = _pj.geometry.cropBand(self._jim_object, 1)
+        jimb = _pj.geometry.cropBand(self._jim_object, 2)
 
         jimlist =_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
         self._jim_object._set(jimlist.geometry.stackBand())
@@ -669,9 +669,9 @@ class _CCOps(_JimModuleBase):
         assert jim.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
             '(h, s, i)'
-        jimh =_pj.geometry.cropBand(self._jim_object, 0)
-        jims =_pj.geometry.cropBand(self._jim_object, 1)
-        jimi =_pj.geometry.cropBand(self._jim_object, 2)
+        jimh = _pj.geometry.cropBand(self._jim_object, 0)
+        jims = _pj.geometry.cropBand(self._jim_object, 1)
+        jimi = _pj.geometry.cropBand(self._jim_object, 2)
 
         self._jim_object._set(jimh._jipjim.convertHsiToRgb(jims, jimi))
 
@@ -688,9 +688,9 @@ class _CCOps(_JimModuleBase):
         assert jim.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
             '(h, s, i)'
-        jimh =_pj.geometry.cropBand(jim, 0)
-        jiml =_pj.geometry.cropBand(jim, 1)
-        jims =_pj.geometry.cropBand(jim, 2)
+        jimh = _pj.geometry.cropBand(jim, 0)
+        jiml = _pj.geometry.cropBand(jim, 1)
+        jims = _pj.geometry.cropBand(jim, 2)
 
         return pj.Jim(jimh._jipjim.convertHlsToRgb(jiml, jims))
 
