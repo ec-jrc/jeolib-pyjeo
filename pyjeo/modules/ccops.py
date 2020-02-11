@@ -19,6 +19,69 @@ def alphaTreeDissim(dissimh, dissimv, alpha):
                                                           alpha))
 
 
+def convertRgbToHsx(jim, theType):
+    """ Returns the hue, saturation, and value, lightness, or intensity channels
+    of an input RGB colour image. The hue component is identical for all 3 models. The
+    luminance is equal to max(R,G,B) for HSV, (max-min)/2 for HSL and (R+G+B)/3 for
+    HSI. See specific formulae for the saturation at http://en.wikipedia.org/
+    wiki/HSL_and_HSV.
+
+    :param jim: multi-band Jim with three bands
+    representing red, green and blue channels
+    :param type: string with key (”V” (default) for Value, ”L” for Lightness,
+    and ”I” for Intensity)
+    :return: Jim with three bands containing the HSX channels
+    """
+
+
+    assert jim.properties.nrOfBand()==3, \
+        'Error: input jim must be multi-band image with three bands (r, g, b)'
+    jimr=_pj.geometry.cropBand(jim, 0)
+    jimg=_pj.geometry.cropBand(jim, 1)
+    jimb=_pj.geometry.cropBand(jim, 2)
+
+    jimlist=_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
+    return jimlist.geometry.stackBand()
+
+
+def convertHsiToRgb(jim):
+    """ takes the hue, saturation, and intensity channels of a colour image
+    and returns an image node containing a colour RGB image.
+
+    :param jim: multi-band Jim with three bands representing hue, saturation,
+    and intensity channels
+    :return: Jim with three bands containing the RGB channels
+    """
+
+
+    assert jim.properties.nrOfBand()==3, \
+        'Error: input jim must be multi-band image with three bands (h, s, i)'
+    jimh=_pj.geometry.cropBand(jim, 0)
+    jims=_pj.geometry.cropBand(jim, 1)
+    jimi=_pj.geometry.cropBand(jim, 2)
+
+    return pj.Jim(jimh._jipjim.convertRgbToHsx(jims, jimi))
+
+
+def convertHlsToRgb(jim):
+    """ takes the hue, lightness, and saturation channels of a colour image
+    and returns an image node containing a colour RGB image.
+
+    :param jim: multi-band Jim with three bands representing hue, lightness,
+    and saturation channels
+    :return: Jim with three bands containing the RGB channels
+    """
+
+
+    assert jim.properties.nrOfBand()==3,\
+        'Error: input jim must be multi-band image with three bands (h, s, i)'
+    jimh=_pj.geometry.cropBand(jim, 0)
+    jiml=_pj.geometry.cropBand(jim, 1)
+    jims=_pj.geometry.cropBand(jim, 2)
+
+    return pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
+
+
 def dissimToAlphaCCs(dissimh, dissimv, alpha):
     """Create Jim holding the labelled alpha-connected component.
 
@@ -133,12 +196,12 @@ def getRegionalMinima(jim, graph):
     return _pj.Jim(jim._jipjim.getRegionalMinima(graph))
 
 
-def labelConstrainedCCs(jimo, localRange, globalRange, graph=4):
+def labelConstrainedCCs(jim, localRange, globalRange, graph=4):
     """Label each alpha-omega connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
 
-    :param jimo: a Jim or Jim list of grey level images having all the same
+    :param jim: a Jim or Jim list of grey level images having all the same
         definition domain and data type.
     :param localRange: integer value indicating maximum absolute local
         difference between 2 adjacent pixels
@@ -162,21 +225,21 @@ def labelConstrainedCCs(jimo, localRange, globalRange, graph=4):
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
 
-    if isinstance(jimo, _pj.Jim):
-        return _pj.Jim(jimo._jipjim.labelConstrainedCCs(
+    if isinstance(jim, _pj.Jim):
+        return _pj.Jim(jim._jipjim.labelConstrainedCCs(
             ngb._jipjim, 1, 1, 0, globalRange, localRange))
     else:
-        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultiband(
+        return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultiband(
             ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 
-def labelConstrainedCCsDissim(jimo, localRange, globalRange, dissimType=0):
+def labelConstrainedCCsDissim(jim, localRange, globalRange, dissimType=0):
     """Label each alpha-omega connected components with a unique label.
 
      Label using graph-connectivity and the dissimilarity measure countering
      the chaining effect as described in :cite:`soille2011ismm`
 
-    :param jimo: a Jim or a Jim list of grey level images having all the same
+    :param jim: a Jim or a Jim list of grey level images having all the same
         definition domain and data type.
     :param localRange: integer value indicating maximum absolute local
         difference between 2 adjacent pixels along alpha-connected paths
@@ -189,13 +252,13 @@ def labelConstrainedCCsDissim(jimo, localRange, globalRange, dissimType=0):
                          effect as described in :cite:`soille2011ismm`
     :return: labeled Jim object
     """
-    dissim = _pj.ngbops.getDissim(jimo, dissimType)
+    dissim = _pj.ngbops.getDissim(jim, dissimType)
 
-    if isinstance(jimo, _pj.Jim):
-        return _pj.Jim(jimo._jipjim.labelConstrainedCCsDissim(
+    if isinstance(jim, _pj.Jim):
+        return _pj.Jim(jim._jipjim.labelConstrainedCCsDissim(
             dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
     else:
-        return _pj.Jim(jimo._jipjimlist.labelConstrainedCCsMultibandDissim(
+        return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultibandDissim(
             dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
 
 
@@ -319,12 +382,12 @@ def labelImagePixels(jim):
     return _pj.Jim(jim._jipjim.labelPix())
 
 
-def labelStronglyCCs(jimo, localRange, graph=4):
+def labelStronglyCCs(jim, localRange, graph=4):
     """Label each strongly alpha-connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
 
-    :param jimo: a Jim or a Jim list of grey level images having all the same
+    :param jim: a Jim or a Jim list of grey level images having all the same
         definition domain and data type.
     :param localRange: integer value indicating maximum absolute local
         difference between 2 adjacent pixels
@@ -345,11 +408,11 @@ def labelStronglyCCs(jimo, localRange, graph=4):
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
 
-    if isinstance(jimo, _pj.Jim):
-        return _pj.Jim(jimo._jipjim.labelConstrainedCCsCi(
+    if isinstance(jim, _pj.Jim):
+        return _pj.Jim(jim._jipjim.labelConstrainedCCsCi(
             ngb._jipjim, 1, 1, 0, localRange))
     else:
-        return _pj.Jim(jimo._jipjimlist.labelStronglyCCsMultiband(
+        return _pj.Jim(jim._jipjimlist.labelStronglyCCsMultiband(
             ngb._jipjim, 1, 1, 0, localRange))
 
 
@@ -442,7 +505,25 @@ def morphoRemoveBorder(ajim, graph):
     return marker
 
 
-def seededRegionGrowing(jimo, seeds, graph=4):
+def partitionSimilarity(jim1, jim2, graph):
+    """Create a list of 4 1-D images containing the following information:
+    correspondence table between the labels of im1 and im2, similarity measure between
+    these labels, correspondence table between the labels of im2 and im1, similarity mea-
+    sure between these labels.Create Jim holding the tree.
+
+    :param jim1: first image
+    :param jim2: seconf image
+    :param graph: an integer for connectivity
+    :return: a list of images
+    """
+
+    assert jim1.properties.getDataType()==jim2.properties.getDataType(),\
+        'Error: inputs must have same data type'
+
+    return _pj.JimList(jim1._jipjim.partitionSimilarity(jim2._jipjim, graph))
+
+
+def seededRegionGrowing(jim, seeds, graph=4):
     """Calculate the seeded region growing.
 
     Seeded region growing :cite:`adams-bischof94` including adaptations
@@ -452,11 +533,11 @@ def seededRegionGrowing(jimo, seeds, graph=4):
     a multi-channel image using graph-connectivity. The growth is driven by
     the spectral distances (L2 norm) are calculated between pixels along
     the external boundary of the already grown regions and the corresponding
-    pixels along the internal boundary of the seeds. Both jimo and seeds are
+    pixels along the internal boundary of the seeds. Both jim and seeds are
     modified by this function. The image of seeds is modified by expanding
     the corresponding initial values of the seeds.
 
-    :param jimo: a Jim or Jim list of grey level images having all the same
+    :param jim: a Jim or Jim list of grey level images having all the same
         definition domain and data type.
     :param seeds: a Jim image for labelled seeds (UINT32 type)
     :param graph: an integer holding for the graph connectivity
@@ -476,10 +557,10 @@ def seededRegionGrowing(jimo, seeds, graph=4):
         ngb.pixops.setData(1)
         ngb[1, 1] = 0
 
-    if isinstance(jimo, _pj.Jim):
-        jim_object_list = _pj.JimList([jimo])
+    if isinstance(jim, _pj.Jim):
+        jim_object_list = _pj.JimList([jim])
     else:
-        jim_object_list = jimo
+        jim_object_list = jim
 
     return _pj.Jim(
         jim_object_list._jipjimlist.segmentationSeededRegionGrowingMultiband(
@@ -548,30 +629,57 @@ def watershed(ajim, graph=8):
 class _CCOps(_JimModuleBase):
     """Define all CCOps methods."""
 
-    # TODO: Test
-    def alphaTreeDissim(self, dissimv, alpha):
-        """Create Jim holding the tree.
+    def convertRgbToHsx(self, theType, band):
+        """ Returns the hue, saturation, and value, lightness, or intensity channels
+        of an input RGB colour image. The hue component is identical for all 3 models. The
+        luminance is equal to max(R,G,B) for HSV, (max-min)/2 for HSL and (R+G+B)/3 for
+        HSI. See specific formulae for the saturation at http://en.wikipedia.org/
+        wiki/HSL_and_HSV.
 
         Modifies the instance on which the method was called.
 
-        :param dissimv: Jim for vertical edge dissimilarities
-        :param alpha: integer for dissimilarity threshold value
+        :param type: string with key (”V” (default) for Value, ”L” for Lightness, and ”I” for Intensity)
         """
-        self._jim_object._set(
-            self._jim_object._jipjim.alphaTreeDissimGet(dissimv._jipjim,
-                                                        alpha))
+        assert self._jim_object.properties.nrOfBand()==3, \
+            'Error: input jim must be multi-band image with three bands (r, g, b)'
+        jimr=_pj.geometry.cropBand(self._jim_object, 0)
+        jimg=_pj.geometry.cropBand(self._jim_object, 1)
+        jimb=_pj.geometry.cropBand(self._jim_object, 2)
 
-    def dissimToAlphaCCs(self, dissimv, alpha):
-        """Create Jim holding the labelled alpha-connected component.
+        jimlist=_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
+        self._jim_object._set(jimlist.geometry.stackBand())
 
-        Modifies the instance on which the method was called.
+    def convertHsiToRgb(self):
+        """ Takes the hue, saturation, and intensity channels of a colour image
+        and returns an image node containing a colour RGB image.
 
-        :param dissimv: Jim for vertical edge dissimilarities
-        :param alpha: integer for dissimilarity threshold value
+        :param jim: multi-band Jim with three bands representing hue, saturation,
+        and intensity channels
+        :return: Jim with three bands containing the RGB channels
         """
-        self._jim_object._set(
-            self._jim_object._jipjim.dissimToAlphaCCs(dissimv._jipjim,
-                                                      alpha))
+        assert jim.properties.nrOfBand()==3, \
+            'Error: input jim must be multi-band image with three bands (h, s, i)'
+        jimh=_pj.geometry.cropBand(self._jim_object, 0)
+        jims=_pj.geometry.cropBand(self._jim_object, 1)
+        jimi=_pj.geometry.cropBand(self._jim_object, 2)
+
+        self._jim_object._set(jimh._jipjim.convertHsiToRgb(jims, jimi))
+
+    def convertHlsToRgb(self):
+        """ takes the hue, lightness, and saturation channels of a colour image
+        and returns an image node containing a colour RGB image.
+
+        :param jim: multi-band Jim with three bands representing hue, saturation,
+        and intensity channels
+        :return: Jim with three bands containing the RGB channels
+        """
+        assert jim.properties.nrOfBand()==3, \
+            'Error: input jim must be multi-band image with three bands (h, s, i)'
+        jimh=_pj.geometry.cropBand(jim, 0)
+        jiml=_pj.geometry.cropBand(jim, 1)
+        jims=_pj.geometry.cropBand(jim, 2)
+
+        return pj.Jim(jimh._jipjim.convertHlsToRgb(jiml, jims))
 
     def distance2d4(self, band=0):
         """Compute the 2-dimensional 4-connected distance function of a Jim.
@@ -580,7 +688,7 @@ class _CCOps(_JimModuleBase):
 
         :param band: List of band indices to crop (index is 0 based)
         """
-        return self._jim_object._jipjim.d_distance2d4(band)
+        self._jim_object._jipjim.d_distance2d4(band)
 
     def distance2dChamfer(self, type, band=0):
         """Compute the chamfer distance function of Jim.
@@ -594,7 +702,7 @@ class _CCOps(_JimModuleBase):
         :param type: Integer for type of chamfer distance {1, 11, 34, 57, 5711}
         :param band: List of band indices to crop (index is 0 based)
         """
-        return self._jim_object._jipjim.d_distance2dChamfer(type, band)
+        self._jim_object._jipjim.d_distance2dChamfer(type, band)
 
     def distance2dEuclideanConstrained(self, mask, band=0):
         """Compute the Euclidean geodesic distance from the marker set.
