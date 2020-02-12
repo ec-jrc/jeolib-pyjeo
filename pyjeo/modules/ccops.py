@@ -742,11 +742,13 @@ class _CCOps(_JimModuleBase):
         :return: labeled Jim object
         """
         if self._jim_object.properties.nrOfBand()==1:
-            return _pj.Jim(self._jim_object._jipjim.labelConstrainedCCs(
-                ngb._jipjim, 1, 1, 0, globalRange, localRange))
+            self._jim_object._set(
+                self._jim_object._jipjim.labelConstrainedCCs(
+                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
         else:
-            return _pj.Jim(self._jim_object._jipjim.labelConstrainedCCsMultiband(
-                ngb._jipjim, 1, 1, 0, globalRange, localRange))
+            self._jim_object._set(
+                self._jim_object._jipjim.labelConstrainedCCsMultiband(
+                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 
     def labelConstrainedCCsCi(self, ngb, ox, oy, oz, rl):
@@ -924,8 +926,22 @@ class _CCOps(_JimModuleBase):
 class _CCOpsList(_JimListModuleBase):
     """Define all CCOps methods for JimLists."""
 
-    pass
+    def labelConstrainedCCs(self, localRange, globalRange, ngb):
+        """Label each alpha-omega connected component.
 
+        Label with a unique label using graph-connectivity :cite:`soille2008pami`
+
+        :param localRange: integer value indicating maximum absolute local
+            difference between 2 adjacent pixels
+        :param globalRange: integer value indicating maximum global difference
+            (difference between the maximum and minimum values of each resulting
+            connected component)
+        :param ngb: Jim object for neighbourhood, e.g., create with
+            pj.Jim(graph=4)
+        :return: labeled Jim object
+        """
+        return _pj.Jim(self._jim_list._jipjimlist.labelConstrainedCCsMultiband(
+            ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 class _CCOpsVect(_JimVectModuleBase):
     """Define all CCOps methods for JimVects."""
