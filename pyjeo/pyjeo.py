@@ -11,6 +11,7 @@ import jiplib as _jl
 
 from .modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, classify, demops, stats, all
+from .__init__ import _check_graph
 
 
 del _jl.Jim.__del__
@@ -71,6 +72,22 @@ class _ParentJim(_jl.Jim):
                 else:
                     kwargs.update({'filename': image})
                     super(_ParentJim, self).__init__(kwargs)
+            elif 'graph' in kwargs:
+                graph = kwargs.pop('graph')
+                _check_graph(graph, [4, 8])
+
+                if graph == 4:
+                    ngb = Jim(ncol=3, nrow=3, otype='Byte')
+                    ngb[0, 1] = 1
+                    ngb[1, 0] = 1
+                    ngb[1, 2] = 1
+                    ngb[2, 1] = 1
+                    super(_ParentJim, self).__init__(ngb._jipjim)
+                else:
+                    ngb = Jim(ncol=3, nrow=3, otype='Byte')
+                    ngb.pixops.setData(1)
+                    ngb[1, 1] = 0
+                    super(_ParentJim, self).__init__(ngb._jipjim)
             else:
                 super(_ParentJim, self).__init__(kwargs)
         elif image:

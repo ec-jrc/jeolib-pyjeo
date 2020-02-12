@@ -1,4 +1,4 @@
-"""Test suite for overriden basic methods for Jim objects."""
+"""test suite for overriden basic methods for Jim objects."""
 
 import pyjeo as pj
 import unittest
@@ -1139,7 +1139,7 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = pj.ccops.labelConstrainedCCsVariance(jim1, 0, 0, 0, 0, 0, 0,
-                                                     graph=0)
+                                                     pj.Jim(graph=0))
             raised = False
         except ValueError:
             raised = True

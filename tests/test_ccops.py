@@ -199,13 +199,14 @@ class BadCCOps(unittest.TestCase):
         labelled = pj.ccops.dissimToAlphaCCs(jim1, jim2, 0)
         labelled_different = pj.ccops.dissimToAlphaCCs(jim1, jim2, 5)
         jim1_copy = pj.Jim(jim1)
-        jim1_copy.ccops.dissimToAlphaCCs(jim2, 0)
+        #member function not supported
+        # jim1_copy.ccops.dissimToAlphaCCs(jim2, 0)
 
         stats = labelled.stats.getStats()
 
-        assert jim1_copy.pixops.isEqual(labelled), \
-            'Inconsistency in ccops.dissimToAlphaCCs() ' \
-            '(method returns different result than function)'
+        # assert jim1_copy.pixops.isEqual(labelled), \
+        #     'Inconsistency in ccops.dissimToAlphaCCs() ' \
+        #     '(method returns different result than function)'
 
         assert not labelled.pixops.isEqual(labelled_different), \
             'Error in ccops.dissimToAlphaCCs() ' \
@@ -222,11 +223,11 @@ class BadCCOps(unittest.TestCase):
         # Test labelConstrainedCCsVariance()
 
         labelled = pj.ccops.labelConstrainedCCsVariance(
-            jim1, 0, 0, 0, 0, 0, 0, 4)
+            jim1, 0, 0, 0, 0, 0, 0.0, pj.Jim(graph=4))
         labelled_different = pj.ccops.labelConstrainedCCsVariance(
-            jim1, 0, 0, 0, 0, 0, 0, 8)
+            jim1, 0, 0, 0, 0, 0, 0.0, pj.Jim(graph=8))
         jim1_copy = pj.Jim(jim1)
-        jim1_copy.ccops.labelConstrainedCCsVariance(0, 0, 0, 0, 0, 0, 4)
+        jim1_copy.ccops.labelConstrainedCCsVariance(0, 0, 0, 0, 0, 0, pj.Jim(graph=4))
 
         stats = labelled.stats.getStats(band=0)
 
@@ -248,7 +249,7 @@ class BadCCOps(unittest.TestCase):
             'equal to 0)'
 
         labelled_different = pj.ccops.labelConstrainedCCsVariance(
-            jim1, 0, 0, 0, 1, 1, 5, 4)
+            jim1, 0, 0, 0, 1, 1, 5, pj.Jim(graph=4))
         stats2 = labelled_different.stats.getStats(band=0)
 
         assert stats2['max'] < stats['max'], \
@@ -257,7 +258,7 @@ class BadCCOps(unittest.TestCase):
             'not smaller)'
 
         labelled_different = pj.ccops.labelConstrainedCCsVariance(
-            jim1, 5, 5, 0, 0, 0, 0, 4)
+            jim1, 5, 5, 0, 0, 0, 0, pj.Jim(graph=4))
 
         assert labelled_different[1, 1].np()[0, 0] == 0, \
             'Error in Jim.ccops.labelConstrainedCCsVariance() ' \

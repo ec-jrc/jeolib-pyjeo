@@ -10,6 +10,8 @@ from . import JimVectModuleBase as _JimVectModuleBase
 def alphaTreeDissim(dissimh, dissimv, alpha):
     """Create Jim holding the tree.
 
+    This function does not have the member function alternative.
+
     :param dissimh: Jim for horizontal edge dissimilarities
     :param dissimv: Jim for vertical edge dissimilarities
     :param alpha: integer for dissimilarity threshold value
@@ -196,7 +198,7 @@ def getRegionalMinima(jim, graph):
     return _pj.Jim(jim._jipjim.getRegionalMinima(graph))
 
 
-def labelConstrainedCCs(jim, localRange, globalRange, graph=4):
+def labelConstrainedCCs(jim, localRange, globalRange, ngb):
     """Label each alpha-omega connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
@@ -208,29 +210,22 @@ def labelConstrainedCCs(jim, localRange, globalRange, graph=4):
     :param globalRange: integer value indicating maximum global difference
         (difference between the maximum and minimum values of each resulting
         connected component)
-    :param graph: an integer holding for the graph connectivity
-        (4 or 8 for 2-D images, default is 4)
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
     :return: labeled Jim object
     """
-    _pj._check_graph(graph, [4, 8])
-
-    if graph == 4:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0, 1] = 1
-        ngb[1, 0] = 1
-        ngb[1, 2] = 1
-        ngb[2, 1] = 1
-    else:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1, 1] = 0
-
     if isinstance(jim, _pj.Jim):
-        return _pj.Jim(jim._jipjim.labelConstrainedCCs(
-            ngb._jipjim, 1, 1, 0, globalRange, localRange))
-    else:
+        if jim.properties.nrOfBand()==1:
+            return _pj.Jim(jim._jipjim.labelConstrainedCCs(
+                ngb._jipjim, 1, 1, 0, globalRange, localRange))
+        else:
+            return _pj.Jim(jim._jipjim.labelConstrainedCCsMultiband(
+                ngb._jipjim, 1, 1, 0, globalRange, localRange))
+    elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultiband(
             ngb._jipjim, 1, 1, 0, globalRange, localRange))
+    else:
+        raise AttributeError(
+            "Error: input must be Jim or JimList object")
 
 
 def labelConstrainedCCsDissim(jim, localRange, globalRange, dissimType=0):
@@ -255,14 +250,36 @@ def labelConstrainedCCsDissim(jim, localRange, globalRange, dissimType=0):
     dissim = _pj.ngbops.getDissim(jim, dissimType)
 
     if isinstance(jim, _pj.Jim):
-        return _pj.Jim(jim._jipjim.labelConstrainedCCsDissim(
-            dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
-    else:
+        if jim.properties.nrOfBand()==1:
+            return _pj.Jim(jim._jipjim.labelConstrainedCCsDissim(
+                dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+        else:
+            return _pj.Jim(jim._jipjim.labelConstrainedCCsMultibandDissim(
+                dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+    elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultibandDissim(
             dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+    else:
+        raise AttributeError(
+            "Error: input must be Jim or JimList object")
 
 
-def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, graph=4):
+def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
+    """Label image, in development.
+
+    :param jim: a Jim object to label
+    :param ngb: a Jim object for neighbourhood
+    :param ox: x coordinate of origin of imngb
+    :param oy: y coordinate of origin of imngb
+    :param oz: z coordinate of origin of imngb
+    :param rl: integer for range parameter lambda l under the strongly connected assumption
+    :return: labeled Jim object
+    """
+    return _pj.Jim(jim._jipjim.labelConstrainedCCsCi(
+        ngb._jipjim, ox, oy, oz, rl))
+
+
+def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, ngb):
     """Label image.
 
     :param jim: a Jim object
@@ -272,23 +289,9 @@ def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, graph=4):
     :param rg: integer for range parameter lambda g
     :param rl: integer for range parameter lambda l
     :param varmax: float for maximum variance of cc
-    :param graph: an integer holding for the graph connectivity
-        (4 or 8 for 2-D images, default is 4)
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
     :return: labeled Jim object
     """
-    _pj._check_graph(graph, [4, 8])
-
-    if graph == 4:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0, 1] = 1
-        ngb[1, 0] = 1
-        ngb[1, 2] = 1
-        ngb[2, 1] = 1
-    else:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1, 1] = 0
-
     return _pj.Jim(jim._jipjim.labelConstrainedCCsVariance(
         ngb._jipjim, ox, oy, oz, rg, rl, varmax))
 
@@ -306,27 +309,13 @@ def labelErode(jim, graph=4):
     return _pj.Jim(jim._jipjim.labelErode(graph))
 
 
-def labelFlatZonesGraph(jim, graph=4):
+def labelFlatZonesGraph(jim, ngb):
     """Label each image flat zone with a unique label using graph-connectivity.
 
     :param jim: a Jim object holding a grey level image
-    :param graph: an integer holding for the graph connectivity
-        (4 or 8 for 2-D images, default is 4)
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
     :return: labeled Jim object
     """
-    _pj._check_graph(graph, [4, 8])
-
-    if graph == 4:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0, 1] = 1
-        ngb[1, 0] = 1
-        ngb[1, 2] = 1
-        ngb[2, 1] = 1
-    else:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1, 1] = 0
-
     return _pj.Jim(jim._jipjim.labelFlatZones(ngb._jipjim, 1, 1, 0))
 
 
@@ -345,29 +334,15 @@ def labelFlatZonesSeeded(jim, jim_ngb, jim_seeds, ox, oy, oz):
         jim_ngb._jipjim, jim_seeds._jipjim, ox, oy, oz))
 
 
-def labelGraph(jim, graph=4):
+def labelGraph(jim, ngb):
     """Label each non-zero connected component with a unique label.
 
     Label using graph-connectivity.
 
     :param jim: a Jim object holding a binary image
-    :param graph: an integer holding for the graph connectivity
-        (4 or 8 for 2-D images, default is 4)
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
     :return: labeled Jim object
     """
-    _pj._check_graph(graph, [4, 8])
-
-    if graph == 4:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0, 1] = 1
-        ngb[1, 0] = 1
-        ngb[1, 2] = 1
-        ngb[2, 1] = 1
-    else:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1, 1] = 0
-
     return _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
 
 
@@ -382,7 +357,7 @@ def labelImagePixels(jim):
     return _pj.Jim(jim._jipjim.labelPix())
 
 
-def labelStronglyCCs(jim, localRange, graph=4):
+def labelStronglyCCs(jim, localRange, ngb):
     """Label each strongly alpha-connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
@@ -391,29 +366,22 @@ def labelStronglyCCs(jim, localRange, graph=4):
         definition domain and data type.
     :param localRange: integer value indicating maximum absolute local
         difference between 2 adjacent pixels
-    :param graph: an integer holding for the graph connectivity
-        (4 or 8 for 2-D images, default is 4)
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
     :return: labeled Jim object
     """
-    _pj._check_graph(graph, [4, 8])
-
-    if graph == 4:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0, 1] = 1
-        ngb[1, 0] = 1
-        ngb[1, 2] = 1
-        ngb[2, 1] = 1
-    else:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1, 1] = 0
-
     if isinstance(jim, _pj.Jim):
-        return _pj.Jim(jim._jipjim.labelConstrainedCCsCi(
-            ngb._jipjim, 1, 1, 0, localRange))
-    else:
+        if jim.properties.nrOfBand()==1:
+            return _pj.Jim(jim._jipjim.labelStronglyCCs(
+                ngb._jipjim, 1, 1, 0, localRange))
+        else:
+            return _pj.Jim(jim._jipjim.labelStronglyCCsMultiband(
+                ngb._jipjim, 1, 1, 0, localRange))
+    elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelStronglyCCsMultiband(
-            ngb._jipjim, 1, 1, 0, localRange))
+            ngb._jipjim, 1, 1, 0, globalRange, localRange))
+    else:
+        raise AttributeError(
+            "Error: input must be Jim or JimList object")
 
 
 def morphoFillHoles(ajim, graph, borderFlag=1):
@@ -524,7 +492,7 @@ def partitionSimilarity(jim1, jim2, graph):
     return _pj.JimList(jim1._jipjim.partitionSimilarity(jim2._jipjim, graph))
 
 
-def seededRegionGrowing(jim, seeds, graph=4):
+def seededRegionGrowing(jim, seeds, ngb):
     """Calculate the seeded region growing.
 
     Seeded region growing :cite:`adams-bischof94` including adaptations
@@ -541,23 +509,9 @@ def seededRegionGrowing(jim, seeds, graph=4):
     :param jim: a Jim or Jim list of grey level images having all the same
         definition domain and data type.
     :param seeds: a Jim image for labelled seeds (UINT32 type)
-    :param graph: an integer holding for the graph connectivity
-        (4 or 8 for 2-D images, default is 4)
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
     :return: labeled Jim object
     """
-    _pj._check_graph(graph, [4, 8])
-
-    if graph == 4:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0, 1] = 1
-        ngb[1, 0] = 1
-        ngb[1, 2] = 1
-        ngb[2, 1] = 1
-    else:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1, 1] = 0
-
     if isinstance(jim, _pj.Jim):
         jim_object_list = _pj.JimList([jim])
     else:
@@ -598,19 +552,15 @@ def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
     """
     _pj._check_graph(graph, [4, 8])
 
-    if graph == 4:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb[0, 1] = 1
-        ngb[1, 0] = 1
-        ngb[1, 2] = 1
-        ngb[2, 1] = 1
+    if isinstance(jim, _pj.Jim):
+        return _pj.Jim(jimList._jipjim.segmentImageMultiband(
+            graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
+    elif isinstance(jim, _pj.JimList):
+        return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(
+            graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
     else:
-        ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-        ngb.pixops.setData(1)
-        ngb[1, 1] = 0
-
-    return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(
-        graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
+        raise AttributeError(
+            "Error: input must be Jim or JimList object")
 
 
 def watershed(ajim, graph=8):
@@ -682,7 +632,7 @@ class _CCOps(_JimModuleBase):
         and returns an image node containing a colour RGB image.
 
         :param jim: multi-band Jim with three bands representing hue, saturation,
-        and intensity channels
+            and intensity channels
         :return: Jim with three bands containing the RGB channels
         """
         assert jim.properties.nrOfBand() == 3, \
@@ -777,7 +727,54 @@ class _CCOps(_JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.distanceInfluenceZones2dEuclidean(band))
 
-    def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, graph=4):
+    def labelConstrainedCCs(self, localRange, globalRange, ngb):
+        """Label each alpha-omega connected component.
+
+        Label with a unique label using graph-connectivity :cite:`soille2008pami`
+
+        :param jim: a Jim or Jim list of grey level images having all the same
+            definition domain and data type.
+        :param localRange: integer value indicating maximum absolute local
+            difference between 2 adjacent pixels
+        :param globalRange: integer value indicating maximum global difference
+            (difference between the maximum and minimum values of each resulting
+            connected component)
+        :param ngb: Jim object for neighbourhood, e.g., create with
+            pj.Jim(graph=4)
+        :return: labeled Jim object
+        """
+        if isinstance(jim, _pj.Jim):
+            if jim.properties.nrOfBand()==1:
+                return _pj.Jim(jim._jipjim.labelConstrainedCCs(
+                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
+            else:
+                return _pj.Jim(jim._jipjim.labelConstrainedCCsMultiband(
+                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
+        elif isinstance(jim, _pj.JimList):
+            return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultiband(
+                ngb._jipjim, 1, 1, 0, globalRange, localRange))
+        else:
+            raise AttributeError(
+                "Error: input must be Jim or JimList object")
+
+
+    def labelConstrainedCCsCi(self, ngb, ox, oy, oz, rl):
+        """Label image, in development.
+        Modifies the instance on which the method was called.
+
+        :param ngb: a Jim object for neighbourhood
+        :param ox: x coordinate of origin of imngb
+        :param oy: y coordinate of origin of imngb
+        :param oz: z coordinate of origin of imngb
+        :param rl: integer for range parameter lambda l
+            under the strongly connected assumption
+        :return: labeled Jim object
+        """
+        self._jim_object._set(
+            self._jim_object._jipjim.labelConstrainedCCsCi(
+            ngb._jipjim, ox, oy, oz, rl))
+
+    def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, ngb):
         """Label image.
 
         Modifies the instance on which the method was called.
@@ -789,23 +786,10 @@ class _CCOps(_JimModuleBase):
         :param rg: integer for range parameter lambda g
         :param rl: integer for range parameter lambda l
         :param varmax: float for maximum variance of cc
-        :param graph: an integer holding for the graph connectivity
-            (4 or 8 for 2-D images, default is 4)
+        :param ngb: Jim object for neighbourhood, e.g., create with
+            pj.Jim(graph=4)
         :return: labeled Jim object
         """
-        _pj._check_graph(graph, [4, 8])
-
-        if graph == 4:
-            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-            ngb[0, 1] = 1
-            ngb[1, 0] = 1
-            ngb[1, 2] = 1
-            ngb[2, 1] = 1
-        else:
-            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-            ngb.pixops.setData(1)
-            ngb[1, 1] = 0
-
         self._jim_object._set(
             self._jim_object._jipjim.labelConstrainedCCsVariance(
                 ngb._jipjim, ox, oy, oz, rg, rl, varmax))
@@ -834,30 +818,16 @@ class _CCOps(_JimModuleBase):
         self._jim_object._jipjim.d_labelFlatZonesSeeded(
             jim_ngb._jipjim, jim_seeds._jipjim, ox, oy, oz)
 
-    def labelGraph(self, graph=8):
+    def labelGraph(self, ngb):
         """Label each non-zero connected component with a unique label.
 
         Uses graph-connectivity
 
         Modifies the instance on which the method was called.
 
-        :param graph: an integer holding for the graph connectivity
-            (4 or 8 for 2-D images, default is 8)
+        :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
         :return: labeled Jim object
         """
-        _pj._check_graph(graph, [4, 8])
-
-        if graph == 4:
-            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-            ngb[0, 1] = 1
-            ngb[1, 0] = 1
-            ngb[1, 2] = 1
-            ngb[2, 1] = 1
-        else:
-            ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
-            ngb.pixops.setData(1)
-            ngb[1, 1] = 0
-
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
 
     def labelImagePixels(self):
