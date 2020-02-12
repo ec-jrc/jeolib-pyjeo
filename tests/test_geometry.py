@@ -443,6 +443,71 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.imageFrameSubtract() ' \
             '(changed values in the original Jim)'
 
+    def test_plotLine(self):
+        """Test the plotLine() function and method."""
+        nrow = ncol = 10
+        nband = 2
+        jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband,
+                     otype='Byte', uniform=[0, 50], seed=0)
+
+        avg = jim.stats.getStats('mean')['mean']
+
+        plotted = pj.geometry.plotLine(jim, 0, 0, 9, 9, 100)
+        jim.geometry.plotLine(0, 0, 9, 9, 100)
+
+        new_avg = jim.stats.getStats('mean')['mean']
+
+        assert jim.pixops.isEqual(plotted), \
+            'Inconsistency in geometry.plotLine() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error in geometry.plotLine() ' \
+            '(number of cols changed)'
+        assert new_avg > avg, \
+            'Error in geometry.plotLine() ' \
+            '(average not higher than of the original image, but higher ' \
+            'values were set for the line)'
+        assert jim.properties.nrOfRow() == nrow, \
+            'Error in geometry.plotLine() ' \
+            '(number of rows changed)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.plotLine() ' \
+            '(number of planes changed)'
+        assert jim.properties.nrOfBand() == nband, \
+            'Error in geometry.plotLine() ' \
+            '(number of bands changed)'
+        assert (jim.np()[range(5), range(5)] == 100).all(), \
+            'Error in geometry.plotLine() ' \
+            '(values not changed to the right value)'
+        assert (jim.np()[range(1, 5), range(4)] != 100).all(), \
+            'Error in geometry.plotLine() ' \
+            '(values outside the line changed)'
+
+        # Test wrong calls
+        jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=2,
+                     otype='Byte', uniform=[0, 50], seed=0)
+
+        try:
+            _ = pj.geometry.plotLine(jim, 0, 0, 9, 9, 100)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.plotLine() ' \
+            'function where the Jim argument is a multi-plane object'
+
+        # Test wrong calls
+        try:
+            jim.geometry.plotLine(0, 0, 9, 9, 100)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.plotLine() ' \
+            'method where the Jim argument is a multi-plane object'
+
     def test_polygonize(self):
         """Test the polygonize() function and method."""
         jim = pj.Jim(tiles[0])
