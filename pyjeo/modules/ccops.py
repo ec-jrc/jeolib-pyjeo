@@ -732,8 +732,6 @@ class _CCOps(_JimModuleBase):
 
         Label with a unique label using graph-connectivity :cite:`soille2008pami`
 
-        :param jim: a Jim or Jim list of grey level images having all the same
-            definition domain and data type.
         :param localRange: integer value indicating maximum absolute local
             difference between 2 adjacent pixels
         :param globalRange: integer value indicating maximum global difference
@@ -743,19 +741,12 @@ class _CCOps(_JimModuleBase):
             pj.Jim(graph=4)
         :return: labeled Jim object
         """
-        if isinstance(jim, _pj.Jim):
-            if jim.properties.nrOfBand()==1:
-                return _pj.Jim(jim._jipjim.labelConstrainedCCs(
-                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
-            else:
-                return _pj.Jim(jim._jipjim.labelConstrainedCCsMultiband(
-                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
-        elif isinstance(jim, _pj.JimList):
-            return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultiband(
+        if self._jim_object.properties.nrOfBand()==1:
+            return _pj.Jim(self._jim_object._jipjim.labelConstrainedCCs(
                 ngb._jipjim, 1, 1, 0, globalRange, localRange))
         else:
-            raise AttributeError(
-                "Error: input must be Jim or JimList object")
+            return _pj.Jim(self._jim_object._jipjim.labelConstrainedCCsMultiband(
+                ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
 
     def labelConstrainedCCsCi(self, ngb, ox, oy, oz, rl):
