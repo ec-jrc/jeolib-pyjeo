@@ -42,7 +42,7 @@ def convertRgbToHsx(jim, theType):
     jimg = _pj.geometry.cropBand(jim, 1)
     jimb = _pj.geometry.cropBand(jim, 2)
 
-    jimlist =_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
+    jimlist = _pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
     return jimlist.geometry.stackBand()
 
 
@@ -214,7 +214,7 @@ def labelConstrainedCCs(jim, localRange, globalRange, ngb):
     :return: labeled Jim object
     """
     if isinstance(jim, _pj.Jim):
-        if jim.properties.nrOfBand()==1:
+        if jim.properties.nrOfBand() == 1:
             return _pj.Jim(jim._jipjim.labelConstrainedCCs(
                 ngb._jipjim, 1, 1, 0, globalRange, localRange))
         else:
@@ -250,7 +250,7 @@ def labelConstrainedCCsDissim(jim, localRange, globalRange, dissimType=0):
     dissim = _pj.ngbops.getDissim(jim, dissimType)
 
     if isinstance(jim, _pj.Jim):
-        if jim.properties.nrOfBand()==1:
+        if jim.properties.nrOfBand() == 1:
             return _pj.Jim(jim._jipjim.labelConstrainedCCsDissim(
                 dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
         else:
@@ -272,7 +272,8 @@ def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
     :param ox: x coordinate of origin of imngb
     :param oy: y coordinate of origin of imngb
     :param oz: z coordinate of origin of imngb
-    :param rl: integer for range parameter lambda l under the strongly connected assumption
+    :param rl: integer for range parameter lambda l under the strongly
+        connected assumption
     :return: labeled Jim object
     """
     return _pj.Jim(jim._jipjim.labelConstrainedCCsCi(
@@ -370,7 +371,7 @@ def labelStronglyCCs(jim, localRange, ngb):
     :return: labeled Jim object
     """
     if isinstance(jim, _pj.Jim):
-        if jim.properties.nrOfBand()==1:
+        if jim.properties.nrOfBand() == 1:
             return _pj.Jim(jim._jipjim.labelStronglyCCs(
                 ngb._jipjim, 1, 1, 0, localRange))
         else:
@@ -554,10 +555,12 @@ def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
 
     if isinstance(jim, _pj.Jim):
         return _pj.Jim(jimList._jipjim.segmentImageMultiband(
-            graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
+            graph, localRange, regionSize, contrast, version,
+            dataFileNamePrefix))
     elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(
-            graph, localRange, regionSize, contrast, version, dataFileNamePrefix))
+            graph, localRange, regionSize, contrast, version,
+            dataFileNamePrefix))
     else:
         raise AttributeError(
             "Error: input must be Jim or JimList object")
@@ -601,7 +604,8 @@ class _CCOps(_JimModuleBase):
         jimg = _pj.geometry.cropBand(self._jim_object, 1)
         jimb = _pj.geometry.cropBand(self._jim_object, 2)
 
-        jimlist =_pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
+        jimlist = _pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb,
+                                                           theType))
         self._jim_object._set(jimlist.geometry.stackBand())
 
     def convertHsiToRgb(self):
@@ -631,8 +635,8 @@ class _CCOps(_JimModuleBase):
         Takes the hue, lightness, and saturation channels of a colour image
         and returns an image node containing a colour RGB image.
 
-        :param jim: multi-band Jim with three bands representing hue, saturation,
-            and intensity channels
+        :param jim: multi-band Jim with three bands representing hue,
+            saturation, and intensity channels
         :return: Jim with three bands containing the RGB channels
         """
         assert jim.properties.nrOfBand() == 3, \
@@ -730,18 +734,19 @@ class _CCOps(_JimModuleBase):
     def labelConstrainedCCs(self, localRange, globalRange, ngb):
         """Label each alpha-omega connected component.
 
-        Label with a unique label using graph-connectivity :cite:`soille2008pami`
+        Label with a unique label using graph-connectivity
+        :cite:`soille2008pami`
 
         :param localRange: integer value indicating maximum absolute local
             difference between 2 adjacent pixels
         :param globalRange: integer value indicating maximum global difference
-            (difference between the maximum and minimum values of each resulting
-            connected component)
+            (difference between the maximum and minimum values of each
+            resulting connected component)
         :param ngb: Jim object for neighbourhood, e.g., create with
             pj.Jim(graph=4)
         :return: labeled Jim object
         """
-        if self._jim_object.properties.nrOfBand()==1:
+        if self._jim_object.properties.nrOfBand() == 1:
             self._jim_object._set(
                 self._jim_object._jipjim.labelConstrainedCCs(
                     ngb._jipjim, 1, 1, 0, globalRange, localRange))
@@ -749,7 +754,6 @@ class _CCOps(_JimModuleBase):
             self._jim_object._set(
                 self._jim_object._jipjim.labelConstrainedCCsMultiband(
                     ngb._jipjim, 1, 1, 0, globalRange, localRange))
-
 
     def labelConstrainedCCsCi(self, ngb, ox, oy, oz, rl):
         """Label image, in development.
@@ -765,14 +769,13 @@ class _CCOps(_JimModuleBase):
         """
         self._jim_object._set(
             self._jim_object._jipjim.labelConstrainedCCsCi(
-            ngb._jipjim, ox, oy, oz, rl))
+                ngb._jipjim, ox, oy, oz, rl))
 
     def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, ngb):
         """Label image.
 
         Modifies the instance on which the method was called.
 
-        :param jim: a Jim object
         :param ox: x coordinate of origin of imngb
         :param oy: y coordinate of origin of imngb
         :param oz: z coordinate of origin of imngb
@@ -818,7 +821,8 @@ class _CCOps(_JimModuleBase):
 
         Modifies the instance on which the method was called.
 
-        :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
+        :param ngb: Jim object for neighbourhood, e.g.,
+            create with pj.Jim(graph=4)
         :return: labeled Jim object
         """
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)

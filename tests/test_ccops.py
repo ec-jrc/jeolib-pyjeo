@@ -227,7 +227,8 @@ class BadCCOps(unittest.TestCase):
         labelled_different = pj.ccops.labelConstrainedCCsVariance(
             jim1, 0, 0, 0, 0, 0, 0.0, pj.Jim(graph=8))
         jim1_copy = pj.Jim(jim1)
-        jim1_copy.ccops.labelConstrainedCCsVariance(0, 0, 0, 0, 0, 0, pj.Jim(graph=4))
+        jim1_copy.ccops.labelConstrainedCCsVariance(0, 0, 0, 0, 0, 0,
+                                                    pj.Jim(graph=4))
 
         stats = labelled.stats.getStats(band=0)
 

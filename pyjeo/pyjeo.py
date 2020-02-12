@@ -82,12 +82,12 @@ class _ParentJim(_jl.Jim):
                     ngb[1, 0] = 1
                     ngb[1, 2] = 1
                     ngb[2, 1] = 1
-                    super(_ParentJim, self).__init__(ngb._jipjim)
                 else:
                     ngb = Jim(ncol=3, nrow=3, otype='Byte')
                     ngb.pixops.setData(1)
                     ngb[1, 1] = 0
-                    super(_ParentJim, self).__init__(ngb._jipjim)
+
+                super(_ParentJim, self).__init__(ngb._jipjim)
             else:
                 super(_ParentJim, self).__init__(kwargs)
         elif image:

@@ -443,6 +443,80 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.imageFrameSubtract() ' \
             '(changed values in the original Jim)'
 
+    # def test_image_inserts(self):
+    #     """Test imageFrame...() functions and methods."""
+    #     nrow = ncol = 50
+    #     nband = nplane = 2
+    #     jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,
+    #                  otype='Byte', uniform=[0, 2])
+    #     jim_copy = pj.Jim(jim)
+    #
+    #     ngb = _pj.Jim(ncol=3, nrow=3, otype='Byte')
+    #     ngb[0, 1] = 1
+    #     ngb[1, 0] = 1
+    #     ngb[1, 2] = 1
+    #     ngb[2, 1] = 1
+    #
+    #     # Test imageInsert()
+    #     #      (for 1-band Jim, see test below)
+    #
+    #     inserted = pj.geometry.imageInsert(jim, ngb, 1, 1, 0)
+    #     jim.geometry.imageInsert(ngb, 1, 1, 0)
+
+    # def test_magnify(self):
+    #     """Test the magnify() function and method."""
+    #     nrow = ncol = 10
+    #     nband = nplane = 2
+    #     jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,
+    #                  otype='Byte', uniform=[0, 255], seed=0)
+    #
+    #     # Test multi-band image
+    #     magnified = pj.geometry.magnify(jim, 2)
+    #     jim.geometry.magnify(2)
+    #
+    #     assert jim.pixops.isEqual(magnified), \
+    #         'Inconsistency in geometry.magnify() ' \
+    #         '(method returns different result than function)'
+    #     assert jim.properties.nrOfCol() == ncol * 2, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of cols not raised or not raised to the right number)'
+    #     assert jim.properties.nrOfRow() == nrow * 2, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of rows not raised or not raised to the right number)'
+    #     assert jim.properties.nrOfPlane() == nplane, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of planes changed)'
+    #     assert jim.properties.nrOfBand() == nband, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of bands changed)'
+    #     assert jim.np()[0, 0] == jim.np()[1, 1], \
+    #         'Error in geometry.magnify() ' \
+    #         '(values not magnified correctly)'
+    #
+    #     # Test one-band image
+    #     jim.geometry.cropBand(0)
+    #     magnified = pj.geometry.magnify(jim, 3)
+    #     jim.geometry.magnify(3)
+    #
+    #     assert jim.pixops.isEqual(magnified), \
+    #         'Inconsistency in geometry.magnify() ' \
+    #         '(method returns different result than function)'
+    #     assert jim.properties.nrOfCol() == ncol * 2 * 3, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of cols not raised or not raised to the right number)'
+    #     assert jim.properties.nrOfRow() == nrow * 2 * 3, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of rows not raised or not raised to the right number)'
+    #     assert jim.properties.nrOfPlane() == nplane, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of planes not raised or not raised to the right number)'
+    #     assert jim.properties.nrOfBand() == 1, \
+    #         'Error in geometry.magnify() ' \
+    #         '(number of bands changed)'
+    #     assert jim.np()[0, 0] == jim.np()[2, 2], \
+    #         'Error in geometry.magnify() ' \
+    #         '(values not magnified correctly)'
+
     def test_plotLine(self):
         """Test the plotLine() function and method."""
         nrow = ncol = 10
@@ -1870,6 +1944,15 @@ class BadGeometryVects(unittest.TestCase):
         assert raised, \
             'Error in catching a call of geometry.join(Jim) method ' \
             'where the argument is not an instance of a JimVect object'
+
+    # def test_stack(self):
+    #     """Test the stackBand and stackPlane methods."""
+    #     jim = pj.Jim(rasterfn)
+    #
+    #     # Test stackBand()
+    #     jim0to11 = pj.geometry.cropBand(jim,
+    #                                     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    #     jim12 = pj.geometry.cropBand(jim, 11)
 
 
 def load_tests(loader=None, tests=None, pattern=None):
