@@ -25,6 +25,13 @@ From the directory of the repository, run:
 sudo python setup.py install
 ```
 
+
+To install without sudo right, you can install with the --user
+
+```
+sudo python setup.py install --user
+```
+
 ## Test the installation
 
 From the directory of the repository, run:
