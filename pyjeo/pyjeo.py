@@ -265,7 +265,7 @@ class Jim():
                                          'specifying the geometry and otype '
                                          'of Jim.')
         elif type(image) is str:
-            if ':' in image:
+            if image[:4] == '/vsi' or ':' in image:
                 # non-standard path (e.g. HDF file) - skip the existence check
                 pass
             elif not _os.path.isfile(image):
