@@ -1,9 +1,6 @@
 """Module for accessing Jim attributes and geospatial informations."""
 
 import pyjeo as _pj
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 # def imageInfo(jim_object):
 #     """Return image information (number of lines, columns, etc.)
@@ -12,7 +9,7 @@ from . import JimVectModuleBase as _JimVectModuleBase
 #     return _pj.Jim(jim_object._jipjim.imageInfo())
 
 
-class _Properties(_JimModuleBase):
+class _Properties(_pj.modules.JimModuleBase):
     """Define all properties methods."""
 
     def clearNoData(self):
@@ -272,7 +269,7 @@ class _Properties(_JimModuleBase):
         self._jim_object._jipjim.setProjection(*args)
 
 
-class _PropertiesList(_JimListModuleBase):
+class _PropertiesList(_pj.modules.JimListModuleBase):
     """Define all properties methods for JimLists."""
 
     def clearNoData(self):
@@ -367,7 +364,7 @@ class _PropertiesList(_JimListModuleBase):
         self._jim_list._set(self._jim_list)
 
 
-class _PropertiesVect(_JimVectModuleBase):
+class _PropertiesVect(_pj.modules.JimVectModuleBase):
     """Define all properties methods for JimVects."""
 
     def getBBox(self):

@@ -1,9 +1,6 @@
 """Module for connected-component operations."""
 
 import pyjeo as _pj
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 
 # TODO: Test
@@ -580,7 +577,7 @@ def watershed(ajim, graph=8):
     return _pj.Jim(ajim._jipjim.segmentationWatershed(ajim._jipjim, graph))
 
 
-class _CCOps(_JimModuleBase):
+class _CCOps(_pj.modules.JimModuleBase):
     """Define all CCOps methods."""
 
     def convertRgbToHsx(self, theType, band):
@@ -927,7 +924,7 @@ class _CCOps(_JimModuleBase):
         self._jim_object._set(marker)
 
 
-class _CCOpsList(_JimListModuleBase):
+class _CCOpsList(_pj.modules.JimListModuleBase):
     """Define all CCOps methods for JimLists."""
 
     def labelConstrainedCCs(self, localRange, globalRange, ngb):
@@ -947,7 +944,7 @@ class _CCOpsList(_JimListModuleBase):
         return _pj.Jim(self._jim_list._jipjimlist.labelConstrainedCCsMultiband(
             ngb._jipjim, 1, 1, 0, globalRange, localRange))
 
-class _CCOpsVect(_JimVectModuleBase):
+class _CCOpsVect(_pj.modules.JimVectModuleBase):
     """Define all CCOps methods for JimVects."""
 
     pass

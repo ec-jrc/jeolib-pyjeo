@@ -3,9 +3,6 @@
 import numpy as _np
 
 import pyjeo as _pj
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def dwt1d(jim_object, **kwargs):
@@ -492,7 +489,7 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
 #     print("kwargs is: {}".format(kwargs))
 #     return _pj.Jim(jim_object._jipjim.stats1d(kwargs))
 
-class _NgbOps(_JimModuleBase):
+class _NgbOps(_pj.modules.JimModuleBase):
     """Define all NgbOps methods."""
 
     def dwt1d(self, **kwargs):
@@ -1328,13 +1325,13 @@ class _NgbOps(_JimModuleBase):
     #     self._jim_object._set(self._jim_object._jipjim.stats1d(kwargs))
 
 
-class _NgbOpsList(_JimListModuleBase):
+class _NgbOpsList(_pj.modules.JimListModuleBase):
     """Define all NgbOps methods for JimLists."""
 
     pass
 
 
-class _NgbOpsVect(_JimVectModuleBase):
+class _NgbOpsVect(_pj.modules.JimVectModuleBase):
     """Define all NgbOps methods for JimVects."""
 
     pass

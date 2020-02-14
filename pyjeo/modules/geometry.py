@@ -5,9 +5,6 @@ import numpy as _np
 import warnings as _warnings
 
 import pyjeo as _pj
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 
 # def append(jvec1, jvec2, output, **kwargs):
@@ -1066,7 +1063,7 @@ def warp(jim_object, t_srs, **kwargs):
     # return _pj.Jim(jim_object._jipjim.warp(kwargs))
 
 
-class _Geometry(_JimModuleBase):
+class _Geometry(_pj.modules.JimModuleBase):
     """Define all Geometry methods."""
 
     def aggregate_vector(self, jvec, rule, output, **kwargs):
@@ -2664,7 +2661,7 @@ class _Geometry(_JimModuleBase):
         # self._jim_object._set(self._jim_object._jipjim.warp(kwargs))
 
 
-class _GeometryList(_JimListModuleBase):
+class _GeometryList(_pj.modules.JimListModuleBase):
     """Define all Geometry methods for JimLists."""
 
     def __init__(self):
@@ -3050,7 +3047,7 @@ class _GeometryList(_JimListModuleBase):
                             'of type JimVect')
 
 
-class _GeometryVect(_JimVectModuleBase):
+class _GeometryVect(_pj.modules.JimVectModuleBase):
     """Define all Geometry methods for JimVects."""
 
     def __init__(self):

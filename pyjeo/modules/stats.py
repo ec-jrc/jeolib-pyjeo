@@ -3,9 +3,6 @@
 import numpy as _np
 
 import pyjeo as _pj
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def getHisto1d(jim_object):
@@ -77,7 +74,7 @@ def stretch(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.stretch(kwargs))
 
 
-class _Stats(_JimModuleBase):
+class _Stats(_pj.modules.JimModuleBase):
     """Define all statistical methods."""
 
     def getHisto1d(self):
@@ -268,7 +265,7 @@ class _Stats(_JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.stretch(kwargs))
 
 
-class _StatsList(_JimListModuleBase):
+class _StatsList(_pj.modules.JimListModuleBase):
     """Define all statistical methods for JimLists."""
 
     def getStatProfile(self, function, **kwargs):
@@ -379,7 +376,7 @@ class _StatsList(_JimListModuleBase):
         return statDict
 
 
-class _StatsVect(_JimVectModuleBase):
+class _StatsVect(_pj.modules.JimVectModuleBase):
     """Define all statistical methods for JimVects."""
 
     pass

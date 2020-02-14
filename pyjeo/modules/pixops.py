@@ -4,9 +4,6 @@ import numpy as _np
 
 import pyjeo as _pj
 import jiplib as _jl
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def composite(jim_list, crule='overwrite', **kwargs):
@@ -430,7 +427,7 @@ def supremum(jim, *args):
     return supremum
 
 
-class _PixOps(_JimModuleBase):
+class _PixOps(_pj.modules.JimModuleBase):
     """Define all PixOps methods."""
 
     def convert(self, otype, **kwargs):
@@ -873,7 +870,7 @@ class _PixOps(_JimModuleBase):
             else:
                 self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
 
-class _PixOpsList(_JimListModuleBase):
+class _PixOpsList(_pj.modules.JimListModuleBase):
     """Define all PixOps methods for JimLists."""
 
     def composite(self, crule='overwrite', **kwargs):
@@ -907,7 +904,7 @@ class _PixOpsList(_JimListModuleBase):
                 supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
         return supremum
 
-class _PixOpsVect(_JimVectModuleBase):
+class _PixOpsVect(_pj.modules.JimVectModuleBase):
     """Define all PixOps methods for JimVects."""
 
     pass

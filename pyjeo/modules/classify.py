@@ -1,9 +1,6 @@
 """Module for operations connected to classification."""
 
 import pyjeo as _pj
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def classify(jim_object, method, model, **kwargs):
@@ -82,7 +79,7 @@ def sml(jim_object, reflist, **kwargs):
         reflist, kwargs))
 
 
-class _Classify(_JimModuleBase):
+class _Classify(_pj.modules.JimModuleBase):
     """Define all classification methods for Jims."""
 
     def classify(self, method, model, **kwargs):
@@ -237,13 +234,13 @@ class _Classify(_JimModuleBase):
             raise ValueError('Error: output for model not set')
 
 
-class _ClassifyList(_JimListModuleBase):
+class _ClassifyList(_pj.modules.JimListModuleBase):
     """Define all classification methods for JimLists."""
 
     pass
 
 
-class _ClassifyVect(_JimVectModuleBase):
+class _ClassifyVect(_pj.modules.JimVectModuleBase):
     """Define all classification methods for JimVects."""
 
     def classify(self, method, model, **kwargs):

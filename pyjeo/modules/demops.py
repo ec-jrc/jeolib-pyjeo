@@ -3,9 +3,6 @@
 import numpy as _np
 
 import pyjeo as _pj
-from . import JimModuleBase as _JimModuleBase
-from . import JimListModuleBase as _JimListModuleBase
-from . import JimVectModuleBase as _JimVectModuleBase
 
 
 def catchmentBasinConfluence(jim_object, d8):
@@ -326,7 +323,7 @@ def strahler(jim_object):
     return _pj.Jim(jim_object._jipjim.demStrahlerOrder())
 
 
-class _DEMOps(_JimModuleBase):
+class _DEMOps(_pj.modules.JimModuleBase):
     """Define all DEMOps methods."""
 
     def catchmentBasinConfluence(self, d8):
@@ -623,13 +620,13 @@ class _DEMOps(_JimModuleBase):
         self._jim_object._jipjim.d_demStrahlerOrder()
 
 
-class _DEMOpsList(_JimListModuleBase):
+class _DEMOpsList(_pj.modules.JimListModuleBase):
     """Define all DEMOps methods for JimLists."""
 
     pass
 
 
-class _DEMOpsVect(_JimVectModuleBase):
+class _DEMOpsVect(_pj.modules.JimVectModuleBase):
     """Define all DEMOps methods for JimVects."""
 
     pass

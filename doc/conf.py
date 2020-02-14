@@ -58,7 +58,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'pyJEO'
 copyright = u'European Commission, 2018'
-author = u'Pieter Kempeneers, Ondrej Pesek, Davide De Marchi, Pierre Soille'
+author = u'Pieter Kempeneers, Ondrej Pesek, Pierre Soille'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
