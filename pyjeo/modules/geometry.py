@@ -746,7 +746,7 @@ def polygonize(jim_object, output, **kwargs):
 #     return ajim
 
 
-def reducePlane(jim, rule, ref_band=None, nodata=None):
+def reducePlane(jim, rule=None, ref_band=None, nodata=None):
     """Reduce planes of Jim object.
 
     :param jim: jim object on which to reduce planes
@@ -768,6 +768,8 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
 
     jimreduced = _pj.geometry.cropPlane(jim, 0)
 
+    if rule is None:
+        rule='overwrite'
     if isinstance(rule, str):
         nr_of_row = jim.properties.nrOfRow()
         nr_of_col = jim.properties.nrOfCol()
@@ -891,11 +893,41 @@ def reducePlane(jim, rule, ref_band=None, nodata=None):
     else:
         if nodata is not None or ref_band is not None:
             raise AttributeError('Error: nodata and ref_band are not '
-                                 'supported for this rule')
-        jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
+                                'supported for this rule')
+        jimreduced = _pj.geometry.cropPlane(jim, 0)
         for iplane in range(1, nr_of_planes):
-            jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
+            jimplane = _pj.geometry.cropPlane(jim, iplane)
             jimreduced = rule(jimreduced, jimplane)
+        # else:
+        #     #default behavior is overwrite
+        #     def rule(reduced, plane):
+        #         return plane
+        #     if ref_band is not None:
+        #         maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
+
+        #     for iplane in range(1, nr_of_planes):
+        #         jimplane = _pj.geometry.cropPlane(jim, iplane)
+
+        #         if nodata is not None and ref_band is None:
+        #             raise AttributeError(
+        #                 'Error: use ref_band option for nodata')
+
+        #         if ref_band is not None:
+        #             maskplane = _pj.geometry.cropBand(jimplane, ref_band)
+        #             themask = rule(maskreduced, maskplane)
+        #             if nodata is not None:
+        #                 themask |= maskreduced == nodata
+        #                 themask &= maskplane != nodata
+        #             maskreduced[themask] = maskplane
+        #         else:
+        #             themask = rule(jimreduced, jimplane)
+
+        #         jimreduced[themask] = jimplane
+
+        #         if nodata is not None:
+        #             nodata_mask = (maskreduced == nodata) & \
+        #                           (maskplane == nodata)
+        #             jimreduced[nodata_mask] = nodata
 
     return jimreduced
 
@@ -2345,7 +2377,7 @@ class _Geometry(_pj.modules.JimModuleBase):
     #     kwargs.update({'ln':ln})
     #     self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
 
-    def reducePlane(self, rule, ref_band=None, nodata=None):
+    def reducePlane(self, rule=None, ref_band=None, nodata=None):
         """Reduce planes of Jim object.
 
         :param rule: rule to reduce (mean, median, min or max)
@@ -2375,6 +2407,8 @@ class _Geometry(_pj.modules.JimModuleBase):
             jim_stacked.geometry.reducePlane(getMax)
 
         """
+        if rule is None:
+            rule='overwrite'
         nr_of_planes = self._jim_object.properties.nrOfPlane()
         if nr_of_planes < 2:
             _warnings.warn(
@@ -2510,11 +2544,44 @@ class _Geometry(_pj.modules.JimModuleBase):
         else:
             if nodata is not None or ref_band is not None:
                 raise AttributeError('Error: nodata and ref_band are not '
-                                     'supported for this rule')
+                                    'supported for this rule')
             jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
             for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
                 jimreduced = rule(jimreduced, jimplane)
+            # else:
+            #     #default behavior is overwrite
+            #     def rule(reduced, plane):
+            #         ones=_pj.Jim(plane,copyData=False)
+            #         ones.pixops.setData(1)
+            #         ones.pixops.convert('GDT_Byte')
+            #         return ones
+            #     if ref_band is not None:
+            #         maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
+
+            #     for iplane in range(1, nr_of_planes):
+            #         jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
+
+            #         if nodata is not None and ref_band is None:
+            #             raise AttributeError(
+            #                 'Error: use ref_band option for nodata')
+
+            #         if ref_band is not None:
+            #             maskplane = _pj.geometry.cropBand(jimplane, ref_band)
+            #             themask = rule(maskreduced, maskplane)
+            #             if nodata is not None:
+            #                 themask |= maskreduced == nodata
+            #                 themask &= maskplane != nodata
+            #             maskreduced[themask] = maskplane
+            #         else:
+            #             themask = rule(jimreduced, jimplane)
+
+            #         jimreduced[themask] = jimplane
+
+            #         if nodata is not None:
+            #             nodata_mask = (maskreduced == nodata) & \
+            #                         (maskplane == nodata)
+            #             jimreduced[nodata_mask] = nodata
 
         self._jim_object._set(jimreduced._jipjim)
 
