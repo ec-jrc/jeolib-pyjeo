@@ -29,7 +29,7 @@ sudo python setup.py install
 To install without sudo right, you can install with the --user
 
 ```
-sudo python setup.py install --user
+python setup.py install --user
 ```
 
 ## Test the installation
