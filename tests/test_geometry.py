@@ -106,6 +106,12 @@ class BadGeometry(unittest.TestCase):
         # Test the reducePlane() method
         jimstack = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
         jimreduce = pj.geometry.reducePlane(jimstack, rule='max')
+        jim0 = pj.Jim(jimstack)
+        jim0.np()[0]=0
+        jim0.np()[2]=0
+        jim0.geometry.reducePlane(nodata=0,ref_band=0)
+        assert jim0.pixops.isEqual(pj.geometry.cropPlane(jimstack,1)), \
+            'Error in geometry.reducePlane(): nodata not taken into account'
         assert jimreduce.properties.nrOfPlane() == 1
         jimstack.geometry.reducePlane(rule='max')
         assert jimstack.properties.nrOfPlane() == 1
