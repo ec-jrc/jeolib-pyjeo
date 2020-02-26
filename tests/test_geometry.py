@@ -106,12 +106,23 @@ class BadGeometry(unittest.TestCase):
         # Test the reducePlane() method
         jimstack = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
         jimreduce = pj.geometry.reducePlane(jimstack, rule='max')
-        jim0 = pj.Jim(jimstack)
-        jim0.np()[0]=0
-        jim0.np()[2]=0
-        jim0.geometry.reducePlane(nodata=0,ref_band=0)
-        assert jim0.pixops.isEqual(pj.geometry.cropPlane(jimstack,1)), \
-            'Error in geometry.reducePlane(): nodata not taken into account'
+        jim0 = pj.Jim(rasterfn, band=[0, 1, 2])
+        jim1 = pj.Jim(jim0)
+        jim1+=1
+        jim1.np(0)[:]=0
+        jim0.geometry.stackPlane(jim1)
+        jimreduce0=pj.geometry.reducePlane(jim0,nodata=0,ref_band=0,rule='median')
+        jimreduce1=pj.geometry.reducePlane(jim0,nodata=0,ref_band=0,rule='max')
+        jim0.geometry.cropPlane(0)
+        jim0[pj.geometry.cropBand(jim0,0)==0]=0
+        assert pj.geometry.cropBand(jimreduce0,0).pixops.isEqual(pj.geometry.cropBand(jim0,0)), \
+            'Error in geometry.reducePlane(): jimreduce0 band 0!= jim0 band 0'
+        assert pj.geometry.cropBand(jimreduce0,1).pixops.isEqual(pj.geometry.cropBand(jim0,1)), \
+            'Error in geometry.reducePlane(): jimreduce0 band 1!= jim0 band 1'
+        assert pj.geometry.cropBand(jimreduce0,2).pixops.isEqual(pj.geometry.cropBand(jim0,2)), \
+            'Error in geometry.reducePlane(): jimreduce0 band 2!= jim0 band 2'
+        assert jimreduce0.pixops.isEqual(jimreduce1), \
+            'Error in geometry.reducePlane(): jimreduce0 != jimreduce1'
         assert jimreduce.properties.nrOfPlane() == 1
         jimstack.geometry.reducePlane(rule='max')
         assert jimstack.properties.nrOfPlane() == 1
