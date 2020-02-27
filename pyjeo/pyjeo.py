@@ -244,7 +244,7 @@ class Jim():
         if band >= self.properties.nrOfBand():
             raise ValueError('Band out of bounds')
         elif band < 0:
-            band = self.properties.nrOfBand() - band
+            band = self.properties.nrOfBand() + band
         return _jl.np(self._jipjim, band)
 
     def _checkInitParamsSense(self, image, kwargs):
