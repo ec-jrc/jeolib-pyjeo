@@ -769,7 +769,7 @@ def reducePlane(jim, rule=None, ref_band=None, nodata=None):
     jimreduced = _pj.geometry.cropPlane(jim, 0)
 
     if rule is None:
-        rule='overwrite'
+        rule = 'overwrite'
     if isinstance(rule, str):
         nr_of_row = jim.properties.nrOfRow()
         nr_of_col = jim.properties.nrOfCol()
@@ -893,7 +893,7 @@ def reducePlane(jim, rule=None, ref_band=None, nodata=None):
     else:
         if nodata is not None or ref_band is not None:
             raise AttributeError('Error: nodata and ref_band are not '
-                                'supported for this rule')
+                                 'supported for this rule')
         jimreduced = _pj.geometry.cropPlane(jim, 0)
         for iplane in range(1, nr_of_planes):
             jimplane = _pj.geometry.cropPlane(jim, iplane)
@@ -2408,7 +2408,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         """
         if rule is None:
-            rule='overwrite'
+            rule = 'overwrite'
         nr_of_planes = self._jim_object.properties.nrOfPlane()
         if nr_of_planes < 2:
             _warnings.warn(
@@ -2544,7 +2544,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         else:
             if nodata is not None or ref_band is not None:
                 raise AttributeError('Error: nodata and ref_band are not '
-                                    'supported for this rule')
+                                     'supported for this rule')
             jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
             for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
