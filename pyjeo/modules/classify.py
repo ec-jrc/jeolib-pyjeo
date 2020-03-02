@@ -223,7 +223,7 @@ class _Classify(_pj.modules.JimModuleBase):
         """
         # convert list of Jim to JimList
         if not isinstance(reference, _pj.JimList):
-            reference = _pj.JimList(reference)
+            reference = _pj.JimList([reference])
         kwargs.update({'method': "sml"})
         if 'classes' in kwargs:
             kwargs.update({'class': kwargs.pop('classes')})
@@ -350,7 +350,7 @@ class _ClassifyVect(_pj.modules.JimVectModuleBase):
 
            jim=pj.Jim('/path/to/multiband/raster.tif')
            training=jim.geometry.extractOgr(sample,rule='centroid',oformat='Memory',copy='label'})
-           training.classify.train(method='svm',label='label',model='/path/to/model.txt')
+           training.classify.train(method='svm',label='label',output='/path/to/model.txt')
 
         Use :py:meth:`~_Classify.classify` to perform the classification
 
@@ -394,7 +394,7 @@ class _ClassifyVect(_pj.modules.JimVectModuleBase):
 
            jim=pj.Jim('/path/to/multiband/raster.tif')
            training=jim.geometry.extractOgr(sample,rule='centroid',oformat='Memory',copy='label'})
-           training.classify.train(method='ann',label='label',model='/path/to/model.txt')
+           training.classify.train(method='ann',label='label',output='/path/to/model.txt')
 
         Use :py:meth:`~_Classify.classify` to perform the classification
         """
