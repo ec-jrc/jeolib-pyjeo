@@ -24,13 +24,13 @@ class BadClassify(unittest.TestCase):
         classFrom = range(0, 50)
         classTo = [50] * 50
         for i in range(0, 50):
-            if i >= 1 and i < 10:
+            if 1 <= i < 10:
                 classTo[i] = classDict['urban']
-            elif i >= 11 and i < 22:
+            elif 11 <= i < 22:
                 classTo[i] = classDict['agriculture']
-            elif i >= 23 and i < 25:
+            elif 23 <= i < 25:
                 classTo[i] = classDict['forest']
-            elif i >= 40 and i < 45:
+            elif 40 <= i < 45:
                 classTo[i] = classDict['water']
             else:
                 classTo[i] = classDict['rest']
