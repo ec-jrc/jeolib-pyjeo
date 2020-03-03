@@ -153,12 +153,23 @@ class BadBasicMethods(unittest.TestCase):
         assert raised, \
             'Error in catching a call of Jim.np() for non-dimensional Jims'
 
-        band0 = ajim.np(nr_of_band - 1)
-        cropped = pj.geometry.cropBand(ajim, nr_of_band - 1).np()
+        nrow = ncol = nband = 5
+        multib_jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, otype='Byte',
+                            uniform=[0, 2], seed=0)
 
-        assert (band0 == cropped).all(), \
+        band_last = multib_jim.np(nband - 1)
+        cropped = pj.geometry.cropBand(multib_jim, nband - 1)
+
+        assert (band_last == cropped.np()).all(), \
             'Error in Jim.np(band) ' \
             '(not returning the same object as cropBand(band).np())'
+
+        band_last_minus = multib_jim.np(-1)
+
+        assert (band_last == band_last_minus).all(), \
+            'Error in Jim.np(-band) ' \
+            '(Jim.np(-1) not returning the same object as ' \
+            'Jim.np(Jim.properties.nrOfBand() - 1))'
 
         try:
             _ = ajim.np(ajim.properties.nrOfBand())
