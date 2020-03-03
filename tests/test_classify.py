@@ -39,7 +39,7 @@ class BadClassify(unittest.TestCase):
         jim_ref.classify.reclass(classes=list(classFrom), reclasses=classTo)
 
         bbox = [4246000, 2547000, 4349500, 2441000]
-        jim = pj.Jim(testFile, band2plane = True,
+        jim = pj.Jim(testFile, band2plane=True,
                      ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
 
         jim_ref.geometry.warp(jim.properties.getProjection())
