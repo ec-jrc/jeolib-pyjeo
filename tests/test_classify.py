@@ -35,8 +35,8 @@ class BadClassify(unittest.TestCase):
             else:
                 classTo[i] = classDict['rest']
 
-        jim_ref=pj.Jim(reference,dx=1000,dy=1000)
-        jim_ref.classify.reclass(classes=list(classFrom),reclasses=classTo)
+        jim_ref = pj.Jim(reference, dx=1000, dy=1000)
+        jim_ref.classify.reclass(classes=list(classFrom), reclasses=classTo)
         jim = pj.Jim(testFile, band2plane=True,
                      dx=jim_ref.properties.getDeltaX(),
                      dy=jim_ref.properties.getDeltaY(),
@@ -53,9 +53,10 @@ class BadClassify(unittest.TestCase):
         sml.geometry.band2plane()
         sml.np()[:] = np.argmax(sml.np(), axis=0)
         sml.properties.clearNoData()
-        sml.classify.reclass(classes=[0,1,2,3,4],reclasses=[2,12,25,41,50])
+        sml.classify.reclass(classes=[0, 1, 2, 3, 4],
+                             reclasses=[2, 12, 25, 41, 50])
 
-        stats=sml.stats.getStats('histogram')
+        stats = sml.stats.getStats('histogram')
         assert stats['histogram'][stats['bin'].index(2)] == 1661.0, \
             'Error in class 2'
         assert stats['histogram'][stats['bin'].index(12)] == 5989.0, \

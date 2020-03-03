@@ -348,9 +348,11 @@ class _ClassifyVect(_pj.modules.JimVectModuleBase):
         Then use the extracted vector to train a SVM and write the model to
         a file.::
 
-           jim=pj.Jim('/path/to/multiband/raster.tif')
-           training=jim.geometry.extractOgr(sample,rule='centroid',oformat='Memory',copy='label'})
-           training.classify.train(method='svm',label='label',output='/path/to/model.txt')
+           jim = pj.Jim('/path/to/multiband/raster.tif')
+           training = jim.geometry.extractOgr(sample, rule='centroid',
+                                              oformat='Memory', copy='label')
+           training.classify.train(method='svm', label='label',
+                                   output='/path/to/model.txt')
 
         Use :py:meth:`~_Classify.classify` to perform the classification
 
@@ -392,9 +394,11 @@ class _ClassifyVect(_pj.modules.JimVectModuleBase):
         Then use the extracted vector to train an ANN and write the model to
         a file.::
 
-           jim=pj.Jim('/path/to/multiband/raster.tif')
-           training=jim.geometry.extractOgr(sample,rule='centroid',oformat='Memory',copy='label'})
-           training.classify.train(method='ann',label='label',output='/path/to/model.txt')
+           jim = pj.Jim('/path/to/multiband/raster.tif')
+           training = jim.geometry.extractOgr(sample, rule='centroid',
+                                              oformat='Memory', copy='label')
+           training.classify.train(method='ann', label='label',
+                                   output='/path/to/model.txt')
 
         Use :py:meth:`~_Classify.classify` to perform the classification
         """
