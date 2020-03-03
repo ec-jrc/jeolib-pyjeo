@@ -37,10 +37,12 @@ class BadClassify(unittest.TestCase):
 
         jim_ref = pj.Jim(reference, dx=1000, dy=1000)
         jim_ref.classify.reclass(classes=list(classFrom), reclasses=classTo)
-        bbox=[4246000, 2547000, 4349500, 2441000]
+
+        bbox = [4246000, 2547000, 4349500, 2441000]
         jim = pj.Jim(testFile, band2plane = True,
                      ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
 
+        jim_ref.geometry.warp(jim.properties.getProjection())
         reflist = pj.JimList([jim_ref])
         jim.classify.trainSML(reflist, output=model,
                               classes=sorted(classDict.values()))
@@ -52,15 +54,15 @@ class BadClassify(unittest.TestCase):
                              reclasses=[2, 12, 25, 41, 50])
 
         stats = sml.stats.getStats('histogram')
-        assert stats['histogram'][stats['bin'].index(2)] == 6590.0, \
+        assert stats['histogram'][stats['bin'].index(2)] == 6608.0, \
             'Error in class 2'
-        assert stats['histogram'][stats['bin'].index(12)] == 23502.0, \
+        assert stats['histogram'][stats['bin'].index(12)] == 23507.0, \
             'Error in class 12'
-        assert stats['histogram'][stats['bin'].index(25)] == 6314.0, \
+        assert stats['histogram'][stats['bin'].index(25)] == 6289.0, \
             'Error in class 25'
-        assert stats['histogram'][stats['bin'].index(41)] == 983.0, \
+        assert stats['histogram'][stats['bin'].index(41)] == 966.0, \
             'Error in class 41'
-        assert stats['histogram'][stats['bin'].index(50)] == 6495.0, \
+        assert stats['histogram'][stats['bin'].index(50)] == 6514.0, \
             'Error in class 50'
 
 
