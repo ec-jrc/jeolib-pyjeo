@@ -344,7 +344,7 @@ def labelGraph(jim, ngb):
     return _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
 
 
-def labelImagePixels(jim):
+def labelPixels(jim):
     """Label each non-zero pixel of im with a unique label.
 
     Labels unless label overflows occurs.
@@ -824,7 +824,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
 
-    def labelImagePixels(self):
+    def labelPixels(self):
         """Label each non-zero pixel of im with a unique label.
 
         Labels unless label overflows occurs.
