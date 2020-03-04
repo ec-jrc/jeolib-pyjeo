@@ -4,10 +4,12 @@ import pyjeo as pj
 import numpy as np
 import unittest
 
+import os
+
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
 reference = 'tests/data/clc_32632.tif'
-model = 'tests/data/sml.txt'
+model = pj._get_random_path()
 
 
 class BadClassify(unittest.TestCase):
@@ -64,6 +66,8 @@ class BadClassify(unittest.TestCase):
             'Error in class 41'
         assert stats['histogram'][stats['bin'].index(50)] == 6514.0, \
             'Error in class 50'
+
+        os.remove(model)
 
 
 def load_tests(loader=None, tests=None, pattern=None):
