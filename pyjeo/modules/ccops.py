@@ -307,7 +307,7 @@ def labelErode(jim, graph=4):
     return _pj.Jim(jim._jipjim.labelErode(graph))
 
 
-def labelFlatZonesGraph(jim, ngb):
+def labelFlatZones(jim, ngb):
     """Label each image flat zone with a unique label using graph-connectivity.
 
     :param jim: a Jim object holding a grey level image
