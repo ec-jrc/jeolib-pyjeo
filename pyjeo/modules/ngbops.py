@@ -309,6 +309,21 @@ def getDissim(jimo, dissimType=0):
     return [h_dissim, v_dissim]
 
 
+def labelPixNgb(jim_object, sec_jim_object, ox, oy, oz):
+    """Label pix ngb.
+
+    :param jim_object: Jim object on which to perform the labelling
+    :param sec_jim_object: a Jim object
+    :param ox: x coordinate
+    :param oy: y coordinate
+    :param oz: z coordinate
+
+    :return: labelled Jim object
+    """
+    return _pj.Jim(jim_object._jipjim.labelPixNgb(sec_jim_object._jipjim,
+                                                  ox, oy, oz))
+
+
 def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     """Output the dilation of im using the SE defined by imse.
 
@@ -1148,6 +1163,22 @@ class _NgbOps(_pj.modules.JimModuleBase):
                              'values 0 and 1'.format(dissimType))
 
         return [h_dissim, v_dissim]
+
+
+    def labelPixNgb(self, sec_jim_object, ox, oy, oz):
+        """Label pix ngb.
+
+        Modifies the instance on which the method was called.
+
+        :param sec_jim_object: a Jim object
+        :param ox: x coordinate
+        :param oy: y coordinate
+        :param oz: z coordinate
+
+        :return: labelled Jim object
+        """
+        self._jim_object._jipjim.d_labelPixNgb(sec_jim_object._jipjim,
+                                               ox, oy, oz)
 
     def morphoDilate(self, sec_jim_object, ox, oy, oz, trFlag=0):
         """Output the dilation of im using the SE defined by imse.
