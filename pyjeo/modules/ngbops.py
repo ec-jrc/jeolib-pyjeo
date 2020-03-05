@@ -273,7 +273,6 @@ def getDissim(jimo, dissimType=0):
                                                            ABS_DIFF_op))
             v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
                                                            ABS_DIFF_op))
-
     elif dissimType == 1:
         mingraderograddil = _pj.pixops.infimum(
             _pj.ngbops.morphoGradientByDilationDiamond(
@@ -303,6 +302,9 @@ def getDissim(jimo, dissimType=0):
 
             h_dissim.pixops.supremum(h_dissim_crt)
             v_dissim.pixops.supremum(v_dissim_crt)
+    else:
+        raise ValueError('dissimType {} not supported. Supported only values '
+                         '0 and 1'.format(dissimType))
 
     return [h_dissim, v_dissim]
 
@@ -1106,7 +1108,6 @@ class _NgbOps(_pj.modules.JimModuleBase):
                                                                ABS_DIFF_op))
                 v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
                                                                ABS_DIFF_op))
-
         elif dissimType == 1:
             mingraderograddil = _pj.pixops.infimum(
                 _pj.ngbops.morphoGradientByDilationDiamond(
@@ -1142,6 +1143,9 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
                 h_dissim.pixops.supremum(h_dissim_crt)
                 v_dissim.pixops.supremum(v_dissim_crt)
+        else:
+            raise ValueError('dissimType {} not supported. Supported only '
+                             'values 0 and 1'.format(dissimType))
 
         return [h_dissim, v_dissim]
 
