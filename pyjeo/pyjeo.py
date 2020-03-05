@@ -205,7 +205,7 @@ class Jim:
 
     def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
-        def treeStructure(module, queried_module):
+        def tree_structure(module, queried_module):
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -223,10 +223,11 @@ class Jim:
                    module_methods
 
         methods = list()
+
         for module in [properties._Properties, io._IO, pixops._PixOps,
                        ngbops._NgbOps, geometry._Geometry, ccops._CCOps,
                        classify._Classify, demops._DEMOps, stats._Stats]:
-            methods.extend(treeStructure(module, queried_module))
+            methods.extend(tree_structure(module, queried_module))
 
         print('\n'.join(methods))
 
@@ -1177,7 +1178,7 @@ class JimList(list):
 
     def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
-        def treeStructure(module, queried_module):
+        def tree_structure(module, queried_module):
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -1198,7 +1199,7 @@ class JimList(list):
 
         for module in [geometry._GeometryList, io._IOList, pixops._PixOpsList,
                        properties._PropertiesList, stats._StatsList]:
-            methods.extend(treeStructure(module, queried_module))
+            methods.extend(tree_structure(module, queried_module))
 
         print('\n'.join(methods))
 
@@ -1407,7 +1408,7 @@ class JimVect:
 
     def getMethods(self, queried_module=None):
         """Print an overview of available methods in format module.method."""
-        def treeStructure(module, queried_module):
+        def tree_structure(module, queried_module):
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -1429,7 +1430,7 @@ class JimVect:
                        geometry._GeometryVect,
                        io._IOVect,
                        properties._PropertiesVect]:
-            methods.extend(treeStructure(module, queried_module))
+            methods.extend(tree_structure(module, queried_module))
 
         print('\n'.join(methods))
 
