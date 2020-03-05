@@ -1275,7 +1275,8 @@ class JimList(list):
             for image in modified_list:
                 self._jipjimlist.pushImage(image._jipjim)
 
-    def __dir__(self):
+    @staticmethod
+    def __dir__():
         """Change behaviour of the method whisperer to ignore jiplib methods.
 
         :return: a whispered module or method
