@@ -101,7 +101,7 @@ class _ParentJim(_jl.Jim):
             super(_ParentJim, self).__init__(image)
 
 
-class Jim():
+class Jim:
     """Definition of Jim object."""
 
     def __init__(self, image=None, **kwargs):
@@ -1352,7 +1352,7 @@ class _ParentVect(_jl.VectorOgr):
                                      'template vector is not specified')
 
 
-class JimVect():
+class JimVect:
     """Definition of JimVect object."""
 
     def __init__(self, vector=None, **kwargs):
