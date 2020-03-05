@@ -17,16 +17,16 @@ from .__init__ import _check_graph
 del _jl.Jim.__del__
 
 
-def jim2np(aJim, band=0, copyData=True):
+def jim2np(aJim, band=0, copy_data=True):
     """Return a numpy representation of a Jim object.
 
     :param aJim: Jim object to be converted
     :param band: band of Jim object to be converted
-    :param copyData: Set to False if reference image is used as a template
+    :param copy_data: Set to False if reference image is used as a template
         only, without copying actual pixel dat
     :return: a numpy representation of the Jim object
     """
-    return _jl.jim2np(aJim._jipjim, band, copyData)
+    return _jl.jim2np(aJim._jipjim, band, copy_data)
 
 
 def np(aJim):
@@ -60,13 +60,13 @@ class _ParentJim(_jl.Jim):
         if kwargs:
             if image:
                 if isinstance(image, Jim):
-                    if 'copyData' in kwargs.keys():
+                    if 'copy_data' in kwargs.keys():
                         super(_ParentJim, self).__init__(image._jipjim,
-                                                         kwargs['copyData'])
+                                                         kwargs['copy_data'])
                     else:
                         _warnings.warn(
                             'Not possible to create Jim image based on another'
-                            ' one together with other kwargs than copyData. '
+                            ' one together with other kwargs than copy_data. '
                             'kwargs ignored.', SyntaxWarning)
                         super(_ParentJim, self).__init__(image._jipjim)
                 else:
@@ -448,13 +448,13 @@ class Jim():
             # self[template>0]=value
 
             if type(value) in (float, int):
-                templateJim = Jim(self, copyData=False)
+                templateJim = Jim(self, copy_data=False)
                 templateJim = Jim(templateJim._jipjim.setMask(
                     item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
                                        'nodata': 1}))
                 self[templateJim > 0] = value
             elif isinstance(value, Jim):
-                templateJim = Jim(self, copyData=False)
+                templateJim = Jim(self, copy_data=False)
                 templateJim = Jim(templateJim._jipjim.setMask(
                     item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
                                        'nodata': 1}))

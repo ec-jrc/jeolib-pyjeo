@@ -2552,7 +2552,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             # else:
             #     #default behavior is overwrite
             #     def rule(reduced, plane):
-            #         ones=_pj.Jim(plane,copyData=False)
+            #         ones=_pj.Jim(plane,copy_data=False)
             #         ones.pixops.setData(1)
             #         ones.pixops.convert('GDT_Byte')
             #         return ones

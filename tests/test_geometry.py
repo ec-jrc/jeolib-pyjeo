@@ -635,7 +635,7 @@ class BadGeometry(unittest.TestCase):
             '(not less features in polygons than cells in raster)'
 
         # Test with the mask parameter
-        mask = pj.Jim(jim, copyData=False)
+        mask = pj.Jim(jim, copy_data=False)
         mask[0, 0] = 1
         mask[0, 1] = 1
         mask[2, 2] = 1

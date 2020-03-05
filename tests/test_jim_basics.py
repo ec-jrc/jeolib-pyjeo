@@ -18,8 +18,8 @@ class BadBasicMethods(unittest.TestCase):
     def test_jim_creations(self):
         """Test creating of Jim objects."""
         jim1 = pj.Jim(tiles[0])
-        jim2 = pj.Jim(jim1, copyData=True)
-        jim3 = pj.Jim(jim1, copyData=False)
+        jim2 = pj.Jim(jim1, copy_data=True)
+        jim3 = pj.Jim(jim1, copy_data=False)
 
         assert jim1.pixops.isEqual(jim2), 'Error in creating Jim object'
         assert not jim1.pixops.isEqual(jim3), 'Error in creating Jim object'
