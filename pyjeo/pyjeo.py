@@ -1213,8 +1213,8 @@ class JimList(list):
     def count(self, jim):
         """Count the occurrences of element in the JimList.."""
         i = 0
-        for jimobject in self:
-            if jim.pixops.isEqual(jimobject):
+        for jim_object in self:
+            if jim.pixops.isEqual(jim_object):
                 i += 1
 
         return i
