@@ -410,14 +410,14 @@ class Jim():
                         cropulj = item[dim-2]
                         # croplrj=item[dim-2]+1
 
-            upperLeft = self.geometry.image2geo(cropuli, cropulj)
+            ul = self.geometry.image2geo(cropuli, cropulj)
             result = Jim(ncol=ncol, nrow=nrow, nband=nband, nplane=nplane,
                          otype=self.properties.getDataType())
             result.properties.setProjection(self.properties.getProjection())
             gt = self.properties.getGeoTransform()
 
-            cropulx = upperLeft[0]-self.properties.getDeltaX()/2
-            cropuly = upperLeft[1]+self.properties.getDeltaY()/2
+            cropulx = ul[0]-self.properties.getDeltaX()/2
+            cropuly = ul[1]+self.properties.getDeltaY()/2
 
             gt[0] = cropulx
             gt[1] = dx
