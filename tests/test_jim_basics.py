@@ -15,7 +15,8 @@ vector = 'tests/data/modis_ndvi_training.sqlite'
 class BadBasicMethods(unittest.TestCase):
     """Test functions and methods on the root level and operations for Jims."""
 
-    def test_jim_creations(self):
+    @staticmethod
+    def test_jim_creations():
         """Test creating of Jim objects."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(jim1, copy_data=True)
@@ -120,7 +121,8 @@ class BadBasicMethods(unittest.TestCase):
         assert raised, \
             'Error in catching a call of Jim creation with non-existing path'
 
-    def test_numpy_conversions(self):
+    @staticmethod
+    def test_numpy_conversions():
         """Test conversions to numpy and back."""
         jim = pj.Jim(tiles[0])
 
@@ -180,7 +182,8 @@ class BadBasicMethods(unittest.TestCase):
         assert raised, 'Error in catching a call of Jim.np(band) with ' \
                        'band value greater than number of bands'
 
-    def test_getters_setters(self):
+    @staticmethod
+    def test_getters_setters():
         """Test getters and setters."""
         jim1 = pj.Jim(tiles[0])
         vect = pj.JimVect(vector)
@@ -395,7 +398,8 @@ class BadBasicMethods(unittest.TestCase):
 
         assert raised, 'Error in catching wrong indices like Jim["string"]'
 
-    def test_operators(self):
+    @staticmethod
+    def test_operators():
         """Test basic operators (+, -, *, /, =, abs(), ~)."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])
@@ -878,7 +882,8 @@ class BadBasicMethods(unittest.TestCase):
             assert raised, \
                 'Error in catching wrong left side of & operation'
 
-    def test_pixel_wise_conditions(self):
+    @staticmethod
+    def test_pixel_wise_conditions():
         """Test conditions like ==, !=, >, >=, <, <= for Jims."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(jim1)
@@ -1143,7 +1148,8 @@ class BadBasicMethods(unittest.TestCase):
 
         warnings.resetwarnings()
 
-    def test_checks(self):
+    @staticmethod
+    def test_checks():
         """Test checks of arguments appearing behind the scene."""
         jim1 = pj.Jim(tiles[0])
         jim1.pixops.convert('Byte')
@@ -1159,7 +1165,8 @@ class BadBasicMethods(unittest.TestCase):
                        'is passed as a graph in a function (for example ' \
                        'ccops.labelConstrainedCCsVariance())'
 
-    def test_args_different_formats(self):
+    @staticmethod
+    def test_args_different_formats():
         """Test the parsing of arguments as bytes, unicode, etc."""
         jim0 = pj.Jim(tiles[0])
         jim1 = pj.Jim(u'tests/data/red1.tif')

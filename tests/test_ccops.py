@@ -13,7 +13,8 @@ tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 class BadCCOps(unittest.TestCase):
     """Test functions and methods from ccops modules."""
 
-    def test_distances(self):
+    @staticmethod
+    def test_distances():
         """Test the distance functions and methods."""
         jim = pj.Jim(tiles[0])
 
@@ -188,7 +189,8 @@ class BadCCOps(unittest.TestCase):
             'Error in Jim.ccops.distanceGeodesic() ' \
             '(mean value for graph=8 not smaller than for graph=4)'
 
-    def test_labelling(self):
+    @staticmethod
+    def test_labelling():
         """Test the labelling functions and methods."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])

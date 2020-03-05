@@ -12,7 +12,8 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadDEMOps(unittest.TestCase):
     """Test functions and methods from DEMOps module."""
 
-    def test_slope(self):
+    @staticmethod
+    def test_slope():
         """Test DEM flow functions and methods."""
         jim = pj.Jim(tiles[0])
 
@@ -25,7 +26,8 @@ class BadDEMOps(unittest.TestCase):
             'Error: min<0 in demops.slope()'
 
     #todo: data type of flowDirectionFlat should be UInt16
-    def test_flows(self):
+    @staticmethod
+    def test_flows():
         """Test DEM flow functions and methods."""
         jim = pj.Jim(tiles[0])
 
@@ -100,7 +102,8 @@ class BadDEMOps(unittest.TestCase):
         #     'Error in demops.flowDirectionFlatGeodesic()'
         # # TODO: Uncomment after bug in jiplib fixed
 
-    def test_drainage_areas(self):
+    @staticmethod
+    def test_drainage_areas():
         """Test drainage area functions and methods."""
         jim = pj.Jim(tiles[0])
         d8 = pj.demops.flowDirectionD8(jim)
@@ -135,7 +138,8 @@ class BadDEMOps(unittest.TestCase):
         assert abs(inf.stats.getStats(band=0)['min']) == 1, \
             'Error in demops.contribDrainAreaInf()'
 
-    def test_slopes(self):
+    @staticmethod
+    def test_slopes():
         """Test demSlopeD8() function and method."""
         jim = pj.Jim(tiles[0])
         destructive_object = pj.Jim(jim)
@@ -156,7 +160,8 @@ class BadDEMOps(unittest.TestCase):
         assert inf.stats.getStats(band=0)['min'] >= 0, \
             'Error in demops.slopeDInf()'
 
-    def test_flood_dir(self):
+    @staticmethod
+    def test_flood_dir():
         """Test floodDir() func and method."""
         jim = pj.Jim(tiles[0])
 
@@ -172,7 +177,8 @@ class BadDEMOps(unittest.TestCase):
         # assert stats['max'] <= jim.properties.nrOfRow() * \
         #       jim.properties.nrOfCol(), 'Error in demops.floodDir()'
 
-    def test_catchments(self):
+    @staticmethod
+    def test_catchments():
         """Test catchment basin funcs and methods."""
         # jim = pj.Jim(tiles[0])
         # d8 = pj.demops.flowDirectionD8(jim)
@@ -187,7 +193,8 @@ class BadDEMOps(unittest.TestCase):
 
         # TODO: catchmentBasinConfluence
 
-    def test_strahler(self):
+    @staticmethod
+    def test_strahler():
         """Test function and method for Strahler order."""
         jim = pj.Jim(tiles[0])
         jim.demops.flowDirectionD8()
@@ -200,7 +207,8 @@ class BadDEMOps(unittest.TestCase):
         assert stats['min'] >= 0, 'Error in demops.strahler()'
         assert stats['max'] <= 8, 'Error in demops.strahler()'
 
-    def test_pit_removals(self):
+    @staticmethod
+    def test_pit_removals():
         """Test functions and methods for pit removals."""
         jim = pj.Jim(tiles[0])
         label = pj.ccops.labelPixels(jim)

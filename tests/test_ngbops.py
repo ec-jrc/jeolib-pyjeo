@@ -13,7 +13,8 @@ tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 class BadNgbOps(unittest.TestCase):
     """Test functions and methods from ngbops modules."""
 
-    def test_filters(self):
+    @staticmethod
+    def test_filters():
         """Test filter1d() and filter2d() functions and methods."""
         jim = pj.Jim(testFile)
         jim.geometry.cropBand(band=[0, 1, 2])
@@ -119,7 +120,8 @@ class BadNgbOps(unittest.TestCase):
         # assert jim[1, 1].np()[0, 0] == 2 * max_jim[0:3, 0:3].np().sum(), \
         #     'Error in ngbops.filter2d(numpy.array) (returning wrong values)'
 
-    def test_dwt(self):
+    @staticmethod
+    def test_dwt():
         """Test dwt() and dwti() functions and methods."""
         jim = pj.Jim(testFile, band2plane=True)
 
@@ -141,7 +143,8 @@ class BadNgbOps(unittest.TestCase):
             'Inconsistency in dwt2d() ' \
             '(method returns different result than function or dwt+dwti!=id)'
 
-    def test_smoothNoData1d(self):
+    @staticmethod
+    def test_smoothNoData1d():
         """Test smoothNoData1d functions and methods."""
         jim = pj.Jim(testFile, band2plane=True)
         smoothed = pj.ngbops.smoothNoData1d(jim, 0)
@@ -154,7 +157,8 @@ class BadNgbOps(unittest.TestCase):
             'Inconsistency in smoothNoData1d ' \
             '(method returns different result than function'
 
-    def test_erode_dilate(self):
+    @staticmethod
+    def test_erode_dilate():
         """Test morphoDilate... and morphoErode...() functions and methods."""
         jim = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 2], seed=0)
 
@@ -368,7 +372,8 @@ class BadNgbOps(unittest.TestCase):
             '(jim.ngbops.morphoGradientByErosionDiamond() not equal to ' \
             'jim - pj.ngbops.morphoErodeDiamond(jim))'
 
-    def test_edgeWeight(self):
+    @staticmethod
+    def test_edgeWeight():
         """Test edgeWeight() function and method."""
         jim = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 2], seed=0)
 
@@ -448,7 +453,8 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.edgeWeight(type=2) ' \
             '(processing of [2, 1] did not return [1, x]'
 
-    def test_getDissim(self):
+    @staticmethod
+    def test_getDissim():
         """Test getDissim() function and method."""
         jim1 = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 3])
         jim2 = pj.Jim(nrow=500, ncol=500, otype='Byte', uniform=[0, 2])

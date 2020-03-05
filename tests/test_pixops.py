@@ -12,7 +12,8 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadPixOps(unittest.TestCase):
     """Test functions and methods from pixops modules."""
 
-    def test_isEqual(self):
+    @staticmethod
+    def test_isEqual():
         """Test isEqual() function."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[0])
@@ -83,7 +84,8 @@ class BadPixOps(unittest.TestCase):
             'Error in pj.pixops.isEqual() ' \
             '(wrong result for multiplane multiband Jim object)'
 
-    def test_NDVI(self):
+    @staticmethod
+    def test_NDVI():
         """Test computing NDVI in different ways."""
         jim = pj.Jim(testFile)
 
@@ -110,7 +112,8 @@ class BadPixOps(unittest.TestCase):
 
         assert not jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
 
-    def test_supremum_infimum(self):
+    @staticmethod
+    def test_supremum_infimum():
         """Test picking up supremum and infimum from computed NDVIs."""
         for tile in tiles:
             jim4 = pj.Jim(tile)
@@ -165,7 +168,8 @@ class BadPixOps(unittest.TestCase):
                 min_ndvi = pj.Jim(max_ndvi)
                 min_ndvi2 = pj.Jim(min_ndvi)
 
-    def test_stretch(self):
+    @staticmethod
+    def test_stretch():
         """Test stretch function."""
         for tile in tiles:
             jim = pj.Jim(tile)
@@ -192,7 +196,8 @@ class BadPixOps(unittest.TestCase):
             assert min(theStats['histogram']) >= 850, \
                 'Error in pixops.stretch(): max is not >= 850'
 
-    def test_setFunctions(self):
+    @staticmethod
+    def test_setFunctions():
         """Test setData, setLevel and setThreshold functions and methods."""
         jim = pj.Jim(testFile)
 
@@ -271,7 +276,8 @@ class BadPixOps(unittest.TestCase):
                                      stats['mean']]), \
             'Error in pixops.setData() or stats.getStats(band=0)'
 
-    def test_convert(self):
+    @staticmethod
+    def test_convert():
         """Test data type conversions."""
         jim = pj.Jim(tiles[0])
 
@@ -412,7 +418,8 @@ class BadPixOps(unittest.TestCase):
         assert raised, \
             'Error in checks for non-supported data types in pixops.convert()'
 
-    def test_histoCompress(self):
+    @staticmethod
+    def test_histoCompress():
         """Test histoCompress() function and method."""
         jim = pj.Jim(tiles[0])
 
@@ -433,7 +440,8 @@ class BadPixOps(unittest.TestCase):
         assert jim.stats.getStats(band=0)['min'] == 0, \
             'Error in pixops.histoCompress() (minimum value not 0)'
 
-    def test_simple_op(self):
+    @staticmethod
+    def test_simple_op():
         """Test simpleArithOp() and simpleBitwiseOp() functions and methods."""
         jim = pj.Jim(tiles[0])
 
@@ -492,7 +500,8 @@ class BadPixOps(unittest.TestCase):
 class BadPixOpsLists(unittest.TestCase):
     """Test JimList functions and methods from pixops modules."""
 
-    def test_composite(self):
+    @staticmethod
+    def test_composite():
         """Test composite() function."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])

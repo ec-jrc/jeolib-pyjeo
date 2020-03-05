@@ -16,7 +16,8 @@ vector = 'tests/data/modis_ndvi_training.sqlite'
 class BadIO(unittest.TestCase):
     """Test functions and methods from io module."""
 
-    def test_close(self):
+    @staticmethod
+    def test_close():
         """Test closing Jim objects."""
         jim0 = pj.Jim(tiles[0])
         nr_of_cols = jim0.properties.nrOfCol()
@@ -34,7 +35,8 @@ class BadIO(unittest.TestCase):
 class BadIOVects(unittest.TestCase):
     """Test JimVect funcs and methods from io module."""
 
-    def test_write(self):
+    @staticmethod
+    def test_write():
         """Test writing JimVect objects."""
         jimv = pj.JimVect(vector)
 

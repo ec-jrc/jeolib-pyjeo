@@ -11,7 +11,8 @@ tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 class BadBasicMethodLists(unittest.TestCase):
     """Test functions and methods on the root level for JimLists."""
 
-    def test_list_methods(self):
+    @staticmethod
+    def test_list_methods():
         """Test basic methods originating in list() inheritance."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])

@@ -15,7 +15,8 @@ model = pj._get_random_path()
 class BadClassify(unittest.TestCase):
     """Test functions and methods from clasisfy module."""
 
-    def test_classify(self):
+    @staticmethod
+    def test_classify():
         """Test the Symbolic Machine Learning classifier."""
         classDict = {}
         classDict['urban'] = 2

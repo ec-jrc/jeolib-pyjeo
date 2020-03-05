@@ -12,7 +12,8 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadStats(unittest.TestCase):
     """Test functions and methods for getting statistics."""
 
-    def test_getStats(self):
+    @staticmethod
+    def test_getStats():
         """Test if values from getStats are not suspicious."""
         jim = pj.Jim(tiles[0])
         stats = jim.stats.getStats(band=0)
@@ -64,7 +65,8 @@ class BadStats(unittest.TestCase):
         assert stats['ninvalid'] > 0, 'Error in getStats(function="invalid")' \
                                       ' (no nodata detected, but should be)'
 
-    def test_histograms(self):
+    @staticmethod
+    def test_histograms():
         """Test that values of histograms are not suspicious."""
         jim1 = pj.Jim(tiles[0])
 
@@ -116,7 +118,8 @@ class BadStats(unittest.TestCase):
             'Error in stats.getHistoCumulative() ' \
             '(nrOfCol != nrOfRow*Col of original)'
 
-    def test_stretch(self):
+    @staticmethod
+    def test_stretch():
         """Test stretching a Jim object."""
         jim = pj.Jim(testFile)
 
@@ -134,7 +137,8 @@ class BadStats(unittest.TestCase):
 
         assert jim.pixops.isEqual(jim_stretched), 'Error in stretching Jim'
 
-    def test_getStatProfile(self):
+    @staticmethod
+    def test_getStatProfile():
         """Test if values from getStatProfile are not wrong."""
         jim = pj.Jim(tiles[0])
 
@@ -157,7 +161,8 @@ class BadStats(unittest.TestCase):
 class BadStatsLists(unittest.TestCase):
     """Test JimList functions and methods for getting statistics."""
 
-    def test_getStats(self):
+    @staticmethod
+    def test_getStats():
         """Test if values from getStats are not suspicious."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])
@@ -223,7 +228,8 @@ class BadStatsLists(unittest.TestCase):
             'Error in JimList.stats.getStats(function="invalid") ' \
             '(no nodata detected, but should be)'
 
-    def test_getStatProfile(self):
+    @staticmethod
+    def test_getStatProfile():
         """Test if values from getStatProfile are not wrong."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])

@@ -16,7 +16,8 @@ warpedfn = pj._get_random_path()
 class BadGeometry(unittest.TestCase):
     """Test functions and methods from geometry module."""
 
-    def test_band2plane(self):
+    @staticmethod
+    def test_band2plane():
         """Test the band2plane method."""
         jim3d = pj.Jim(rasterfn, band2plane=True)
         jim2d = pj.Jim(rasterfn, band2plane=False)
@@ -32,7 +33,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.band2plane() ' \
             '(function is not equal to method)'
 
-    def test_stack(self):
+    @staticmethod
+    def test_stack():
         """Test the stackBand and stackPlane methods."""
         jim = pj.Jim(rasterfn)
 
@@ -142,7 +144,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.band2plane() ' \
             '(jimband not equal to jimsplane)'
 
-    def test_warp(self):
+    @staticmethod
+    def test_warp():
         """Test the warp method."""
         jim0 = pj.Jim(rasterfn)
         jim_warped = pj.geometry.warp(jim0, 'epsg:4326')
@@ -174,7 +177,8 @@ class BadGeometry(unittest.TestCase):
         assert jim0.properties.nrOfBand() == jim_warped.properties.nrOfBand(),\
             'Error in geometry.warp(): nrOfBand'
 
-    def test_extractOgr(self):
+    @staticmethod
+    def test_extractOgr():
         """Test the extractOgr method."""
         jim0 = pj.Jim(rasterfn)
         sample = pj.JimVect(vectorfn)
@@ -214,7 +218,8 @@ class BadGeometry(unittest.TestCase):
             jl0.io.close()
         sample.io.close()
 
-    def test_crop(self):
+    @staticmethod
+    def test_crop():
         """Test crop...() functions and methods."""
         raster = pj.geometry.stackPlane(pj.Jim(rasterfn), pj.Jim(rasterfn))
         vector = pj.JimVect(vectorfn)
@@ -242,7 +247,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.cropOgr() ' \
             '(new BBox values not equal to the vector one)'
 
-    def test_coords_transformations(self):
+    @staticmethod
+    def test_coords_transformations():
         """Test geo2image() and image2geo() functions and methods."""
         jim = pj.Jim(tiles[0])
         geo_ulx, geo_uly, geo_lrx, geo_lry = jim.properties.getBBox()
@@ -291,7 +297,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.image2geo()' \
             '(geo2image(0, 0) did not return original values divided by dX/dY)'
 
-    def test_image_frames(self):
+    @staticmethod
+    def test_image_frames():
         """Test imageFrame...() functions and methods."""
         nrow = ncol = 500
         nband = nplane = 2
@@ -465,7 +472,7 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.imageFrameSubtract() ' \
             '(changed values in the original Jim)'
 
-    # def test_image_inserts(self):
+    # def test_image_inserts():
     #     """Test imageFrame...() functions and methods."""
     #     nrow = ncol = 50
     #     nband = nplane = 2
@@ -485,7 +492,7 @@ class BadGeometry(unittest.TestCase):
     #     inserted = pj.geometry.imageInsert(jim, ngb, 1, 1, 0)
     #     jim.geometry.imageInsert(ngb, 1, 1, 0)
 
-    # def test_magnify(self):
+    # def test_magnify():
     #     """Test the magnify() function and method."""
     #     nrow = ncol = 10
     #     nband = nplane = 2
@@ -539,7 +546,8 @@ class BadGeometry(unittest.TestCase):
     #         'Error in geometry.magnify() ' \
     #         '(values not magnified correctly)'
 
-    def test_plotLine(self):
+    @staticmethod
+    def test_plotLine():
         """Test the plotLine() function and method."""
         nrow = ncol = 10
         nband = 2
@@ -604,7 +612,8 @@ class BadGeometry(unittest.TestCase):
             'Error in catching a call of geometry.plotLine() ' \
             'method where the Jim argument is a multi-plane object'
 
-    def test_polygonize(self):
+    @staticmethod
+    def test_polygonize():
         """Test the polygonize() function and method."""
         jim = pj.Jim(tiles[0])
 
@@ -693,7 +702,8 @@ class BadGeometry(unittest.TestCase):
             'Error in catching a call of geometry.polygonize(path, mask) ' \
             'method where the mask argument is not an instance of a Jim object'
 
-    def test_reducePlane(self):
+    @staticmethod
+    def test_reducePlane():
         """Test the reducePlane() function and method."""
         nr_of_row = nr_of_col = 10
         min = 0
@@ -1809,7 +1819,8 @@ class BadGeometry(unittest.TestCase):
 class BadGeometryVects(unittest.TestCase):
     """Test functions and methods from geometry module."""
 
-    def test_intersect(self):
+    @staticmethod
+    def test_intersect():
         """Test the stack band method."""
         jim = pj.Jim(rasterfn, band=0)
         jimv = pj.JimVect(vectorfn)
@@ -1860,7 +1871,8 @@ class BadGeometryVects(unittest.TestCase):
             'Error in catching a call of geometry.intersect(Jim) method ' \
             'where the argument is not an instance of a Jim object'
 
-    def test_convexhull(self):
+    @staticmethod
+    def test_convexhull():
         """Test the convexHull() function and method."""
         jimv = pj.JimVect(vectorfn)
 
@@ -1887,7 +1899,8 @@ class BadGeometryVects(unittest.TestCase):
         #     'Error in geometry.convexHull() ' \
         #     '(BBox of hull is not the same as of the original JimVect)'
 
-    def test_join(self):
+    @staticmethod
+    def test_join():
         """Test the join() function and method."""
         jimv = pj.JimVect(vectorfn)
         jimr = pj.Jim(rasterfn)
@@ -1967,7 +1980,8 @@ class BadGeometryVects(unittest.TestCase):
             'Error in catching a call of geometry.join(Jim) method ' \
             'where the argument is not an instance of a JimVect object'
 
-    # def test_stack(self):
+    # @staticmethod
+    # def test_stack():
     #     """Test the stackBand and stackPlane methods."""
     #     jim = pj.Jim(rasterfn)
     #

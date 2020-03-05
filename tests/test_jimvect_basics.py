@@ -16,7 +16,8 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadBasicMethods(unittest.TestCase):
     """Test funcs and methods on the root level and operations for JimVects."""
 
-    def test_jimvect_creations(self):
+    @staticmethod
+    def test_jimvect_creations():
         """Test creating of JimVect objects."""
         out_path = os.sep.join(
             [os.sep + 'tmp',
