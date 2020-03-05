@@ -372,6 +372,10 @@ class Jim():
                 nplane = 1
                 nrow = 1
                 ncol = 1
+            else:
+                raise ValueError(
+                    'Len of shape {} of the np object not supported. Supported'
+                    ' lengths are [0, 1, 2, 3]'.format(len(npresult.shape)))
 
             # [gs]item only supports single band image (use plane instead)
             nband = 1
