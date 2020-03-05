@@ -1245,7 +1245,7 @@ class JimList(list):
         return popped
 
     def remove(self, jim):
-        """Remove the first occurence of an element from the JimList."""
+        """Remove the first occurrence of an element from the JimList."""
         for i in range(len(self)):
             if self[i].pixops.isEqual(jim):
                 del self[i]
