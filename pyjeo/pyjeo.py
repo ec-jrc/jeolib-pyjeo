@@ -17,27 +17,27 @@ from .__init__ import _check_graph
 del _jl.Jim.__del__
 
 
-def jim2np(aJim, band=0, copy_data=True):
+def jim2np(jim_object, band=0, copy_data=True):
     """Return a numpy representation of a Jim object.
 
-    :param aJim: Jim object to be converted
+    :param jim_object: Jim object to be converted
     :param band: band of Jim object to be converted
     :param copy_data: Set to False if reference image is used as a template
         only, without copying actual pixel dat
     :return: a numpy representation of the Jim object
     """
-    return _jl.jim2np(aJim._jipjim, band, copy_data)
+    return _jl.jim2np(jim_object._jipjim, band, copy_data)
 
 
-def np(aJim):
+def np(jim_object):
     """Return a pointer to numpy representation of values in a Jim object.
 
     The created pointer does not consume new memory.
 
-    :param aJim: Jim object with values to which will the pointer point
+    :param jim_object: Jim object with values to which will the pointer point
     :return: a numpy representation of the Jim object
     """
-    return _jl.np(aJim._jipjim)
+    return _jl.np(jim_object._jipjim)
 
 
 def np2jim(aNp):
