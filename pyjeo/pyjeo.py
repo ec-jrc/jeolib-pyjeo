@@ -40,13 +40,13 @@ def np(jim_object):
     return _jl.np(jim_object._jipjim)
 
 
-def np2jim(aNp):
+def np2jim(np_object):
     """Return a Jim representation of a numpy array.
 
-    :param aNp: a numpy array
+    :param np_object: a numpy array
     :return: a Jim representation of a numpy array
     """
-    return Jim(_jl.np2jim(aNp))
+    return Jim(_jl.np2jim(np_object))
 
 
 class _ParentJim(_jl.Jim):
