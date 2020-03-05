@@ -176,7 +176,7 @@ class BadDEMOps(unittest.TestCase):
         """Test catchment basin funcs and methods."""
         # jim = pj.Jim(tiles[0])
         # d8 = pj.demops.flowDirectionD8(jim)
-        # jim.ccops.labelImagePixels()
+        # jim.ccops.labelPixels()
 
         # outlet = pj.demops.catchmentBasinOutlet(jim, d8)
         # jim.demops.catchmentBasinOutlet(d8)
@@ -203,7 +203,7 @@ class BadDEMOps(unittest.TestCase):
     def test_pit_removals(self):
         """Test functions and methods for pit removals."""
         jim = pj.Jim(tiles[0])
-        label = pj.ccops.labelImagePixels(jim)
+        label = pj.ccops.labelPixels(jim)
 
         unpit = pj.demops.pitRemovalCarve(label, jim, 8, 212)
         pit_label = pj.Jim(label)
