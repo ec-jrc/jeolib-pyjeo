@@ -20,8 +20,6 @@ class BadProps(unittest.TestCase):
 
     def test_no_data_vals(self):
         """Test functions connected to no data values."""
-        self.jim = pj.Jim(tiles[0])
-
         self.jim.properties.clearNoData()
         no_data = self.jim.properties.getNoDataVals()
 
