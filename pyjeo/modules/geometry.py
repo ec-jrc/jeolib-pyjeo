@@ -1002,7 +1002,7 @@ def stackBand(jim_object, jim_other=None, band=None):
         raise TypeError('Error: expected a Jim object')
 
 
-def stackPlane(jim_object, jim_other=None, plane=None):
+def stackPlane(jim_object, jim_other=None):
     """Stack planes from raster datasets into new multiplane Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the planes
@@ -1012,16 +1012,16 @@ def stackPlane(jim_object, jim_other=None, plane=None):
 
     Append all the planes of jim1 to jim0::
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jim_stacked=pj.geometry.stackPlane(jim0,jim1)
+        jim0 = pj.Jim('/path/to/raster0.tif')
+        jim1 = pj.Jim('/path/to/raster1.tif')
+        jim_stacked = pj.geometry.stackPlane(jim0, jim1)
 
     Stack all planes of the JimList, returning a multi-plane Jim object::
 
-        jim0=pj.Jim('/path/to/raster0.tif')
-        jim1=pj.Jim('/path/to/raster1.tif')
-        jimlist=pj.JimList([jim0,jim1])
-        jim_stacked=pj.geometry.stackPlane(jimlist)
+        jim0 = pj.Jim('/path/to/raster0.tif')
+        jim1 = pj.Jim('/path/to/raster1.tif')
+        jimlist = pj.JimList([jim0, jim1])
+        jim_stacked = pj.geometry.stackPlane(jimlist)
     """
     if isinstance(jim_object, _pj.JimList):
         ret_jim = _pj.Jim(jim_object._jipjimlist.stackPlane())
