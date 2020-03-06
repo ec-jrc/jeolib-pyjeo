@@ -39,6 +39,12 @@ From the directory of the repository, run:
 python -W ignore -m unittest -v tests
 ```
 
+To run tests only for one module:
+
+```
+ python -W ignore -m unittest -v tests/test_classify.py
+```
+
 ## Build documentation
 
 Dependencies for the documentation build:
