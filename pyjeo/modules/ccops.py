@@ -745,7 +745,6 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.distanceInfluenceZones2dEuclidean(band))
 
-
     def flatZonesSeeded(self, jim2, jim3, ox, oy, oz):
         """Compute seeded flat zones.
 
