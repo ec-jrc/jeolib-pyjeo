@@ -54,7 +54,7 @@ def reclass(jim_object, classes, reclasses, otype=None):
     return ret_jim
 
 
-def sml(jim_object, reflist, **kwargs):
+def sml(jim_object, reflist, classes=None, **kwargs):
     """Perform supervised classification of a Jim object using SML.
 
     For training, one or more reference raster datasets with categorical
@@ -74,8 +74,8 @@ def sml(jim_object, reflist, **kwargs):
 
     see :py:meth:`~_Classify.sml` for an example how to use this function
     """
-    if 'classes' in kwargs:
-        kwargs.update({'class': kwargs.pop('classes')})
+    if classes is not None:
+        kwargs.update({'class': classes})
     return _pj.Jim(jim_object._jipjim.classifySML(
         reflist, kwargs))
 
@@ -139,7 +139,7 @@ class _Classify(_pj.modules.JimModuleBase):
             kwargs.update({'otype': otype})
         self._jim_object._jipjim.d_reclass(kwargs)
 
-    def sml(self, reflist, **kwargs):
+    def sml(self, reflist, classes=None, **kwargs):
         """Perform supervised classification of a Jim object using SML.
 
         For training, one or more reference raster datasets with categorical
@@ -174,8 +174,8 @@ class _Classify(_pj.modules.JimModuleBase):
         Use :py:meth:`~_Classify.reclass` to convert the indices to the actual
         class numbers.
         """
-        if 'classes' in kwargs:
-            kwargs.update({'class': kwargs.pop('classes')})
+        if classes is not None:
+            kwargs.update({'class': classes})
         self._jim_object._set(self._jim_object._jipjim.classifySML(
             reflist._jipjimlist, kwargs))
 
