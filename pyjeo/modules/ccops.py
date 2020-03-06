@@ -269,9 +269,9 @@ def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
 
     :param jim: a Jim object to label
     :param ngb: a Jim object for neighbourhood
-    :param ox: x coordinate of origin of imngb
-    :param oy: y coordinate of origin of imngb
-    :param oz: z coordinate of origin of imngb
+    :param ox: x coordinate of origin of ngb Jim
+    :param oy: y coordinate of origin of ngb Jim
+    :param oz: z coordinate of origin of ngb Jim
     :param rl: integer for range parameter lambda l under the strongly
         connected assumption
     :return: labeled Jim object
@@ -284,9 +284,9 @@ def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, ngb):
     """Label image.
 
     :param jim: a Jim object
-    :param ox: x coordinate of origin of imngb
-    :param oy: y coordinate of origin of imngb
-    :param oz: z coordinate of origin of imngb
+    :param ox: x coordinate of origin of ngb Jim
+    :param oy: y coordinate of origin of ngb Jim
+    :param oz: z coordinate of origin of ngb Jim
     :param rg: integer for range parameter lambda g
     :param rl: integer for range parameter lambda l
     :param varmax: float for maximum variance of cc
@@ -758,9 +758,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         Modifies the instance on which the method was called.
 
         :param ngb: a Jim object for neighbourhood
-        :param ox: x coordinate of origin of imngb
-        :param oy: y coordinate of origin of imngb
-        :param oz: z coordinate of origin of imngb
+        :param ox: x coordinate of origin of ngb Jim
+        :param oy: y coordinate of origin of ngb Jim
+        :param oz: z coordinate of origin of ngb Jim
         :param rl: integer for range parameter lambda l
             under the strongly connected assumption
         :return: labeled Jim object
@@ -774,9 +774,9 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         Modifies the instance on which the method was called.
 
-        :param ox: x coordinate of origin of imngb
-        :param oy: y coordinate of origin of imngb
-        :param oz: z coordinate of origin of imngb
+        :param ox: x coordinate of origin of ngb Jim
+        :param oy: y coordinate of origin of ngb Jim
+        :param oz: z coordinate of origin of ngb Jim
         :param rg: integer for range parameter lambda g
         :param rl: integer for range parameter lambda l
         :param varmax: float for maximum variance of cc
@@ -931,7 +931,8 @@ class _CCOpsList(_pj.modules.JimListModuleBase):
     def labelConstrainedCCs(self, local_range, global_range, ngb):
         """Label each alpha-omega connected component.
 
-        Label with a unique label using graph-connectivity :cite:`soille2008pami`
+        Label everyting with a unique label using graph-connectivity
+        :cite:`soille2008pami`.
 
         :param local_range: integer value indicating maximum absolute local
             difference between 2 adjacent pixels
