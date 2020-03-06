@@ -635,6 +635,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         Takes the hue, lightness, and saturation channels of a colour image
         and returns an image node containing a colour RGB image.
 
+        Modifies the instance on which the method was called.
+
         :return: Jim with three bands containing the RGB channels
         """
         assert jim.properties.nrOfBand() == 3, \
@@ -644,7 +646,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         jiml = _pj.geometry.cropBand(jim, 1)
         jims = _pj.geometry.cropBand(jim, 2)
 
-        return pj.Jim(jimh._jipjim.convertHlsToRgb(jiml, jims))
+        self._jim_object._set(jimh._jipjim.convertHlsToRgb(jiml, jims))
 
     def distance2d4(self, band=0):
         """Compute the 2-dimensional 4-connected distance function of a Jim.
