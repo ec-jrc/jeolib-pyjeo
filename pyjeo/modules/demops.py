@@ -173,17 +173,6 @@ def flowNew(jim_object, drain_image, graph=8):
     return _pj.Jim(jim_object._jipjim.demFlowNew(drain_image._jipjim, graph))
 
 
-def labelsSet(label_jim, ival_jim, indic):
-    """Set labels to regions.
-
-    :param label_jim: Jim object with labels
-    :param ival_jim: a Jim object
-    :param indic: an integer
-    :return: a Jim object with set region labels
-    """
-    return _pj.Jim(label_jim._jipjim.labelsSet(ival_jim, indic))
-
-
 def pitRemovalCarve(labeled_jim, grey_jim, graph, maxfl):
     """Use for carving.
 
@@ -548,17 +537,6 @@ class _DEMOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.demFlowNew(drain_image._jipjim,
                                                 graph))
-
-    def labelsSet(self, ival_jim, indic):
-        """Set labels to regions.
-
-        Modifies the instance on which the method was called.
-
-        :param ival_jim: a Jim object
-        :param indic: an integer
-        :return: a Jim object with set region labels
-        """
-        self._jim_object._jipjim.d_labelsSet(ival_jim, indic)
 
     def pitRemovalCarve(self, grey_jim, graph, maxfl):
         """Use for carving, algorithm description in Soille et al. 2003.

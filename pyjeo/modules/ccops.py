@@ -372,6 +372,17 @@ def labelPixels(jim):
     return _pj.Jim(jim._jipjim.labelPix())
 
 
+def labelsSet(label_jim, ival_jim, indic):
+    """Set labels to regions.
+
+    :param label_jim: Jim object with labels
+    :param ival_jim: a Jim object
+    :param indic: an integer
+    :return: a Jim object with set region labels
+    """
+    return _pj.Jim(label_jim._jipjim.labelsSet(ival_jim, indic))
+
+
 def labelStronglyCCs(jim, local_range, ngb):
     """Label each strongly alpha-connected component.
 
@@ -859,11 +870,25 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelFlatZonesSeeded(
             jim_ngb._jipjim, jim_seeds._jipjim, ox, oy, oz)
 
+    def labelPixels(self):
+        """Label each non-zero pixel of im with a unique label.
 
+        Labels unless label overflows occurs.
 
         Modifies the instance on which the method was called.
         """
+        self._jim_object._jipjim.d_labelPix()
 
+    def labelsSet(self, ival_jim, indic):
+        """Set labels to regions.
+
+        Modifies the instance on which the method was called.
+
+        :param ival_jim: a Jim object
+        :param indic: an integer
+        :return: a Jim object with set region labels
+        """
+        self._jim_object._jipjim.d_labelsSet(ival_jim, indic)
 
 
         Modifies the instance on which the method was called.
