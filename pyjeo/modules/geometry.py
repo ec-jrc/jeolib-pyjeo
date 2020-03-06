@@ -1248,7 +1248,6 @@ class _Geometry(_pj.modules.JimModuleBase):
             v.io.write('/path/to/output.sqlite')
         """
         # make list of rules
-        rules = []
         if isinstance(rule, list):
             rules = rule
         else:
