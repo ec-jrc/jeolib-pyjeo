@@ -142,7 +142,8 @@ def edgeWeight(jim_object, dir=0, type=0):
     return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
 
-def filter1d(jim_object, filter, dz=None, pad=None, otype=None, **kwargs):
+def filter1d(jim_object, filter, dz=None, pad='symmetric', otype=None,
+             **kwargs):
     """Subset raster dataset in spectral/temporal domain.
 
     This function is deprecated
@@ -659,7 +660,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.edgeWeight(dir, type))
 
-    def filter1d(self, filter, dz=None, pad=None, otype=None, **kwargs):
+    def filter1d(self, filter, dz=None, pad='symmetric', otype=None, **kwargs):
         """Subset raster dataset in spectral/temporal domain.
 
         This function is deprecated
