@@ -2122,7 +2122,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                     ret_jim.geometry.stackBand(jimband)
                 else:
                     ret_jim = _pj.geometry.cropBand(self._jim_object,
-                                                      band=band)
+                                                    band=band)
                     ret_jim._jipjim.d_imageFrameAdd(
                         [l, r, t, b, u, d], val)
             self._jim_object._set(ret_jim._jipjim)
