@@ -210,6 +210,18 @@ def getRegionalMinima(jim, graph):
     return _pj.Jim(jim._jipjim.getRegionalMinima(graph))
 
 
+def label(jim, ngb):
+    """Label each non-zero connected component with a unique label.
+
+    Label using graph-connectivity.
+
+    :param jim: a Jim object holding a binary image
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
+    :return: labeled Jim object
+    """
+    return _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
+
+
 def labelConstrainedCCs(jim, local_range, global_range, ngb):
     """Label each alpha-omega connected component.
 
@@ -347,18 +359,6 @@ def labelFlatZonesSeeded(jim, jim_ngb, jim_seeds, ox, oy, oz):
     """
     return _pj.Jim(jim._jipjim.labelFlatZonesSeeded(
         jim_ngb._jipjim, jim_seeds._jipjim, ox, oy, oz))
-
-
-def label(jim, ngb):
-    """Label each non-zero connected component with a unique label.
-
-    Label using graph-connectivity.
-
-    :param jim: a Jim object holding a binary image
-    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
-    :return: labeled Jim object
-    """
-    return _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
 
 
 def labelPixels(jim):
@@ -767,6 +767,18 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_flatZonesSeeded(jim2, jim3, ox, oy, oz)
 
+    def label(self, ngb):
+        """Label each non-zero connected component with a unique label.
+
+        Uses graph-connectivity
+
+        Modifies the instance on which the method was called.
+
+        :param ngb: Jim object for neighbourhood, e.g.,
+            create with pj.Jim(graph=4)
+        """
+        self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
+
     def labelConstrainedCCs(self, local_range, global_range, ngb):
         """Label each alpha-omega connected component.
 
@@ -847,26 +859,15 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelFlatZonesSeeded(
             jim_ngb._jipjim, jim_seeds._jipjim, ox, oy, oz)
 
-    def label(self, ngb):
-        """Label each non-zero connected component with a unique label.
 
-        Uses graph-connectivity
-
-        Modifies the instance on which the method was called.
-
-        :param ngb: Jim object for neighbourhood, e.g.,
-            create with pj.Jim(graph=4)
-        """
-        self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
-
-    def labelPixels(self):
-        """Label each non-zero pixel of im with a unique label.
-
-        Labels unless label overflows occurs.
 
         Modifies the instance on which the method was called.
         """
-        self._jim_object._jipjim.d_labelPix()
+
+
+
+        Modifies the instance on which the method was called.
+        """
 
         #todo: not working (self is not modified)
     def morphoFillHoles(self, graph, border_flag=1):
