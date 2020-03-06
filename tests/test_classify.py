@@ -24,7 +24,7 @@ class BadClassify(unittest.TestCase):
         class_dict['forest'] = 25
         class_dict['water'] = 41
         class_dict['rest'] = 50
-        classFrom = range(0, 50)
+        class_from = range(0, 50)
         classTo = [50] * 50
         for i in range(0, 50):
             if 1 <= i < 10:
@@ -39,7 +39,7 @@ class BadClassify(unittest.TestCase):
                 classTo[i] = class_dict['rest']
 
         jim_ref = pj.Jim(reference, dx=1000, dy=1000)
-        jim_ref.classify.reclass(classes=list(classFrom), reclasses=classTo)
+        jim_ref.classify.reclass(classes=list(class_from), reclasses=classTo)
 
         bbox = [4246000, 2547000, 4349500, 2441000]
         jim = pj.Jim(testFile, band2plane=True,
