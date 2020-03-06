@@ -329,21 +329,24 @@ class _DEMOps(_pj.modules.JimModuleBase):
     def catchmentBasinConfluence(self, d8):
         """Compute the catchment basin confluence.
 
-        :param jim_object: an image node holding labelled outlet pixels with
-            value 1 and river pixels with value 2
-        :param d8: an image node holding d8 flow directions
+        The Jim object on which this method is called should hold labelled
+        outlet pixels with value 1 and river pixels with value 2.
 
         Modifies the instance on which the method was called.
+
+        :param d8: an image node holding d8 flow directions
         """
         self._jim_object._jipjim.d_demCatchmenBasinConfluence(d8._jipjim)
 
     def catchmentBasinOutlet(self, d8):
         """Compute the catchment basin outlet.
 
-        :param jim_object: an image node holding labelled outlets
-        :param d8: an image node holding d8 flow directions
+        The Jim object on which this method is called should hold labelled
+        outlets.
 
         Modifies the instance on which the method was called.
+
+        :param d8: an image node holding d8 flow directions
         """
         self._jim_object._jipjim.d_demCatchmentBasinOutlet(d8._jipjim)
 
@@ -352,11 +355,11 @@ class _DEMOps(_pj.modules.JimModuleBase):
 
         Outputs the contributing drainage areas of a DEM given its
         graph-connected drainage directions coded as follows: NW=5, N=3, NE=7,
-        W=1, E=2, SW=6, S=4, SE=8.
+        W=1, E=2, SW=6, S=4, SE=8. The Jim object on which this method is
+        called should contain D8 drainage directions (UCHAR).
 
         Modifies the instance on which the method was called.
 
-        :param jim_object: an image node with D8 drainage directions (UCHAR)
         :param graph: integer for number of possible flow directions
             (either 4 or 8)
 
@@ -380,8 +383,6 @@ class _DEMOps(_pj.modules.JimModuleBase):
         (t FLOAT, -1.0 for undefined direction).
 
         Modifies the instance on which the method was called.
-
-        :param graph: integer for number of nearest neighbours to consider
         """
         self._jim_object._set(
             self._jim_object._jipjim.demContributingDrainageAreaDInf())
@@ -489,11 +490,11 @@ class _DEMOps(_pj.modules.JimModuleBase):
 
         Flat regions (i.e., no flow direction) must be of type USHORT (with
         flat regions set to 65533) or INT32 (with flat regions set to INT32
-        MAX-2).
+        MAX-2). The Jim object on which this method is called should contain
+        flat regions (USHORT or INT32).
 
         Modifies the instance on which the method was called.
 
-        :param jim_object: an image node for flat regions (USHORT or INT32)
         :param dem_jim: an image node for corresponding DEM (USHORT)
         :param graph: integer for number of nearest neighbours to consider
         """
@@ -540,9 +541,11 @@ class _DEMOps(_pj.modules.JimModuleBase):
     def pitRemovalCarve(self, grey_jim, graph, maxfl):
         """Use for carving, algorithm description in Soille et al. 2003.
 
+        The Jim object on which this method is called should contain labelled
+        relevant minima.
+
         Modifies the instance on which the method was called.
 
-        :param labeled_jim: an image node with labelled relevant minima
         :param grey_jim: an image node with grey tone image
         :param graph: an integer for connectivity
         :param maxfl: an integer for highest flooding level
@@ -563,10 +566,11 @@ class _DEMOps(_pj.modules.JimModuleBase):
 
         Note that irrelevant minima must have all an intensity greater than
         that of the lowest minimum! The actual carved image is stored in imr.
+        The Jim object on which this method is called should contain labelled
+        relevant minima.
 
         Modifies the instance on which the method was called.
 
-        :param labeled_jim: an image node with labelled relevant minima
         :param grey_jim: an image node with grey tone image
         :param graph: an integer for connectivity
         :param maxfl: an integer for highest flooding level
