@@ -1325,7 +1325,7 @@ class _ParentVect(_jl.VectorOgr):
                 out_feature.SetGeometry(geom)
                 # Add new feature to output layer
                 out_layer.CreateFeature(out_feature)
-                out_feature = None
+                del out_feature
                 super(_ParentVect, self).__init__(kwargs)
             else:
                 kwargs.update({'filename': kwargs.pop('output', None)})
