@@ -460,8 +460,8 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
     """Merge Jim instance with values of im2 if val of imlbl == val.
 
     :param jim_object: a Jim object
-    :param imRaster_imlbl: a Jim object
-    :param imRaster_im2: a Jim object
+    :param imlbl: a Jim object
+    :param im2: a Jim object
     :param x: x coordinate of 1st pixel
     :param y: y coordinate of 1st pixel
     :param z: z coordinate of 1st pixel
@@ -537,8 +537,8 @@ def join(jvec1, jvec2, output, **kwargs):
 
     A key field is used to find corresponding features in both objects.
 
-    :param jvec: first JimVect object to join
-    :param jvec: second JimVect object to join
+    :param jvec1: first JimVect object to join
+    :param jvec2: second JimVect object to join
     :param output: output filename of JimVect object that is returned.
         Use /vsimem for in memory vectors
     :param kwargs: See table below
@@ -662,6 +662,7 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     :param y1: an integer for y-coordinate of 1st point
     :param x2: an integer for x-coordinate of 2nd point
     :param y2: an integer for y-coordinate of 2nd point
+    :param val: value to be used for line pixels
     :return: a Jim object
     """
     if jim_object.properties.nrOfPlane() > 1:
@@ -2203,8 +2204,8 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         Modifies the instance on which the method was called.
 
-        :param imRaster_imlbl: a Jim object
-        :param imRaster_im2: a Jim object
+        :param imlbl: a Jim object
+        :param im2: a Jim object
         :param x: x coordinate of 1st pixel
         :param y: y coordinate of 1st pixel
         :param z: z coordinate of 1st pixel
@@ -2287,6 +2288,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param y1: an integer for y-coordinate of 1st point
         :param x2: an integer for x-coordinate of 2nd point
         :param y2: an integer for y-coordinate of 2nd point
+        :param val: value to be used for line pixels
         """
         if self._jim_object.properties.nrOfPlane() > 1:
             raise TypeError(
@@ -3202,7 +3204,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
 
         A key field is used to find corresponding features in both objects.
 
-        :param jve2c: second JimVect object to join
+        :param jvec2: second JimVect object to join
         :param kwargs: See table below
         :return: joined JimVect object
 
