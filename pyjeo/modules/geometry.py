@@ -357,16 +357,16 @@ def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0):
     :return: a Jim object
     """
     if jim_object.properties.nrOfBand() > 1:
-        returnJim = None
+        ret_jim = None
         for band in range(0, jim_object.properties.nrOfBand()):
-            if returnJim:
+            if ret_jim:
                 jimband = _pj.geometry.cropBand(jim_object, band=band)
                 jimband._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
-                returnJim.geometry.stackBand(jimband)
+                ret_jim.geometry.stackBand(jimband)
             else:
-                returnJim = _pj.geometry.cropBand(jim_object, band=band)
-                returnJim._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
-        return _pj.Jim(returnJim)
+                ret_jim = _pj.geometry.cropBand(jim_object, band=band)
+                ret_jim._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
+        return _pj.Jim(ret_jim)
     else:
         return _pj.Jim(jim_object._jipjim.imageFrameAdd(
             [l, r, t, b, u, d], val))
@@ -407,19 +407,19 @@ def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
     :return: a Jim object
     """
     if jim_object.properties.nrOfBand() > 1:
-        returnJim = None
+        ret_jim = None
         for band in range(0, jim_object.properties.nrOfBand()):
-            if returnJim:
+            if ret_jim:
                 jimband = _pj.geometry.cropBand(jim_object,
                                                 band=band)
                 jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
-                returnJim.geometry.stackBand(jimband)
+                ret_jim.geometry.stackBand(jimband)
             else:
-                returnJim = _pj.geometry.cropBand(jim_object,
-                                                  band=band)
-                returnJim._jipjim.d_imageFrameSubtract(
+                ret_jim = _pj.geometry.cropBand(jim_object,
+                                                band=band)
+                ret_jim._jipjim.d_imageFrameSubtract(
                     [l, r, t, b, u, d])
-        return _pj.Jim(returnJim)
+        return _pj.Jim(ret_jim)
     else:
         return _pj.Jim(jim_object._jipjim.imageFrameSubtract(
             [l, r, t, b, u, d]))
@@ -442,18 +442,18 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
     else:
         bands.extend(band)
 
-    returnJim = None
+    ret_jim = None
 
     for band in bands:
-        if returnJim:
+        if ret_jim:
             jimband = jim_object._jipjim.imageInsert(
                 sec_jim_object._jipjim, x, y, z, band)
-            returnJim.geometry.stackBand(jimband)
+            ret_jim.geometry.stackBand(jimband)
         else:
-            returnJim = jim_object._jipjim.imageInsert(
+            ret_jim = jim_object._jipjim.imageInsert(
                 sec_jim_object._jipjim, x, y, z, band)
 
-    return _pj.Jim(returnJim)
+    return _pj.Jim(ret_jim)
 
 
 def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
@@ -478,18 +478,18 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
         except TypeError:
             bands.append(band)
 
-    returnJim = None
+    ret_jim = None
 
     for band in bands:
-        if returnJim:
+        if ret_jim:
             jimband = jim_object._jipjim.imageInsertCompose(
                 imlbl._jipjim, im2._jipjim, x, y, z, val, band)
-            returnJim.geometry.stackBand(jimband)
+            ret_jim.geometry.stackBand(jimband)
         else:
-            returnJim = jim_object._jipjim.imageInsertCompose(
+            ret_jim = jim_object._jipjim.imageInsertCompose(
                 imlbl._jipjim, im2._jipjim, x, y, z, val, band)
 
-    return _pj.Jim(returnJim)
+    return _pj.Jim(ret_jim)
 
 
 def intersect(jvec, jim, output, **kwargs):
@@ -605,19 +605,19 @@ def magnify(jim_object, n):
     :return: a Jim object containing the magnified image
     """
     if jim_object.properties.nrOfBand() > 1:
-        returnJim = None
+        ret_jim = None
         for band in range(0, jim_object.properties.nrOfBand()):
-            if returnJim:
+            if ret_jim:
                 jimband = _pj.geometry.cropBand(jim_object,
                                                 band=band)
                 jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
 
-                returnJim.geometry.stackBand(jimband)
+                ret_jim.geometry.stackBand(jimband)
             else:
-                returnJim = _pj.Jim(_pj.geometry.cropBand(
+                ret_jim = _pj.Jim(_pj.geometry.cropBand(
                     jim_object, band=band)._jipjim.imageMagnify(n))
 
-        return returnJim
+        return ret_jim
     else:
         return _pj.Jim(jim_object._jipjim.imageMagnify(n))
 
@@ -964,15 +964,15 @@ def stackBand(jim_object, jim_other=None, band=None):
     """
     if isinstance(jim_object, _pj.JimList):
         if band:
-            retJim = _pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
+            ret_jim = _pj.Jim(jim_object._jipjimlist.stackBand({'band': band}))
         else:
-            retJim = _pj.Jim(jim_object._jipjimlist.stackBand())
+            ret_jim = _pj.Jim(jim_object._jipjimlist.stackBand())
 
         if isinstance(jim_other, _pj.Jim):
             if band:
-                return retJim.geometry.stackBand(jim_other, band=band)
+                return ret_jim.geometry.stackBand(jim_other, band=band)
             else:
-                retJim.geometry.stackBand(jim_other)
+                ret_jim.geometry.stackBand(jim_other)
         elif isinstance(jim_other, list):
             if band:
                 jim_to_stack = _pj.Jim(
@@ -980,10 +980,10 @@ def stackBand(jim_object, jim_other=None, band=None):
             else:
                 jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
 
-            retJim = _pj.Jim(retJim._jipjim.stackBand(
+            ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                 jim_to_stack._jipjim))
 
-        return retJim
+        return ret_jim
     elif isinstance(jim_object, _pj.Jim):
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
@@ -1023,21 +1023,21 @@ def stackPlane(jim_object, jim_other=None, plane=None):
         jim_stacked=pj.geometry.stackPlane(jimlist)
     """
     if isinstance(jim_object, _pj.JimList):
-        retJim = _pj.Jim(jim_object._jipjimlist.stackPlane())
+        ret_jim = _pj.Jim(jim_object._jipjimlist.stackPlane())
         if isinstance(jim_other, _pj.Jim):
-            retJim.geometry.stackPlane(jim_other)
-            return retJim
+            ret_jim.geometry.stackPlane(jim_other)
+            return ret_jim
         else:
-            return retJim
+            return ret_jim
     elif isinstance(jim_object, _pj.Jim):
-        retJim = _pj.Jim(jim_object)
+        ret_jim = _pj.Jim(jim_object)
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
 
         for jim in jim_other:
-            retJim.geometry.stackPlane(jim_other)
+            ret_jim.geometry.stackPlane(jim_other)
 
-        return retJim
+        return ret_jim
     else:
         raise TypeError('Error: expected a Jim object')
 
@@ -2111,19 +2111,19 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param val: value of frame
         """
         if self._jim_object.properties.nrOfBand() > 1:
-            returnJim = None
+            ret_jim = None
             for band in range(0, self._jim_object.properties.nrOfBand()):
-                if returnJim:
+                if ret_jim:
                     jimband = _pj.geometry.cropBand(self._jim_object,
                                                     band=band)
                     jimband._jipjim.d_imageFrameAdd([l, r, t, b, u, d], val)
-                    returnJim.geometry.stackBand(jimband)
+                    ret_jim.geometry.stackBand(jimband)
                 else:
-                    returnJim = _pj.geometry.cropBand(self._jim_object,
+                    ret_jim = _pj.geometry.cropBand(self._jim_object,
                                                       band=band)
-                    returnJim._jipjim.d_imageFrameAdd(
+                    ret_jim._jipjim.d_imageFrameAdd(
                         [l, r, t, b, u, d], val)
-            self._jim_object._set(returnJim._jipjim)
+            self._jim_object._set(ret_jim._jipjim)
         else:
             self._jim_object._jipjim.d_imageFrameAdd(
                 [l, r, t, b, u, d], val)
@@ -2162,18 +2162,18 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param d: width of lower frame
         """
         if self._jim_object.properties.nrOfBand() > 1:
-            returnJim = None
+            ret_jim = None
             for band in range(0, self._jim_object.properties.nrOfBand()):
-                if returnJim:
+                if ret_jim:
                     jimband = _pj.geometry.cropBand(self._jim_object,
                                                     band=band)
                     jimband._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
-                    returnJim.geometry.stackBand(jimband)
+                    ret_jim.geometry.stackBand(jimband)
                 else:
-                    returnJim = _pj.geometry.cropBand(self._jim_object,
-                                                      band=band)
-                    returnJim._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
-            self._jim_object._set(returnJim._jipjim)
+                    ret_jim = _pj.geometry.cropBand(self._jim_object,
+                                                    band=band)
+                    ret_jim._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
+            self._jim_object._set(ret_jim._jipjim)
         else:
             self._jim_object._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
 
@@ -2232,18 +2232,18 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param n: a positive integer for magnifying size by pixel replication
         """
         if self._jim_object.properties.nrOfBand() > 1:
-            returnJim = None
+            ret_jim = None
             for band in range(0, self._jim_object.properties.nrOfBand()):
-                if returnJim:
+                if ret_jim:
                     jimband = _pj.geometry.cropBand(self._jim_object,
                                                     band=band)
                     jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
 
-                    returnJim.geometry.stackBand(jimband)
+                    ret_jim.geometry.stackBand(jimband)
                 else:
-                    returnJim = _pj.Jim(_pj.geometry.cropBand(
+                    ret_jim = _pj.Jim(_pj.geometry.cropBand(
                         self._jim_object, band=band)._jipjim.imageMagnify(n))
-            self._jim_object._set(returnJim._jipjim)
+            self._jim_object._set(ret_jim._jipjim)
         else:
             self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
 
@@ -2760,16 +2760,16 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             jim_stacked = jimlist.geometry.stackBand([0, 2])
         """
         if band:
-            retJim = _pj.Jim(
+            ret_jim = _pj.Jim(
                 self._jim_list._jipjimlist.stackBand({'band': band}))
         else:
-            retJim = _pj.Jim(self._jim_list._jipjimlist.stackBand())
+            ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackBand())
 
         if isinstance(jim_other, _pj.Jim):
             if band:
-                return retJim.geometry.stackBand(jim_other, band=band)
+                return ret_jim.geometry.stackBand(jim_other, band=band)
             else:
-                retJim.geometry.stackBand(jim_other)
+                ret_jim.geometry.stackBand(jim_other)
         elif isinstance(jim_other, list):
             if band:
                 jim_to_stack = _pj.Jim(
@@ -2777,10 +2777,10 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             else:
                 jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
 
-            retJim = _pj.Jim(retJim._jipjim.stackBand(
+            ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                 jim_to_stack._jipjim))
 
-        return retJim
+        return ret_jim
 
     def stackPlane(self):
         """Stack planes from raster datasets into new multiplane Jim object.
