@@ -175,7 +175,8 @@ def filter1d(jim_object, filter, dz=None, pad='symmetric', otype=None,
     return _pj.Jim(jim_object._jipjim.filter1d(kwargs))
 
 
-def filter2d(jim_object, filter, **kwargs):
+def filter2d(jim_object, filter, dx=3, dy=3, pad='symmetric', otype=None,
+             **kwargs):
     """Subset raster dataset in spectral/temporal domain.
 
     #This function is deprecated
@@ -196,6 +197,11 @@ def filter2d(jim_object, filter, **kwargs):
 
     see the corresponding method :py:meth:`.filter2d` for more information
     """
+    kwargs.update({'dx': dx, 'dy': dy, 'pad': pad})
+
+    if otype is not None:
+        kwargs.update({'otype': otype})
+
     if isinstance(filter, _np.ndarray):
         taps = kwargs.pop('filter')
         kwargs.update({'taps': taps})
@@ -205,7 +211,7 @@ def filter2d(jim_object, filter, **kwargs):
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
-def firfilter1d(jim_object, taps, **kwargs):
+def firfilter1d(jim_object, taps, pad='symmetric', **kwargs):
     """Compute the finite impulse response filter in time-spectral domain.
 
     :param jim_object: a Jim object
@@ -221,16 +227,16 @@ def firfilter1d(jim_object, taps, **kwargs):
 
         filtered = pj.ngbops.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
     """
-    if taps is None:
-        raise AttributeError('Error: no taps provided')
     if len(taps.shape) != 1:
         raise ValueError('Error: taps should be 1D array')
+
     taps = _np.array(taps).tolist()
     kwargs.update({'taps': taps})
+    kwargs.update({'pad': pad})
     return _pj.Jim(jim_object._jipjim.firfilter1d(kwargs))
 
 
-def firfilter2d(jim_object, taps, **kwargs):
+def firfilter2d(jim_object, taps, nodata=None, norm=None, **kwargs):
     """Compute the finite impulse response filter in spatial domain.
 
     :param jim_object: a Jim object
@@ -247,14 +253,19 @@ def firfilter2d(jim_object, taps, **kwargs):
 
         filtered = pj.ngbops.firfilter2d(jim, taps=[1, 2, 1], norm=True)
     """
-    if taps is None:
-        raise AttributeError('Error: no taps provided')
     if len(taps.shape) != 2:
         raise ValueError('Error: taps should be 2D array')
+
     taps = _np.array(taps)
     kwargs.update({'taps': taps.flatten().tolist()})
     kwargs.update({'dimx': taps.shape[1]})
     kwargs.update({'dimy': taps.shape[0]})
+
+    if nodata is not None:
+        kwargs.update({'nodata': nodata})
+    if norm is not None:
+        kwargs.update({'norm': norm})
+
     return _pj.Jim(jim_object._jipjim.firfilter2d(kwargs))
 
 
@@ -897,7 +908,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.filter1d(kwargs))
 
-    def filter2d(self, filter, **kwargs):
+    def filter2d(self, filter, dx=3, dy=3, pad='symmetric', otype=None,
+                 **kwargs):
         """Subset raster dataset in spectral/temporal domain.
 
         This function is deprecated
@@ -1073,19 +1085,21 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim_multitemp[(jim_multitemp < 0) | (jim_multitemp > 255)] = 0
             jim_multitemp.convert(otype='Byte')
         """
+        kwargs.update({'dx': dx, 'dy': dy, 'pad': pad})
+
+        if otype is not None:
+            kwargs.update({'otype': otype})
+
         if isinstance(filter, _np.ndarray):
             taps = kwargs.pop('filter', None)
             kwargs.update({'taps': taps})
             self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
             self.firfilter2d(kwargs)
-            # kwargs.update({'dy': filter.shape[0]})
-            # kwargs.update({'dx': filter.shape[1]})
-            # kwargs.update({'tap': filter.flatten().tolist()})
         else:
             kwargs.update({'filter': filter})
             self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
-    def firfilter1d(self, taps, **kwargs):
+    def firfilter1d(self, taps, pad='symmetric', **kwargs):
         """Compute the finite impulse response filter in time-spectral domain.
 
         :param taps: 1D array of filter taps
@@ -1099,15 +1113,15 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
             jim.firfilter1d(jim, taps=[1, 2, 1], pad='symmetric')
         """
-        if taps is None:
-            raise AttributeError('Error: no taps provided')
         if len(taps.shape) != 1:
             raise ValueError('Error: taps should be 1D array')
+
         taps = _np.array(taps).tolist()
         kwargs.update({'taps': taps})
+        kwargs.update({'pad': pad})
         self._jim_object._set(self._jim_object._jipjim.firfilter1d(kwargs))
 
-    def firfilter2d(self, taps, **kwargs):
+    def firfilter2d(self, taps, nodata=None, norm=None, **kwargs):
         """Compute the finite impulse response filter in spatial domain.
 
         :param taps: 2D array of filter taps
@@ -1122,14 +1136,18 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
             jim.ngbops.firfilter2d(taps=[1, 2, 1], norm=True, pad='symmetric')
         """
-        if taps is None:
-            raise AttributeError('Error: no taps provided')
         if len(taps.shape) != 2:
             raise ValueError('Error: taps should be 2D array')
+
         taps = _np.array(taps)
         kwargs.update({'taps': taps.flatten().tolist()})
         kwargs.update({'dimx': taps.shape[1]})
         kwargs.update({'dimy': taps.shape[0]})
+
+        if nodata is not None:
+            kwargs.update({'nodata': nodata})
+        if norm is not None:
+            kwargs.update({'norm': norm})
 
         self._jim_object._set(self._jim_object._jipjim.firfilter2d(kwargs))
 
