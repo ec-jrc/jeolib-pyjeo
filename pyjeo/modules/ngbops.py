@@ -287,11 +287,11 @@ def getDissim(jimo, dissim_type=0):
     :return: a list of 2 Jim objects holding the horizontal and vertical
         dissimilarities respectively
     """
-    DIR_HORI = 0
-    DIR_VERT = 1
-    ABS_DIFF_op = 0
-    MAX_op = 1
-    MIN_op = 2
+    dir_hori = 0
+    dir_vert = 1
+    abs_diff_op = 0
+    max_op = 1
+    min_op = 2
 
     if isinstance(jimo, _pj.Jim):
         jim_object_list = _pj.JimList([jimo])
@@ -301,42 +301,42 @@ def getDissim(jimo, dissim_type=0):
     if dissim_type == 0:
         # TODO: Check if looping through everything with edgeWeight() and
         #       then one call of supremum is not faster
-        h_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI,
-                                         ABS_DIFF_op)
-        v_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT,
-                                         ABS_DIFF_op)
+        h_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], dir_hori,
+                                         abs_diff_op)
+        v_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], dir_vert,
+                                         abs_diff_op)
 
         for im in jim_object_list[1:]:
-            h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
-                                                           ABS_DIFF_op))
-            v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
-                                                           ABS_DIFF_op))
+            h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_hori,
+                                                           abs_diff_op))
+            v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_vert,
+                                                           abs_diff_op))
     elif dissim_type == 1:
         mingraderograddil = _pj.pixops.infimum(
             _pj.ngbops.morphoGradientByDilationDiamond(
                 jim_object_list[0]),
             _pj.ngbops.morphoGradientByErosionDiamond(jim_object_list[0]))
-        h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI, MAX_op)
-        v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT, MAX_op)
+        h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, dir_hori, max_op)
+        v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, dir_vert, max_op)
         mingraderograddil = 0
         h_dissim.pixops.supremum(
-            _pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI, ABS_DIFF_op))
+            _pj.ngbops.edgeWeight(jim_object_list[0], dir_hori, abs_diff_op))
         v_dissim.pixops.supremum(
-            _pj.ngbops.edgeWeight(jim_object_list[0], DIR_VERT, ABS_DIFF_op))
+            _pj.ngbops.edgeWeight(jim_object_list[0], dir_vert, abs_diff_op))
 
         for im in jim_object_list[1:]:
             mingraderograddil = _pj.pixops.infimum(
                 _pj.ngbops.morphoGradientByDilationDiamond(im),
                 _pj.ngbops.morphoGradientByErosionDiamond(im))
-            h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI,
-                                                 MAX_op)
-            v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT,
-                                                 MAX_op)
+            h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, dir_hori,
+                                                 max_op)
+            v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil, dir_vert,
+                                                 max_op)
             mingraderograddil = 0
-            h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
-                                                               ABS_DIFF_op))
-            v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
-                                                               ABS_DIFF_op))
+            h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_hori,
+                                                               abs_diff_op))
+            v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_vert,
+                                                               abs_diff_op))
 
             h_dissim.pixops.supremum(h_dissim_crt)
             v_dissim.pixops.supremum(v_dissim_crt)
@@ -1167,11 +1167,11 @@ class _NgbOps(_pj.modules.JimModuleBase):
                               the chaining effect as described in \
                               :cite:`soille2011ismm`.
         """
-        DIR_HORI = 0
-        DIR_VERT = 1
-        ABS_DIFF_op = 0
-        MAX_op = 1
-        MIN_op = 2
+        dir_hori = 0
+        dir_vert = 1
+        abs_diff_op = 0
+        max_op = 1
+        min_op = 2
 
         if isinstance(jimo, _pj.Jim):
             jim_object_list = _pj.JimList([jimo])
@@ -1183,48 +1183,48 @@ class _NgbOps(_pj.modules.JimModuleBase):
         if dissim_type == 0:
             # TODO: Check if looping through everything with edgeWeight() and
             #       then one call of supremum is not faster
-            h_dissim = _pj.ngbops.edgeWeight(self._jim_object, DIR_HORI,
-                                             ABS_DIFF_op)
-            v_dissim = _pj.ngbops.edgeWeight(self._jim_object, DIR_VERT,
-                                             ABS_DIFF_op)
+            h_dissim = _pj.ngbops.edgeWeight(self._jim_object, dir_hori,
+                                             abs_diff_op)
+            v_dissim = _pj.ngbops.edgeWeight(self._jim_object, dir_vert,
+                                             abs_diff_op)
 
             for im in jim_object_list:
-                h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_HORI,
-                                                               ABS_DIFF_op))
-                v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
-                                                               ABS_DIFF_op))
+                h_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_hori,
+                                                               abs_diff_op))
+                v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_vert,
+                                                               abs_diff_op))
         elif dissim_type == 1:
             mingraderograddil = _pj.pixops.infimum(
                 _pj.ngbops.morphoGradientByDilationDiamond(
                     self._jim_object),
                 _pj.ngbops.morphoGradientByErosionDiamond(self._jim_object))
-            h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_HORI,
-                                             MAX_op)
-            v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, DIR_VERT,
-                                             MAX_op)
+            h_dissim = _pj.ngbops.edgeWeight(mingraderograddil, dir_hori,
+                                             max_op)
+            v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, dir_vert,
+                                             max_op)
             mingraderograddil = 0
             h_dissim.pixops.supremum(
-                _pj.ngbops.edgeWeight(self._jim_object, DIR_HORI,
-                                      ABS_DIFF_op))
+                _pj.ngbops.edgeWeight(self._jim_object, dir_hori,
+                                      abs_diff_op))
             v_dissim.pixops.supremum(
-                _pj.ngbops.edgeWeight(self._jim_object, DIR_VERT,
-                                      ABS_DIFF_op))
+                _pj.ngbops.edgeWeight(self._jim_object, dir_vert,
+                                      abs_diff_op))
 
             for im in jim_object_list:
                 mingraderograddil = _pj.pixops.infimum(
                     _pj.ngbops.morphoGradientByDilationDiamond(im),
                     _pj.ngbops.morphoGradientByErosionDiamond(im))
                 h_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil,
-                                                     DIR_HORI,
-                                                     MAX_op)
+                                                     dir_hori,
+                                                     max_op)
                 v_dissim_crt = _pj.ngbops.edgeWeight(mingraderograddil,
-                                                     DIR_VERT,
-                                                     MAX_op)
+                                                     dir_vert,
+                                                     max_op)
                 mingraderograddil = 0
                 h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(
-                    im, DIR_HORI, ABS_DIFF_op))
+                    im, dir_hori, abs_diff_op))
                 v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(
-                    im, DIR_VERT, ABS_DIFF_op))
+                    im, dir_vert, abs_diff_op))
 
                 h_dissim.pixops.supremum(h_dissim_crt)
                 v_dissim.pixops.supremum(v_dissim_crt)
