@@ -269,7 +269,7 @@ def firfilter2d(jim_object, taps, nodata=None, norm=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.firfilter2d(kwargs))
 
 
-def getDissim(jimo, dissimType=0):
+def getDissim(jimo, dissim_type=0):
     """Compute the dissimilarities.
 
     Compute the dissimilarities between horizontal and vertical pairs of
@@ -278,12 +278,12 @@ def getDissim(jimo, dissimType=0):
     :param jimo: a list of grey level Jim objects with the same
         definition domain. The dissimilarities are calculated for each
         image separately and composed using the point-wise maximum rule.
-    :param dissimType: integer value indicating the type of dissimilarity \
-                           measure.
-                       0 (default) for absolute difference.
-                       1 for dissimilarity measure countering \
-                         the chaining effect as described in \
-                         :cite:`soille2011ismm`
+    :param dissim_type: integer value indicating the type of dissimilarity \
+                            measure.
+                        0 (default) for absolute difference.
+                        1 for dissimilarity measure countering \
+                          the chaining effect as described in \
+                          :cite:`soille2011ismm`
     :return: a list of 2 Jim objects holding the horizontal and vertical
         dissimilarities respectively
     """
@@ -298,7 +298,7 @@ def getDissim(jimo, dissimType=0):
     else:
         jim_object_list = jimo
 
-    if dissimType == 0:
+    if dissim_type == 0:
         # TODO: Check if looping through everything with edgeWeight() and
         #       then one call of supremum is not faster
         h_dissim = _pj.ngbops.edgeWeight(jim_object_list[0], DIR_HORI,
@@ -311,7 +311,7 @@ def getDissim(jimo, dissimType=0):
                                                            ABS_DIFF_op))
             v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
                                                            ABS_DIFF_op))
-    elif dissimType == 1:
+    elif dissim_type == 1:
         mingraderograddil = _pj.pixops.infimum(
             _pj.ngbops.morphoGradientByDilationDiamond(
                 jim_object_list[0]),
@@ -341,8 +341,8 @@ def getDissim(jimo, dissimType=0):
             h_dissim.pixops.supremum(h_dissim_crt)
             v_dissim.pixops.supremum(v_dissim_crt)
     else:
-        raise ValueError('dissimType {} not supported. Supported only values '
-                         '0 and 1'.format(dissimType))
+        raise ValueError('dissim_type {} not supported. Supported only values '
+                         '0 and 1'.format(dissim_type))
 
     return [h_dissim, v_dissim]
 
@@ -1151,7 +1151,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.firfilter2d(kwargs))
 
-    def getDissim(self, jimo=None, dissimType=0):
+    def getDissim(self, jimo=None, dissim_type=0):
         """Compute the dissimilarities.
 
         Compute the dissimilarities between horizontal and vertical pairs of
@@ -1160,12 +1160,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
         :param jimo: a list of grey level Jim objects with the same
             definition domain. The dissimilarities are calculated for each
             image separately and composed using the point-wise maximum rule.
-        :param dissimType: integer value indicating the type of dissimilarity \
-                               measure.
-                           0 (default) for absolute difference.
-                           1 for dissimilarity measure countering \
-                             the chaining effect as described in \
-                             :cite:`soille2011ismm`.
+        :param dissim_type: integer value indicating the type of dissimilarity \
+                                measure.
+                            0 (default) for absolute difference.
+                            1 for dissimilarity measure countering \
+                              the chaining effect as described in \
+                              :cite:`soille2011ismm`.
         """
         DIR_HORI = 0
         DIR_VERT = 1
@@ -1180,7 +1180,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
         else:
             jim_object_list = []
 
-        if dissimType == 0:
+        if dissim_type == 0:
             # TODO: Check if looping through everything with edgeWeight() and
             #       then one call of supremum is not faster
             h_dissim = _pj.ngbops.edgeWeight(self._jim_object, DIR_HORI,
@@ -1193,7 +1193,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
                                                                ABS_DIFF_op))
                 v_dissim.pixops.supremum(_pj.ngbops.edgeWeight(im, DIR_VERT,
                                                                ABS_DIFF_op))
-        elif dissimType == 1:
+        elif dissim_type == 1:
             mingraderograddil = _pj.pixops.infimum(
                 _pj.ngbops.morphoGradientByDilationDiamond(
                     self._jim_object),
@@ -1229,8 +1229,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
                 h_dissim.pixops.supremum(h_dissim_crt)
                 v_dissim.pixops.supremum(v_dissim_crt)
         else:
-            raise ValueError('dissimType {} not supported. Supported only '
-                             'values 0 and 1'.format(dissimType))
+            raise ValueError('dissim_type {} not supported. Supported only '
+                             'values 0 and 1'.format(dissim_type))
 
         return [h_dissim, v_dissim]
 
