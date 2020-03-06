@@ -335,7 +335,7 @@ def labelFlatZonesSeeded(jim, jim_ngb, jim_seeds, ox, oy, oz):
         jim_ngb._jipjim, jim_seeds._jipjim, ox, oy, oz))
 
 
-def labelGraph(jim, ngb):
+def label(jim, ngb):
     """Label each non-zero connected component with a unique label.
 
     Label using graph-connectivity.
@@ -812,7 +812,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelFlatZonesSeeded(
             jim_ngb._jipjim, jim_seeds._jipjim, ox, oy, oz)
 
-    def labelGraph(self, ngb):
+    def label(self, ngb):
         """Label each non-zero connected component with a unique label.
 
         Uses graph-connectivity
