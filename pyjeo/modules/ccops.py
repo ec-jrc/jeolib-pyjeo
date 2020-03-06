@@ -383,6 +383,18 @@ def labelsSet(label_jim, ival_jim, indic):
     return _pj.Jim(label_jim._jipjim.labelsSet(ival_jim, indic))
 
 
+def labelsSetGraph(label_jim, ival_jim, indic, graph):
+    """Set labels to regions.
+
+    :param label_jim: Jim object with labels
+    :param ival_jim: a Jim object
+    :param indic: an integer
+    :param graph: an integer holding for the graph connectivity
+    :return: a Jim object with set region labels
+    """
+    return _pj.Jim(label_jim._jipjim.labelsSetGraph(ival_jim, indic, graph))
+
+
 def labelStronglyCCs(jim, local_range, ngb):
     """Label each strongly alpha-connected component.
 
@@ -890,9 +902,17 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_labelsSet(ival_jim, indic)
 
+    def labelsSetGraph(self, ival_jim, indic, graph):
+        """Set labels to regions.
 
         Modifies the instance on which the method was called.
+
+        :param ival_jim: a Jim object
+        :param indic: an integer
+        :param graph: an integer holding for the graph connectivity
+        :return: a Jim object with set region labels
         """
+        self._jim_object._jipjim.d_labelsSetGraph(ival_jim, indic, graph)
 
         #todo: not working (self is not modified)
     def morphoFillHoles(self, graph, border_flag=1):
