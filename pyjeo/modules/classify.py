@@ -49,9 +49,9 @@ def reclass(jim_object, classes, reclasses, otype=None):
     kwargs = {'class': classes, 'reclass': reclasses}
     if otype:
         kwargs.update({'otype': otype})
-    retJim = _pj.Jim(jim_object)
-    retJim._jipjim.d_reclass(kwargs)
-    return retJim
+    ret_jim = _pj.Jim(jim_object)
+    ret_jim._jipjim.d_reclass(kwargs)
+    return ret_jim
 
 
 def sml(jim_object, reflist, **kwargs):
