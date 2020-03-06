@@ -453,17 +453,17 @@ class Jim:
             # self[template>0]=value
 
             if type(value) in (float, int):
-                templateJim = Jim(self, copy_data=False)
-                templateJim = Jim(templateJim._jipjim.setMask(
+                template_jim = Jim(self, copy_data=False)
+                template_jim = Jim(template_jim._jipjim.setMask(
                     item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
                                        'nodata': 1}))
-                self[templateJim > 0] = value
+                self[template_jim > 0] = value
             elif isinstance(value, Jim):
-                templateJim = Jim(self, copy_data=False)
-                templateJim = Jim(templateJim._jipjim.setMask(
+                template_jim = Jim(self, copy_data=False)
+                template_jim = Jim(template_jim._jipjim.setMask(
                     item._jipjimvect, {'eo': ['ALL_TOUCHED=TRUE'],
                                        'nodata': 1}))
-                self[templateJim > 0] = value
+                self[template_jim > 0] = value
         elif isinstance(item, Jim):
             if value is not None:
                 if isinstance(value, Jim):
