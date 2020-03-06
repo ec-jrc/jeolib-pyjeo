@@ -1361,7 +1361,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                 except SystemError:
                     print("no coverage for plane {}, continue with next "
                           "product".format(planenames[iplane]))
-                    if v:
+                    if v in locals():
                         v.io.close()
                     continue
                 if not v.properties.isEmpty():
