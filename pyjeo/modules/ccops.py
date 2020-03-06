@@ -126,6 +126,7 @@ def distance2dEuclideanConstrained(marker, mask, band=0):
 
     Modifies the instance on which the method was called.
 
+    :param marker: Image marker
     :param mask: binary UCHAR image with geodesic mask pixels set to 1
     :param band: List of band indices to crop (index is 0 based)
     """
@@ -181,7 +182,7 @@ def distanceInfluenceZones2dEuclidean(jim, band=0):
 
 
 def getRegionalMinima(jim, graph):
-    """Compute the regional minima of the input image.
+    """Compute regional minima of the input image.
 
     The pixels belonging to a regional minimum are set to 1, all other pixels
     are set to 0.
@@ -189,7 +190,7 @@ def getRegionalMinima(jim, graph):
     :param jim: a Jim object
     :param graph: an integer holding for the graph connectivity
         (4 or 8 for 2-D images)
-    :return: a new Jim object of type unsigned char containing the regional
+    :return: a new Jim object of type unsigned char containing regional
         minima of the input Jim object
     """
     return _pj.Jim(jim._jipjim.getRegionalMinima(graph))
@@ -480,7 +481,7 @@ def partitionSimilarity(jim1, jim2, graph):
     between these labels. Create Jim holding the tree.
 
     :param jim1: first image
-    :param jim2: seconf image
+    :param jim2: second image
     :param graph: an integer for connectivity
     :return: a list of images
     """
@@ -615,8 +616,6 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         Modifies the instance on which the method was called.
 
-        :param jim: multi-band Jim with three bands representing hue,
-            saturation, and intensity channels
         :return: Jim with three bands containing the RGB channels
         """
         assert jim.properties.nrOfBand() == 3, \
@@ -634,8 +633,6 @@ class _CCOps(_pj.modules.JimModuleBase):
         Takes the hue, lightness, and saturation channels of a colour image
         and returns an image node containing a colour RGB image.
 
-        :param jim: multi-band Jim with three bands representing hue,
-            saturation, and intensity channels
         :return: Jim with three bands containing the RGB channels
         """
         assert jim.properties.nrOfBand() == 3, \
