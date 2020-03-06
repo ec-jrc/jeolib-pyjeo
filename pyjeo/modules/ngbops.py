@@ -131,6 +131,7 @@ def edgeWeight(jim_object, dir=0, type=0):
 
     Linking any pair of horizontally or vertically adjacent pixels.
 
+    :param jim_object: Jim object on which to perform the computation
     :param dir:  integer for coding edge direction
         (horizontal if 0, vertical otherwise).
     :param type: integer determining how the edge weights are computed:
