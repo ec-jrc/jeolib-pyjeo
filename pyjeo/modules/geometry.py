@@ -783,10 +783,10 @@ def reducePlane(jim, rule=None, ref_band=None, nodata=None):
                 nan_func = _np.nanmean
                 func = _np.mean
 
-            theType = jim.properties.getDataType()
+            d_type = jim.properties.getDataType()
             nr_of_bands = jim.properties.nrOfBand()
-            if nodata is not None and theType not in ('GDT_Float32',
-                                                      'GDT_Float64'):
+            if nodata is not None and d_type not in ('GDT_Float32',
+                                                     'GDT_Float64'):
                 jim = _pj.pixops.convert(jim, otype='GDT_Float32')
             if ref_band is not None:
                 # create plane-wise mask for the ref_band
@@ -851,9 +851,9 @@ def reducePlane(jim, rule=None, ref_band=None, nodata=None):
                     jimreduced.np(iband)[:] = func(
                         jim.np(iband), axis=0)
             if nodata is not None:
-                if theType not in ('GDT_Float32', 'GDT_Float64'):
-                    jimreduced.pixops.convert(otype=theType)
-                    jim.pixops.convert(otype=theType)
+                if d_type not in ('GDT_Float32', 'GDT_Float64'):
+                    jimreduced.pixops.convert(otype=d_type)
+                    jim.pixops.convert(otype=d_type)
         else:
             if rule == 'max':
                 def rule(reduced, plane):
@@ -2431,10 +2431,10 @@ class _Geometry(_pj.modules.JimModuleBase):
                     nan_func = _np.nanmean
                     func = _np.mean
 
-                theType = self._jim_object.properties.getDataType()
+                d_type = self._jim_object.properties.getDataType()
                 nr_of_bands = self._jim_object.properties.nrOfBand()
-                if nodata is not None and theType not in ('GDT_Float32',
-                                                          'GDT_Float64'):
+                if nodata is not None and d_type not in ('GDT_Float32',
+                                                         'GDT_Float64'):
                     self._jim_object.pixops.convert(otype='GDT_Float32')
                 if ref_band is not None:
                     # create plane-wise mask for the ref_band
@@ -2500,9 +2500,9 @@ class _Geometry(_pj.modules.JimModuleBase):
                         jimreduced.np(iband)[:] = func(
                             self._jim_object.np(iband), axis=0)
                 if nodata is not None:
-                    if theType not in ('GDT_Float32', 'GDT_Float64'):
-                        jimreduced.pixops.convert(otype=theType)
-                        self._jim_object.pixops.convert(otype=theType)
+                    if d_type not in ('GDT_Float32', 'GDT_Float64'):
+                        jimreduced.pixops.convert(otype=d_type)
+                        self._jim_object.pixops.convert(otype=d_type)
             else:
                 if rule == 'max':
                     def rule(reduced, plane):
