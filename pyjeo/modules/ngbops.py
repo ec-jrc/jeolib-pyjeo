@@ -165,12 +165,13 @@ def filter1d(jim_object, filter, dz=None, pad='symmetric', otype=None,
     see the corresponding method :py:meth:`.filter1d` for more information
     """
     kwargs.update({'filter': filter})
+    kwargs.update({'pad': pad})
+
     if dz:
         kwargs.update({'dz': dz})
-    if pad:
-        kwargs.update({'pad': pad})
     if otype:
         kwargs.update({'otype': otype})
+
     return _pj.Jim(jim_object._jipjim.filter1d(kwargs))
 
 
@@ -887,12 +888,13 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.ngbops.filter1d(tapz=[1, 1, 1])
         """
         kwargs.update({'filter': filter})
+        kwargs.update({'pad': pad})
+
         if dz:
             kwargs.update({'dz': dz})
-        if pad:
-            kwargs.update({'pad': pad})
         if otype:
             kwargs.update({'otype': otype})
+
         self._jim_object._set(self._jim_object._jipjim.filter1d(kwargs))
 
     def filter2d(self, filter, **kwargs):
