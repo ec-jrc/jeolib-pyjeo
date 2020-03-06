@@ -2747,6 +2747,8 @@ class _GeometryList(_pj.modules.JimListModuleBase):
     def stackBand(self, jim_other=None, band=None):
         """Stack bands from raster datasets into new multiband Jim object.
 
+        :param jim_other: a Jim object or jimlist from which to copy bands
+            (optional)
         :param band: List of band indices to stack (index is 0 based)
         :return: multiband Jim object
 
