@@ -1894,10 +1894,9 @@ class BadGeometryVects(unittest.TestCase):
         assert feature_count_meth == 1, \
             'Error in geometry.convexHull() ' \
             '(getFeatureCount != 1 for the output)'
-        # TODO: Uncomment when bug #28 in jiplib is solved
-        # assert orig_bbox == jimv.properties.getBBox(), \
-        #     'Error in geometry.convexHull() ' \
-        #     '(BBox of hull is not the same as of the original JimVect)'
+        assert orig_bbox == jimv.properties.getBBox(), \
+            'Error in geometry.convexHull() ' \
+            '(BBox of hull is not the same as of the original JimVect)'
 
     @staticmethod
     def test_join():
