@@ -508,6 +508,19 @@ def partitionSimilarity(jim1, jim2, graph):
     return _pj.JimList(jim1._jipjim.partitionSimilarity(jim2._jipjim, graph))
 
 
+def propagate(label_jim, dst_jim, imap_jim, nc, graph):
+    """Perform propagation.
+
+    :param label_jim: a Jim object with labels
+    :param dst_jim: a Jim object
+    :param imap_jim: a Jim object
+    :param nc: an integer
+    :param graph: an integer for connectivity
+    :return: propagated Jim object
+    """
+    return _pj.Jim(label_jim._jipjim.propagate(dst_jim, imap_jim, nc, graph))
+
+
 def seededRegionGrowing(jim, seeds, ngb):
     """Calculate the seeded region growing.
 
@@ -951,6 +964,16 @@ class _CCOps(_pj.modules.JimModuleBase):
         marker.ccops.morphoGeodesicReconstructionByDilation(jim_object, graph)
         marker.pixops.simpleArithOp(jim_object, 17)  # 17 for SUBSWAP_op_ovf
         self._jim_object._set(marker)
+
+    def propagate(self, dst_jim, imap_jim, nc, graph):
+        """Perform propagation.
+
+        :param dst_jim: a Jim object
+        :param imap_jim: a Jim object
+        :param nc: an integer
+        :param graph: an integer for connectivity
+        """
+        self._jim_object._jipjim.propagate(dst_jim, imap_jim, nc, graph)
 
 
 class _CCOpsList(_pj.modules.JimListModuleBase):
