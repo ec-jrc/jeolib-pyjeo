@@ -861,6 +861,9 @@ def reducePlane(jim, rule=None, ref_band=None, nodata=None):
             elif rule == 'min':
                 def rule(reduced, plane):
                     return reduced > plane
+            elif rule == 'overwrite':
+                def rule(reduced, plane):
+                    return _pj.pixops.setData(plane, 1)
             else:
                 raise AttributeError(
                     'Error: rule not supported')
