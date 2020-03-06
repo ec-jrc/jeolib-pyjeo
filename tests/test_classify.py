@@ -18,25 +18,25 @@ class BadClassify(unittest.TestCase):
     @staticmethod
     def test_classify():
         """Test the Symbolic Machine Learning classifier."""
-        classDict = {}
-        classDict['urban'] = 2
-        classDict['agriculture'] = 12
-        classDict['forest'] = 25
-        classDict['water'] = 41
-        classDict['rest'] = 50
+        class_dict = {}
+        class_dict['urban'] = 2
+        class_dict['agriculture'] = 12
+        class_dict['forest'] = 25
+        class_dict['water'] = 41
+        class_dict['rest'] = 50
         classFrom = range(0, 50)
         classTo = [50] * 50
         for i in range(0, 50):
             if 1 <= i < 10:
-                classTo[i] = classDict['urban']
+                classTo[i] = class_dict['urban']
             elif 11 <= i < 22:
-                classTo[i] = classDict['agriculture']
+                classTo[i] = class_dict['agriculture']
             elif 23 <= i < 25:
-                classTo[i] = classDict['forest']
+                classTo[i] = class_dict['forest']
             elif 40 <= i < 45:
-                classTo[i] = classDict['water']
+                classTo[i] = class_dict['water']
             else:
-                classTo[i] = classDict['rest']
+                classTo[i] = class_dict['rest']
 
         jim_ref = pj.Jim(reference, dx=1000, dy=1000)
         jim_ref.classify.reclass(classes=list(classFrom), reclasses=classTo)
@@ -48,7 +48,7 @@ class BadClassify(unittest.TestCase):
         jim_ref.geometry.warp(jim.properties.getProjection())
         reflist = pj.JimList([jim_ref])
         jim.classify.trainSML(reflist, output=model,
-                              classes=sorted(classDict.values()))
+                              classes=sorted(class_dict.values()))
         sml = pj.classify.classify(jim, method='sml', model=model)
         sml.geometry.band2plane()
         sml.np()[:] = np.argmax(sml.np(), axis=0)
