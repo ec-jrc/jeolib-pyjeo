@@ -18,7 +18,7 @@ def alphaTreeDissim(dissimh, dissimv, alpha):
                                                           alpha))
 
 
-def convertRgbToHsx(jim, theType):
+def convertRgbToHsx(jim, x_type):
     """Convert RGB to HSX.
 
     Returns the hue, saturation, and value, lightness, or intensity channels
@@ -29,7 +29,7 @@ def convertRgbToHsx(jim, theType):
 
     :param jim: multi-band Jim with three bands
         representing red, green and blue channels
-    :param type: string with key ('V' (default) for Value, 'L' for Lightness,
+    :param x_type: string with key ('V' (default) for Value, 'L' for Lightness,
         and 'I' for Intensity)
     :return: Jim with three bands containing the HSX channels
     """
@@ -39,7 +39,7 @@ def convertRgbToHsx(jim, theType):
     jimg = _pj.geometry.cropBand(jim, 1)
     jimb = _pj.geometry.cropBand(jim, 2)
 
-    jimlist = _pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, theType))
+    jimlist = _pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, x_type))
     return jimlist.geometry.stackBand()
 
 
@@ -531,56 +531,57 @@ def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
     contrast value automatically), and > 0 (use this value as threshold value).
     Authorised version values are: 0 (compare to whole region), 1 (compare to
     original seeds), and 2 (compare to pixel neighbours).  If the optional
-    string dataFileNamePrefix is given, data files to use with gnuplot are
-    stored in dataFileNamePrefix_xxx.dat, otherwise data files are not
+    string filename_prefix is given, data files to use with gnuplot are
+    stored in filename_prefix_xxx.dat, otherwise data files are not
     generated (default).
 
-    :param jimList: a Jim list of grey level images having all the same
+    :param jimlist: a Jim list of grey level images having all the same
         definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local
+    :param local_range: integer value indicating maximum absolute local
         difference between 2 adjacent pixels
-    :param regionSize: integer value for minimum size of iso-intensity region
+    :param region_size: integer value for minimum size of iso-intensity region
         in output image (must be >= 2 pixels)
     :param contrast: (default is 0)
     :param version:  (default is 0)
     :param graph: an integer holding for the graph connectivity
         (4 or 8 for 2-D images, default is 4)
-    :param dataFileName:
+    :param filename_prefix: Prefix for filenames
     :return: labeled Jim object
     """
     _pj._check_graph(graph, [4, 8])
 
     if isinstance(jim, _pj.Jim):
-        return _pj.Jim(jimList._jipjim.segmentImageMultiband(
-            graph, localRange, regionSize, contrast, version,
-            dataFileNamePrefix))
+        return _pj.Jim(jimlist._jipjim.segmentImageMultiband(
+            graph, local_range, region_size, contrast, version,
+            filename_prefix))
     elif isinstance(jim, _pj.JimList):
-        return _pj.Jim(jimList._jipjimlist.segmentImageMultiband(
-            graph, localRange, regionSize, contrast, version,
-            dataFileNamePrefix))
+        return _pj.Jim(jimlist._jipjimlist.segmentImageMultiband(
+            graph, local_range, region_size, contrast, version,
+            filename_prefix))
     else:
         raise AttributeError(
             "Error: input must be Jim or JimList object")
 
 
-def watershed(ajim, graph=8):
+def watershed(jim_object, graph=8):
     """Watershed segmentation based on immersion simulation.
 
     Described in :cite:`soille-vincent90`, see also :cite:`vincent-soille91`
 
-    :param ajim: input Jim object
+    :param jim_object: input Jim object
     :param graph: an integer holding for the graph connectivity
         (4 or 8 for 2-D images)
     :return: a new Jim object with the connected component of the input
         object removed
     """
-    return _pj.Jim(ajim._jipjim.segmentationWatershed(ajim._jipjim, graph))
+    return _pj.Jim(jim_object._jipjim.segmentationWatershed(jim_object._jipjim,
+                                                            graph))
 
 
 class _CCOps(_pj.modules.JimModuleBase):
     """Define all CCOps methods."""
 
-    def convertRgbToHsx(self, theType, band):
+    def convertRgbToHsx(self, x_type, band):
         """Convert RGB to HSX.
 
         Returns the hue, saturation, and value, lightness, or intensity
@@ -591,8 +592,9 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         Modifies the instance on which the method was called.
 
-        :param theType: string with key ('V' (default) for Value,
+        :param x_type: string with key ('V' (default) for Value,
             'L' for Lightness, and 'I' for Intensity)
+        :param band: Band to be used
         """
         assert self._jim_object.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
@@ -602,7 +604,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         jimb = _pj.geometry.cropBand(self._jim_object, 2)
 
         jimlist = _pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb,
-                                                           theType))
+                                                           x_type))
         self._jim_object._set(jimlist.geometry.stackBand())
 
     def convertHsiToRgb(self):
