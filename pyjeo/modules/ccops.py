@@ -181,6 +181,20 @@ def distanceInfluenceZones2dEuclidean(jim, band=0):
     return _pj.Jim(jim._jipjim.distanceInfluenceZones2dEuclidean(band))
 
 
+def flatZonesSeeded(jim1, jim2, jim3, ox, oy, oz):
+    """Compute seeded flat zones.
+
+    :param jim1: a Jim object
+    :param jim2: a Jim object
+    :param jim3: a Jim object
+    :param ox: x coordinate of origin
+    :param oy: y coordinate of origin
+    :param oz: z coordinate of origin
+    :return: a Jim object
+    """
+    return _pj.Jim(jim1._jipjim.flatZonesSeeded(jim2, jim3, ox, oy, oz))
+
+
 def getRegionalMinima(jim, graph):
     """Compute regional minima of the input image.
 
@@ -730,6 +744,20 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(
             self._jim_object._jipjim.distanceInfluenceZones2dEuclidean(band))
+
+
+    def flatZonesSeeded(self, jim2, jim3, ox, oy, oz):
+        """Compute seeded flat zones.
+
+        Modifies the instance on which the method was called.
+
+        :param jim2: a Jim object
+        :param jim3: a Jim object
+        :param ox: x coordinate of origin
+        :param oy: y coordinate of origin
+        :param oz: z coordinate of origin
+        """
+        self._jim_object._jipjim.d_flatZonesSeeded(jim2, jim3, ox, oy, oz)
 
     def labelConstrainedCCs(self, local_range, global_range, ngb):
         """Label each alpha-omega connected component.
