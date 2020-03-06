@@ -58,15 +58,15 @@ class BadDEMOps(unittest.TestCase):
 
         destructive_object = pj.Jim(jim)
 
-        flowNew = pj.demops.flowNew(destructive_object, flow, 8)
+        flow_new = pj.demops.flowNew(destructive_object, flow, 8)
         destructive_object.demops.flowNew(flow, 8)
 
-        assert destructive_object.pixops.isEqual(flowNew), \
+        assert destructive_object.pixops.isEqual(flow_new), \
             'Error in demops.flowNew()'
         assert flowNew.stats.getStats(band=0)['min'] > 0, \
             'Error in demops.flowNew()'
         assert destructive_object.properties.getDataType() == \
-               flowNew.properties.getDataType(), \
+               flow_new.properties.getDataType(), \
             'Error in demops.flowNew() (changed data type of object)'
 
         flow = pj.demops.flowDirectionDInf(jim)
