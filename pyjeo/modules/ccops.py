@@ -772,7 +772,6 @@ class _CCOps(_pj.modules.JimModuleBase):
             resulting connected component)
         :param ngb: Jim object for neighbourhood, e.g., create with
             pj.Jim(graph=4)
-        :return: labeled Jim object
         """
         if self._jim_object.properties.nrOfBand() == 1:
             self._jim_object._set(
