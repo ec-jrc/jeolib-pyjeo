@@ -1322,7 +1322,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         else:
             sampleintersect.io.write()
 
-        firstExtract = True
+        first_extract = True
         joinfn = None
 
         vsioutput = os.path.join('/vsimem', 'aggregate_polygon.sqlite')
@@ -1373,12 +1373,12 @@ class _Geometry(_pj.modules.JimModuleBase):
                         joinfn = output
                     # joinfn='/vsimem/vjoin.sqlite'
 
-                    if firstExtract:
+                    if first_extract:
                         vjoin = _pj.JimVect(v, output=joinfn,
                                             co='OVERWRITE=YES')
                         vjoin.io.write()
                         vjoin.io.close()
-                        firstExtract = False
+                        first_extract = False
                     else:
                         vprev = _pj.JimVect(joinfn)
                         vjoin = _pj.geometry.join(
@@ -2966,7 +2966,7 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         # if sample is None:
         #     raise Exception('Error: missing sample option')
 
-        # firstExtract = True
+        # first_extract = True
         # joinfn = None
 
         # vsioutput = os.path.join('/vsimem', 'aggregate_polygon.sqlite')
@@ -3051,12 +3051,12 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         #                 joinfn = output
         #             # joinfn='/vsimem/vjoin.sqlite'
 
-        #             if firstExtract:
+        #             if first_extract:
         #                 vjoin = _pj.JimVect(v, output=joinfn,
         #                                     co='OVERWRITE=YES')
         #                 vjoin.io.write()
         #                 vjoin.io.close()
-        #                 firstExtract = False
+        #                 first_extract = False
         #             else:
         #                 vprev = _pj.JimVect(joinfn)
         #                 vjoin = _pj.geometry.join(
