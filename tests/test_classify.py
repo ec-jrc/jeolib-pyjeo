@@ -18,12 +18,8 @@ class BadClassify(unittest.TestCase):
     @staticmethod
     def test_classify():
         """Test the Symbolic Machine Learning classifier."""
-        class_dict = {}
-        class_dict['urban'] = 2
-        class_dict['agriculture'] = 12
-        class_dict['forest'] = 25
-        class_dict['water'] = 41
-        class_dict['rest'] = 50
+        class_dict = {'urban': 2, 'agriculture': 12, 'forest': 25,
+                      'water': 41, 'rest': 50}
         class_from = range(0, 50)
         class_to = [50] * 50
         for i in range(0, 50):
