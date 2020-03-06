@@ -80,7 +80,7 @@ class BadDEMOps(unittest.TestCase):
         assert stats['max'] < 6.5, \
             'Error in demops.demFlowDirectionDInf()'
 
-        jim2 = pj.Jim(tiles[0][:-8] + 'nir' + tiles[0][-5:])
+        # jim2 = pj.Jim(tiles[0][:-8] + 'nir' + tiles[0][-5:])
         destructive_object = pj.Jim(jim)
         destructive_object[25:30, 25:30] = 65533
 
