@@ -63,7 +63,7 @@ class BadDEMOps(unittest.TestCase):
 
         assert destructive_object.pixops.isEqual(flow_new), \
             'Error in demops.flowNew()'
-        assert flowNew.stats.getStats(band=0)['min'] > 0, \
+        assert flow_new.stats.getStats(band=0)['min'] > 0, \
             'Error in demops.flowNew()'
         assert destructive_object.properties.getDataType() == \
                flow_new.properties.getDataType(), \
