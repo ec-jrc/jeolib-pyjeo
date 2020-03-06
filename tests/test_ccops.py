@@ -200,7 +200,7 @@ class BadCCOps(unittest.TestCase):
 
         labelled = pj.ccops.dissimToAlphaCCs(jim1, jim2, 0)
         labelled_different = pj.ccops.dissimToAlphaCCs(jim1, jim2, 5)
-        jim1_copy = pj.Jim(jim1)
+        # jim1_copy = pj.Jim(jim1)
         #member function not supported
         # jim1_copy.ccops.dissimToAlphaCCs(jim2, 0)
 
