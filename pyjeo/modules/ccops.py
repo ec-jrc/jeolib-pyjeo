@@ -585,7 +585,7 @@ def watershed(jim_object, graph=8):
 class _CCOps(_pj.modules.JimModuleBase):
     """Define all CCOps methods."""
 
-    def convertRgbToHsx(self, x_type, band):
+    def convertRgbToHsx(self, x_type):
         """Convert RGB to HSX.
 
         Returns the hue, saturation, and value, lightness, or intensity
@@ -598,7 +598,6 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         :param x_type: string with key ('V' (default) for Value,
             'L' for Lightness, and 'I' for Intensity)
-        :param band: Band to be used
         """
         assert self._jim_object.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
