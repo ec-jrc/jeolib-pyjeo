@@ -644,8 +644,6 @@ class _CCOps(_pj.modules.JimModuleBase):
         and returns an image node containing a colour RGB image.
 
         Modifies the instance on which the method was called.
-
-        :return: Jim with three bands containing the RGB channels
         """
         assert jim.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
@@ -663,8 +661,6 @@ class _CCOps(_pj.modules.JimModuleBase):
         and returns an image node containing a colour RGB image.
 
         Modifies the instance on which the method was called.
-
-        :return: Jim with three bands containing the RGB channels
         """
         assert jim.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
@@ -804,7 +800,6 @@ class _CCOps(_pj.modules.JimModuleBase):
         :param oz: z coordinate of origin of ngb Jim
         :param rl: integer for range parameter lambda l
             under the strongly connected assumption
-        :return: labeled Jim object
         """
         self._jim_object._set(
             self._jim_object._jipjim.labelConstrainedCCsCi(
@@ -823,7 +818,6 @@ class _CCOps(_pj.modules.JimModuleBase):
         :param varmax: float for maximum variance of cc
         :param ngb: Jim object for neighbourhood, e.g., create with
             pj.Jim(graph=4)
-        :return: labeled Jim object
         """
         self._jim_object._set(
             self._jim_object._jipjim.labelConstrainedCCsVariance(
@@ -862,7 +856,6 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         :param ngb: Jim object for neighbourhood, e.g.,
             create with pj.Jim(graph=4)
-        :return: labeled Jim object
         """
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
 
@@ -886,8 +879,6 @@ class _CCOps(_pj.modules.JimModuleBase):
         :param border_flag:
         :param graph: an integer holding for the graph connectivity
             (4 or 8 for 2-D images)
-        :return: a new Jim object with the connected component of the input
-            object removed
         """
         # jim_object=_pj.Jim(self._jim_object._jipjim)
         maxval = self._jim_object.stats.getStats('max')['max']
@@ -918,8 +909,6 @@ class _CCOps(_pj.modules.JimModuleBase):
             if flag equals 0, otherwise the image are internally processed by
             adding a border which is then removed at the end of
             the processing). Default value is 1.
-        :return: jim_object_mark containing the result of the morphological
-            reconstruction by dilation
         """
         self._jim_object._jipjim.d_geodesicReconstructionByDilation(
             jim_object_mask._jipjim, graph, flag)
@@ -940,8 +929,6 @@ class _CCOps(_pj.modules.JimModuleBase):
             if flag equals 0, otherwise the image are internally processed by
             adding a border which is then removed at the end of the
             processing). Default value is 1.
-        :return: jim_object_mark containing the result of the morphological
-            reconstruction by erosion
         """
         self._jim_object._jipjim.d_geodesicReconstructionByErosion(
             jim_object_mask._jipjim, graph, flag)
