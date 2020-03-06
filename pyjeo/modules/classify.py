@@ -41,6 +41,7 @@ def reclass(jim_object, classes, reclasses, otype=None):
     :param classes: list of source values that need to be replaced
     :param reclasses: list of target values to which the pixels should be
         replaced
+    :param otype: Data type
     :return: Jim object with replaced values
 
     see :py:meth:`~_Classify.reclass` for an example
@@ -126,6 +127,7 @@ class _Classify(_pj.modules.JimModuleBase):
         :param classes: list of source values that need to be replaced
         :param reclasses: list of target values to which the pixels should be
             replaced
+        :param otype: Data type
 
         Reclass a Jim object, replacing all values in [0,1,2] to
         [250,251,252]::
