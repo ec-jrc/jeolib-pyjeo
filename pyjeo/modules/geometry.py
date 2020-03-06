@@ -1036,7 +1036,7 @@ def stackPlane(jim_object, jim_other=None):
             jim_other = [jim_other]
 
         for jim in jim_other:
-            ret_jim.geometry.stackPlane(jim_other)
+            ret_jim.geometry.stackPlane(jim)
 
         return ret_jim
     else:
