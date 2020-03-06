@@ -185,15 +185,15 @@ class BadPixOps(unittest.TestCase):
                 'Inconsistency in pixops.stretch() ' \
                 '(method returns different result than function)'
 
-            theStats = stretched_eq.stats.getStats(['min', 'max', 'histogram'],
-                                                   src_min=1, src_max=254)
-            assert theStats['min'] == 1, \
+            stats = stretched_eq.stats.getStats(['min', 'max', 'histogram'],
+                                                src_min=1, src_max=254)
+            assert stats['min'] == 1, \
                 'Error in pixops.stretch(): min is not 1'
-            assert theStats['max'] == 254, \
+            assert stats['max'] == 254, \
                 'Error in pixops.stretch(): max is not 254'
-            assert max(theStats['histogram']) <= 1150, \
+            assert max(stats['histogram']) <= 1150, \
                 'Error in pixops.stretch(): max is not < 1150'
-            assert min(theStats['histogram']) >= 850, \
+            assert min(stats['histogram']) >= 850, \
                 'Error in pixops.stretch(): max is not >= 850'
 
     @staticmethod
