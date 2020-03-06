@@ -110,9 +110,9 @@ class BadProps(unittest.TestCase):
 
         center_pos = self.jim.properties.getCenterPos()
 
-        assert center_pos[0] > self.ulx and center_pos[0] < self.lrx, \
+        assert self.ulx < center_pos[0] < self.lrx, \
             'Error in properties.getCenterPos()'
-        assert center_pos[1] < self.uly and center_pos[1] > self.lry, \
+        assert self.uly > center_pos[1] > self.lry, \
             'Error in properties.getCenterPos()'
 
     def test_projection(self):
