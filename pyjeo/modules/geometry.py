@@ -1099,7 +1099,7 @@ def warp(jim_object, t_srs, **kwargs):
 class _Geometry(_pj.modules.JimModuleBase):
     """Define all Geometry methods."""
 
-    def aggregate_vector(self, jvec, rule, output, **kwargs):
+    def aggregateVector(self, jvec, rule, output, **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
         :param jvec: reference JimVect instance
