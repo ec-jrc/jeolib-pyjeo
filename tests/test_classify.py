@@ -25,21 +25,21 @@ class BadClassify(unittest.TestCase):
         class_dict['water'] = 41
         class_dict['rest'] = 50
         class_from = range(0, 50)
-        classTo = [50] * 50
+        class_to = [50] * 50
         for i in range(0, 50):
             if 1 <= i < 10:
-                classTo[i] = class_dict['urban']
+                class_to[i] = class_dict['urban']
             elif 11 <= i < 22:
-                classTo[i] = class_dict['agriculture']
+                class_to[i] = class_dict['agriculture']
             elif 23 <= i < 25:
-                classTo[i] = class_dict['forest']
+                class_to[i] = class_dict['forest']
             elif 40 <= i < 45:
-                classTo[i] = class_dict['water']
+                class_to[i] = class_dict['water']
             else:
-                classTo[i] = class_dict['rest']
+                class_to[i] = class_dict['rest']
 
         jim_ref = pj.Jim(reference, dx=1000, dy=1000)
-        jim_ref.classify.reclass(classes=list(class_from), reclasses=classTo)
+        jim_ref.classify.reclass(classes=list(class_from), reclasses=class_to)
 
         bbox = [4246000, 2547000, 4349500, 2441000]
         jim = pj.Jim(testFile, band2plane=True,
