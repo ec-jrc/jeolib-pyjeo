@@ -5,7 +5,7 @@ import numpy as _np
 import pyjeo as _pj
 
 
-def dwt1d(jim_object, **kwargs):
+def dwt1d(jim_object, wavelet=None, family=None, **kwargs):
     """Compute discrete forward wavelet transform in time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -23,10 +23,16 @@ def dwt1d(jim_object, **kwargs):
         dwt = pj.ngbops.dwt1d(jim)
         dwt.ngbops.dwti1d()
     """
+    if wavelet is not None:
+        kwargs.update({'wavelet': wavelet})
+
+    if family is not None:
+        kwargs.update({'family': family})
+
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
 
 
-def dwt2d(jim_object, **kwargs):
+def dwt2d(jim_object, wavelet=None, family=None, **kwargs):
     """Compute forward discrete wavelet transform in the spatial domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -44,10 +50,16 @@ def dwt2d(jim_object, **kwargs):
         dwt = pj.ngbops.dwt2d(jim)
         dwt.ngbops.dwti2d()
     """
+    if wavelet is not None:
+        kwargs.update({'wavelet': wavelet})
+
+    if family is not None:
+        kwargs.update({'family': family})
+
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
 
 
-def dwti1d(jim_object, **kwargs):
+def dwti1d(jim_object, wavelet=None, family=None, **kwargs):
     """Compute inverse discrete wavelet transform in time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -78,10 +90,16 @@ def dwti1d(jim_object, **kwargs):
         jim[jimabs < thresholds] = 0
         jim.ngbops.dwti1d()
     """
+    if wavelet is not None:
+        kwargs.update({'wavelet': wavelet})
+
+    if family is not None:
+        kwargs.update({'family': family})
+
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
 
 
-def dwti2d(jim_object, **kwargs):
+def dwti2d(jim_object, wavelet=None, family=None, **kwargs):
     """Compute inverse discrete wavelet transform in the spatial domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -99,6 +117,12 @@ def dwti2d(jim_object, **kwargs):
         dwt = pj.ngbops.dwt2d(jim)
         dwt.ngbops.dwti2d()
     """
+    if wavelet is not None:
+        kwargs.update({'wavelet': wavelet})
+
+    if family is not None:
+        kwargs.update({'family': family})
+
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
 
 
@@ -509,7 +533,7 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
 class _NgbOps(_pj.modules.JimModuleBase):
     """Define all NgbOps methods."""
 
-    def dwt1d(self, **kwargs):
+    def dwt1d(self, wavelet=None, family=None, **kwargs):
         """Compute discrete forward wavelet transform in time-spectral domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -525,9 +549,15 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.ngbops.dwt1d()
             jim.ngbops.dwti1d()
         """
+        if wavelet is not None:
+            kwargs.update({'wavelet': wavelet})
+
+        if family is not None:
+            kwargs.update({'family': family})
+
         self._jim_object._jipjim.d_dwt1d(kwargs)
 
-    def dwt2d(self, **kwargs):
+    def dwt2d(self, wavelet=None, family=None, **kwargs):
         """Compute forward discrete wavelet transform in the spatial domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -543,9 +573,15 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.ngbops.dwt2d()
             jim.ngbops.dwti2d()
         """
+        if wavelet is not None:
+            kwargs.update({'wavelet': wavelet})
+
+        if family is not None:
+            kwargs.update({'family': family})
+
         self._jim_object._jipjim.d_dwt2d(kwargs)
 
-    def dwti1d(self, **kwargs):
+    def dwti1d(self, wavelet=None, family=None, **kwargs):
         """Compute inverse discrete wavelet transform in time-spectral domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -574,9 +610,15 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim[jimabs<thresholds]=0
             jim.ngbops.dwti1d()
         """
+        if wavelet is not None:
+            kwargs.update({'wavelet': wavelet})
+
+        if family is not None:
+            kwargs.update({'family': family})
+
         self._jim_object._jipjim.d_dwti1d(kwargs)
 
-    def dwti2d(self, **kwargs):
+    def dwti2d(self, wavelet=None, family=None, **kwargs):
         """Compute inverse discrete wavelet transform in the spatial domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -592,6 +634,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.ngbops.dwt2d()
             jim.ngbops.dwti2d()
         """
+        if wavelet is not None:
+            kwargs.update({'wavelet': wavelet})
+
+        if family is not None:
+            kwargs.update({'family': family})
+
         self._jim_object._jipjim.d_dwti2d(kwargs)
 
     def edgeWeight(self, dir=0, type=0):
