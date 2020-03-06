@@ -196,16 +196,16 @@ def getRegionalMinima(jim, graph):
     return _pj.Jim(jim._jipjim.getRegionalMinima(graph))
 
 
-def labelConstrainedCCs(jim, localRange, globalRange, ngb):
+def labelConstrainedCCs(jim, local_range, global_range, ngb):
     """Label each alpha-omega connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
 
     :param jim: a Jim or Jim list of grey level images having all the same
         definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local
+    :param local_range: integer value indicating maximum absolute local
         difference between 2 adjacent pixels
-    :param globalRange: integer value indicating maximum global difference
+    :param global_range: integer value indicating maximum global difference
         (difference between the maximum and minimum values of each resulting
         connected component)
     :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
@@ -214,19 +214,19 @@ def labelConstrainedCCs(jim, localRange, globalRange, ngb):
     if isinstance(jim, _pj.Jim):
         if jim.properties.nrOfBand() == 1:
             return _pj.Jim(jim._jipjim.labelConstrainedCCs(
-                ngb._jipjim, 1, 1, 0, globalRange, localRange))
+                ngb._jipjim, 1, 1, 0, global_range, local_range))
         else:
             return _pj.Jim(jim._jipjim.labelConstrainedCCsMultiband(
-                ngb._jipjim, 1, 1, 0, globalRange, localRange))
+                ngb._jipjim, 1, 1, 0, global_range, local_range))
     elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultiband(
-            ngb._jipjim, 1, 1, 0, globalRange, localRange))
+            ngb._jipjim, 1, 1, 0, global_range, local_range))
     else:
         raise AttributeError(
             "Error: input must be Jim or JimList object")
 
 
-def labelConstrainedCCsDissim(jim, localRange, globalRange, dissimType=0):
+def labelConstrainedCCsDissim(jim, local_range, global_range, dissim_type=0):
     """Label each alpha-omega connected components with a unique label.
 
      Label using graph-connectivity and the dissimilarity measure countering
@@ -234,29 +234,31 @@ def labelConstrainedCCsDissim(jim, localRange, globalRange, dissimType=0):
 
     :param jim: a Jim or a Jim list of grey level images having all the same
         definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local
+    :param local_range: integer value indicating maximum absolute local
         difference between 2 adjacent pixels along alpha-connected paths
-    :param globalRange: integer value indicating maximum global difference
+    :param global_range: integer value indicating maximum global difference
         (difference between the maximum and minimum values of each resulting
         connected component)
-    :param dissimType: int value indicating type of dissimilarity measure. \
-                       0 (default) for absolute difference. \
-                       1 for dissimilarity measure countering the chaining \
-                         effect as described in :cite:`soille2011ismm`
+    :param dissim_type: int value indicating type of dissimilarity measure. \
+                        0 (default) for absolute difference. \
+                        1 for dissimilarity measure countering the chaining \
+                          effect as described in :cite:`soille2011ismm`
     :return: labeled Jim object
     """
-    dissim = _pj.ngbops.getDissim(jim, dissimType)
+    dissim = _pj.ngbops.getDissim(jim, dissim_type)
 
     if isinstance(jim, _pj.Jim):
         if jim.properties.nrOfBand() == 1:
             return _pj.Jim(jim._jipjim.labelConstrainedCCsDissim(
-                dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+                dissim[0]._jipjim, dissim[1]._jipjim,
+                global_range, local_range))
         else:
             return _pj.Jim(jim._jipjim.labelConstrainedCCsMultibandDissim(
-                dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+                dissim[0]._jipjim, dissim[1]._jipjim,
+                global_range, local_range))
     elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultibandDissim(
-            dissim[0]._jipjim, dissim[1]._jipjim, globalRange, localRange))
+            dissim[0]._jipjim, dissim[1]._jipjim, global_range, local_range))
     else:
         raise AttributeError(
             "Error: input must be Jim or JimList object")
@@ -356,14 +358,14 @@ def labelPixels(jim):
     return _pj.Jim(jim._jipjim.labelPix())
 
 
-def labelStronglyCCs(jim, localRange, ngb):
+def labelStronglyCCs(jim, local_range, ngb):
     """Label each strongly alpha-connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
 
     :param jim: a Jim or a Jim list of grey level images having all the same
         definition domain and data type.
-    :param localRange: integer value indicating maximum absolute local
+    :param local_range: integer value indicating maximum absolute local
         difference between 2 adjacent pixels
     :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
     :return: labeled Jim object
@@ -371,13 +373,13 @@ def labelStronglyCCs(jim, localRange, ngb):
     if isinstance(jim, _pj.Jim):
         if jim.properties.nrOfBand() == 1:
             return _pj.Jim(jim._jipjim.labelStronglyCCs(
-                ngb._jipjim, 1, 1, 0, localRange))
+                ngb._jipjim, 1, 1, 0, local_range))
         else:
             return _pj.Jim(jim._jipjim.labelStronglyCCsMultiband(
-                ngb._jipjim, 1, 1, 0, localRange))
+                ngb._jipjim, 1, 1, 0, local_range))
     elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelStronglyCCsMultiband(
-            ngb._jipjim, 1, 1, 0, globalRange, localRange))
+            ngb._jipjim, 1, 1, 0, global_range, local_range))
     else:
         raise AttributeError(
             "Error: input must be Jim or JimList object")
@@ -521,8 +523,8 @@ def seededRegionGrowing(jim, seeds, ngb):
             seeds._jipjim, ngb._jipjim, 1, 1, 0))
 
 
-def segmentImageMultiband(jimList, localRange, regionSize, contrast=0,
-                          version=0, graph=4, dataFileNamePrefix=""):
+def segmentImageMultiband(jimlist, local_range, region_size, contrast=0,
+                          version=0, graph=4, filename_prefix=""):
     """Do multiband image segmentation.
 
     Based on the method described in :cite:`brunner-soille2007`
@@ -727,15 +729,15 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.distanceInfluenceZones2dEuclidean(band))
 
-    def labelConstrainedCCs(self, localRange, globalRange, ngb):
+    def labelConstrainedCCs(self, local_range, global_range, ngb):
         """Label each alpha-omega connected component.
 
         Label with a unique label using graph-connectivity
         :cite:`soille2008pami`
 
-        :param localRange: integer value indicating maximum absolute local
+        :param local_range: integer value indicating maximum absolute local
             difference between 2 adjacent pixels
-        :param globalRange: integer value indicating maximum global difference
+        :param global_range: integer value indicating maximum global difference
             (difference between the maximum and minimum values of each
             resulting connected component)
         :param ngb: Jim object for neighbourhood, e.g., create with
@@ -745,11 +747,11 @@ class _CCOps(_pj.modules.JimModuleBase):
         if self._jim_object.properties.nrOfBand() == 1:
             self._jim_object._set(
                 self._jim_object._jipjim.labelConstrainedCCs(
-                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
+                    ngb._jipjim, 1, 1, 0, global_range, local_range))
         else:
             self._jim_object._set(
                 self._jim_object._jipjim.labelConstrainedCCsMultiband(
-                    ngb._jipjim, 1, 1, 0, globalRange, localRange))
+                    ngb._jipjim, 1, 1, 0, global_range, local_range))
 
     def labelConstrainedCCsCi(self, ngb, ox, oy, oz, rl):
         """Label image, in development.
@@ -926,14 +928,14 @@ class _CCOps(_pj.modules.JimModuleBase):
 class _CCOpsList(_pj.modules.JimListModuleBase):
     """Define all CCOps methods for JimLists."""
 
-    def labelConstrainedCCs(self, localRange, globalRange, ngb):
+    def labelConstrainedCCs(self, local_range, global_range, ngb):
         """Label each alpha-omega connected component.
 
         Label with a unique label using graph-connectivity :cite:`soille2008pami`
 
-        :param localRange: integer value indicating maximum absolute local
+        :param local_range: integer value indicating maximum absolute local
             difference between 2 adjacent pixels
-        :param globalRange: integer value indicating maximum global difference
+        :param global_range: integer value indicating maximum global difference
             (difference between the maximum and minimum values of each resulting
             connected component)
         :param ngb: Jim object for neighbourhood, e.g., create with
@@ -941,7 +943,8 @@ class _CCOpsList(_pj.modules.JimListModuleBase):
         :return: labeled Jim object
         """
         return _pj.Jim(self._jim_list._jipjimlist.labelConstrainedCCsMultiband(
-            ngb._jipjim, 1, 1, 0, globalRange, localRange))
+            ngb._jipjim, 1, 1, 0, global_range, local_range))
+
 
 class _CCOpsVect(_pj.modules.JimVectModuleBase):
     """Define all CCOps methods for JimVects."""
