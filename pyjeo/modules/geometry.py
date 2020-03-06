@@ -1714,6 +1714,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         :param reference: thematic raster dataset with integer values,
             typically a land cover map
+        :param output: path to the output
         :param kwargs: See table below
         :return: A VectorOgr with fields for each of the calculated raster
             value (zonal) statistics
@@ -1983,6 +1984,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         :output: Name of the output vector dataset in which the zonal
             statistics will be saved
+        :param output: path to the output
         :param kwargs: See table below
         :return: A VectorOgr with fields for each of the calculated raster
             value (zonal) statistics
