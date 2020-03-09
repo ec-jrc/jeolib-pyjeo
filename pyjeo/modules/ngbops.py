@@ -364,7 +364,7 @@ def labelPixNgb(jim_object, sec_jim_object, ox, oy, oz):
                                                   ox, oy, oz))
 
 
-def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
+def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, tr_flag=0):
     """Output the dilation of im using the SE defined by imse.
 
     Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -376,10 +376,10 @@ def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     :param ox: x coordinate
     :param oy: y coordinate
     :param oz: z coordinate
-    :param trFlag: optional parameter (0 or 1)
+    :param tr_flag: optional parameter (0 or 1)
     """
     return _pj.Jim(jim_object._jipjim.morphoDilate(sec_jim_object._jipjim,
-                                                   ox, oy, oz, trFlag))
+                                                   ox, oy, oz, tr_flag))
 
 
 def morphoDilateDiamond(jim_object):
@@ -410,7 +410,7 @@ def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
     return _pj.Jim(jim_object._jipjim.morphoDilateLine(dx, dy, k, o, type))
 
 
-def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
+def morphoErode(jim_object, sec_jim_object, ox, oy, oz, tr_flag=0):
     """Output the erosion of im using the SE defined by imse.
 
     Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -422,10 +422,10 @@ def morphoErode(jim_object, sec_jim_object, ox, oy, oz, trFlag=0):
     :param ox: x coordinate
     :param oy: y coordinate
     :param oz: z coordinate
-    :param trFlag: optional parameter (0 or 1)
+    :param tr_flag: optional parameter (0 or 1)
     """
     return _pj.Jim(jim_object._jipjim.morphoErode(sec_jim_object._jipjim,
-                                                  ox, oy, oz, trFlag))
+                                                  ox, oy, oz, tr_flag))
 
 
 def morphoErodeDiamond(jim_object):
@@ -1250,7 +1250,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelPixNgb(sec_jim_object._jipjim,
                                                ox, oy, oz)
 
-    def morphoDilate(self, sec_jim_object, ox, oy, oz, trFlag=0):
+    def morphoDilate(self, sec_jim_object, ox, oy, oz, tr_flag=0):
         """Output the dilation of im using the SE defined by imse.
 
         Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -1263,10 +1263,10 @@ class _NgbOps(_pj.modules.JimModuleBase):
         :param ox: x coordinate
         :param oy: y coordinate
         :param oz: z coordinate
-        :param trFlag: optional parameter (0 or 1)
+        :param tr_flag: optional parameter (0 or 1)
         """
         self._jim_object._set(self._jim_object._jipjim.morphoDilate(
-            sec_jim_object._jipjim, ox, oy, oz, trFlag))
+            sec_jim_object._jipjim, ox, oy, oz, tr_flag))
 
     def morphoDilateDiamond(self):
         """Output the dilation of im using the elementary diamond shaped SE.
@@ -1296,7 +1296,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_morphoDilateLine(dx, dy, k, o, type)
 
-    def morphoErode(self, sec_jim_object, ox, oy, oz, trFlag=0):
+    def morphoErode(self, sec_jim_object, ox, oy, oz, tr_flag=0):
         """Output the erosion of im using the SE defined by imse.
 
         Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -1309,10 +1309,10 @@ class _NgbOps(_pj.modules.JimModuleBase):
         :param ox: x coordinate
         :param oy: y coordinate
         :param oz: z coordinate
-        :param trFlag: optional parameter (0 or 1)
+        :param tr_flag: optional parameter (0 or 1)
         """
         self._jim_object._set(self._jim_object._jipjim.morphoErode(
-            sec_jim_object._jipjim, ox, oy, oz, trFlag))
+            sec_jim_object._jipjim, ox, oy, oz, tr_flag))
 
     def morphoErodeDiamond(self):
         """Output the erosion of im using the elementary diamond shaped SE.
