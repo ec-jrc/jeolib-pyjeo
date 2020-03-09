@@ -472,7 +472,7 @@ def morphoGradientByErosionDiamond(jim_object):
     return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
 
-def savgolay(jim_object, **kwargs):
+def savgolay(jim_object, nl=None, nr=None, ld=None, m=None, **kwargs):
     """Compute the Savitzky-Golay filter in the time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -502,6 +502,15 @@ def savgolay(jim_object, **kwargs):
             savgol = pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6,
                                         pad='replicate')
     """
+    if nl is not None:
+        kwargs.update({'nl': nl})
+    if nr is not None:
+        kwargs.update({'nr': nr})
+    if ld is not None:
+        kwargs.update({'ld': ld})
+    if m is not None:
+        kwargs.update({'m': m})
+
     return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
 
 
@@ -1364,7 +1373,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
         self._jim_object -= _pj.Jim(
             self._jim_object._jipjim.morphoErodeNgb4(1, 1))
 
-    def savgolay(self, **kwargs):
+    def savgolay(self, nl=None, nr=None, ld=None, m=None, **kwargs):
         """Compute the Savitzky-Golay filter in the time-spectral domain.
 
         :param nl: Number of leftward (past) data points used in Savitzky-
@@ -1392,6 +1401,15 @@ class _NgbOps(_pj.modules.JimModuleBase):
                 savgol = pj.ngbops.savgolay(savgol, nl=4, nr=4, m=6,
                                             pad='replicate')
         """
+        if nl is not None:
+            kwargs.update({'nl': nl})
+        if nr is not None:
+            kwargs.update({'nr': nr})
+        if ld is not None:
+            kwargs.update({'ld': ld})
+        if m is not None:
+            kwargs.update({'m': m})
+
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
     def smoothNoData1d(self, nodata=0, **kwargs):
