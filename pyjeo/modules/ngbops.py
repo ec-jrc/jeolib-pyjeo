@@ -320,7 +320,7 @@ def getDissim(jimo, dissim_type=0):
                                          max_op)
         v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, dir_vert,
                                          max_op)
-        mingraderograddil = 0
+
         h_dissim.pixops.supremum(
             _pj.ngbops.edgeWeight(jim_object_list[0], dir_hori, abs_diff_op))
         v_dissim.pixops.supremum(
@@ -334,7 +334,7 @@ def getDissim(jimo, dissim_type=0):
                 mingraderograddil, dir_hori, max_op)
             v_dissim_crt = _pj.ngbops.edgeWeight(
                 mingraderograddil, dir_vert, max_op)
-            mingraderograddil = 0
+
             h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_hori,
                                                                abs_diff_op))
             v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(im, dir_vert,
@@ -1204,7 +1204,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
                                              max_op)
             v_dissim = _pj.ngbops.edgeWeight(mingraderograddil, dir_vert,
                                              max_op)
-            mingraderograddil = 0
+
             h_dissim.pixops.supremum(
                 _pj.ngbops.edgeWeight(self._jim_object, dir_hori,
                                       abs_diff_op))
@@ -1220,7 +1220,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
                     mingraderograddil, dir_hori, max_op)
                 v_dissim_crt = _pj.ngbops.edgeWeight(
                     mingraderograddil, dir_vert, max_op)
-                mingraderograddil = 0
+
                 h_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(
                     im, dir_hori, abs_diff_op))
                 v_dissim_crt.pixops.supremum(_pj.ngbops.edgeWeight(
