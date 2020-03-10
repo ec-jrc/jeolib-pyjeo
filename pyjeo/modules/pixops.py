@@ -258,16 +258,16 @@ def NDVI(jim_object, band_red, band_nir):
     return _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
 
 
-def NDVISeparateBands(redJim, nirJim):
+def NDVISeparateBands(jim_red, jim_nir):
     """Compute NDVI from two Jim objects.
 
     Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
-    :param redJim: Jim object with values of red
-    :param nirJim: Jim object with values of NIR
+    :param jim_red: Jim object with values of red
+    :param jim_nir: Jim object with values of NIR
     :return: a Jim object with values of NDVI
     """
-    return _pj.Jim(nirJim._jipjim.pointOpNDI(redJim._jipjim))
+    return _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
 
 
 def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=None,
@@ -670,17 +670,17 @@ class _PixOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
 
-    def NDVISeparateBands(self, nirJim):
+    def NDVISeparateBands(self, jim_nir):
         """Compute NDVI from two Jims (call on red band, use NIR as param).
 
         Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
         Modifies the instance on which the method was called.
 
-        :param nirJim: Jim object with values of NIR
+        :param jim_nir: Jim object with values of NIR
         """
         self._jim_object._set(
-            nirJim._jipjim.pointOpNDI(self._jim_object._jipjim))
+            jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
 
     def setData(self, value, ulx=None, uly=None, lrx=None, lry=None,
                 bands=None, dx=0, dy=0, nogeo=False):
