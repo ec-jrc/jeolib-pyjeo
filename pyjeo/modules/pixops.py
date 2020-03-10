@@ -313,7 +313,7 @@ def setLevel(jim_object, min, max, val):
 def setThreshold(jim_object, **kwargs):
     """Apply min and max threshold to pixel values in raster dataset.
 
-    :jim_object: the Jim object on which to set threshold
+    :param jim_object: the Jim object on which to set threshold
     :param kwargs: See table :py:meth:`~pixops._PixOps.setThreshold`.
 
     for help, please refer to the corresponding
