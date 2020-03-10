@@ -1245,7 +1245,6 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         return [h_dissim, v_dissim]
 
-
     def labelPixNgb(self, sec_jim_object, ox, oy, oz):
         """Label pix ngb.
 
