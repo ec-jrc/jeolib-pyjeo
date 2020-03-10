@@ -7,7 +7,12 @@ import jiplib as _jl
 
 
 def composite(jim_list, crule='overwrite', **kwargs):
-    """Composite Jims in a JimList using a composite rule."""
+    """Composite Jims in a JimList using a composite rule.
+
+    :param jim_list: List of Jims to composite
+    :param crule: Rule for the composition
+    :return: composited Jim object
+    """
     kwargs.update({'crule': crule})
     return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
 
@@ -876,7 +881,11 @@ class _PixOpsList(_pj.modules.JimListModuleBase):
     """Define all PixOps methods for JimLists."""
 
     def composite(self, crule='overwrite', **kwargs):
-        """Composite Jims in a JimList using a composite rule."""
+        """Composite Jims in a JimList using a composite rule.
+
+        :param crule: Rule for the composition
+        :return: a composited Jim object
+        """
         kwargs.update({'crule': crule})
         return _pj.Jim(self._jim_list._jipjimlist.composite(kwargs))
 
