@@ -931,7 +931,6 @@ class _NgbOps(_pj.modules.JimModuleBase):
         Filter Jim object in spatial domain performed on single or multi-band
         raster dataset.
 
-        :param jim_object: a Jim object
         :param filter: filter function (see values for different filter
             types :ref:`supported filters <filters2d>`)
         :param dx: filter kernel size in x, use odd values only (default is 3)
