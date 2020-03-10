@@ -514,7 +514,7 @@ def savgolay(jim_object, nl=None, nr=None, ld=None, m=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
 
 
-def smoothNoData1d(jim_object, nodata=0, **kwargs):
+def smoothNoData1d(jim_object, nodata=0, intepolationType=None, **kwargs):
     """Smooth nodata in spectral/temporal domain.
 
     :param jim_object: input Jim object
@@ -530,6 +530,9 @@ def smoothNoData1d(jim_object, nodata=0, **kwargs):
         pj.ngbops.smoothNoData1d(jim, 0)
     """
     kwargs.update({'nodata': nodata})
+    if intepolationType is not None:
+        kwargs.update({'interpolationType': intepolationType})
+
     return _pj.Jim(jim_object._jipjim.smoothNoData1d(kwargs))
 
 
@@ -1412,7 +1415,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
-    def smoothNoData1d(self, nodata=0, **kwargs):
+    def smoothNoData1d(self, nodata=0, interpolationType=None, **kwargs):
         """Smooth nodata in spectral/temporal domain.
 
         :param nodata: no data value to interpolate
@@ -1427,6 +1430,9 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.ngbops.smoothNoData1d(0)
         """
         kwargs.update({'nodata': nodata})
+        if intepolationType is not None:
+            kwargs.update({'interpolationType': intepolationType})
+
         self._jim_object._set(self._jim_object._jipjim.smoothNoData1d(kwargs))
 
     # works but slower than directly in Numpy:  jim.np()[0]=jim.np().min(axis=0)
