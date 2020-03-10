@@ -166,7 +166,8 @@ def histoCompress(jim_object, band=None):
     used until the maximum value (i.e. no gaps).
 
     :param jim_object: Jim object to be used for the histoCompress
-    :return: a  Jim object
+    :param band: from which to get the histogram
+    :return: a Jim object
     """
     if band is not None:
         return _pj.Jim(jim_object._jipjim.histoCompress(band))
@@ -588,6 +589,8 @@ class _PixOps(_pj.modules.JimModuleBase):
         used until the maximum value (i.e. no gaps).
 
         Modifies the instance on which the method was called.
+
+        :param band: from which to get the histogram
         """
         if band is not None:
             self._jim_object._jipjim.d_histoCompress(band)
