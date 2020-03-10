@@ -15,6 +15,7 @@ def composite(jim_list, crule='overwrite', **kwargs):
 def convert(jim_object, otype, **kwargs):
     """Convert Jim image with respect to data type.
 
+    :param jim_object: Jim object to be used for the conversion
     :param otype: Data type for output image
     :param kwargs: See table below
     :return: a Jim object
@@ -159,6 +160,7 @@ def histoCompress(jim_object, band=None):
     minimum value is zero and that all subsequent intensity values are
     used until the maximum value (i.e. no gaps).
 
+    :param jim_object: Jim object to be used for the histoCompress
     :return: a  Jim object
     """
     if band is not None:
