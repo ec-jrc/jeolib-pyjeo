@@ -246,6 +246,8 @@ def isEqual(first_jim, second_jim):
 def NDVI(jim_object, redBand, nirBand):
     """Compute NDVI on the Jim object.
 
+    :param jim_object: Jim object from which the red and NIR bands are to be
+        derived
     :param redBand: index of band with values of red
     :param nirBand: index of band with values of NIR
     :return: a Jim object with values of NDVI
