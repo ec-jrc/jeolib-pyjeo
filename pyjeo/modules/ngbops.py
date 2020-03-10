@@ -514,12 +514,12 @@ def savgolay(jim_object, nl=None, nr=None, ld=None, m=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
 
 
-def smoothNoData1d(jim_object, nodata=0, intepolationType=None, **kwargs):
+def smoothNoData1d(jim_object, nodata=0, interpolation_type=None, **kwargs):
     """Smooth nodata in spectral/temporal domain.
 
     :param jim_object: input Jim object
     :param nodata: no data value to interpolate
-    :param interpolationType: type of interpolation for spectral filtering
+    :param interpolation_type: type of interpolation for spectral filtering
         (see https://www.gnu.org/software/gsl/doc/html/interp.html)
 
     Example::
@@ -530,8 +530,8 @@ def smoothNoData1d(jim_object, nodata=0, intepolationType=None, **kwargs):
         pj.ngbops.smoothNoData1d(jim, 0)
     """
     kwargs.update({'nodata': nodata})
-    if intepolationType is not None:
-        kwargs.update({'interpolationType': intepolationType})
+    if interpolation_type is not None:
+        kwargs.update({'interpolation_type': interpolation_type})
 
     return _pj.Jim(jim_object._jipjim.smoothNoData1d(kwargs))
 
@@ -1415,11 +1415,11 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
-    def smoothNoData1d(self, nodata=0, interpolationType=None, **kwargs):
+    def smoothNoData1d(self, nodata=0, interpolation_type=None, **kwargs):
         """Smooth nodata in spectral/temporal domain.
 
         :param nodata: no data value to interpolate
-        :param interpolationType: type of interpolation for spectral filtering
+        :param interpolation_type: type of interpolation for spectral filtering
             (see https://www.gnu.org/software/gsl/doc/html/interp.html)
 
         Example::
@@ -1430,8 +1430,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.ngbops.smoothNoData1d(0)
         """
         kwargs.update({'nodata': nodata})
-        if intepolationType is not None:
-            kwargs.update({'interpolationType': intepolationType})
+        if interpolation_type is not None:
+            kwargs.update({'interpolation_type': interpolation_type})
 
         self._jim_object._set(self._jim_object._jipjim.smoothNoData1d(kwargs))
 
