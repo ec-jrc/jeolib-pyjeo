@@ -243,17 +243,17 @@ def isEqual(first_jim, second_jim):
 #     return _pj.Jim(jim_object._jipjim.pointOpModulo(val))
 
 
-def NDVI(jim_object, redBand, nirBand):
+def NDVI(jim_object, band_red, band_nir):
     """Compute NDVI on the Jim object.
 
     :param jim_object: Jim object from which the red and NIR bands are to be
         derived
-    :param redBand: index of band with values of red
-    :param nirBand: index of band with values of NIR
+    :param band_red: index of band with values of red
+    :param band_nir: index of band with values of NIR
     :return: a Jim object with values of NDVI
     """
-    red = _pj.geometry.cropBand(jim_object, redBand)
-    nir = _pj.geometry.cropBand(jim_object, nirBand)
+    red = _pj.geometry.cropBand(jim_object, band_red)
+    nir = _pj.geometry.cropBand(jim_object, band_nir)
 
     return _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
 
@@ -657,16 +657,16 @@ class _PixOps(_pj.modules.JimModuleBase):
     #     """
     #     self._jim_object._jipjim.d_pointOpModulo(val)
 
-    def NDVI(self, redBand, nirBand):
+    def NDVI(self, band_red, band_nir):
         """Compute NDVI on the Jim object.
 
         Modifies the instance on which the method was called.
 
-        :param redBand: index of band with values of red
-        :param nirBand: index of band with values of NIR
+        :param band_red: index of band with values of red
+        :param band_nir: index of band with values of NIR
         """
-        red = _pj.geometry.cropBand(self._jim_object, redBand)
-        nir = _pj.geometry.cropBand(self._jim_object, nirBand)
+        red = _pj.geometry.cropBand(self._jim_object, band_red)
+        nir = _pj.geometry.cropBand(self._jim_object, band_nir)
 
         self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
 
