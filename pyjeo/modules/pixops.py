@@ -303,6 +303,7 @@ def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=None,
 def setLevel(jim_object, min, max, val):
     """Set all pixels within min and max values to val.
 
+    :param jim_object: a Jim object used fas a basis for the level setting
     :param min:  Minimum threshold value
     :param max:  Maximum threshold value
     :param val:  All pixels within [min,max] are set to val
