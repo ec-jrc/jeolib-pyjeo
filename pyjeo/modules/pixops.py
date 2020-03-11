@@ -690,7 +690,6 @@ class _PixOps(_pj.modules.JimModuleBase):
                 bands=None, dx=0, dy=0, nogeo=False):
         """Set range of pixels to value.
 
-        :param jim_object: a Jim object
         :param value: new value for pixels of Jim object
         :param ulx: upper left corner x coordinate (in projected coordinates
             if geo is True, else in image coordinates)
