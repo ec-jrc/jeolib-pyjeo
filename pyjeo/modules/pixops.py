@@ -417,6 +417,7 @@ def stretch(jim_object, **kwargs):
 
     return _pj.Jim(jim_object._jipjim.stretch(kwargs))
 
+
 def supremum(jim, *args):
     """Create Jim composed using maximum rule from provided Jim objects.
 
@@ -884,6 +885,7 @@ class _PixOps(_pj.modules.JimModuleBase):
             else:
                 self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 5)
 
+
 class _PixOpsList(_pj.modules.JimListModuleBase):
     """Define all PixOps methods for JimLists."""
 
@@ -921,6 +923,7 @@ class _PixOpsList(_pj.modules.JimListModuleBase):
             else:
                 supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
         return supremum
+
 
 class _PixOpsVect(_pj.modules.JimVectModuleBase):
     """Define all PixOps methods for JimVects."""
