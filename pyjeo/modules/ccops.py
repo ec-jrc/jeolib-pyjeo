@@ -1067,7 +1067,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         :param nc: an integer
         :param graph: an integer for connectivity
         """
-        self._jim_object._jipjim.propagate(dst_jim, imap_jim, nc, graph)
+        self._jim_object._jipjim.d_propagate(dst_jim, imap_jim, nc, graph)
 
     def relabel(self, jim_label2, jim_area):
         """Perform propagation.
