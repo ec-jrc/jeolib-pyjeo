@@ -662,6 +662,18 @@ def vertexDegreeAlpha(jim_object, alpha, graph=8):
     return _pj.Jim(jim_object._jipjim.vertexDegreeAlpha(alpha, graph))
 
 
+def vertexSeparation(jim_object, graph=8, type=None):
+    """Label Jim based on vertex separation.
+
+    :param jim_object: input Jim object
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :param type: integer
+    :return: vertex separated labeled Jim
+    """
+    return _pj.Jim(jim_object._jipjim.vertexSeparation(graph, type))
+
+
 def watershed(jim_object, graph=8):
     """Watershed segmentation based on immersion simulation.
 
@@ -1088,6 +1100,17 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.vertexDegreeAlpha(
             alpha, graph))
+
+    def vertexSeparation(self, graph=8, type=None):
+        """Label Jim based on vertex degree alpha.
+
+        :param graph: an integer holding for the graph connectivity
+            (4 or 8 for 2-D images)
+        :param type: integer
+        :return: vertex separated labeled Jim
+        """
+        self._jim_object._set(self._jim_object._jipjim.vertexSeparation(
+            graph, type))
 
 
 class _CCOpsList(_pj.modules.JimListModuleBase):
