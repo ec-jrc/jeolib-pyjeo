@@ -364,6 +364,7 @@ def simpleBitwiseOp(jim, another_jim, op, *args):
 def simpleThreshold(jim_object, min, max, bg_val, fg_val):
     """Set all pixels within min and max values to val.
 
+    :param jim_object: Jim object to be used for the threshold
     :param min:  Minimum threshold value
     :param max:  Maximum threshold value
     :param bg_val:  All pixels outside [min,max] are set to bg_val
@@ -375,6 +376,7 @@ def simpleThreshold(jim_object, min, max, bg_val, fg_val):
 def stretch(jim_object, **kwargs):
     """Stretch pixel values
 
+    :param jim_object: Jim object to be used for the stretch
     :param kwargs: See table below
 
     Modifies the instance on which the method was called.
