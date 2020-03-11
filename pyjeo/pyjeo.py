@@ -14,7 +14,7 @@ from .modules import pjio as io, properties, pixops, ngbops, geometry, \
 from .__init__ import _check_graph
 
 
-# del _jl.Jim.__del__
+del _jl.Jim.__del__
 
 
 def jim2np(jim_object, band=0, copy_data=True):
