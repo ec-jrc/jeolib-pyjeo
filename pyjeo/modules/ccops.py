@@ -685,8 +685,7 @@ def watershed(jim_object, graph=8):
     :return: a new Jim object with the connected component of the input
         object removed
     """
-    return _pj.Jim(jim_object._jipjim.segmentationWatershed(jim_object._jipjim,
-                                                            graph))
+    return _pj.Jim(jim_object._jipjim.segmentationWatershed(graph))
 
 
 class _CCOps(_pj.modules.JimModuleBase):
