@@ -426,18 +426,18 @@ def supremum(jim, *args):
     :return: Jim composed of biggest values from provided Jim objects
     """
     if isinstance(jim, _pj.JimList):
-        supremum = None
+        sup = None
         for newJim in jim:
-            if supremum is None:
-                supremum = _pj.Jim(jim[0])
+            if sup is None:
+                sup = _pj.Jim(jim[0])
             else:
-                supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
+                sup._jipjim.d_pointOpArith(newJim._jipjim, 5)
     else:
-        supremum = _pj.Jim(jim)
+        sup = _pj.Jim(jim)
     for newJim in args:
-        supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
+        sup._jipjim.d_pointOpArith(newJim._jipjim, 5)
 
-    return supremum
+    return sup
 
 
 class _PixOps(_pj.modules.JimModuleBase):
@@ -916,13 +916,13 @@ class _PixOpsList(_pj.modules.JimListModuleBase):
 
         :return: Jim composed of biggest values from provided Jim objects
         """
-        supremum = None
+        sup = None
         for newJim in self._jim_list:
-            if supremum is None:
-                supremum = _pj.Jim(self._jim_list[0])
+            if sup is None:
+                sup = _pj.Jim(self._jim_list[0])
             else:
-                supremum._jipjim.d_pointOpArith(newJim._jipjim, 5)
-        return supremum
+                sup._jipjim.d_pointOpArith(newJim._jipjim, 5)
+        return sup
 
 
 class _PixOpsVect(_pj.modules.JimVectModuleBase):
