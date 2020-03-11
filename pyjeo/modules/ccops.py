@@ -383,6 +383,15 @@ def labelsSet(label_jim, ival_jim, indic):
     return _pj.Jim(label_jim._jipjim.labelsSet(ival_jim, indic))
 
 
+def labelsSetArea(jim):
+    """Set labels to regions based on Tessel surface.
+
+    :param jim: Jim object with labels
+    :return: a Jim object with set region labels
+    """
+    return _pj.Jim(jim._jipjim.labelsSet())
+
+
 def labelsSetGraph(label_jim, ival_jim, indic, graph):
     """Set labels to regions.
 
@@ -901,6 +910,11 @@ class _CCOps(_pj.modules.JimModuleBase):
         :return: a Jim object with set region labels
         """
         self._jim_object._jipjim.d_labelsSet(ival_jim, indic)
+
+    def labelsSetArea(self):
+        """Set labels to regions based on Tessel surface.
+        """
+        self._jim_object._jipjim.d_labelsSetArea()
 
     def labelsSetGraph(self, ival_jim, indic, graph):
         """Set labels to regions.
