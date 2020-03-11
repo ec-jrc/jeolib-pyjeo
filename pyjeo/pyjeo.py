@@ -203,7 +203,8 @@ class Jim:
         _gc.collect()
         return self._stats
 
-    def getMethods(self, queried_module=None):
+    @staticmethod
+    def getMethods(queried_module=None):
         """Print an overview of available methods in format module.method."""
         def tree_structure(module, queried_module):
             if queried_module and queried_module not in str(module):
@@ -1170,7 +1171,8 @@ class JimList(list):
         _gc.collect()
         return self._stats
 
-    def getMethods(self, queried_module=None):
+    @staticmethod
+    def getMethods(queried_module=None):
         """Print an overview of available methods in format module.method."""
         def tree_structure(module, queried_module):
             if queried_module and queried_module not in str(module):
@@ -1401,7 +1403,8 @@ class JimVect:
         _gc.collect()
         return self._geometry
 
-    def getMethods(self, queried_module=None):
+    @staticmethod
+    def getMethods(queried_module=None):
         """Print an overview of available methods in format module.method."""
         def tree_structure(module, queried_module):
             if queried_module and queried_module not in str(module):
