@@ -824,7 +824,6 @@ class _PixOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_pointOpThresh(min, max, bg_val, fg_val)
 
-
     def stretch(self, **kwargs):
         """Stretch pixel values
 
