@@ -637,6 +637,19 @@ def segmentImageMultiband(jimlist, local_range, region_size, contrast=0,
             "Error: input must be Jim or JimList object")
 
 
+def vertexConnectedness(jim_object, alpha, graph=8, deg=None):
+    """Label Jim based on vertex connectedness.
+
+    :param jim_object: input Jim object
+    :param alpha: value
+    :param graph: an integer holding for the graph connectivity
+        (4 or 8 for 2-D images)
+    :param deg: integer
+    :return: vertex connectedness labeled Jim
+    """
+    return _pj.Jim(jim_object._jipjim.vertexDegreeAlpha(alpha, graph, deg))
+
+
 def watershed(jim_object, graph=8):
     """Watershed segmentation based on immersion simulation.
 
@@ -1040,6 +1053,18 @@ class _CCOps(_pj.modules.JimModuleBase):
         :param jim_area: a Jim object
         """
         self._jim_object._jipjim.d_labelRelabel(jim_label2, jim_area)
+
+    def vertexConnectedness(self, alpha, graph=8, deg=None):
+        """Label Jim based on vertex connectedness.
+
+        :param alpha: value
+        :param graph: an integer holding for the graph connectivity
+            (4 or 8 for 2-D images)
+        :param deg: integer
+        :return: vertex connectedness labeled Jim
+        """
+        self._jim_object._set(self._jim_object._jipjim.vertexConnectedness(
+            alpha, graph, deg))
 
 
 class _CCOpsList(_pj.modules.JimListModuleBase):
