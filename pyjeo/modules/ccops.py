@@ -553,6 +553,17 @@ def propagate(label_jim, dst_jim, imap_jim, nc, graph):
     return _pj.Jim(label_jim._jipjim.propagate(dst_jim, imap_jim, nc, graph))
 
 
+def relabel(jim_label1, jim_label2, jim_area):
+    """Perform propagation.
+
+    :param jim_label1: a Jim object
+    :param jim_label2: a Jim object
+    :param jim_area: a Jim object
+    :return: relabeled Jim object
+    """
+    return _pj.Jim(jim_label1._jipjim.labelRelabel(jim_label2, jim_area))
+
+
 def seededRegionGrowing(jim, seeds, ngb):
     """Calculate the seeded region growing.
 
@@ -1021,6 +1032,14 @@ class _CCOps(_pj.modules.JimModuleBase):
         :param graph: an integer for connectivity
         """
         self._jim_object._jipjim.propagate(dst_jim, imap_jim, nc, graph)
+
+    def relabel(self, jim_label2, jim_area):
+        """Perform propagation.
+
+        :param jim_label2: a Jim object
+        :param jim_area: a Jim object
+        """
+        self._jim_object._jipjim.d_labelRelabel(jim_label2, jim_area)
 
 
 class _CCOpsList(_pj.modules.JimListModuleBase):
