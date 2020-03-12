@@ -49,6 +49,18 @@ def alphaTreePersistenceLut(atree):
     return _pj.Jim(atree._jipjim.alphaTreeGetPersistenceLut())
 
 
+def alphaTreeToCCs(atree, label_jim, lut, rule):
+    """Convert an alpha tree to connected components.
+
+    :param atree: a Jim object
+    :param label_jim: a Jim object
+    :param lut: flag
+    :param rule: integer
+    :return: Jim object representing alpha tree converted to CCs
+    """
+    return _pj.Jim(atree._jipjim.alphaTreeToCCs(label_jim._jipjim, lut, rule))
+
+
 def convertRgbToHsx(jim, x_type):
     """Convert RGB to HSX.
 
@@ -783,6 +795,18 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(
             self._jim_object._jipjim.alphaTreeGetPersistenceLut())
+
+    def alphaTreeToCCs(self, label_jim, lut, rule):
+        """Convert an alpha tree to connected components.
+
+        Modifies the instance on which the method was called.
+
+        :param label_jim: a Jim object
+        :param lut: flag
+        :param rule: integer
+        """
+        self._jim_object._set(self._jim_object._jipjim.alphaTreeToCCs(
+            label_jim._jipjim, lut, rule))
 
     def convertRgbToHsx(self, x_type):
         """Convert RGB to HSX.
