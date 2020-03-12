@@ -266,6 +266,22 @@ def labelConstrainedCCsAttr(jim, graph, rg, rl):
         graph, rg, rl))
 
 
+def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
+    """Label image, in development.
+
+    :param jim: a Jim object to label
+    :param ngb: a Jim object for neighbourhood
+    :param ox: x coordinate of origin of ngb Jim
+    :param oy: y coordinate of origin of ngb Jim
+    :param oz: z coordinate of origin of ngb Jim
+    :param rl: integer for range parameter lambda l under the strongly
+        connected assumption
+    :return: labeled Jim object
+    """
+    return _pj.Jim(jim._jipjim.labelConstrainedCCsCi(
+        ngb._jipjim, ox, oy, oz, rl))
+
+
 def labelConstrainedCCsDissim(jim, local_range, global_range, dissim_type=0):
     """Label each alpha-omega connected components with a unique label.
 
@@ -302,22 +318,6 @@ def labelConstrainedCCsDissim(jim, local_range, global_range, dissim_type=0):
     else:
         raise AttributeError(
             "Error: input must be Jim or JimList object")
-
-
-def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
-    """Label image, in development.
-
-    :param jim: a Jim object to label
-    :param ngb: a Jim object for neighbourhood
-    :param ox: x coordinate of origin of ngb Jim
-    :param oy: y coordinate of origin of ngb Jim
-    :param oz: z coordinate of origin of ngb Jim
-    :param rl: integer for range parameter lambda l under the strongly
-        connected assumption
-    :return: labeled Jim object
-    """
-    return _pj.Jim(jim._jipjim.labelConstrainedCCsCi(
-        ngb._jipjim, ox, oy, oz, rl))
 
 
 def labelConstrainedCCsMi(jim, jim_mi, jim_se, ox, oy, oz, rg, rl):
