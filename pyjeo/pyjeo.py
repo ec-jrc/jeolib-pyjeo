@@ -249,7 +249,8 @@ class Jim:
             band = self.properties.nrOfBand() + band
         return _jl.np(self._jipjim, band)
 
-    def _checkInitParamsSense(self, image, kwargs):
+    @staticmethod
+    def _checkInitParamsSense(image, kwargs):
         """Check if the combination of (kw)args for Jim init makes sense.
 
         :param image: path to a raster or another Jim object as a basis for
@@ -1332,7 +1333,8 @@ class _ParentVect(_jl.VectorOgr):
             else:
                 super(_ParentVect, self).__init__()
 
-    def _checkInitParamsSense(self, vector, kwargs):
+    @staticmethod
+    def _checkInitParamsSense(vector, kwargs):
         """Check if the combination of (kw)args for JimVect init makes sense.
 
         :param vector: path to a vector or another JimVect object as a basis
