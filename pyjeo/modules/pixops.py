@@ -519,7 +519,8 @@ class _PixOps(_pj.modules.JimModuleBase):
             kwargs.update({'otype': otype})
             self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
         else:
-            self._jim_object._set(self._jim_object._jipjim.convertDataType(otype))
+            self._jim_object._set(
+                self._jim_object._jipjim.convertDataType(otype))
             # jimnew = _pj.Jim(ncol=self._jim_object.properties.nrOfCol(),
             #                  nrow=self._jim_object.properties.nrOfRow(),
             #                  nband=self._jim_object.properties.nrOfBand(),

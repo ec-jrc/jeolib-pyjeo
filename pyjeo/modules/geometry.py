@@ -716,12 +716,13 @@ def polygonize(jim_object, output, **kwargs):
         raise TypeError('Error: can only polygonize Jim object')
 
 
-# def rasterize(jim_object, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
+# def rasterize(jim_object, jim_vect, burn_value=1, eo=['ALL_TOUCHED'],
+#               ln=None):
 #     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
 #     :param jim_object: a template Jim object
 #     :param jim_vect: JimVect object that needs to be polygonized
-#     :param burnValue: burn value
+#     :param burn_value: burn value
 #     :param eo: option (default is ALL_TOUCHED)
 #     :param ln: layer names (optional)
 #     :return: rasterized Jim object
@@ -738,11 +739,11 @@ def polygonize(jim_object, output, **kwargs):
 #     if not isinstance(jim_vect, _pj.JimVect):
 #         raise TypeError('Error: can only rasterize a JimVect')
 
-#     ajim=_pj.Jim(jim_object)
-#     kwargs={}
-#     kwargs.update({'burn':float(burnValue)})
-#     kwargs.update({'eo':eo})
-#     kwargs.update({'ln':ln})
+#     ajim = _pj.Jim(jim_object)
+#     kwargs = {}
+#     kwargs.update({'burn': float(burn_value)})
+#     kwargs.update({'eo': eo})
+#     kwargs.update({'ln': ln})
 #     ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
 #     return ajim
 
@@ -1978,7 +1979,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                 kwargs['threshold'] = -kwargs['threshold']
 
         if 'classes' in kwargs:
-            classes=kwargs.pop('classes')
+            classes = kwargs.pop('classes')
             kwargs['class'] = classes
 
         avect = self._jim_object._jipjim.extractOgr(jvec._jipjimvect, kwargs)
@@ -2355,14 +2356,14 @@ class _Geometry(_pj.modules.JimModuleBase):
         pjvect._set(avect)
         return pjvect
 
-    #todo: to be tested (we can also use jim[jimVect] instead...)
-    # def rasterize(self, jim_vect, burnValue=1,eo=['ALL_TOUCHED'],ln=None):
+    # todo: to be tested (we can also use jim[jimVect] instead...)
+    # def rasterize(self, jim_vect, burn_value=1,eo=['ALL_TOUCHED'],ln=None):
     #     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
-    def rasterizeBuf(self, jim_vect, burnValue=None, eo=None, ln=None):
+    def rasterizeBuf(self, jim_vect, burn_value=None, eo=None, ln=None):
         """
         :param jim_vect: JimVect object that needs to be polygonized
-        :param burnValue: burn value
+        :param burn_value: burn value
         :param eo: option (default is ALL_TOUCHED)
         :param ln: layer names (optional)
 
@@ -2374,23 +2375,31 @@ class _Geometry(_pj.modules.JimModuleBase):
           For instance you can use 'eo':'ATTRIBUTE=fieldname'
         """
 
-        kwargs={}
-        # if burnValue is not None:
-        #     kwargs.update({'burn':float(burnValue)})
+        kwargs = {}
+        # if burn_value is not None:
+        #     kwargs.update({'burn':float(burn_value)})
         # self._jim_object.pixops.setData(0)
-        kwargs.update({'eo':eo})
+        kwargs.update({'eo': eo})
         # kwargs.update({'ln':ln})
         # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
         # self._jim_object._jipjim.d_setMask(jim_vect._jipjimvect, kwargs)
 
         self._jim_object.pixops.setData(0)
         self._jim_object._jipjim.d_setMask(jim_vect._jipjimvect,
-                                           {'eo': ['ATTRIBUTE=objectid_1'],'nodata':1})
-        # self._jim_object._jipjim.d_setMask(jim_vect._jipjimvect,{'nodata':9})
-        # self._jim_object._jipjim.d_setMask(jim_vect._jipjimvect,{'eo': ['ATTRIBUTE=objectid_1'],'nodata':10})
-        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,{'burn':10,'eo': ['ALL_TOUCHED']})
-        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,{'burn':10,'eo': ['ATTRIBUTE=objectid_1']})
-        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
+                                           {'eo': ['ATTRIBUTE=objectid_1'],
+                                            'nodata': 1})
+        # self._jim_object._jipjim.d_setMask(jim_vect._jipjimvect,
+        #                                    {'nodata': 9})
+        # self._jim_object._jipjim.d_setMask(
+        #     jim_vect._jipjimvect,
+        #     {'eo': ['ATTRIBUTE=objectid_1'], 'nodata': 10})
+        # self._jim_object._jipjim.d_rasterizeBuf(
+        #     jim_vect._jipjimvect,
+        #     {'burn':10, 'eo': ['ALL_TOUCHED']})
+        # self._jim_object._jipjim.d_rasterizeBuf(
+        #     jim_vect._jipjimvect,
+        #     {'burn':10, 'eo': ['ATTRIBUTE=objectid_1']})
+        # self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
 
     def reducePlane(self, rule=None, ref_band=None, nodata=None):
         """Reduce planes of Jim object.
