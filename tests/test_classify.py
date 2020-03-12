@@ -53,17 +53,16 @@ class BadClassify(unittest.TestCase):
                              reclasses=[2, 12, 25, 41, 50])
 
         stats = sml.stats.getStats('histogram')
-        assert stats['histogram'][stats['bin'].index(2)] == 6608.0, \
+        assert stats['histogram'][stats['bin'].index(2)] > 6605.0 and stats['histogram'][stats['bin'].index(2)] < 6610.0 , \
             'Error in class 2'
-        assert stats['histogram'][stats['bin'].index(12)] == 23507.0, \
+        assert stats['histogram'][stats['bin'].index(12)] > 23500.0 and stats['histogram'][stats['bin'].index(12)] < 23510.0, \
             'Error in class 12'
-        assert stats['histogram'][stats['bin'].index(25)] == 6289.0, \
+        assert stats['histogram'][stats['bin'].index(25)] > 6285.0 and stats['histogram'][stats['bin'].index(25)] < 6295.0, \
             'Error in class 25'
-        assert stats['histogram'][stats['bin'].index(41)] == 966.0, \
+        assert stats['histogram'][stats['bin'].index(41)] > 960.0 and stats['histogram'][stats['bin'].index(41)] < 975.0, \
             'Error in class 41'
-        assert stats['histogram'][stats['bin'].index(50)] == 6514.0, \
+        assert stats['histogram'][stats['bin'].index(50)] > 6510.0 and stats['histogram'][stats['bin'].index(50)] < 6520.0, \
             'Error in class 50'
-
         os.remove(model)
 
 

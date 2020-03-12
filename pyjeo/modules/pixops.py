@@ -86,21 +86,23 @@ def convert(jim_object, otype, **kwargs):
         raise TypeError("Output type {} not supported".format(otype))
     # TODO: Support CTypes
 
-    if len(kwargs) and jim_object.properties.nrOfPlane() == 1:
+    # if len(kwargs) and jim_object.properties.nrOfPlane() == 1:
+    if len(kwargs):
         kwargs.update({'otype': otype})
         return _pj.Jim(jim_object._jipjim.convert(kwargs))
     else:
-        jimnew = _pj.Jim(ncol=jim_object.properties.nrOfCol(),
-                         nrow=jim_object.properties.nrOfRow(),
-                         nband=jim_object.properties.nrOfBand(),
-                         nplane=jim_object.properties.nrOfPlane(),
-                         otype=otype)
-        jimnew.properties.setProjection(jim_object.properties.getProjection())
-        jimnew.properties.setGeoTransform(
-            jim_object.properties.getGeoTransform())
-        for iband in range(0, jim_object.properties.nrOfBand()):
-            jimnew.np(iband)[:] = jim_object.np(iband).astype(nptype)
-        return jimnew
+        return _pj.Jim(jim_object._jipjim.convertDataType(otype))
+        # jimnew = _pj.Jim(ncol=jim_object.properties.nrOfCol(),
+        #                  nrow=jim_object.properties.nrOfRow(),
+        #                  nband=jim_object.properties.nrOfBand(),
+        #                  nplane=jim_object.properties.nrOfPlane(),
+        #                  otype=otype)
+        # jimnew.properties.setProjection(jim_object.properties.getProjection())
+        # jimnew.properties.setGeoTransform(
+        #     jim_object.properties.getGeoTransform())
+        # for iband in range(0, jim_object.properties.nrOfBand()):
+        #     jimnew.np(iband)[:] = jim_object.np(iband).astype(nptype)
+        # return jimnew
 
 # def convert(jim_object, otype, **kwargs):
 #     """Convert Jim image with respect to data type.
@@ -517,18 +519,19 @@ class _PixOps(_pj.modules.JimModuleBase):
             kwargs.update({'otype': otype})
             self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
         else:
-            jimnew = _pj.Jim(ncol=self._jim_object.properties.nrOfCol(),
-                             nrow=self._jim_object.properties.nrOfRow(),
-                             nband=self._jim_object.properties.nrOfBand(),
-                             nplane=self._jim_object.properties.nrOfPlane(),
-                             otype=otype)
-            jimnew.properties.setProjection(
-                self._jim_object.properties.getProjection())
-            jimnew.properties.setGeoTransform(
-                self._jim_object.properties.getGeoTransform())
-            for iband in range(0, self._jim_object.properties.nrOfBand()):
-                jimnew.np(iband)[:] = self._jim_object.np(iband).astype(nptype)
-            self._jim_object._set(jimnew._jipjim)
+            self._jim_object._set(self._jim_object._jipjim.convertDataType(otype))
+            # jimnew = _pj.Jim(ncol=self._jim_object.properties.nrOfCol(),
+            #                  nrow=self._jim_object.properties.nrOfRow(),
+            #                  nband=self._jim_object.properties.nrOfBand(),
+            #                  nplane=self._jim_object.properties.nrOfPlane(),
+            #                  otype=otype)
+            # jimnew.properties.setProjection(
+            #     self._jim_object.properties.getProjection())
+            # jimnew.properties.setGeoTransform(
+            #     self._jim_object.properties.getGeoTransform())
+            # for iband in range(0, self._jim_object.properties.nrOfBand()):
+            #     jimnew.np(iband)[:] = self._jim_object.np(iband).astype(nptype)
+            # self._jim_object._set(jimnew._jipjim)
 
     # def convert(self, otype, **kwargs):
     #     """Convert Jim image with respect to data type.
