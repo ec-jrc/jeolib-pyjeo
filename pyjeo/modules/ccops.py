@@ -4,6 +4,17 @@ import pyjeo as _pj
 
 
 # TODO: Test
+def alphaTree(atree, attr0cc, type):
+    """Compute the alpha tree.
+
+    :param atree: a Jim object
+    :param attr0cc: a Jim object
+    :param type: an integer
+    :return: Jim object with the alpha tree
+    """
+    return _pj.Jim(atree._jipjim.alphaTree(attr0cc._jipjim, type))
+
+
 def alphaTreeDissim(dissimh, dissimv, alpha):
     """Create Jim holding the tree.
 
@@ -722,6 +733,17 @@ def watershed(jim_object, graph=8):
 
 class _CCOps(_pj.modules.JimModuleBase):
     """Define all CCOps methods."""
+
+    def alphaTree(self, attr0cc, type):
+        """Compute the alpha tree.
+
+        Modifies the instance on which the method was called.
+
+        :param attr0cc: a Jim object
+        :param type: an integer
+        """
+        self._jim_object._set(self._jim_object._jipjim.alphaTree(
+            attr0cc._jipjim, type))
 
     def convertRgbToHsx(self, x_type):
         """Convert RGB to HSX.
