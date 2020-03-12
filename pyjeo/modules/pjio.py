@@ -145,7 +145,7 @@ class _IOVect(_pj.modules.JimVectModuleBase):
         """Close JimVect object."""
         self._jim_vect._jipjimvect.close()
 
-    def dumpVect(self, name=None, **kwargs):
+    def dumpVect(self, name=None, output=None, **kwargs):
         """
         Dump vector content to screen or file (if output argument is provided).
 
@@ -154,10 +154,14 @@ class _IOVect(_pj.modules.JimVectModuleBase):
         :param output: output ascii file
             (default is empty: dump to standard output)
         """
-        if name:
-            kwargs.update({'name': name})
         if not kwargs:
             kwargs = {}
+
+        if name:
+            kwargs.update({'name': name})
+        if output is not None:
+            kwargs.update({'output': output})
+
         self._jim_vect._jipjimvect.dumpOgr(kwargs)
 
     def write(self, filename=None):
