@@ -29,6 +29,17 @@ def alphaTreeDissim(dissimh, dissimv, alpha):
                                                           alpha))
 
 
+def alphaTreeNextLevel(atree, label_jim, alpha):
+    """Compute the alpha tree next level.
+
+    :param atree: a Jim object
+    :param label_jim: a Jim object
+    :param alpha: integer
+    :return: Jim object representing the next level of alpha tree
+    """
+    return _pj.Jim(atree._jipjim.alphaTreeNextLevel(label_jim._jipjim, alpha))
+
+
 def convertRgbToHsx(jim, x_type):
     """Convert RGB to HSX.
 
@@ -744,6 +755,17 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.alphaTree(
             attr0cc._jipjim, type))
+
+    def alphaTreeNextLevel(self, label_jim, alpha):
+        """Convert an alpha tree to connected components.
+
+        Modifies the instance on which the method was called.
+
+        :param label_jim: a Jim object
+        :param alpha: integer
+        """
+        self._jim_object._set(self._jim_object._jipjim.alphaTreeNextLevel(
+            label_jim._jipjim, alpha))
 
     def convertRgbToHsx(self, x_type):
         """Convert RGB to HSX.
