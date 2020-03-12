@@ -40,6 +40,15 @@ def alphaTreeNextLevel(atree, label_jim, alpha):
     return _pj.Jim(atree._jipjim.alphaTreeNextLevel(label_jim._jipjim, alpha))
 
 
+def alphaTreePersistenceLut(atree):
+    """Compute the alpha tree persistence lut.
+
+    :param atree: a Jim object
+    :return: Jim object representing the alpha tree persistence lut
+    """
+    return _pj.Jim(atree._jipjim.alphaTreeGetPersistenceLut())
+
+
 def convertRgbToHsx(jim, x_type):
     """Convert RGB to HSX.
 
@@ -766,6 +775,14 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.alphaTreeNextLevel(
             label_jim._jipjim, alpha))
+
+    def alphaTreePersistenceLut(self):
+        """Compute the alpha tree persistence lut.
+
+        Modifies the instance on which the method was called.
+        """
+        self._jim_object._set(
+            self._jim_object._jipjim.alphaTreeGetPersistenceLut())
 
     def convertRgbToHsx(self, x_type):
         """Convert RGB to HSX.
