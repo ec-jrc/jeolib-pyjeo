@@ -306,6 +306,24 @@ def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
         ngb._jipjim, ox, oy, oz, rl))
 
 
+def labelConstrainedCCsMi(jim, jim_mi, jim_se, ox, oy, oz, rg, rl):
+    """Label image, in development.
+
+    :param jim: a Jim object to label
+    :param jim_mi: a Jim object
+    :param jim_se: a Jim object
+    :param ox: x coordinate of origin of
+    :param oy: y coordinate of origin of
+    :param oz: z coordinate of origin of
+    :param rg: integer
+    :param rl: integer for range parameter lambda l under the strongly
+        connected assumption
+    :return: labeled Jim object
+    """
+    return _pj.Jim(jim._jipjim.labelConstrainedCCsMi(
+        jim_mi._jipjim, jim_se._jipjim, ox, oy, oz, rg, rl))
+
+
 def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, ngb):
     """Label image.
 
@@ -894,6 +912,23 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(
             self._jim_object._jipjim.labelConstrainedCCsCi(
+                ngb._jipjim, ox, oy, oz, rl))
+
+    def labelConstrainedCCsMi(self, jim_mi, jim_se, ox, oy, oz, rg, rl):
+        """Label image, in development.
+        Modifies the instance on which the method was called.
+
+        :param jim_mi: a Jim object
+        :param jim_se: a Jim object
+        :param ox: x coordinate of origin of ngb Jim
+        :param oy: y coordinate of origin of ngb Jim
+        :param oz: z coordinate of origin of ngb Jim
+        :param rg: integer
+        :param rl: integer for range parameter lambda l
+            under the strongly connected assumption
+        """
+        self._jim_object._set(
+            self._jim_object._jipjim.labelConstrainedCCsMi(
                 ngb._jipjim, ox, oy, oz, rl))
 
     def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, ngb):
