@@ -252,6 +252,20 @@ def labelConstrainedCCs(jim, local_range, global_range, ngb):
             "Error: input must be Jim or JimList object")
 
 
+def labelConstrainedCCsAttr(jim, graph, rg, rl):
+    """Label image, in development.
+
+    :param jim: a Jim object to label
+    :param graph: integer for graph connectivity
+    :param rg: integer
+    :param rl: integer for range parameter lambda l under the strongly
+        connected assumption
+    :return: labeled Jim object
+    """
+    return _pj.Jim(jim._jipjim.labelConstrainedCCsAttr(
+        graph, rg, rl))
+
+
 def labelConstrainedCCsDissim(jim, local_range, global_range, dissim_type=0):
     """Label each alpha-omega connected components with a unique label.
 
@@ -898,6 +912,19 @@ class _CCOps(_pj.modules.JimModuleBase):
             self._jim_object._set(
                 self._jim_object._jipjim.labelConstrainedCCsMultiband(
                     ngb._jipjim, 1, 1, 0, global_range, local_range))
+
+    def labelConstrainedCCsAttr(self, graph, rg, rl):
+        """Label image, in development.
+
+        :param graph: integer for graph connectivity
+        :param rg: integer
+        :param rl: integer for range parameter lambda l under the strongly
+            connected assumption
+        :return: labeled Jim object
+        """
+        self._jim_object._set(
+            self._jim_object._jipjim.labelConstrainedCCsAttr(
+                graph, rg, rl))
 
     def labelConstrainedCCsCi(self, ngb, ox, oy, oz, rl):
         """Label image, in development.
