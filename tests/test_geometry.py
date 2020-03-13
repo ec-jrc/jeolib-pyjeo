@@ -219,7 +219,7 @@ class BadGeometry(unittest.TestCase):
         sample.io.close()
 
     @staticmethod
-    def test_extractOgr_band():
+    def test_extractOgr_list_multiband():
         """Test the extractOgr method for list with multibands."""
         jim0 = pj.Jim(rasterfn)
         sample = pj.JimVect(vectorfn)
@@ -228,7 +228,7 @@ class BadGeometry(unittest.TestCase):
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('B' + str(band))
         v = jl0.geometry.extractOgr(sample, rule='mean',
-                                    output=output2fn, oformat='SQLite',
+                                    output=outputfn, oformat='SQLite',
                                     co=['OVERWRITE=YES'],
                                     bandname=bandname, fid='fid')
         v.io.write()
@@ -238,14 +238,16 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names (1)'
-        print(v.properties.getFieldNames())
-        print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names (1)'
         jl0.io.close()
         sample.io.close()
 
+    @staticmethod
+    def test_extractOgr_multiband():
         """Test the extractOgr method for jim with multibands."""
+        jim0 = pj.Jim(rasterfn)
+        sample = pj.JimVect(vectorfn)
         planename=[]
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('T' + str(plane))
@@ -253,7 +255,7 @@ class BadGeometry(unittest.TestCase):
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('B' + str(band))
         v = jim0.geometry.extractOgr(sample, rule='mean',
-                                    output=output2fn, oformat='SQLite',
+                                    output=outputfn, oformat='SQLite',
                                     co=['OVERWRITE=YES'],
                                     bandname=bandname, fid='fid')
         v.io.write()
@@ -263,14 +265,14 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names (1)'
-        print(v.properties.getFieldNames())
-        print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names (1)'
 
     @staticmethod
     def test_extractOgr_plane():
         """Test the extractOgr method for multiplanes."""
+        jim0 = pj.Jim(rasterfn)
+        sample = pj.JimVect(vectorfn)
         planename=[]
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('T' + str(plane))
@@ -278,7 +280,7 @@ class BadGeometry(unittest.TestCase):
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('B' + str(band))
         v = jim0.geometry.extractOgr(sample, rule='mean',
-                                    output=output2fn, oformat='SQLite',
+                                    output=outputfn, oformat='SQLite',
                                     co=['OVERWRITE=YES'],
                                     planename=planename,
                                     bandname=bandname, fid='fid')
@@ -289,14 +291,13 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names (1)'
-        print(v.properties.getFieldNames())
-        print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names (1)'
 
     @staticmethod
     def test_extractOgr_band_plane():
         """Test the extractOgr method for multiband multiplanes."""
+        sample = pj.JimVect(vectorfn)
         jim0 = pj.Jim(rasterfn,band=[0,1,2,3,4,5])
         jim1 = pj.Jim(rasterfn,band=[6,7,8,9,10,11])
         jim0.geometry.stackPlane(jim1)
@@ -307,7 +308,7 @@ class BadGeometry(unittest.TestCase):
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('Band' + str(band))
         v = jim0.geometry.extractOgr(sample, rule=['mean','stdev'],
-                                    output=output2fn, oformat='SQLite',
+                                    output=outputfn, oformat='SQLite',
                                     co=['OVERWRITE=YES'],
                                     bandname=bandname,
                                     planename=planename, fid='fid')
@@ -318,38 +319,37 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names (1)'
-        print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 26, \
             'Error in geometry.extractOgr() field names (1)'
 
-    @staticmethod
-    def test_extractOgr_band_plane():
-        """Test the extractOgr method for allpoints."""
-        jim0 = pj.Jim(rasterfn,band=[0,1,2,3,4,5])
-        jim1 = pj.Jim(rasterfn,band=[6,7,8,9,10,11])
-        jim0.geometry.stackPlane(jim1)
-        planename=[]
-        bandname=[]
-        for plane in range(0, jim0.properties.nrOfPlane()):
-            planename.append('Time' + str(plane))
-        for band in range(0, jim0.properties.nrOfBand()):
-            bandname.append('Band' + str(band))
-        v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
-                                     output=output2fn, oformat='SQLite',
-                                     co=['OVERWRITE=YES'],
-                                     copy='label',
-                                     bandname=bandname,
-                                     planename=planename, fid='fid')
-        v.io.write()
-        assert v.properties.getFeatureCount() == 11, \
-            'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
-            'Error in geometry.extractOgr() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
-            'Error in geometry.extractOgr() field names (1)'
-        print(len(v.properties.getFieldNames()))
-        assert len(v.properties.getFieldNames()) == 26, \
-            'Error in geometry.extractOgr() field names (1)'
+    # @staticmethod
+    # def test_extractOgr_band_plane():
+    #     """Test the extractOgr method for allpoints."""
+    #     jim0 = pj.Jim(rasterfn,band=[0,1,2,3,4,5])
+    #     jim1 = pj.Jim(rasterfn,band=[6,7,8,9,10,11])
+    #     jim0.geometry.stackPlane(jim1)
+    #     planename=[]
+    #     bandname=[]
+    #     for plane in range(0, jim0.properties.nrOfPlane()):
+    #         planename.append('Time' + str(plane))
+    #     for band in range(0, jim0.properties.nrOfBand()):
+    #         bandname.append('Band' + str(band))
+    #     v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
+    #                                  output=outputfn, oformat='SQLite',
+    #                                  co=['OVERWRITE=YES'],
+    #                                  copy='label',
+    #                                  bandname=bandname,
+    #                                  planename=planename, fid='fid')
+    #     v.io.write()
+    #     assert v.properties.getFeatureCount() == 11, \
+    #         'Error in geometry.extractOgr() feature count (1)'
+    #     assert 'fid' in v.properties.getFieldNames(), \
+    #         'Error in geometry.extractOgr() field names (1)'
+    #     assert 'fid' in v.properties.getFieldNames(), \
+    #         'Error in geometry.extractOgr() field names (1)'
+    #     print(len(v.properties.getFieldNames()))
+    #     assert len(v.properties.getFieldNames()) == 26, \
+    #         'Error in geometry.extractOgr() field names (1)'
 
     @staticmethod
     def test_crop():

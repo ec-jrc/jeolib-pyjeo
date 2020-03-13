@@ -17,7 +17,7 @@ def composite(jim_list, crule='overwrite', **kwargs):
     return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
 
 
-def convert(jim_object, otype, **kwargs):
+def convert(jim_object, otype):
     """Convert Jim image with respect to data type.
 
     :param jim_object: Jim object to be used for the conversion
@@ -63,11 +63,7 @@ def convert(jim_object, otype, **kwargs):
         raise TypeError("Output type {} not supported".format(otype))
     # TODO: Support CTypes
 
-    if len(kwargs):
-        kwargs.update({'otype': otype})
-        return _pj.Jim(jim_object._jipjim.convert(kwargs))
-    else:
-        return _pj.Jim(jim_object._jipjim.convertDataType(otype))
+    return _pj.Jim(jim_object._jipjim.convertDataType(otype))
 
 
 def histoCompress(jim_object, band=None):
@@ -377,7 +373,6 @@ class _PixOps(_pj.modules.JimModuleBase):
             jim1.pixops.convert('Byte')
         """
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
-            kwargs.update({'otype': 'GDT_Byte'})
             otype = 'GDT_Byte'
         elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
             otype = 'GDT_UInt16'
@@ -403,12 +398,8 @@ class _PixOps(_pj.modules.JimModuleBase):
             raise TypeError("Output type {} not supported".format(otype))
         # TODO: Support CTypes
 
-        if len(kwargs) and self._jim_object.properties.nrOfPlane() == 1:
-            kwargs.update({'otype': otype})
-            self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
-        else:
-            self._jim_object._set(
-                self._jim_object._jipjim.convertDataType(otype))
+        self._jim_object._set(
+            self._jim_object._jipjim.convertDataType(otype))
 
     def histoCompress(self, band=None):
         """Redistribute the intensity of histogram to fit full range of values.
