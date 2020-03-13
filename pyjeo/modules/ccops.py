@@ -471,6 +471,17 @@ def labelPixels(jim):
     return _pj.Jim(jim._jipjim.labelPix())
 
 
+def labelsOuterContour(jim_label, graph):
+    """Get outer contour of labels.
+
+    :param jim_label: a Jim object
+    :param graph: integer for connectivity
+    :return: a Jim object containing the outher edge
+    """
+    return _pj.Jim(jim_label._jipjim.labelsGetOuterContour(
+        graph))
+
+
 def labelsSet(label_jim, ival_jim, indic):
     """Set labels to regions.
 
@@ -1142,6 +1153,18 @@ class _CCOps(_pj.modules.JimModuleBase):
         Modifies the instance on which the method was called.
         """
         self._jim_object._jipjim.d_labelPix()
+
+    def labelsOuterContour(self, graph):
+        """Compute the outer contour of labels.
+
+        This method should be called on a Jim object which contains labels.
+
+        Modifies the instance on which the method was called.
+
+        :param graph: integer for connectivity
+        """
+        self._jim_object._set(self._jim_object._jipjim.labelsGetOuterContour(
+            graph))
 
     def labelsSet(self, ival_jim, indic):
         """Set labels to regions.
