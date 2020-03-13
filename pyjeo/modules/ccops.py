@@ -1041,7 +1041,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(
             self._jim_object._jipjim.labelConstrainedCCsMi(
-                ngb._jipjim, ox, oy, oz, rl))
+                jim_mi._jipjim, jim_se._jipjim, ox, oy, oz, rg, rl))
 
     def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, ngb):
         """Label image.
