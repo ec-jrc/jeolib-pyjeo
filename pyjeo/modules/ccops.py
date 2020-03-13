@@ -124,6 +124,17 @@ def convertHlsToRgb(jim):
     return pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
 
 
+def dbscan(jim_dissim, eps, min_pts):
+    """Compute dbscan.
+
+    :param jim_dissim: a Jim object containing the dissimilarity matrix
+    :param eps: float
+    :param min_pts: integer
+    :return: a Jim object
+    """
+    return _pj.Jim(jim_dissim._jipjim.dbscan(eps, min_pts))
+
+
 def dissimToAlphaCCs(dissimh, dissimv, alpha):
     """Create Jim holding the labelled alpha-connected component.
 
@@ -866,6 +877,20 @@ class _CCOps(_pj.modules.JimModuleBase):
         jims = _pj.geometry.cropBand(jim, 2)
 
         self._jim_object._set(jimh._jipjim.convertHlsToRgb(jiml, jims))
+
+    def dbscan(self, eps, min_pts):
+        """Compute dbscan.
+
+        This method should be called on an object which contains
+        a dissimilarity matrix.
+
+        Modifies the instance on which the method was called.
+
+        :param eps: float
+        :param min_pts: integer
+        """
+        self._jim_object._set(self._jim_object._jipjim.dbscan(eps, min_pts))
+
 
     def distance2d4(self, band=0):
         """Compute the 2-dimensional 4-connected distance function of a Jim.
