@@ -37,6 +37,12 @@ def getHisto3d(jim_object, jim_object2, jim_object3):
 
 
 def getStatProfile(jim_object, function, **kwargs):
+    """Get statistic profile.
+
+    :param jim_object: a Jim object
+    :param function: string naming a statistical function
+    :return: a Jim object
+    """
     kwargs.update({'function': function})
     return _pj.Jim(jim_object._jipjim.statProfile(kwargs))
 
@@ -71,6 +77,12 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
 
 
 def stretch(jim_object, **kwargs):
+    """Stretch Jim.
+
+    :param jim_object:
+    :param kwargs:
+    :return:
+    """
     return _pj.Jim(jim_object._jipjim.stretch(kwargs))
 
 
@@ -269,6 +281,10 @@ class _StatsList(_pj.modules.JimListModuleBase):
     """Define all statistical methods for JimLists."""
 
     def getStatProfile(self, function, **kwargs):
+        """Get statistic profile.
+
+        :param function: string naming a statistical function
+        """
         kwargs.update({'function': function})
         return _pj.Jim(self._jim_list._jipjimlist.statProfile(kwargs))
 
