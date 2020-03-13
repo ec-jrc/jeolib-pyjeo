@@ -493,6 +493,17 @@ def labelsOuterEdge(jim_label, graph):
         graph))
 
 
+def labelsOuterEdgeLut(jim_label, jim_edge_label):
+    """Get outer edge lut of labels.
+
+    :param jim_label: a Jim object containing labels
+    :param jim_edge_label: a Jim object containing the labels outer edge
+    :return: a Jim object containing the outher edge lut
+    """
+    return _pj.Jim(jim_label._jipjim.labelsGetOuterEdgeLut(
+        jim_edge_label._jipjim))
+
+
 def labelsSet(label_jim, ival_jim, indic):
     """Set labels to regions.
 
@@ -1188,6 +1199,18 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.labelsGetOuterEdge(
             graph))
+
+    def labelsOuterEdgeLut(self, jim_edge_label):
+        """Compute the outer edge lut of labels.
+
+        This method should be called on a Jim object which contains labels.
+
+        Modifies the instance on which the method was called.
+
+        :param jim_edge_label: a Jim object containing the labels outer edge
+        """
+        self._jim_object._set(self._jim_object._jipjim.labelsGetOuterEdgeLut(
+            jim_edge_label._jipjim))
 
     def labelsSet(self, ival_jim, indic):
         """Set labels to regions.
