@@ -344,20 +344,20 @@ def labelConstrainedCCsDissim(jim, local_range, global_range, dissim_type=0):
                           effect as described in :cite:`soille2011ismm`
     :return: labeled Jim object
     """
-    dissim = _pj.ngbops.getDissim(jim, dissim_type)
+    diss = _pj.ngbops.getDissim(jim, dissim_type)
 
     if isinstance(jim, _pj.Jim):
         if jim.properties.nrOfBand() == 1:
             return _pj.Jim(jim._jipjim.labelConstrainedCCsDissim(
-                dissim[0]._jipjim, dissim[1]._jipjim,
+                diss[0]._jipjim, diss[1]._jipjim,
                 global_range, local_range))
         else:
             return _pj.Jim(jim._jipjim.labelConstrainedCCsMultibandDissim(
-                dissim[0]._jipjim, dissim[1]._jipjim,
+                diss[0]._jipjim, diss[1]._jipjim,
                 global_range, local_range))
     elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultibandDissim(
-            dissim[0]._jipjim, dissim[1]._jipjim, global_range, local_range))
+            diss[0]._jipjim, diss[1]._jipjim, global_range, local_range))
     else:
         raise AttributeError(
             "Error: input must be Jim or JimList object")
