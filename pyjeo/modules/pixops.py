@@ -54,110 +54,33 @@ def convert(jim_object, otype, **kwargs):
     """
     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
         otype = 'GDT_Byte'
-        nptype = _np.int8
     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
         otype = 'GDT_UInt16'
-        nptype = _np.uint16
     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
         otype = 'GDT_Int16'
-        nptype = _np.int16
     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
         otype = 'GDT_UInt32'
-        nptype = _np.uint32
     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
         otype = 'GDT_Int32'
-        nptype = _np.int32
     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
         otype = 'GDT_Float32'
-        nptype = _np.float32
     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
         otype = 'GDT_Float64'
-        nptype = _np.float64
     elif otype in ['int64', 'Int64', 'JDT_Int64']:
         otype = 'JDT_Int64'
-        nptype = _np.int64
     elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
         otype = 'JDT_UInt64'
-        nptype = _np.uint64
     elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
         otype = 'JDT_UInt64'
-        nptype = _np.uint64
     else:
         raise TypeError("Output type {} not supported".format(otype))
     # TODO: Support CTypes
 
-    # if len(kwargs) and jim_object.properties.nrOfPlane() == 1:
     if len(kwargs):
         kwargs.update({'otype': otype})
         return _pj.Jim(jim_object._jipjim.convert(kwargs))
     else:
         return _pj.Jim(jim_object._jipjim.convertDataType(otype))
-        # jimnew = _pj.Jim(ncol=jim_object.properties.nrOfCol(),
-        #                  nrow=jim_object.properties.nrOfRow(),
-        #                  nband=jim_object.properties.nrOfBand(),
-        #                  nplane=jim_object.properties.nrOfPlane(),
-        #                  otype=otype)
-        # jimnew.properties.setProjection(jim_object.properties.getProjection())
-        # jimnew.properties.setGeoTransform(
-        #     jim_object.properties.getGeoTransform())
-        # for iband in range(0, jim_object.properties.nrOfBand()):
-        #     jimnew.np(iband)[:] = jim_object.np(iband).astype(nptype)
-        # return jimnew
-
-# def convert(jim_object, otype, **kwargs):
-#     """Convert Jim image with respect to data type.
-
-#     :param jim_object: a Jim object
-#     :param otype: Data type for output image
-#     :param kwargs: See table below
-#     :return: a Jim object
-
-#     +------------------+--------------------------------------------------+
-#     | key              | value                                            |
-#     +==================+==================================================+
-#     | scale            | Scale output: output=scale*input+offset          |
-#     +------------------+--------------------------------------------------+
-#     | offset           | Apply offset: output=scale*input+offset          |
-#     +------------------+--------------------------------------------------+
-#     | autoscale        | Scale output to min and max, e.g., [0,255]       |
-#     +------------------+--------------------------------------------------+
-#     | a_srs            | Override the projection for the output file      |
-#     +------------------+--------------------------------------------------+
-
-#     Example:
-
-#     Convert data type of input image to byte using autoscale::
-
-#         jim0=pj.Jim('/path/to/raster.tif')
-#         jim0.convert(Byte,autoscale=[0,255])
-
-#         Clip raster dataset between 0 and 255 (set all other values to 0),
-#         then convert data type to byte::
-
-#         jim1=pj.Jim('/path/to/raster.tif')
-#         jim1.setThreshold(min=0,max=255,nodata=0)
-#         jim1.convert('Byte')
-#     """
-#     if otype in [1, 'int8', 'uint8', 'UInt8', 'Byte', 'GDT_Byte',
-#                  _jl.GDT_Byte]:
-#         kwargs.update({'otype': 'GDT_Byte'})
-#     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-#         kwargs.update({'otype': 'GDT_UInt16'})
-#     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
-#         kwargs.update({'otype': 'GDT_Int16'})
-#     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-#         kwargs.update({'otype': 'GDT_UInt32'})
-#     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
-#         kwargs.update({'otype': 'GDT_Int32'})
-#     elif otype in [6, 'float32', 'Float32', 'GDT_Float32', _jl.GDT_Float32]:
-#         kwargs.update({'otype': 'GDT_Float32'})
-#     elif otype in [7, 'float64', 'Float64', 'GDT_Float64', _jl.GDT_Float64]:
-#         kwargs.update({'otype': 'GDT_Float64'})
-#     else:
-#         raise TypeError("Output type {} not supported".format(otype))
-#         # TODO: Support CTypes when bug fixed in jiplib
-
-#     return _pj.Jim(jim_object._jipjim.convert(kwargs))
 
 
 def histoCompress(jim_object, band=None):
@@ -482,113 +405,36 @@ class _PixOps(_pj.modules.JimModuleBase):
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
             otype = 'GDT_Byte'
-            nptype = _np.int8
         elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
             otype = 'GDT_UInt16'
-            nptype = _np.uint16
         elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
             otype = 'GDT_Int16'
-            nptype = _np.int16
         elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
             otype = 'GDT_UInt32'
-            nptype = _np.uint32
         elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
             otype = 'GDT_Int32'
-            nptype = _np.int32
         elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
                        _jl.GDT_Float32]:
             otype = 'GDT_Float32'
-            nptype = _np.float32
         elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
                        _jl.GDT_Float64]:
             otype = 'GDT_Float64'
-            nptype = _np.float64
         elif otype in ['int64', 'Int64', 'JDT_Int64']:
             otype = 'JDT_Int64'
-            nptype = _np.int64
         elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
             otype = 'JDT_UInt64'
-            nptype = _np.uint64
         elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
             otype = 'JDT_UInt64'
-            nptype = _np.uint64
         else:
             raise TypeError("Output type {} not supported".format(otype))
         # TODO: Support CTypes
+
         if len(kwargs) and self._jim_object.properties.nrOfPlane() == 1:
             kwargs.update({'otype': otype})
             self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
         else:
             self._jim_object._set(
                 self._jim_object._jipjim.convertDataType(otype))
-            # jimnew = _pj.Jim(ncol=self._jim_object.properties.nrOfCol(),
-            #                  nrow=self._jim_object.properties.nrOfRow(),
-            #                  nband=self._jim_object.properties.nrOfBand(),
-            #                  nplane=self._jim_object.properties.nrOfPlane(),
-            #                  otype=otype)
-            # jimnew.properties.setProjection(
-            #     self._jim_object.properties.getProjection())
-            # jimnew.properties.setGeoTransform(
-            #     self._jim_object.properties.getGeoTransform())
-            # for iband in range(0, self._jim_object.properties.nrOfBand()):
-            #     jimnew.np(iband)[:] = self._jim_object.np(iband).astype(nptype)
-            # self._jim_object._set(jimnew._jipjim)
-
-    # def convert(self, otype, **kwargs):
-    #     """Convert Jim image with respect to data type.
-
-    #     :param otype: Data type for output image
-    #     :param kwargs: See table below
-
-    #     Modifies the instance on which the method was called.
-
-    #     +------------------+----------------------------------------------+
-    #     | key              | value                                        |
-    #     +==================+==============================================+
-    #     | scale            | Scale output: output=scale*input+offset      |
-    #     +------------------+----------------------------------------------+
-    #     | offset           | Apply offset: output=scale*input+offset      |
-    #     +------------------+----------------------------------------------+
-    #     | autoscale        | Scale output to min and max, e.g., [0,255]   |
-    #     +------------------+----------------------------------------------+
-    #     | a_srs            | Override the projection for the output file  |
-    #     +------------------+----------------------------------------------+
-
-    #     Example:
-
-    #     Convert data type of input image to byte using autoscale::
-
-    #         jim0=jl.io.createJim('/path/to/raster.tif')
-    #         jim0.convert(otype=Byte,autoscale=[0,255])
-
-    #         Clip raster dataset between 0 and 255 (set all other values to
-    #         0), then convert data type to byte::
-
-    #         jim1=jl.io.createJim('/path/to/raster.tif')
-    #         jim1.setThreshold(min=0,max=255,nodata=0)
-    #         jim1.convert(Byte)
-    #     """
-    #     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
-    #         kwargs.update({'otype': 'GDT_Byte'})
-    #     elif otype in [2, 'uint16', 'UInt16', 'GDT_UInt16', _jl.GDT_UInt16]:
-    #         kwargs.update({'otype': 'GDT_UInt16'})
-    #     elif otype in [3, 'int16', 'Int16', 'GDT_Int16', _jl.GDT_Int16]:
-    #         kwargs.update({'otype': 'GDT_Int16'})
-    #     elif otype in [4, 'uint32', 'UInt32', 'GDT_UInt32', _jl.GDT_UInt32]:
-    #         kwargs.update({'otype': 'GDT_UInt32'})
-    #     elif otype in [5, 'int32', 'Int32', 'GDT_Int32', _jl.GDT_Int32]:
-    #         kwargs.update({'otype': 'GDT_Int32'})
-    #     elif otype in [6, 'float32', 'Float32', 'GDT_Float32',
-    #                    _jl.GDT_Float32]:
-    #         kwargs.update({'otype': 'GDT_Float32'})
-    #     elif otype in [7, 'float64', 'Float64', 'GDT_Float64',
-    #                    _jl.GDT_Float64]:
-    #         kwargs.update({'otype': 'GDT_Float64'})
-    #     else:
-    #         raise TypeError("Output type {} not supported".format(otype))
-    #     # TODO: Support CTypes when bug fixed in jiplib
-
-    #     self._jim_object._set(self._jim_object._jipjim.convert(kwargs))
 
     def histoCompress(self, band=None):
         """Redistribute the intensity of histogram to fit full range of values.
