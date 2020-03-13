@@ -12,6 +12,50 @@ class BadBasicMethodLists(unittest.TestCase):
     """Test functions and methods on the root level for JimLists."""
 
     @staticmethod
+    def test_jimlist_creations():
+        jim1 = pj.Jim(tiles[0])
+
+        # Test JimList creation from a list of jims
+        jiml = pj.JimList([jim1, jim1])
+
+        assert len(jiml) == 2, 'Error in JimList creation from a list of ' \
+                               'Jims (wrong number of items afterwards)'
+        assert jiml[0].pixops.isEqual(jim1) and jiml[1].pixops.isEqual(jim1), \
+            'Error in JimList creation from a list of Jims ' \
+            '(items at positions do not correspond with the used ones)'
+
+        # Test JimList creation from a JimList
+        jiml2 = pj.JimList(jiml)
+
+        assert len(jiml2) == 2, 'Error in JimList creation from a JimList ' \
+                                '(wrong number of items afterwards)'
+        assert jiml2[0].pixops.isEqual(jim1) and \
+               jiml2[1].pixops.isEqual(jim1), \
+            'Error in JimList creation from a JimList object ' \
+            '(items at positions do not correspond with the used ones)'
+
+        # Test JimList creation from a Jim
+        jiml = pj.JimList(jim1)
+
+        print(jiml)
+        assert len(jiml) == 1, 'Error in JimList creation from a Jim object ' \
+                               '(wrong number of items afterwards)'
+        assert jiml[0].pixops.isEqual(jim1), \
+            'Error in JimList creation from a Jim object ' \
+            '(item at position 0 does not correspond with the used Jim)'
+
+        # Test wrong creation of a JimList (integer used as an argument)
+        try:
+            jiml = pj.JimList(None)
+            raised = False
+        except ValueError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of JimList creation with wrong value ' \
+            'parsed (integer used instead of allowed argument types)'
+
+    @staticmethod
     def test_list_methods():
         """Test basic methods originating in list() inheritance."""
         jim1 = pj.Jim(tiles[0])
