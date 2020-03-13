@@ -22,35 +22,22 @@ def convert(jim_object, otype, **kwargs):
 
     :param jim_object: Jim object to be used for the conversion
     :param otype: Data type for output image
-    :param kwargs: See table below
     :return: a Jim object
-
-    +------------------+------------------------------------------------------+
-    | key              | value                                                |
-    +==================+======================================================+
-    | scale            | Scale output: output=scale*input+offset              |
-    +------------------+------------------------------------------------------+
-    | offset           | Apply offset: output=scale*input+offset              |
-    +------------------+------------------------------------------------------+
-    | autoscale        | Scale output to min and max, e.g., [0,255]           |
-    +------------------+------------------------------------------------------+
-    | a_srs            | Override the projection for the output file          |
-    +------------------+------------------------------------------------------+
 
 
     Example:
 
-    Convert data type of input image to byte using autoscale::
+    Convert data type of input image to byte::
 
         jim0 = pj.Jim('/path/to/raster.tif')
-        jim0.pixops.convert(otype=Byte, autoscale=[0, 255])
+        jim0.pixops.convert(otype='Byte')
 
     Clip raster dataset between 0 and 255 (set all other values to 0),
     then convert data type to byte::
 
         jim1 = pj.Jim('/path/to/raster.tif')
         jim1.pixops.setThreshold(min=0, max=255, nodata=0)
-        jim1.pixops.convert(Byte)
+        jim1.pixops.convert('Byte')
     """
     if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
         otype = 'GDT_Byte'
@@ -368,39 +355,26 @@ def supremum(jim, *args):
 class _PixOps(_pj.modules.JimModuleBase):
     """Define all PixOps methods."""
 
-    def convert(self, otype, **kwargs):
+    def convert(self, otype):
         """Convert Jim image with respect to data type.
 
         :param otype: Data type for output image
-        :param kwargs: See table below
 
         Modifies the instance on which the method was called.
 
-        +------------------+--------------------------------------------------+
-        | key              | value                                            |
-        +==================+==================================================+
-        | scale            | Scale output: output=scale*input+offset          |
-        +------------------+--------------------------------------------------+
-        | offset           | Apply offset: output=scale*input+offset          |
-        +------------------+--------------------------------------------------+
-        | autoscale        | Scale output to min and max, e.g., [0,255]       |
-        +------------------+--------------------------------------------------+
-        | a_srs            | Override the projection for the output file      |
-        +------------------+--------------------------------------------------+
-
         Example:
 
-        Convert data type of input image to byte using autoscale::
+        Convert data type of input image to byte::
 
             jim0 = pj.Jim('/path/to/raster.tif')
-            jim0.pixops.convert(otype=Byte, autoscale=[0, 255])
+            jim0.pixops.convert(otype='Byte')
 
         Clip raster dataset between 0 and 255 (set all other values to 0),
         then convert data type to byte::
 
             jim1 = pj.Jim('/path/to/raster.tif')
             jim1.setThreshold(min=0, max=255, nodata=0)
-            jim1.pixops.convert(Byte)
+            jim1.pixops.convert('Byte')
         """
         if otype in [1, 'int8', 'uint8', 'Byte', 'GDT_Byte', _jl.GDT_Byte]:
             kwargs.update({'otype': 'GDT_Byte'})
