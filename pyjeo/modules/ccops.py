@@ -135,6 +135,19 @@ def dbscan(jim_dissim, eps, min_pts):
     return _pj.Jim(jim_dissim._jipjim.dbscan(eps, min_pts))
 
 
+def dissim(jim_map, jim_mask, nc, type):
+    """Compute the dissimilarity matrix.
+
+    :param jim_map: a Jim object
+    :param jim_mask: a Jim object
+    :param nc: integer
+    :param type: integer
+    :return: Jim object representing the dissimilarity matrix
+    """
+    return pj.Jim(jim_map._jipjim.dissimilarityMatrix(jim_mask._jipjim,
+                                                      nc, type))
+
+
 def dissimToAlphaCCs(dissimh, dissimv, alpha):
     """Create Jim holding the labelled alpha-connected component.
 
@@ -891,6 +904,17 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.dbscan(eps, min_pts))
 
+    def dissim(self, jim_mask, nc, type):
+        """Compute the dissimilarity matrix.
+
+        Modifies the instance on which the method was called.
+
+        :param jim_mask: a Jim object
+        :param nc: integer
+        :param type: integer
+        """
+        self._jim_object._set(self._jim_object._jipjim.dissimilarityMatrix(
+            jim_mask._jipjim, nc, type))
 
     def distance2d4(self, band=0):
         """Compute the 2-dimensional 4-connected distance function of a Jim.
