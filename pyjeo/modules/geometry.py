@@ -303,7 +303,7 @@ def cropPlane(jim_object, plane):
 
 
 def geo2image(jim_object, x, y):
-    """Convert georeferenced coordinates (column and row) to image coordinates.
+    """Convert georeferenced coordinates to image coordinates (col, row).
 
     :param jim_object: a Jim object
     :param x: georeferenced coordinate in x according to the object spatial
@@ -325,7 +325,7 @@ def geo2image(jim_object, x, y):
 
 
 def image2geo(jim_object, i, j):
-    """Convert image coordinates (col and row) to georeferenced coordinates.
+    """Convert image coordinates (col, row) to georeferenced coordinates.
 
     :param jim_object: a Jim object
     :param i: image column number (starting from 0)
@@ -2071,7 +2071,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         return self._jim_object._jipjim.extractSample(kwargs)
 
     def geo2image(self, x, y):
-        """Convert georeferenced coordinates to image coordinates (col and row).
+        """Convert georeferenced coordinates to image coordinates (col, row).
 
         :param x: georeferenced coordinate in x according to the object spatial
             reference system
@@ -2091,7 +2091,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         return [int(coord[0]), int(coord[1])]
 
     def image2geo(self, i, j):
-        """Convert image coordinates (col and row) to georeferenced coordinates.
+        """Convert image coordinates (col, row) to georeferenced coordinates.
 
         :param i: image column number (starting from 0)
         :param j: image row number (starting from 0)
