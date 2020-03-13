@@ -268,10 +268,9 @@ class Jim:
                                          'specifying the geometry and otype '
                                          'of Jim.')
         elif type(image) is str:
-            if image[:4] == '/vsi' or ':' in image:
-                # non-standard path (e.g. HDF file) - skip the existence check
-                pass
-            elif not _os.path.isfile(image):
+            non_standard_path = image[:4] == '/vsi' or ':' in image
+
+            if not non_standard_path and not _os.path.isfile(image):
                 raise ValueError('File does not exist')
 
     def _checkNumberOfBands(self, another_jim):
