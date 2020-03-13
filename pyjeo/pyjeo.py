@@ -1102,14 +1102,9 @@ class _ParentList(_jl.JimList):
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
-        if not isinstance(images_list, list):
-            if isinstance(images_list, Jim):
-                images_list = [images_list]
-            else:
-                raise ValueError('Argument images_list must be either list, '
-                                 'JimList or a Jim object.')
         jiplib_images_list = [i._jipjim if isinstance(i, Jim) else i for i in
                               images_list]
+
         super(_ParentList, self).__init__(jiplib_images_list, *args)
 
 
@@ -1120,8 +1115,14 @@ class JimList(list):
         """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
-        the Jim object
+            the Jim object
         """
+        if isinstance(images_list, Jim):
+            images_list = [images_list]
+        elif not isinstance(images_list, list):
+            raise ValueError('Argument images_list must be either list, '
+                             'JimList or a Jim object.')
+
         super(JimList, self).__init__(images_list)
         self._jipjimlist = _ParentList(images_list, *args)
 
