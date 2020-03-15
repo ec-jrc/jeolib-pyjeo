@@ -716,36 +716,40 @@ def polygonize(jim_object, output, **kwargs):
         raise TypeError('Error: can only polygonize Jim object')
 
 
-# def rasterize(jim_object, jim_vect, burn_value=1, eo=['ALL_TOUCHED'],
-#               ln=None):
-#     """Rasterize Jim object based on GDALRasterizeLayersBuf
+def rasterize(jim_object, jim_vect, burn_value=1, eo=['ALL_TOUCHED'],
+              ln=None):
+    """Rasterize Jim object based on GDALRasterizeLayersBuf
 
-#     :param jim_object: a template Jim object
-#     :param jim_vect: JimVect object that needs to be polygonized
-#     :param burn_value: burn value
-#     :param eo: option (default is ALL_TOUCHED)
-#     :param ln: layer names (optional)
-#     :return: rasterized Jim object
+    :param jim_object: a template Jim object
+    :param jim_vect: JimVect object that needs to be rasterized
+    :param burn_value: burn value
+    :param eo: option (default is ALL_TOUCHED)
+    :param ln: layer names (optional)
+    :return: rasterized Jim object
 
-#     .. note::
-#        Possible values for the key 'eo' are:
+    .. note::
+       Possible values for the key 'eo' are:
 
-#        ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
+       ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
-#        For instance you can use 'eo':'ATTRIBUTE=fieldname'
-#     """
-#     if not isinstance(jim_object, _pj.Jim):
-#         raise TypeError('Error: template must be a Jim object')
-#     if not isinstance(jim_vect, _pj.JimVect):
-#         raise TypeError('Error: can only rasterize a JimVect')
+       For instance you can use 'eo':'ATTRIBUTE=fieldname to burn the (numeric) fieldname in the pixel value'
+    """
+    if not isinstance(jim_object, _pj.Jim):
+        raise TypeError('Error: template must be a Jim object')
+    if not isinstance(jim_vect, _pj.JimVect):
+        raise TypeError('Error: can only rasterize a JimVect')
 
-#     ajim = _pj.Jim(jim_object)
-#     kwargs = {}
-#     kwargs.update({'burn': float(burn_value)})
-#     kwargs.update({'eo': eo})
-#     kwargs.update({'ln': ln})
-#     ajim._jipjim.d_rasterizeBuf(item._jipjimvect,kwargs)
-#     return ajim
+    kwargs={}
+    if burn_value is not None:
+        kwargs.update({'burn':float(burn_value)})
+    if eo is not None:
+        kwargs.update({'eo':eo})
+    if ln is not None:
+        kwargs.update({'ln':ln})
+
+    ajim = _pj.Jim(jim_object, copy_data=False)
+    ajim._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
+    return ajim
 
 
 def reducePlane(jim, rule=None, ref_band=None, nodata=None):
@@ -2360,9 +2364,9 @@ class _Geometry(_pj.modules.JimModuleBase):
     # def rasterize(self, jim_vect, burn_value=1,eo=['ALL_TOUCHED'],ln=None):
     #     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
-    def rasterize(self, jim_vect, burn_value=None, eo=None, ln=None):
+    def rasterize(self, jim_vect, burn_value=1, eo=['ALL_TOUCHED'], ln=None):
         """
-        :param jim_vect: JimVect object that needs to be polygonized
+        :param jim_vect: JimVect object that needs to be rasterized
         :param burn_value: burn value
         :param eo: option (default is ALL_TOUCHED)
         :param ln: layer names (optional)
@@ -2373,7 +2377,17 @@ class _Geometry(_pj.modules.JimModuleBase):
           ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
           For instance you can use 'eo':'ATTRIBUTE=fieldname to burn the (numeric) fieldname in the pixel value'
+
+        Example: rasterize vector using the label attribute by creating first a mask from an existing raster::
+
+        jim0 = pj.Jim(rasterfn,band=0)
+        sample = pj.JimVect(vectorfn)
+        mask = pj.Jim(jim0,copy_data=False)
+        mask.pixops.convert('GDT_Byte')
+        mask.geometry.rasterize(sample,eo=['ATTRIBUTE=label'])
         """
+        if not isinstance(jim_vect, _pj.JimVect):
+            raise TypeError('Error: can only rasterize a JimVect')
 
         kwargs={}
         if burn_value is not None:

@@ -4,6 +4,7 @@ import pyjeo as pj
 import unittest
 import warnings
 import numpy as np
+import os
 
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 
@@ -176,6 +177,7 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.warp(): nrOfRow'
         assert jim0.properties.nrOfBand() == jim_warped.properties.nrOfBand(),\
             'Error in geometry.warp(): nrOfBand'
+        os.remove(warpedfn)
 
     @staticmethod
     def test_extractOgr_loop():
@@ -217,6 +219,7 @@ class BadGeometry(unittest.TestCase):
                 v.io.close()
             jl0.io.close()
         sample.io.close()
+        os.remove(outputfn)
 
     @staticmethod
     def test_extractOgr_list_multiband():
@@ -242,6 +245,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         jl0.io.close()
         sample.io.close()
+        v.io.close()
+        os.remove(outputfn)
 
     @staticmethod
     def test_extractOgr_multiband():
@@ -267,6 +272,9 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names (1)'
+        sample.io.close()
+        v.io.close()
+        os.remove(outputfn)
 
     @staticmethod
     def test_extractOgr_plane():
@@ -293,6 +301,9 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names (1)'
+        sample.io.close()
+        v.io.close()
+        os.remove(outputfn)
 
     @staticmethod
     def test_extractOgr_band_plane():
@@ -321,35 +332,43 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() field names (1)'
         assert len(v.properties.getFieldNames()) == 26, \
             'Error in geometry.extractOgr() field names (1)'
+        sample.io.close()
+        v.io.close()
+        os.remove(outputfn)
 
-    # @staticmethod
-    # def test_extractOgr_band_plane():
-    #     """Test the extractOgr method for allpoints."""
-    #     jim0 = pj.Jim(rasterfn,band=[0,1,2,3,4,5])
-    #     jim1 = pj.Jim(rasterfn,band=[6,7,8,9,10,11])
-    #     jim0.geometry.stackPlane(jim1)
-    #     planename=[]
-    #     bandname=[]
-    #     for plane in range(0, jim0.properties.nrOfPlane()):
-    #         planename.append('Time' + str(plane))
-    #     for band in range(0, jim0.properties.nrOfBand()):
-    #         bandname.append('Band' + str(band))
-    #     v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
-    #                                  output=outputfn, oformat='SQLite',
-    #                                  co=['OVERWRITE=YES'],
-    #                                  copy='label',
-    #                                  bandname=bandname,
-    #                                  planename=planename, fid='fid')
-    #     v.io.write()
-    #     assert v.properties.getFeatureCount() == 11, \
-    #         'Error in geometry.extractOgr() feature count (1)'
-    #     assert 'fid' in v.properties.getFieldNames(), \
-    #         'Error in geometry.extractOgr() field names (1)'
-    #     assert 'fid' in v.properties.getFieldNames(), \
-    #         'Error in geometry.extractOgr() field names (1)'
-    #     print(len(v.properties.getFieldNames()))
-    #     assert len(v.properties.getFieldNames()) == 26, \
-    #         'Error in geometry.extractOgr() field names (1)'
+    @staticmethod
+    def test_extractOgr_allpoints():
+        """Test the extractOgr method for allpoints."""
+        sample = pj.JimVect(vectorfn)
+        jim0 = pj.Jim(rasterfn,band=[0,1,2,3,4,5])
+        jim1 = pj.Jim(rasterfn,band=[6,7,8,9,10,11])
+        jim0.geometry.stackPlane(jim1)
+        planename=[]
+        bandname=[]
+        for plane in range(0, jim0.properties.nrOfPlane()):
+            planename.append('Time' + str(plane))
+        for band in range(0, jim0.properties.nrOfBand()):
+            bandname.append('Band' + str(band))
+        v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
+                                     output=outputfn, oformat='SQLite',
+                                     co=['OVERWRITE=YES'],
+                                     attribute='label',
+                                     classes=[1,2],
+                                     bandname=bandname,
+                                     planename=planename, fid='fid')
+        v.io.write()
+        assert v.properties.getFeatureCount() == 307, \
+            'Error in geometry.extractOgr() feature count'
+        assert 'fid' in v.properties.getFieldNames(), \
+            'Error in geometry.extractOgr() field names'
+        assert 'fid' in v.properties.getFieldNames(), \
+            'Error in geometry.extractOgr() field names'
+        print(len(v.properties.getFieldNames()))
+        assert len(v.properties.getFieldNames()) == 14, \
+            'Error in geometry.extractOgr() field names'
+        sample.io.close()
+        v.io.close()
+        os.remove(outputfn)
 
     @staticmethod
     def test_crop():
@@ -834,6 +853,27 @@ class BadGeometry(unittest.TestCase):
         assert raised, \
             'Error in catching a call of geometry.polygonize(path, mask) ' \
             'method where the mask argument is not an instance of a Jim object'
+
+
+    @staticmethod
+    def test_rasterize():
+        """Test the rasterize() function and method."""
+        jim0 = pj.Jim(rasterfn,band=0)
+        sample = pj.JimVect(vectorfn)
+        mask = pj.Jim(jim0,copy_data=False)
+        mask.pixops.convert('GDT_Byte')
+        mask.geometry.rasterize(sample,eo=['ATTRIBUTE=label'])
+        assert pj.geometry.rasterize(jim0, sample, eo=['ATTRIBUTE=label']).pixops.isEqual(mask), \
+            'Error in geometry.rasterize() ' \
+            '(function is not equal to method)'
+        minmax=mask.stats.getStats(function=['min', 'max'])
+        assert minmax['min'] == 0,\
+            'Error in geometry.reducePlane() min != 0'
+        assert minmax['max'] == 2,\
+            'Error in geometry.reducePlane() max != 2'
+        sample.io.close()
+        jim0.io.close()
+        mask.io.close()
 
     @staticmethod
     def test_reducePlane():
