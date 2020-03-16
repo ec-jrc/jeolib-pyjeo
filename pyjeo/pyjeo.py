@@ -1440,3 +1440,9 @@ class JimVect:
         :param modified_object: modified VectorOgr instance
         """
         self._jipjimvect.__dict__.update(modified_object.__dict__)
+
+    def np(self):
+        """Return numpy array from JimVect object.
+        :return: 2D numpy array representation of all fields of all features
+        """
+        return _jl.np(self._jipjimvect)
