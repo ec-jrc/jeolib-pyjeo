@@ -741,16 +741,16 @@ def rasterize(jim_object, jim_vect, burn_value=1, eo=['ALL_TOUCHED'],
     if not isinstance(jim_vect, _pj.JimVect):
         raise TypeError('Error: can only rasterize a JimVect')
 
-    kwargs={}
+    kwargs = {}
     if burn_value is not None:
-        kwargs.update({'burn':float(burn_value)})
+        kwargs.update({'burn': float(burn_value)})
     if eo is not None:
-        kwargs.update({'eo':eo})
+        kwargs.update({'eo': eo})
     if ln is not None:
-        kwargs.update({'ln':ln})
+        kwargs.update({'ln': ln})
 
     ajim = _pj.Jim(jim_object, copy_data=False)
-    ajim._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
+    ajim._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
     return ajim
 
 
@@ -2394,15 +2394,15 @@ class _Geometry(_pj.modules.JimModuleBase):
         if not isinstance(jim_vect, _pj.JimVect):
             raise TypeError('Error: can only rasterize a JimVect')
 
-        kwargs={}
+        kwargs = {}
         if burn_value is not None:
-            kwargs.update({'burn':float(burn_value)})
+            kwargs.update({'burn': float(burn_value)})
         if eo is not None:
-            kwargs.update({'eo':eo})
+            kwargs.update({'eo': eo})
         if ln is not None:
-            kwargs.update({'ln':ln})
+            kwargs.update({'ln': ln})
         self._jim_object.pixops.setData(0)
-        self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect,kwargs)
+        self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
 
     def reducePlane(self, rule=None, ref_band=None, nodata=None):
         """Reduce planes of Jim object.

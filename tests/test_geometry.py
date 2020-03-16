@@ -227,7 +227,7 @@ class BadGeometry(unittest.TestCase):
         jim0 = pj.Jim(rasterfn)
         sample = pj.JimVect(vectorfn)
         jl0 = pj.JimList([jim0])
-        bandname=[]
+        bandname = []
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('B' + str(band))
         v = jl0.geometry.extractOgr(sample, rule='mean',
@@ -253,16 +253,16 @@ class BadGeometry(unittest.TestCase):
         """Test the extractOgr method for jim with multibands."""
         jim0 = pj.Jim(rasterfn)
         sample = pj.JimVect(vectorfn)
-        planename=[]
+        planename = []
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('T' + str(plane))
-        bandname=[]
+        bandname = []
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('B' + str(band))
         v = jim0.geometry.extractOgr(sample, rule='mean',
-                                    output=outputfn, oformat='SQLite',
-                                    co=['OVERWRITE=YES'],
-                                    bandname=bandname, fid='fid')
+                                     output=outputfn, oformat='SQLite',
+                                     co=['OVERWRITE=YES'],
+                                     bandname=bandname, fid='fid')
         v.io.write()
         assert v.properties.getFeatureCount() == 11, \
             'Error in geometry.extractOgr() feature count (1)'
@@ -281,17 +281,17 @@ class BadGeometry(unittest.TestCase):
         """Test the extractOgr method for multiplanes."""
         jim0 = pj.Jim(rasterfn)
         sample = pj.JimVect(vectorfn)
-        planename=[]
+        planename = []
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('T' + str(plane))
-        bandname=[]
+        bandname = []
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('B' + str(band))
         v = jim0.geometry.extractOgr(sample, rule='mean',
-                                    output=outputfn, oformat='SQLite',
-                                    co=['OVERWRITE=YES'],
-                                    planename=planename,
-                                    bandname=bandname, fid='fid')
+                                     output=outputfn, oformat='SQLite',
+                                     co=['OVERWRITE=YES'],
+                                     planename=planename,
+                                     bandname=bandname, fid='fid')
         v.io.write()
         assert v.properties.getFeatureCount() == 11, \
             'Error in geometry.extractOgr() feature count (1)'
@@ -309,20 +309,20 @@ class BadGeometry(unittest.TestCase):
     def test_extractOgr_band_plane():
         """Test the extractOgr method for multiband multiplanes."""
         sample = pj.JimVect(vectorfn)
-        jim0 = pj.Jim(rasterfn,band=[0,1,2,3,4,5])
-        jim1 = pj.Jim(rasterfn,band=[6,7,8,9,10,11])
+        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3, 4, 5])
+        jim1 = pj.Jim(rasterfn, band=[6, 7, 8, 9, 10, 11])
         jim0.geometry.stackPlane(jim1)
-        planename=[]
-        bandname=[]
+        planename = []
+        bandname = []
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('Time' + str(plane))
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('Band' + str(band))
-        v = jim0.geometry.extractOgr(sample, rule=['mean','stdev'],
-                                    output=outputfn, oformat='SQLite',
-                                    co=['OVERWRITE=YES'],
-                                    bandname=bandname,
-                                    planename=planename, fid='fid')
+        v = jim0.geometry.extractOgr(sample, rule=['mean', 'stdev'],
+                                     output=outputfn, oformat='SQLite',
+                                     co=['OVERWRITE=YES'],
+                                     bandname=bandname,
+                                     planename=planename, fid='fid')
         v.io.write()
         assert v.properties.getFeatureCount() == 11, \
             'Error in geometry.extractOgr() feature count (1)'
@@ -340,11 +340,11 @@ class BadGeometry(unittest.TestCase):
     def test_extractOgr_allpoints():
         """Test the extractOgr method for allpoints."""
         sample = pj.JimVect(vectorfn)
-        jim0 = pj.Jim(rasterfn,band=[0,1,2,3,4,5])
-        jim1 = pj.Jim(rasterfn,band=[6,7,8,9,10,11])
+        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3, 4, 5])
+        jim1 = pj.Jim(rasterfn, band=[6, 7, 8, 9, 10, 11])
         jim0.geometry.stackPlane(jim1)
-        planename=[]
-        bandname=[]
+        planename = []
+        bandname = []
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('Time' + str(plane))
         for band in range(0, jim0.properties.nrOfBand()):
@@ -353,7 +353,7 @@ class BadGeometry(unittest.TestCase):
                                      output=outputfn, oformat='SQLite',
                                      co=['OVERWRITE=YES'],
                                      attribute='label',
-                                     classes=[1,2],
+                                     classes=[1, 2],
                                      bandname=bandname,
                                      planename=planename, fid='fid')
         v.io.write()
@@ -854,23 +854,29 @@ class BadGeometry(unittest.TestCase):
             'Error in catching a call of geometry.polygonize(path, mask) ' \
             'method where the mask argument is not an instance of a Jim object'
 
-
     @staticmethod
     def test_rasterize():
         """Test the rasterize() function and method."""
-        jim0 = pj.Jim(rasterfn,band=0)
+        jim0 = pj.Jim(rasterfn, band=0)
         sample = pj.JimVect(vectorfn)
-        mask = pj.Jim(jim0,copy_data=False)
+        mask = pj.Jim(jim0, copy_data=False)
         mask.pixops.convert('GDT_Byte')
-        mask.geometry.rasterize(sample,eo=['ATTRIBUTE=label'])
-        assert pj.geometry.rasterize(jim0, sample, eo=['ATTRIBUTE=label']).pixops.isEqual(mask), \
+        mask.geometry.rasterize(sample, eo=['ATTRIBUTE=label'])
+
+        rasterized = pj.geometry.rasterize(jim0, sample,
+                                           eo=['ATTRIBUTE=label'])
+
+        assert rasterized.pixops.isEqual(mask), \
             'Error in geometry.rasterize() ' \
             '(function is not equal to method)'
-        minmax=mask.stats.getStats(function=['min', 'max'])
+
+        minmax = mask.stats.getStats(function=['min', 'max'])
+
         assert minmax['min'] == 0,\
             'Error in geometry.reducePlane() min != 0'
         assert minmax['max'] == 2,\
             'Error in geometry.reducePlane() max != 2'
+
         sample.io.close()
         jim0.io.close()
         mask.io.close()
