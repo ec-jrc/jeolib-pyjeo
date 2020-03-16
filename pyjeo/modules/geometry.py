@@ -2382,13 +2382,14 @@ class _Geometry(_pj.modules.JimModuleBase):
           For instance you can use 'eo':'ATTRIBUTE=fieldname to burn
           the (numeric) fieldname in the pixel value'
 
-        Example: rasterize vector using the label attribute by creating first a mask from an existing raster::
+        Example: rasterize vector using the label attribute by creating first
+        a mask from an existing raster::
 
-        jim0 = pj.Jim(rasterfn,band=0)
-        sample = pj.JimVect(vectorfn)
-        mask = pj.Jim(jim0,copy_data=False)
-        mask.pixops.convert('GDT_Byte')
-        mask.geometry.rasterize(sample,eo=['ATTRIBUTE=label'])
+          jim0 = pj.Jim(rasterfn, band=0)
+          sample = pj.JimVect(vectorfn)
+          mask = pj.Jim(jim0, copy_data=False)
+          mask.pixops.convert('GDT_Byte')
+          mask.geometry.rasterize(sample, eo=['ATTRIBUTE=label'])
         """
         if not isinstance(jim_vect, _pj.JimVect):
             raise TypeError('Error: can only rasterize a JimVect')
