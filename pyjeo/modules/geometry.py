@@ -265,7 +265,8 @@ def cropOgr(jim_object, extent, **kwargs):
 
        ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
-       For instance you can use 'eo':'ATTRIBUTE=fieldname'
+       For instance you can use 'eo':'ATTRIBUTE=fieldname' to burn
+           the (numeric) fieldname in the pixel value'
     """
     jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.cropOgr(
         extent._jipjimvect, kwargs))
@@ -732,7 +733,8 @@ def rasterize(jim_object, jim_vect, burn_value=1, eo=['ALL_TOUCHED'],
 
        ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
-       For instance you can use 'eo':'ATTRIBUTE=fieldname to burn the (numeric) fieldname in the pixel value'
+       For instance you can use 'eo':'ATTRIBUTE=fieldname to burn
+       the (numeric) fieldname in the pixel value'
     """
     if not isinstance(jim_object, _pj.Jim):
         raise TypeError('Error: template must be a Jim object')
@@ -1679,7 +1681,8 @@ class _Geometry(_pj.modules.JimModuleBase):
 
            ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
-           For instance you can use 'eo':'ATTRIBUTE=fieldname'
+           For instance you can use 'eo':'ATTRIBUTE=fieldname' to burn
+           the (numeric) fieldname in the pixel value'
         """
         jim = _pj.Jim(_pj.geometry.cropPlane(
             self._jim_object, 0)._jipjim.cropOgr(extent._jipjimvect, kwargs))
@@ -2376,7 +2379,8 @@ class _Geometry(_pj.modules.JimModuleBase):
 
           ATTRIBUTE|CHUNKYSIZE|ALL_TOUCHED|BURN_VALUE_FROM|MERGE_ALG.
 
-          For instance you can use 'eo':'ATTRIBUTE=fieldname to burn the (numeric) fieldname in the pixel value'
+          For instance you can use 'eo':'ATTRIBUTE=fieldname to burn
+          the (numeric) fieldname in the pixel value'
 
         Example: rasterize vector using the label attribute by creating first a mask from an existing raster::
 
