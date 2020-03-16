@@ -1445,4 +1445,7 @@ class JimVect:
         """Return numpy array from JimVect object.
         :return: 2D numpy array representation of all fields of all features
         """
-        return _jl.np(self._jipjimvect)
+        if self.properties.getFeatureCount():
+            return _jl.np(self._jipjimvect)
+        else:
+            return None

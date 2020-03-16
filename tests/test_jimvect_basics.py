@@ -6,6 +6,7 @@ import unittest
 import os
 import random
 import string
+import numpy as np
 
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
@@ -15,6 +16,17 @@ vector = 'tests/data/nuts_italy.sqlite'
 
 class BadBasicMethods(unittest.TestCase):
     """Test funcs and methods on the root level and operations for JimVects."""
+
+    @staticmethod
+    def test_numpy_conversions():
+        vect = pj.JimVect(vector)
+        anp = vect.np()
+        assert isinstance(anp,np.ndarray), \
+            'Error in numpy conversion: not an instance of ndarray'
+        assert anp.shape[0] == 2, \
+            'Error in numpy conversion: first dimension (number of features)'
+        assert anp.shape[1] == 12, \
+            'Error in numpy conversion: second dimension (number of fields)'
 
     @staticmethod
     def test_jimvect_creations():
