@@ -108,7 +108,7 @@ class _IO(_pj.modules.JimModuleBase):
               **kwargs):
         """Write the raster dataset to file in a GDAL supported format.
 
-        : param filename: output filename to write to
+        :param filename: output filename to write to
 
         Supported keys as arguments:
 
