@@ -6,7 +6,9 @@ import pyjeo as _pj
 import jiplib as _jl
 
 
-def composite(jim_list, crule='overwrite', **kwargs):
+def composite(jim_list,
+              crule: str = 'overwrite',
+              **kwargs):
     """Composite Jims in a JimList using a composite rule.
 
     :param jim_list: List of Jims to composite
@@ -17,7 +19,8 @@ def composite(jim_list, crule='overwrite', **kwargs):
     return _pj.Jim(jim_list._jipjimlist.composite(kwargs))
 
 
-def convert(jim_object, otype):
+def convert(jim_object,
+            otype):
     """Convert Jim image with respect to data type.
 
     :param jim_object: Jim object to be used for the conversion
@@ -66,7 +69,8 @@ def convert(jim_object, otype):
     return _pj.Jim(jim_object._jipjim.convertDataType(otype))
 
 
-def histoCompress(jim_object, band=None):
+def histoCompress(jim_object,
+                  band: int = None):
     """Redistribute the intensity of histogram to fit full range of values.
 
     Redistributes the intensity values of im in such a way that the
@@ -83,7 +87,8 @@ def histoCompress(jim_object, band=None):
         return _pj.Jim(jim_object._jipjim.histoCompress())
 
 
-def infimum(jim, *args):
+def infimum(jim,
+            *args):
     """Create Jim composed using minimum rule from provided Jim objects.
 
     :param jim: Jim object (to be sure that at least one is provided)
@@ -105,7 +110,8 @@ def infimum(jim, *args):
     return inf
 
 
-def isEqual(first_jim, second_jim):
+def isEqual(first_jim,
+            second_jim):
     """Check if the values of one Jim object are the same as in another one.
 
     :param first_jim: a Jim object
@@ -151,7 +157,9 @@ def isEqual(first_jim, second_jim):
 #     return _pj.Jim(jim_object._jipjim.pointOpModulo(val))
 
 
-def NDVI(jim_object, band_red, band_nir):
+def NDVI(jim_object,
+         band_red: int,
+         band_nir: int):
     """Compute NDVI on the Jim object.
 
     :param jim_object: Jim object from which the red and NIR bands are to be
@@ -166,7 +174,8 @@ def NDVI(jim_object, band_red, band_nir):
     return _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
 
 
-def NDVISeparateBands(jim_red, jim_nir):
+def NDVISeparateBands(jim_red,
+                      jim_nir):
     """Compute NDVI from two Jim objects.
 
     Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
@@ -178,8 +187,16 @@ def NDVISeparateBands(jim_red, jim_nir):
     return _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
 
 
-def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=None,
-            dx=0, dy=0, nogeo=False):
+def setData(jim,
+            value: float,
+            ulx: float = None,
+            uly: float = None,
+            lrx: float = None,
+            lry: float = None,
+            bands=None,
+            dx: int = 0,
+            dy: int = 0,
+            nogeo: bool = False):
     """Set range of pixels to value.
 
     :param jim: a Jim object
@@ -208,7 +225,10 @@ def setData(jim, value, ulx=None, uly=None, lrx=None, lry=None, bands=None,
     return jout
 
 
-def setLevel(jim_object, min, max, val):
+def setLevel(jim_object,
+             min: float,
+             max: float,
+             val: float):
     """Set all pixels within min and max values to val.
 
     :param jim_object: a Jim object used fas a basis for the level setting
@@ -219,7 +239,8 @@ def setLevel(jim_object, min, max, val):
     return _pj.Jim(jim_object._jipjim.pointOpSetLevel(min, max, val))
 
 
-def setThreshold(jim_object, **kwargs):
+def setThreshold(jim_object,
+                 **kwargs):
     """Apply min and max threshold to pixel values in raster dataset.
 
     :param jim_object: the Jim object on which to set threshold
@@ -231,7 +252,10 @@ def setThreshold(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
 
 
-def simpleArithOp(jim1, jim2, op, *args):
+def simpleArithOp(jim1,
+                  jim2,
+                  op: int,
+                  *args):
     """Create Jim composed using a simple arithmetic operation (coded with op).
 
     :param jim1: Jim object
@@ -250,7 +274,10 @@ def simpleArithOp(jim1, jim2, op, *args):
     return _pj.Jim(jout)
 
 
-def simpleBitwiseOp(jim, another_jim, op, *args):
+def simpleBitwiseOp(jim,
+                    another_jim,
+                    op: int,
+                    *args):
     """Create Jim composed using a simple bitwise operation (coded with op).
 
     :param jim: Jim object
@@ -269,19 +296,24 @@ def simpleBitwiseOp(jim, another_jim, op, *args):
     return _pj.Jim(jout)
 
 
-def simpleThreshold(jim_object, min, max, bg_val, fg_val):
+def simpleThreshold(jim_object,
+                    min: float,
+                    max: float,
+                    bg_val: float,
+                    fg_val: float):
     """Set all pixels within min and max values to val.
 
     :param jim_object: Jim object to be used for the threshold
-    :param min:  Minimum threshold value
-    :param max:  Maximum threshold value
-    :param bg_val:  All pixels outside [min,max] are set to bg_val
-    :param fg_val:  All pixels within [min,max] are set to fg_val
+    :param min: Minimum threshold value
+    :param max: Maximum threshold value
+    :param bg_val: All pixels outside [min,max] are set to bg_val
+    :param fg_val: All pixels within [min,max] are set to fg_val
     """
     return _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
 
 
-def stretch(jim_object, **kwargs):
+def stretch(jim_object,
+            **kwargs):
     """Stretch pixel values
 
     :param jim_object: Jim object to be used for the stretch
@@ -326,7 +358,8 @@ def stretch(jim_object, **kwargs):
     return _pj.Jim(jim_object._jipjim.stretch(kwargs))
 
 
-def supremum(jim, *args):
+def supremum(jim,
+             *args):
     """Create Jim composed using maximum rule from provided Jim objects.
 
     :param jim: Jim object (to be sure that at least one is provided)
@@ -351,7 +384,8 @@ def supremum(jim, *args):
 class _PixOps(_pj.modules.JimModuleBase):
     """Define all PixOps methods."""
 
-    def convert(self, otype):
+    def convert(self,
+                otype):
         """Convert Jim image with respect to data type.
 
         :param otype: Data type for output image
@@ -401,7 +435,8 @@ class _PixOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.convertDataType(otype))
 
-    def histoCompress(self, band=None):
+    def histoCompress(self,
+                      band: int = None):
         """Redistribute the intensity of histogram to fit full range of values.
 
         Redistributes the intensity values of im in such a way that the
@@ -417,7 +452,8 @@ class _PixOps(_pj.modules.JimModuleBase):
         else:
             self._jim_object._jipjim.d_histoCompress()
 
-    def infimum(self, *args):
+    def infimum(self,
+                *args):
         """Change values of Jim using mimimum composition rule.
 
         Modifies the instance on which the method was called.
@@ -431,7 +467,8 @@ class _PixOps(_pj.modules.JimModuleBase):
             else:
                 self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 4)
 
-    def isEqual(self, other):
+    def isEqual(self,
+                other):
         """Check if the values of one Jim object are the same as in another.
 
         :param other: a Jim object
@@ -476,7 +513,9 @@ class _PixOps(_pj.modules.JimModuleBase):
     #     """
     #     self._jim_object._jipjim.d_pointOpModulo(val)
 
-    def NDVI(self, band_red, band_nir):
+    def NDVI(self,
+             band_red: int,
+             band_nir: int):
         """Compute NDVI on the Jim object.
 
         Modifies the instance on which the method was called.
@@ -489,7 +528,8 @@ class _PixOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
 
-    def NDVISeparateBands(self, jim_nir):
+    def NDVISeparateBands(self,
+                          jim_nir):
         """Compute NDVI from two Jims (call on red band, use NIR as param).
 
         Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
@@ -501,8 +541,16 @@ class _PixOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
 
-    def setData(self, value, ulx=None, uly=None, lrx=None, lry=None,
-                bands=None, dx=0, dy=0, nogeo=False):
+    def setData(self,
+                value: float,
+                ulx: float = None,
+                uly: float = None,
+                lrx: float = None,
+                lry: float = None,
+                bands=None,
+                dx: int = 0,
+                dy: int = 0,
+                nogeo: bool = False):
         """Set range of pixels to value.
 
         :param value: new value for pixels of Jim object
@@ -541,7 +589,10 @@ class _PixOps(_pj.modules.JimModuleBase):
                 self._jim_object._jipjim.setData(value, ulx, uly, lrx, lry,
                                                  band, dx, dy, nogeo)
 
-    def setLevel(self, min, max, val):
+    def setLevel(self,
+                 min: float,
+                 max: float,
+                 val: float):
         """Set all pixels within min and max values to val.
 
         :param min:  Minimum threshold value
@@ -552,7 +603,8 @@ class _PixOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_pointOpSetLevel(min, max, val)
 
-    def setThreshold(self, **kwargs):
+    def setThreshold(self,
+                     **kwargs):
         """Apply min and max threshold to pixel values in raster dataset.
 
         :param kwargs: See table below
@@ -599,7 +651,10 @@ class _PixOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.setThreshold(kwargs))
 
-    def simpleArithOp(self, jim, op, *args):
+    def simpleArithOp(self,
+                      jim,
+                      op: int,
+                      *args):
         """Change values of Jim using an arithmetic operation (coded by op).
 
         Modifies the instance on which the method was called.
@@ -613,7 +668,10 @@ class _PixOps(_pj.modules.JimModuleBase):
         for jim in jims:
             self._jim_object._jipjim.d_pointOpArith(jim._jipjim, op)
 
-    def simpleBitwiseOp(self, jim, op, *args):
+    def simpleBitwiseOp(self,
+                        jim,
+                        op: int,
+                        *args):
         """Change values of Jim using an bitwise operation (coded by op).
 
         Modifies the instance on which the method was called.
@@ -627,7 +685,11 @@ class _PixOps(_pj.modules.JimModuleBase):
         for jim in jims:
             self._jim_object._jipjim.d_pointOpBitwise(jim._jipjim, op)
 
-    def simpleThreshold(self, min, max, bg_val, fg_val):
+    def simpleThreshold(self,
+                        min: float,
+                        max: float,
+                        bg_val: float,
+                        fg_val: float):
         """Set all pixels within min and max values to val.
 
         Modifies the instance on which the method was called.
@@ -639,7 +701,8 @@ class _PixOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_pointOpThresh(min, max, bg_val, fg_val)
 
-    def stretch(self, **kwargs):
+    def stretch(self,
+                **kwargs):
         """Stretch pixel values
 
         Modifies the instance on which the method was called.
@@ -684,7 +747,8 @@ class _PixOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.stretch(kwargs))
 
-    def supremum(self, *args):
+    def supremum(self,
+                 *args):
         """Change values of Jim using maximum composition rule.
 
         Modifies the instance on which the method was called.
@@ -702,7 +766,9 @@ class _PixOps(_pj.modules.JimModuleBase):
 class _PixOpsList(_pj.modules.JimListModuleBase):
     """Define all PixOps methods for JimLists."""
 
-    def composite(self, crule='overwrite', **kwargs):
+    def composite(self,
+                  crule: str = 'overwrite',
+                  **kwargs):
         """Composite Jims in a JimList using a composite rule.
 
         :param crule: Rule for the composition

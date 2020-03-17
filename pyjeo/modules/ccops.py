@@ -4,7 +4,9 @@ import pyjeo as _pj
 
 
 # TODO: Test
-def alphaTree(atree, attr0cc, type):
+def alphaTree(atree,
+              attr0cc,
+              type: int):
     """Compute the alpha tree.
 
     :param atree: a Jim object
@@ -15,7 +17,9 @@ def alphaTree(atree, attr0cc, type):
     return _pj.Jim(atree._jipjim.alphaTree(attr0cc._jipjim, type))
 
 
-def alphaTreeDissim(dissimh, dissimv, alpha):
+def alphaTreeDissim(dissimh,
+                    dissimv,
+                    alpha: int):
     """Create Jim holding the tree.
 
     This function does not have the member function alternative.
@@ -29,7 +33,9 @@ def alphaTreeDissim(dissimh, dissimv, alpha):
                                                           alpha))
 
 
-def alphaTreeNextLevel(atree, label_jim, alpha):
+def alphaTreeNextLevel(atree,
+                       label_jim,
+                       alpha: int):
     """Compute the alpha tree next level.
 
     :param atree: a Jim object
@@ -49,7 +55,10 @@ def alphaTreePersistenceLut(atree):
     return _pj.Jim(atree._jipjim.alphaTreeGetPersistenceLut())
 
 
-def alphaTreeToCCs(atree, label_jim, lut, rule):
+def alphaTreeToCCs(atree,
+                   label_jim,
+                   lut: bool,
+                   rule: int):
     """Convert an alpha tree to connected components.
 
     :param atree: a Jim object
@@ -61,7 +70,8 @@ def alphaTreeToCCs(atree, label_jim, lut, rule):
     return _pj.Jim(atree._jipjim.alphaTreeToCCs(label_jim._jipjim, lut, rule))
 
 
-def convertRgbToHsx(jim, x_type):
+def convertRgbToHsx(jim,
+                    x_type: str):
     """Convert RGB to HSX.
 
     Returns the hue, saturation, and value, lightness, or intensity channels
@@ -124,7 +134,9 @@ def convertHlsToRgb(jim):
     return pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
 
 
-def dbscan(jim_dissim, eps, min_pts):
+def dbscan(jim_dissim,
+           eps: float,
+           min_pts: int):
     """Compute dbscan.
 
     :param jim_dissim: a Jim object containing the dissimilarity matrix
@@ -135,7 +147,10 @@ def dbscan(jim_dissim, eps, min_pts):
     return _pj.Jim(jim_dissim._jipjim.dbscan(eps, min_pts))
 
 
-def dissim(jim_map, jim_mask, nc, type):
+def dissim(jim_map,
+           jim_mask,
+           nc: int,
+           type: int):
     """Compute the dissimilarity matrix.
 
     :param jim_map: a Jim object
@@ -148,7 +163,9 @@ def dissim(jim_map, jim_mask, nc, type):
                                                       nc, type))
 
 
-def dissimToAlphaCCs(dissimh, dissimv, alpha):
+def dissimToAlphaCCs(dissimh,
+                     dissimv,
+                     alpha: int):
     """Create Jim holding the labelled alpha-connected component.
 
     :param dissimh: Jim for horizontal edge dissimilarities
@@ -160,7 +177,8 @@ def dissimToAlphaCCs(dissimh, dissimv, alpha):
                                                     alpha))
 
 
-def distance2d4(jim, band=0):
+def distance2d4(jim,
+                band: int = 0):
     """Compute the 2-dimensional 4-connected distance function of a Jim.
 
     :param jim: a Jim object
@@ -170,7 +188,9 @@ def distance2d4(jim, band=0):
     return _pj.Jim(jim._jipjim.distance2d4(band))
 
 
-def distance2dChamfer(jim, type, band=0):
+def distance2dChamfer(jim,
+                      type: int,
+                      band: int = 0):
     """Compute the chamfer distance function of Jim.
 
     Note that the type of Jim must be large enough to hold the largest
@@ -185,7 +205,9 @@ def distance2dChamfer(jim, type, band=0):
     return _pj.Jim(jim._jipjim.distance2dChamfer(type, band))
 
 
-def distance2dEuclideanConstrained(marker, mask, band=0):
+def distance2dEuclideanConstrained(marker,
+                                   mask,
+                                   band: int = 0):
     """Compute the Euclidean geodesic distance from the marker set.
 
     Defined by the image marker and within the geodesic mask defined by
@@ -201,7 +223,8 @@ def distance2dEuclideanConstrained(marker, mask, band=0):
                                                                  band))
 
 
-def distance2dEuclideanSquared(jim, band=0):
+def distance2dEuclideanSquared(jim,
+                               band: int = 0):
     """Compute the squared Euclidean distance transform of im.
 
     Jim must be a 2-D binary image. Original algorithm proposed by Saito
@@ -219,7 +242,10 @@ def distance2dEuclideanSquared(jim, band=0):
     return _pj.Jim(jim._jipjim.distance2dEuclideanSquared(band))
 
 
-def distanceGeodesic(mask, marker, graph, band=0):
+def distanceGeodesic(mask,
+                     marker,
+                     graph: int,
+                     band: int = 0):
     """Compute geodesic distance function from marker within mask.
 
     Using graph connectivity.
@@ -234,7 +260,8 @@ def distanceGeodesic(mask, marker, graph, band=0):
         marker._jipjim, graph, band))
 
 
-def distanceInfluenceZones2dEuclidean(jim, band=0):
+def distanceInfluenceZones2dEuclidean(jim,
+                                      band: int = 0):
     """Output error-free influence zones of the labelled regions in Jim.
 
     Jim must be a 2-D image, its last bit being reserved (e.g., for a UCHAR
@@ -248,7 +275,12 @@ def distanceInfluenceZones2dEuclidean(jim, band=0):
     return _pj.Jim(jim._jipjim.distanceInfluenceZones2dEuclidean(band))
 
 
-def flatZonesSeeded(jim1, jim2, jim3, ox, oy, oz):
+def flatZonesSeeded(jim1,
+                    jim2,
+                    jim3,
+                    ox: float,
+                    oy: float,
+                    oz: float):
     """Compute seeded flat zones.
 
     :param jim1: a Jim object
@@ -262,7 +294,8 @@ def flatZonesSeeded(jim1, jim2, jim3, ox, oy, oz):
     return _pj.Jim(jim1._jipjim.flatZonesSeeded(jim2, jim3, ox, oy, oz))
 
 
-def getRegionalMinima(jim, graph):
+def getRegionalMinima(jim,
+                      graph: int):
     """Compute regional minima of the input image.
 
     The pixels belonging to a regional minimum are set to 1, all other pixels
@@ -277,7 +310,8 @@ def getRegionalMinima(jim, graph):
     return _pj.Jim(jim._jipjim.getRegionalMinima(graph))
 
 
-def label(jim, ngb):
+def label(jim,
+          ngb):
     """Label each non-zero connected component with a unique label.
 
     Label using graph-connectivity.
@@ -289,7 +323,10 @@ def label(jim, ngb):
     return _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
 
 
-def labelConstrainedCCs(jim, local_range, global_range, ngb):
+def labelConstrainedCCs(jim,
+                        local_range: int,
+                        global_range: int,
+                        ngb):
     """Label each alpha-omega connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
@@ -319,7 +356,10 @@ def labelConstrainedCCs(jim, local_range, global_range, ngb):
             "Error: input must be Jim or JimList object")
 
 
-def labelConstrainedCCsAttr(jim, graph, rg, rl):
+def labelConstrainedCCsAttr(jim,
+                            graph: int,
+                            rg: int,
+                            rl: int):
     """Label image, in development.
 
     :param jim: a Jim object to label
@@ -333,7 +373,12 @@ def labelConstrainedCCsAttr(jim, graph, rg, rl):
         graph, rg, rl))
 
 
-def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
+def labelConstrainedCCsCi(jim,
+                          ngb,
+                          ox: float,
+                          oy: float,
+                          oz: float,
+                          rl: int):
     """Label image, in development.
 
     :param jim: a Jim object to label
@@ -349,7 +394,10 @@ def labelConstrainedCCsCi(jim, ngb, ox, oy, oz, rl):
         ngb._jipjim, ox, oy, oz, rl))
 
 
-def labelConstrainedCCsDissim(jim, local_range, global_range, dissim_type=0):
+def labelConstrainedCCsDissim(jim,
+                              local_range: int,
+                              global_range: int,
+                              dissim_type: int = 0):
     """Label each alpha-omega connected components with a unique label.
 
      Label using graph-connectivity and the dissimilarity measure countering
@@ -387,7 +435,14 @@ def labelConstrainedCCsDissim(jim, local_range, global_range, dissim_type=0):
             "Error: input must be Jim or JimList object")
 
 
-def labelConstrainedCCsMi(jim, jim_mi, jim_se, ox, oy, oz, rg, rl):
+def labelConstrainedCCsMi(jim,
+                          jim_mi,
+                          jim_se,
+                          ox: float,
+                          oy: float,
+                          oz: float,
+                          rg: int,
+                          rl: int):
     """Label image, in development.
 
     :param jim: a Jim object to label
@@ -405,7 +460,14 @@ def labelConstrainedCCsMi(jim, jim_mi, jim_se, ox, oy, oz, rg, rl):
         jim_mi._jipjim, jim_se._jipjim, ox, oy, oz, rg, rl))
 
 
-def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, ngb):
+def labelConstrainedCCsVariance(jim,
+                                ox: float,
+                                oy: float,
+                                oz: float,
+                                rg: int,
+                                rl: int,
+                                varmax: float,
+                                ngb):
     """Label image.
 
     :param jim: a Jim object
@@ -422,7 +484,8 @@ def labelConstrainedCCsVariance(jim, ox, oy, oz, rg, rl, varmax, ngb):
         ngb._jipjim, ox, oy, oz, rg, rl, varmax))
 
 
-def labelErode(jim, graph=4):
+def labelErode(jim,
+               graph: int = 4):
     """Label to contain the union of the erosions of the iso-intensity CCs.
 
     :param jim: a Jim object
@@ -435,7 +498,8 @@ def labelErode(jim, graph=4):
     return _pj.Jim(jim._jipjim.labelErode(graph))
 
 
-def labelFlatZones(jim, ngb):
+def labelFlatZones(jim,
+                   ngb):
     """Label each image flat zone with a unique label using graph-connectivity.
 
     :param jim: a Jim object holding a grey level image
@@ -445,7 +509,12 @@ def labelFlatZones(jim, ngb):
     return _pj.Jim(jim._jipjim.labelFlatZones(ngb._jipjim, 1, 1, 0))
 
 
-def labelFlatZonesSeeded(jim, jim_ngb, jim_seeds, ox, oy, oz):
+def labelFlatZonesSeeded(jim,
+                         jim_ngb,
+                         jim_seeds,
+                         ox: float,
+                         oy: float,
+                         oz: float):
     """Label the flat regions using the ngb Jim and its origin.
 
     :param jim: a Jim object
@@ -471,7 +540,8 @@ def labelPixels(jim):
     return _pj.Jim(jim._jipjim.labelPix())
 
 
-def labelsOuterContour(jim_label, graph):
+def labelsOuterContour(jim_label,
+                       graph: int):
     """Get outer contour of labels.
 
     :param jim_label: a Jim object
@@ -482,7 +552,8 @@ def labelsOuterContour(jim_label, graph):
         graph))
 
 
-def labelsOuterEdge(jim_label, graph):
+def labelsOuterEdge(jim_label,
+                    graph: int):
     """Get outer edge of labels.
 
     :param jim_label: a Jim object containing labels
@@ -493,7 +564,8 @@ def labelsOuterEdge(jim_label, graph):
         graph))
 
 
-def labelsOuterEdgeLut(jim_label, jim_edge_label):
+def labelsOuterEdgeLut(jim_label,
+                       jim_edge_label):
     """Get outer edge lut of labels.
 
     :param jim_label: a Jim object containing labels
@@ -504,7 +576,9 @@ def labelsOuterEdgeLut(jim_label, jim_edge_label):
         jim_edge_label._jipjim))
 
 
-def labelsSet(label_jim, ival_jim, indic):
+def labelsSet(label_jim,
+              ival_jim,
+              indic: int):
     """Set labels to regions.
 
     :param label_jim: Jim object with labels
@@ -524,7 +598,10 @@ def labelsSetArea(jim):
     return _pj.Jim(jim._jipjim.labelsSet())
 
 
-def labelsSetGraph(label_jim, ival_jim, indic, graph):
+def labelsSetGraph(label_jim,
+                   ival_jim,
+                   indic: int,
+                   graph: int):
     """Set labels to regions.
 
     :param label_jim: Jim object with labels
@@ -536,7 +613,9 @@ def labelsSetGraph(label_jim, ival_jim, indic, graph):
     return _pj.Jim(label_jim._jipjim.labelsSetGraph(ival_jim, indic, graph))
 
 
-def labelStronglyCCs(jim, local_range, ngb):
+def labelStronglyCCs(jim,
+                     local_range: int,
+                     ngb):
     """Label each strongly alpha-connected component.
 
     Label with a unique label using graph-connectivity :cite:`soille2008pami`
@@ -563,7 +642,9 @@ def labelStronglyCCs(jim, local_range, ngb):
             "Error: input must be Jim or JimList object")
 
 
-def morphoFillHoles(jim_object, graph, border_flag=1):
+def morphoFillHoles(jim_object,
+                    graph: int,
+                    border_flag: int = 1):
     """Remove the not border-connected regional minima of the image.
 
     Uses graph connectivity (originally proposed for removing pits in
@@ -589,8 +670,10 @@ def morphoFillHoles(jim_object, graph, border_flag=1):
     return marker
 
 
-def morphoGeodesicReconstructionByDilation(jim_object_mark, jim_object_mask,
-                                           graph, border_flag=1):
+def morphoGeodesicReconstructionByDilation(jim_object_mark,
+                                           jim_object_mask,
+                                           graph: int,
+                                           border_flag: int = 1):
     """Compute the morphological reconstruction by dilation of mask image.
 
     Mask image is from mark image using graph connectivity.
@@ -610,8 +693,10 @@ def morphoGeodesicReconstructionByDilation(jim_object_mark, jim_object_mask,
         jim_object_mask._jipjim, graph, border_flag))
 
 
-def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask,
-                                          graph, border_flag=1):
+def morphoGeodesicReconstructionByErosion(jim_object_mark,
+                                          jim_object_mask,
+                                          graph: int,
+                                          border_flag: int = 1):
     """Compute the morphological reconstruction by erosion of mask image.
 
     Mask image is from mark image using graph connectivity.
@@ -631,7 +716,8 @@ def morphoGeodesicReconstructionByErosion(jim_object_mark, jim_object_mask,
         jim_object_mask._jipjim, graph, border_flag))
 
 
-def morphoRemoveBorder(jim_object, graph):
+def morphoRemoveBorder(jim_object,
+                       graph: int):
     """Remove the border-connected components of an image.
 
     Uses graph connectivity.
@@ -653,7 +739,9 @@ def morphoRemoveBorder(jim_object, graph):
     return marker
 
 
-def partitionSimilarity(jim1, jim2, graph):
+def partitionSimilarity(jim1,
+                        jim2,
+                        graph: int):
     """Create a list of 4 1-D images.
 
     They contain the following information: correspondence table between the
@@ -672,7 +760,11 @@ def partitionSimilarity(jim1, jim2, graph):
     return _pj.JimList(jim1._jipjim.partitionSimilarity(jim2._jipjim, graph))
 
 
-def propagate(label_jim, dst_jim, imap_jim, nc, graph):
+def propagate(label_jim,
+              dst_jim,
+              imap_jim,
+              nc: int,
+              graph: int):
     """Perform propagation.
 
     :param label_jim: a Jim object with labels
@@ -685,7 +777,9 @@ def propagate(label_jim, dst_jim, imap_jim, nc, graph):
     return _pj.Jim(label_jim._jipjim.propagate(dst_jim, imap_jim, nc, graph))
 
 
-def relabel(jim_label1, jim_label2, jim_area):
+def relabel(jim_label1,
+            jim_label2,
+            jim_area):
     """Perform propagation.
 
     :param jim_label1: a Jim object
@@ -696,7 +790,9 @@ def relabel(jim_label1, jim_label2, jim_area):
     return _pj.Jim(jim_label1._jipjim.labelRelabel(jim_label2, jim_area))
 
 
-def seededRegionGrowing(jim, seeds, ngb):
+def seededRegionGrowing(jim,
+                        seeds,
+                        ngb):
     """Calculate the seeded region growing.
 
     Seeded region growing :cite:`adams-bischof94` including adaptations
@@ -726,8 +822,13 @@ def seededRegionGrowing(jim, seeds, ngb):
             seeds._jipjim, ngb._jipjim, 1, 1, 0))
 
 
-def segmentImageMultiband(jimlist, local_range, region_size, contrast=0,
-                          version=0, graph=4, filename_prefix=""):
+def segmentImageMultiband(jimlist,
+                          local_range: int,
+                          region_size: int,
+                          contrast: int = 0,
+                          version: int = 0,
+                          graph: int = 4,
+                          filename_prefix: str = ""):
     """Do multiband image segmentation.
 
     Based on the method described in :cite:`brunner-soille2007`
@@ -769,7 +870,10 @@ def segmentImageMultiband(jimlist, local_range, region_size, contrast=0,
             "Error: input must be Jim or JimList object")
 
 
-def vertexConnectedness(jim_object, alpha, graph=8, deg=None):
+def vertexConnectedness(jim_object,
+                        alpha: int,
+                        graph: int = 8,
+                        deg: int = None):
     """Label Jim based on vertex connectedness.
 
     :param jim_object: input Jim object
@@ -782,7 +886,9 @@ def vertexConnectedness(jim_object, alpha, graph=8, deg=None):
     return _pj.Jim(jim_object._jipjim.vertexDegreeAlpha(alpha, graph, deg))
 
 
-def vertexDegreeAlpha(jim_object, alpha, graph=8):
+def vertexDegreeAlpha(jim_object,
+                      alpha: int,
+                      graph: int = 8):
     """Label Jim based on vertex degree alpha.
 
     :param jim_object: input Jim object
@@ -794,7 +900,9 @@ def vertexDegreeAlpha(jim_object, alpha, graph=8):
     return _pj.Jim(jim_object._jipjim.vertexDegreeAlpha(alpha, graph))
 
 
-def vertexSeparation(jim_object, graph=8, type=None):
+def vertexSeparation(jim_object,
+                     graph: int = 8,
+                     type: int = None):
     """Label Jim based on vertex separation.
 
     :param jim_object: input Jim object
@@ -806,7 +914,8 @@ def vertexSeparation(jim_object, graph=8, type=None):
     return _pj.Jim(jim_object._jipjim.vertexSeparation(graph, type))
 
 
-def watershed(jim_object, graph=8):
+def watershed(jim_object,
+              graph: int = 8):
     """Watershed segmentation based on immersion simulation.
 
     Described in :cite:`soille-vincent90`, see also :cite:`vincent-soille91`
@@ -823,7 +932,9 @@ def watershed(jim_object, graph=8):
 class _CCOps(_pj.modules.JimModuleBase):
     """Define all CCOps methods."""
 
-    def alphaTree(self, attr0cc, type):
+    def alphaTree(self,
+                  attr0cc,
+                  type: int):
         """Compute the alpha tree.
 
         Modifies the instance on which the method was called.
@@ -834,7 +945,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.alphaTree(
             attr0cc._jipjim, type))
 
-    def alphaTreeNextLevel(self, label_jim, alpha):
+    def alphaTreeNextLevel(self,
+                           label_jim,
+                           alpha: int):
         """Convert an alpha tree to connected components.
 
         Modifies the instance on which the method was called.
@@ -853,7 +966,10 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.alphaTreeGetPersistenceLut())
 
-    def alphaTreeToCCs(self, label_jim, lut, rule):
+    def alphaTreeToCCs(self,
+                       label_jim,
+                       lut: bool,
+                       rule: int):
         """Convert an alpha tree to connected components.
 
         Modifies the instance on which the method was called.
@@ -865,7 +981,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.alphaTreeToCCs(
             label_jim._jipjim, lut, rule))
 
-    def convertRgbToHsx(self, x_type):
+    def convertRgbToHsx(self,
+                        x_type: str):
         """Convert RGB to HSX.
 
         Returns the hue, saturation, and value, lightness, or intensity
@@ -924,7 +1041,9 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(jimh._jipjim.convertHlsToRgb(jiml, jims))
 
-    def dbscan(self, eps, min_pts):
+    def dbscan(self,
+               eps: float,
+               min_pts: int):
         """Compute dbscan.
 
         This method should be called on an object which contains
@@ -937,7 +1056,10 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.dbscan(eps, min_pts))
 
-    def dissim(self, jim_mask, nc, type):
+    def dissim(self,
+               jim_mask,
+               nc: int,
+               type: int):
         """Compute the dissimilarity matrix.
 
         Modifies the instance on which the method was called.
@@ -949,7 +1071,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.dissimilarityMatrix(
             jim_mask._jipjim, nc, type))
 
-    def distance2d4(self, band=0):
+    def distance2d4(self,
+                    band: int = 0):
         """Compute the 2-dimensional 4-connected distance function of a Jim.
 
         Modifies the instance on which the method was called.
@@ -958,7 +1081,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_distance2d4(band)
 
-    def distance2dChamfer(self, type, band=0):
+    def distance2dChamfer(self,
+                          type: int,
+                          band: int = 0):
         """Compute the chamfer distance function of Jim.
 
         Note that the type of Jim must be large enough to hold the largest
@@ -972,7 +1097,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_distance2dChamfer(type, band)
 
-    def distance2dEuclideanConstrained(self, mask, band=0):
+    def distance2dEuclideanConstrained(self,
+                                       mask,
+                                       band: int = 0):
         """Compute the Euclidean geodesic distance from the marker set.
 
         Defined by the image marker and within the geodesic mask defined by
@@ -987,7 +1114,8 @@ class _CCOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.distance2dEuclideanConstrained(
                 mask._jipjim, band))
 
-    def distance2dEuclideanSquared(self, band=0):
+    def distance2dEuclideanSquared(self,
+                                   band: int = 0):
         """Compute the squared Euclidean distance transform.
 
         im must be a 2-D binary image. Original algorithm proposed by Saito
@@ -1005,7 +1133,10 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.distance2dEuclideanSquared(band))
 
-    def distanceGeodesic(self, marker, graph, band=0):
+    def distanceGeodesic(self,
+                         marker,
+                         graph: int,
+                         band: int = 0):
         """Compute geodesic distance function from marker within mask.
 
         Using graph connectivity.
@@ -1019,7 +1150,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_jldistanceGeodesic(
             marker._jipjim, graph, band)
 
-    def distanceInfluenceZones2dEuclidean(self, band=0):
+    def distanceInfluenceZones2dEuclidean(self,
+                                          band: int = 0):
         """Output error-free influence zones of the labelled regions in Jim.
 
         Jim must be a 2-D image, its last bit being reserved (e.g., for a UCHAR
@@ -1032,7 +1164,12 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.distanceInfluenceZones2dEuclidean(band))
 
-    def flatZonesSeeded(self, jim2, jim3, ox, oy, oz):
+    def flatZonesSeeded(self,
+                        jim2,
+                        jim3,
+                        ox: float,
+                        oy: float,
+                        oz: float):
         """Compute seeded flat zones.
 
         Modifies the instance on which the method was called.
@@ -1045,7 +1182,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_flatZonesSeeded(jim2, jim3, ox, oy, oz)
 
-    def label(self, ngb):
+    def label(self,
+              ngb):
         """Label each non-zero connected component with a unique label.
 
         Uses graph-connectivity
@@ -1057,7 +1195,10 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
 
-    def labelConstrainedCCs(self, local_range, global_range, ngb):
+    def labelConstrainedCCs(self,
+                            local_range: int,
+                            global_range: int,
+                            ngb):
         """Label each alpha-omega connected component.
 
         Label with a unique label using graph-connectivity
@@ -1080,7 +1221,10 @@ class _CCOps(_pj.modules.JimModuleBase):
                 self._jim_object._jipjim.labelConstrainedCCsMultiband(
                     ngb._jipjim, 1, 1, 0, global_range, local_range))
 
-    def labelConstrainedCCsAttr(self, graph, rg, rl):
+    def labelConstrainedCCsAttr(self,
+                                graph: int,
+                                rg: int,
+                                rl: int):
         """Label image, in development.
 
         :param graph: integer for graph connectivity
@@ -1093,7 +1237,12 @@ class _CCOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.labelConstrainedCCsAttr(
                 graph, rg, rl))
 
-    def labelConstrainedCCsCi(self, ngb, ox, oy, oz, rl):
+    def labelConstrainedCCsCi(self,
+                              ngb,
+                              ox: float,
+                              oy: float,
+                              oz: float,
+                              rl: int):
         """Label image, in development.
         Modifies the instance on which the method was called.
 
@@ -1108,7 +1257,14 @@ class _CCOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.labelConstrainedCCsCi(
                 ngb._jipjim, ox, oy, oz, rl))
 
-    def labelConstrainedCCsMi(self, jim_mi, jim_se, ox, oy, oz, rg, rl):
+    def labelConstrainedCCsMi(self,
+                              jim_mi,
+                              jim_se,
+                              ox: float,
+                              oy: float,
+                              oz: float,
+                              rg: int,
+                              rl: int):
         """Label image, in development.
         Modifies the instance on which the method was called.
 
@@ -1125,7 +1281,14 @@ class _CCOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.labelConstrainedCCsMi(
                 jim_mi._jipjim, jim_se._jipjim, ox, oy, oz, rg, rl))
 
-    def labelConstrainedCCsVariance(self, ox, oy, oz, rg, rl, varmax, ngb):
+    def labelConstrainedCCsVariance(self,
+                                    ox: float,
+                                    oy: float,
+                                    oz: float,
+                                    rg: int,
+                                    rl: int,
+                                    varmax: float,
+                                    ngb):
         """Label image.
 
         Modifies the instance on which the method was called.
@@ -1143,7 +1306,8 @@ class _CCOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.labelConstrainedCCsVariance(
                 ngb._jipjim, ox, oy, oz, rg, rl, varmax))
 
-    def labelErode(self, graph=4):
+    def labelErode(self,
+                   graph: int = 4):
         """Label to contain the union of the erosions of the iso-intensity CCs.
 
         Modifies the instance on which the method was called.
@@ -1155,7 +1319,12 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.labelErode(graph))
 
-    def labelFlatZonesSeeded(self, jim_ngb, jim_seeds, ox, oy, oz):
+    def labelFlatZonesSeeded(self,
+                             jim_ngb,
+                             jim_seeds,
+                             ox: float,
+                             oy: float,
+                             oz: float):
         """Label the flat regions using the ngb Jim and its origin.
 
         :param jim_ngb: a Jim objects for neighbourhood
@@ -1176,7 +1345,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_labelPix()
 
-    def labelsOuterContour(self, graph):
+    def labelsOuterContour(self,
+                           graph: int):
         """Compute the outer contour of labels.
 
         This method should be called on a Jim object which contains labels.
@@ -1188,7 +1358,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.labelsGetOuterContour(
             graph))
 
-    def labelsOuterEdge(self, graph):
+    def labelsOuterEdge(self,
+                        graph: int):
         """Compute the outer edge of labels.
 
         This method should be called on a Jim object which contains labels.
@@ -1200,7 +1371,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.labelsGetOuterEdge(
             graph))
 
-    def labelsOuterEdgeLut(self, jim_edge_label):
+    def labelsOuterEdgeLut(self,
+                           jim_edge_label):
         """Compute the outer edge lut of labels.
 
         This method should be called on a Jim object which contains labels.
@@ -1212,7 +1384,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.labelsGetOuterEdgeLut(
             jim_edge_label._jipjim))
 
-    def labelsSet(self, ival_jim, indic):
+    def labelsSet(self,
+                  ival_jim,
+                  indic: int):
         """Set labels to regions.
 
         Modifies the instance on which the method was called.
@@ -1228,7 +1402,10 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_labelsSetArea()
 
-    def labelsSetGraph(self, ival_jim, indic, graph):
+    def labelsSetGraph(self,
+                       ival_jim,
+                       indic: int,
+                       graph: int):
         """Set labels to regions.
 
         Modifies the instance on which the method was called.
@@ -1241,7 +1418,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelsSetGraph(ival_jim, indic, graph)
 
         #todo: not working (self is not modified)
-    def morphoFillHoles(self, graph, border_flag=1):
+    def morphoFillHoles(self,
+                        graph: int,
+                        border_flag: int = 1):
         """Remove the image-border-connected regional minima.
 
         Uses graph connectivity.
@@ -1265,8 +1444,10 @@ class _CCOps(_pj.modules.JimModuleBase):
                                                            graph, border_flag)
         self._jim_object._set(marker._jipjim)
 
-    def morphoGeodesicReconstructionByDilation(self, jim_object_mask, graph,
-                                               flag=1):
+    def morphoGeodesicReconstructionByDilation(self,
+                                               jim_object_mask,
+                                               graph: int,
+                                               flag: int = 1):
         """Compute the morphological reconstruction by dilation.
 
         Dilation of the current object is from mark image using graph
@@ -1285,8 +1466,10 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_geodesicReconstructionByDilation(
             jim_object_mask._jipjim, graph, flag)
 
-    def morphoGeodesicReconstructionByErosion(self, jim_object_mask, graph,
-                                              flag=1):
+    def morphoGeodesicReconstructionByErosion(self,
+                                              jim_object_mask,
+                                              graph: int,
+                                              flag: int = 1):
         """Compute the morphological reconstruction by erosion.
 
         Erosion of the current object is from mark image using graph
@@ -1305,7 +1488,8 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_geodesicReconstructionByErosion(
             jim_object_mask._jipjim, graph, flag)
 
-    def morphoRemoveBorder(self, graph):
+    def morphoRemoveBorder(self,
+                           graph: int):
         """Remove the border-connected components using graph connectivity.
 
         Modifies the instance on which the method was called.
@@ -1324,7 +1508,11 @@ class _CCOps(_pj.modules.JimModuleBase):
         marker.pixops.simpleArithOp(jim_object, 17)  # 17 for SUBSWAP_op_ovf
         self._jim_object._set(marker)
 
-    def propagate(self, dst_jim, imap_jim, nc, graph):
+    def propagate(self,
+                  dst_jim,
+                  imap_jim,
+                  nc: int,
+                  graph: int):
         """Perform propagation.
 
         :param dst_jim: a Jim object
@@ -1334,7 +1522,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_propagate(dst_jim, imap_jim, nc, graph)
 
-    def relabel(self, jim_label2, jim_area):
+    def relabel(self,
+                jim_label2,
+                jim_area):
         """Perform propagation.
 
         :param jim_label2: a Jim object
@@ -1342,7 +1532,10 @@ class _CCOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_labelRelabel(jim_label2, jim_area)
 
-    def vertexConnectedness(self, alpha, graph=8, deg=None):
+    def vertexConnectedness(self,
+                            alpha: float,
+                            graph: int = 8,
+                            deg: int = None):
         """Label Jim based on vertex connectedness.
 
         :param alpha: value
@@ -1354,7 +1547,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.vertexConnectedness(
             alpha, graph, deg))
 
-    def vertexDegreeAlpha(self, alpha, graph=8):
+    def vertexDegreeAlpha(self,
+                          alpha: float,
+                          graph: int = 8):
         """Label Jim based on vertex degree alpha.
 
         :param alpha: value
@@ -1365,7 +1560,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.vertexDegreeAlpha(
             alpha, graph))
 
-    def vertexSeparation(self, graph=8, type=None):
+    def vertexSeparation(self,
+                         graph: int = 8,
+                         type: int = None):
         """Label Jim based on vertex degree alpha.
 
         :param graph: an integer holding for the graph connectivity
@@ -1380,7 +1577,10 @@ class _CCOps(_pj.modules.JimModuleBase):
 class _CCOpsList(_pj.modules.JimListModuleBase):
     """Define all CCOps methods for JimLists."""
 
-    def labelConstrainedCCs(self, local_range, global_range, ngb):
+    def labelConstrainedCCs(self,
+                            local_range: int,
+                            global_range: int,
+                            ngb):
         """Label each alpha-omega connected component.
 
         Label everyting with a unique label using graph-connectivity

@@ -3,7 +3,10 @@
 import pyjeo as _pj
 
 
-def classify(jim_object, method, model, **kwargs):
+def classify(jim_object,
+             method: str,
+             model: str,
+             **kwargs):
     """Supervised classification of a raster dataset.
 
     The classifier must have been trained via the train() method.
@@ -31,7 +34,10 @@ def classify(jim_object, method, model, **kwargs):
     return _pj.Jim(jim_object._jipjim.classify(kwargs))
 
 
-def reclass(jim_object, classes, reclasses, otype=None):
+def reclass(jim_object,
+            classes: list,
+            reclasses: list,
+            otype=None):
     """Reclassify a Jim object, replacing all pixels in the set classes.
 
     Replace all pixels in the set class to the corresponding values in
@@ -54,7 +60,10 @@ def reclass(jim_object, classes, reclasses, otype=None):
     return ret_jim
 
 
-def sml(jim_object, reflist, classes=None, **kwargs):
+def sml(jim_object,
+        reflist,
+        classes: list = None,
+        **kwargs):
     """Perform supervised classification of a Jim object using SML.
 
     For training, one or more reference raster datasets with categorical
@@ -83,7 +92,10 @@ def sml(jim_object, reflist, classes=None, **kwargs):
 class _Classify(_pj.modules.JimModuleBase):
     """Define all classification methods for Jims."""
 
-    def classify(self, method, model, **kwargs):
+    def classify(self,
+                 method: str,
+                 model: str,
+                 **kwargs):
         """Supervised classification of a raster dataset.
 
         The classifier must have been trained via the train() method.
@@ -118,7 +130,10 @@ class _Classify(_pj.modules.JimModuleBase):
         kwargs.update({'method': method, 'model': model})
         self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
 
-    def reclass(self, classes, reclasses, otype=None):
+    def reclass(self,
+                classes: list,
+                reclasses: list,
+                otype=None):
         """Reclassify a Jim object.
 
         Replace all pixels in the set classes to the corresponding values in
@@ -139,7 +154,10 @@ class _Classify(_pj.modules.JimModuleBase):
             kwargs.update({'otype': otype})
         self._jim_object._jipjim.d_reclass(kwargs)
 
-    def sml(self, reflist, classes=None, **kwargs):
+    def sml(self,
+            reflist,
+            classes: list = None,
+            **kwargs):
         """Perform supervised classification of a Jim object using SML.
 
         For training, one or more reference raster datasets with categorical
@@ -179,7 +197,10 @@ class _Classify(_pj.modules.JimModuleBase):
         self._jim_object._set(self._jim_object._jipjim.classifySML(
             reflist._jipjimlist, kwargs))
 
-    def trainSML(self, reference, output=None, **kwargs):
+    def trainSML(self,
+                 reference,
+                 output: str = None,
+                 **kwargs):
         """Train a supervised symbolic machine learning (SML) classifier.
 
         Train it based on a reference :py:class:`JimList` object
@@ -245,7 +266,10 @@ class _ClassifyList(_pj.modules.JimListModuleBase):
 class _ClassifyVect(_pj.modules.JimVectModuleBase):
     """Define all classification methods for JimVects."""
 
-    def classify(self, method, model, **kwargs):
+    def classify(self,
+                 method: str,
+                 model: str,
+                 **kwargs):
         """Supervised classification of a raster dataset.
 
         The classifier must have been trained via the train() method.
@@ -271,7 +295,10 @@ class _ClassifyVect(_pj.modules.JimVectModuleBase):
         kwargs.update({'method': method, 'model': model})
         self._jim_vect._set(self._jim_vect._jipjimvect.classify(kwargs))
 
-    def train(self, method, output, **kwargs):
+    def train(self,
+              method: str,
+              output: str,
+              **kwargs):
         """Train a supervised classifier based on extracted data.
 
         Includes label information (typically obtained via

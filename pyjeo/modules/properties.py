@@ -16,11 +16,13 @@ class _Properties(_pj.modules.JimModuleBase):
         """Clear the list of no data values for this raster dataset."""
         self._jim_object._jipjim.clearNoData()
 
-    def copyGeoTransform(self, sec_jim_object):
+    def copyGeoTransform(self,
+                         sec_jim_object):
         """Copy geotransform information from another georeferenced image."""
         self._jim_object._jipjim.copyGeoTransform(sec_jim_object._jipjim)
 
-    def covers(self, *args):
+    def covers(self,
+               *args):
         """Check if a geolocation is covered by this dataset.
 
         You can check the coverage for a :ref:`point of interest
@@ -166,7 +168,8 @@ class _Properties(_pj.modules.JimModuleBase):
         """
         return self._jim_object._jipjim.getProjection()
 
-    def getRefPix(self, *args):
+    def getRefPix(self,
+                  *args):
         """Calculate the reference pixel as the center of gravity pixel.
 
         Calculated as the weighted average of all values not taking into
@@ -230,11 +233,13 @@ class _Properties(_pj.modules.JimModuleBase):
         """Print the list of no data values of this raster dataset."""
         self._jim_object._jipjim.printNoDataValues()
 
-    def pushNoDataVal(self, value):
+    def pushNoDataVal(self,
+                      value: float):
         """Push a no data value for this raster dataset."""
         self._jim_object._jipjim.pushNoDataValue(value)
 
-    def setGeoTransform(self, *args):
+    def setGeoTransform(self,
+                        *args):
         """Set the geotransform data for this dataset.
 
         :args: List of floats with geotransform data:
@@ -248,7 +253,8 @@ class _Properties(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.setGeoTransform(*args)
 
-    def setNoDataVals(self, value):
+    def setNoDataVals(self,
+                      value: float):
         """Set the list of no data value for this raster dataset."""
         if isinstance(value, list):
             self._jim_object._jipjim.setNoData(value)
@@ -258,7 +264,8 @@ class _Properties(_pj.modules.JimModuleBase):
             raise TypeError('Error: setNoDataVals not implemented for value '
                             'type {}'.format(type(value)))
 
-    def setProjection(self, *args):
+    def setProjection(self,
+                      *args):
         """Set the projection for this dataset.
 
         Set it in well known text (wkt) format or as a string epsg:<epsgcode>.
@@ -276,7 +283,8 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
         """Clear the list of no data values for this JimList object."""
         self._jim_list._jipjimlist.clearNoData()
 
-    def covers(self, *args):
+    def covers(self,
+               *args):
         """Check if a geolocation is covered by this dataset.
 
         You can check the coverage for a :ref:`point of interest
@@ -355,7 +363,8 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
         """
         return self._jim_list._jipjimlist.getUly()
 
-    def pushNoDataVal(self, value):
+    def pushNoDataVal(self,
+                      value: float):
         """Push a no data value for this raster JimList object."""
         self._jim_list._jipjimlist.pushNoDataValue(value)
 
@@ -377,7 +386,8 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         """
         return self._jim_vect._jipjimvect.getBoundingBox()
 
-    def getFeatureCount(self, layer=None):
+    def getFeatureCount(self,
+                        layer: int = None):
         """Get the number of features of this dataset.
 
         :layer: the layer number (default is all layers)
@@ -388,7 +398,8 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         else:
             return self._jim_vect._jipjimvect.getFeatureCount()
 
-    def getFieldNames(self, layer=0):
+    def getFieldNames(self,
+                      layer: int = 0):
         """Get the list of field names for this dataset.
 
         :param layer: The layer to get the field names, index starting from 0
@@ -421,7 +432,8 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         """
         return self._jim_vect._jipjimvect.getLry()
 
-    def getProjection(self, layer=0):
+    def getProjection(self,
+                      layer: int = 0):
         """Get the projection for this dataset in well known text (wkt) format.
 
         :param layer: The layer to get the projection from, index starting

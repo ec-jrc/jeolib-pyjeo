@@ -14,7 +14,8 @@ def getHisto1d(jim_object):
     return _pj.Jim(jim_object._jipjim.histo1d())
 
 
-def getHisto2d(jim_object, jim_object2):
+def getHisto2d(jim_object,
+               jim_object2):
     """Compute the frequency distribution of the grey levels pairs.
 
     :param jim_object: a Jim object
@@ -24,7 +25,9 @@ def getHisto2d(jim_object, jim_object2):
     return _pj.Jim(jim_object._jipjim.histo2d(jim_object2._jipjim))
 
 
-def getHisto3d(jim_object, jim_object2, jim_object3):
+def getHisto3d(jim_object,
+               jim_object2,
+               jim_object3):
     """Compute the frequency distribution of the grey levels pairs.
 
     :param jim_object: a Jim object
@@ -36,7 +39,9 @@ def getHisto3d(jim_object, jim_object2, jim_object3):
                                               jim_object3._jipjim))
 
 
-def getStatProfile(jim_object, function, **kwargs):
+def getStatProfile(jim_object,
+                   function: str,
+                   **kwargs):
     """Get statistic profile.
 
     :param jim_object: a Jim object
@@ -53,7 +58,9 @@ def getStatProfile(jim_object, function, **kwargs):
 #     return _pj.Jim(jimlist._jim_list._jipjimlist.statProfile(kwargs))
 
 
-def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
+def getStats(jim_object,
+             function=['min', 'max', 'mean'],
+             **kwargs):
     """Compute basic statistics on a JimList object.
 
     Similar to the :py:meth:`~._Stats.getStats` method from Jim when
@@ -76,7 +83,8 @@ def getStats(jim_object, function=['min', 'max', 'mean'], **kwargs):
 #     return jimlist._jim_list._jipjimlist.getStats(kwargs)
 
 
-def stretch(jim_object, **kwargs):
+def stretch(jim_object,
+            **kwargs):
     """Stretch Jim.
 
     :param jim_object:
@@ -96,7 +104,8 @@ class _Stats(_pj.modules.JimModuleBase):
         """
         return _pj.Jim(self._jim_object._jipjim.histo1d())
 
-    def getHisto2d(self, jim_object2):
+    def getHisto2d(self,
+                   jim_object2):
         """Compute the frequency distribution of the grey levels pairs.
 
         :param jim_object2: a Jim object
@@ -104,7 +113,9 @@ class _Stats(_pj.modules.JimModuleBase):
         """
         return _pj.Jim(self._jim_object._jipjim.histo2d(jim_object2._jipjim))
 
-    def getHisto3d(self, jim_object2, jim_object3):
+    def getHisto3d(self,
+                   jim_object2,
+                   jim_object3):
         """Compute the frequency distribution of the grey levels pairs.
 
         :param jim_object2: a Jim object
@@ -124,7 +135,9 @@ class _Stats(_pj.modules.JimModuleBase):
             raise TypeError('Object must be of type UInt32 or Int32')
         return _pj.Jim(self._jim_object._jipjim.histo1dCumulative())
 
-    def getStats(self, function=['min', 'max', 'mean'], **kwargs):
+    def getStats(self,
+                 function=['min', 'max', 'mean'],
+                 **kwargs):
         """Compute basic statistics on a Jim object.
 
         For functions requiring two datasets (e.g., regression), use
@@ -269,7 +282,9 @@ class _Stats(_pj.modules.JimModuleBase):
 
         return statDict
 
-    def statProfile(self, function, **kwargs):
+    def statProfile(self,
+                    function: str,
+                    **kwargs):
         kwargs.update({'function': function})
         self._jim_object._set(self._jim_object._jipjim.statProfile(kwargs))
 
@@ -280,7 +295,9 @@ class _Stats(_pj.modules.JimModuleBase):
 class _StatsList(_pj.modules.JimListModuleBase):
     """Define all statistical methods for JimLists."""
 
-    def getStatProfile(self, function, **kwargs):
+    def getStatProfile(self,
+                       function: str,
+                       **kwargs):
         """Get statistic profile.
 
         :param function: string naming a statistical function
@@ -288,7 +305,9 @@ class _StatsList(_pj.modules.JimListModuleBase):
         kwargs.update({'function': function})
         return _pj.Jim(self._jim_list._jipjimlist.statProfile(kwargs))
 
-    def getStats(self, function=['min', 'max', 'mean'], **kwargs):
+    def getStats(self,
+                 function=['min', 'max', 'mean'],
+                 **kwargs):
         """Compute basic statistics on a JimList object.
 
         Similar to the :py:meth:`~._Stats.getStats` method from Jim.

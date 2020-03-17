@@ -5,7 +5,10 @@ import numpy as _np
 import pyjeo as _pj
 
 
-def dwt1d(jim_object, wavelet=None, family=None, **kwargs):
+def dwt1d(jim_object,
+          wavelet: str = None,
+          family: str = None,
+          **kwargs):
     """Compute discrete forward wavelet transform in time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -32,7 +35,10 @@ def dwt1d(jim_object, wavelet=None, family=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
 
 
-def dwt2d(jim_object, wavelet=None, family=None, **kwargs):
+def dwt2d(jim_object,
+          wavelet: str = None,
+          family: str = None,
+          **kwargs):
     """Compute forward discrete wavelet transform in the spatial domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -59,7 +65,10 @@ def dwt2d(jim_object, wavelet=None, family=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
 
 
-def dwti1d(jim_object, wavelet=None, family=None, **kwargs):
+def dwti1d(jim_object,
+           wavelet: str = None,
+           family: str = None,
+           **kwargs):
     """Compute inverse discrete wavelet transform in time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -99,7 +108,10 @@ def dwti1d(jim_object, wavelet=None, family=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.dwt1d(kwargs))
 
 
-def dwti2d(jim_object, wavelet=None, family=None, **kwargs):
+def dwti2d(jim_object,
+           wavelet: str = None,
+           family: str = None,
+           **kwargs):
     """Compute inverse discrete wavelet transform in the spatial domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -142,7 +154,11 @@ def edgeWeight(jim_object, dir=0, type=0):
     return _pj.Jim(jim_object._jipjim.edgeWeight(dir, type))
 
 
-def filter1d(jim_object, filter, dz=None, pad='symmetric', otype=None,
+def filter1d(jim_object,
+             filter: str,
+             dz: int = None,
+             pad: str = 'symmetric',
+             otype=None,
              **kwargs):
     """Subset raster dataset in spectral/temporal domain.
 
@@ -175,7 +191,12 @@ def filter1d(jim_object, filter, dz=None, pad='symmetric', otype=None,
     return _pj.Jim(jim_object._jipjim.filter1d(kwargs))
 
 
-def filter2d(jim_object, filter, dx=3, dy=3, pad='symmetric', otype=None,
+def filter2d(jim_object,
+             filter: str,
+             dx: int = 3,
+             dy: int = 3,
+             pad: str = 'symmetric',
+             otype=None,
              **kwargs):
     """Subset raster dataset in spectral/temporal domain.
 
@@ -211,7 +232,10 @@ def filter2d(jim_object, filter, dx=3, dy=3, pad='symmetric', otype=None,
     return _pj.Jim(jim_object._jipjim.filter2d(kwargs))
 
 
-def firfilter1d(jim_object, taps, pad='symmetric', **kwargs):
+def firfilter1d(jim_object,
+                taps,
+                pad: str = 'symmetric',
+                **kwargs):
     """Compute the finite impulse response filter in time-spectral domain.
 
     :param jim_object: a Jim object
@@ -236,7 +260,11 @@ def firfilter1d(jim_object, taps, pad='symmetric', **kwargs):
     return _pj.Jim(jim_object._jipjim.firfilter1d(kwargs))
 
 
-def firfilter2d(jim_object, taps, nodata=None, norm=None, **kwargs):
+def firfilter2d(jim_object,
+                taps,
+                nodata=None,
+                norm=None,
+                **kwargs):
     """Compute the finite impulse response filter in spatial domain.
 
     :param jim_object: a Jim object
@@ -269,7 +297,8 @@ def firfilter2d(jim_object, taps, nodata=None, norm=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.firfilter2d(kwargs))
 
 
-def getDissim(jimo, dissim_type=0):
+def getDissim(jimo,
+              dissim_type: int = 0):
     """Compute the dissimilarities.
 
     Compute the dissimilarities between horizontal and vertical pairs of
@@ -349,7 +378,11 @@ def getDissim(jimo, dissim_type=0):
     return [h_dissim, v_dissim]
 
 
-def labelPixNgb(jim_object, sec_jim_object, ox, oy, oz):
+def labelPixNgb(jim_object,
+                sec_jim_object,
+                ox: float,
+                oy: float,
+                oz: float):
     """Label pix ngb.
 
     :param jim_object: Jim object on which to perform the labelling
@@ -364,7 +397,12 @@ def labelPixNgb(jim_object, sec_jim_object, ox, oy, oz):
                                                   ox, oy, oz))
 
 
-def morphoDilate(jim_object, sec_jim_object, ox, oy, oz, tr_flag=0):
+def morphoDilate(jim_object,
+                 sec_jim_object,
+                 ox: float,
+                 oy: float,
+                 oz: float,
+                 tr_flag: bool = 0):
     """Output the dilation of im using the SE defined by imse.
 
     Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -392,7 +430,12 @@ def morphoDilateDiamond(jim_object):
     return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(ox, oy))
 
 
-def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
+def morphoDilateLine(jim_object,
+                     dx: int,
+                     dy: int,
+                     k: int,
+                     o: int,
+                     type: int = 0):
     """Output the dilation of im.
 
     Uses the line SE with slope dy/dx, length k, origin o, and line type
@@ -410,7 +453,12 @@ def morphoDilateLine(jim_object, dx, dy, k, o, type=0):
     return _pj.Jim(jim_object._jipjim.morphoDilateLine(dx, dy, k, o, type))
 
 
-def morphoErode(jim_object, sec_jim_object, ox, oy, oz, tr_flag=0):
+def morphoErode(jim_object,
+                sec_jim_object,
+                ox: float,
+                oy: float,
+                oz: float,
+                tr_flag: bool = 0):
     """Output the erosion of im using the SE defined by imse.
 
     Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -438,7 +486,12 @@ def morphoErodeDiamond(jim_object):
     return _pj.Jim(jim_object._jipjim.morphoErodeNgb4(ox, oy))
 
 
-def morphoErodeLine(jim_object, dx, dy, k, o, type=0):
+def morphoErodeLine(jim_object,
+                    dx: int,
+                    dy: int,
+                    k: int,
+                    o: int,
+                    type: int = 0):
     """Output the erosion of im using a line segment.
 
     Uses the line SE with slope dy/dx, length k, origin o, and line type. See
@@ -472,7 +525,12 @@ def morphoGradientByErosionDiamond(jim_object):
     return jim_object - _pj.Jim(jim_object._jipjim.morphoErodeNgb4(1, 1))
 
 
-def savgolay(jim_object, nl=None, nr=None, ld=None, m=None, **kwargs):
+def savgolay(jim_object,
+             nl: int = None,
+             nr: int = None,
+             ld: int = None,
+             m: int = None,
+             **kwargs):
     """Compute the Savitzky-Golay filter in the time-spectral domain.
 
     :param jim_object: a Jim object of data type GDT_Float64
@@ -514,7 +572,10 @@ def savgolay(jim_object, nl=None, nr=None, ld=None, m=None, **kwargs):
     return _pj.Jim(jim_object._jipjim.savgolay(kwargs))
 
 
-def smoothNoData1d(jim_object, nodata=0, interpolation_type=None, **kwargs):
+def smoothNoData1d(jim_object,
+                   nodata: float = 0,
+                   interpolation_type: str = None,
+                   **kwargs):
     """Smooth nodata in spectral/temporal domain.
 
     :param jim_object: input Jim object
@@ -561,7 +622,10 @@ def smoothNoData1d(jim_object, nodata=0, interpolation_type=None, **kwargs):
 class _NgbOps(_pj.modules.JimModuleBase):
     """Define all NgbOps methods."""
 
-    def dwt1d(self, wavelet=None, family=None, **kwargs):
+    def dwt1d(self,
+              wavelet: str = None,
+              family: str = None,
+              **kwargs):
         """Compute discrete forward wavelet transform in time-spectral domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -585,7 +649,10 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._jipjim.d_dwt1d(kwargs)
 
-    def dwt2d(self, wavelet=None, family=None, **kwargs):
+    def dwt2d(self,
+              wavelet: str = None,
+              family: str = None,
+              **kwargs):
         """Compute forward discrete wavelet transform in the spatial domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -609,7 +676,10 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._jipjim.d_dwt2d(kwargs)
 
-    def dwti1d(self, wavelet=None, family=None, **kwargs):
+    def dwti1d(self,
+               wavelet: str = None,
+               family: str = None,
+               **kwargs):
         """Compute inverse discrete wavelet transform in time-spectral domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -646,7 +716,10 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._jipjim.d_dwti1d(kwargs)
 
-    def dwti2d(self, wavelet=None, family=None, **kwargs):
+    def dwti2d(self,
+               wavelet: str = None,
+               family: str = None,
+               **kwargs):
         """Compute inverse discrete wavelet transform in the spatial domain.
 
         :param wavelet: wavelet type: daubechies,daubechies_centered, haar,
@@ -656,7 +729,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         Example::
 
-            jim=pj.Jim('/path/to/image.tif')
+            jim = pj.Jim('/path/to/image.tif')
             jim.pixops.convert('GDT_Float64')
 
             jim.ngbops.dwt2d()
@@ -670,7 +743,9 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._jipjim.d_dwti2d(kwargs)
 
-    def edgeWeight(self, dir=0, type=0):
+    def edgeWeight(self,
+                   dir: int = 0,
+                   type: int = 0):
         """Compute the weights of the horizontal or vertical edges.
 
         Linking any pair of horizontally or vertically adjacent pixels.
@@ -686,7 +761,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.edgeWeight(dir, type))
 
-    def filter1d(self, filter, dz=None, pad='symmetric', otype=None, **kwargs):
+    def filter1d(self,
+                 filter: str,
+                 dz: int = None,
+                 pad: str = 'symmetric',
+                 otype=None,
+                 **kwargs):
         """Subset raster dataset in spectral/temporal domain.
 
         This function is deprecated
@@ -922,7 +1002,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.filter1d(kwargs))
 
-    def filter2d(self, filter, dx=3, dy=3, pad='symmetric', otype=None,
+    def filter2d(self,
+                 filter: str,
+                 dx: int = 3,
+                 dy: int = 3,
+                 pad: str = 'symmetric',
+                 otype=None,
                  **kwargs):
         """Subset raster dataset in spectral/temporal domain.
 
@@ -1112,7 +1197,10 @@ class _NgbOps(_pj.modules.JimModuleBase):
             kwargs.update({'filter': filter})
             self._jim_object._set(self._jim_object._jipjim.filter2d(kwargs))
 
-    def firfilter1d(self, taps, pad='symmetric', **kwargs):
+    def firfilter1d(self,
+                    taps,
+                    pad: str = 'symmetric',
+                    **kwargs):
         """Compute the finite impulse response filter in time-spectral domain.
 
         :param taps: 1D array of filter taps
@@ -1134,7 +1222,11 @@ class _NgbOps(_pj.modules.JimModuleBase):
         kwargs.update({'pad': pad})
         self._jim_object._set(self._jim_object._jipjim.firfilter1d(kwargs))
 
-    def firfilter2d(self, taps, nodata=None, norm=None, **kwargs):
+    def firfilter2d(self,
+                    taps,
+                    nodata=None,
+                    norm=None,
+                    **kwargs):
         """Compute the finite impulse response filter in spatial domain.
 
         :param taps: 2D array of filter taps
@@ -1164,7 +1256,9 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.firfilter2d(kwargs))
 
-    def getDissim(self, jimo=None, dissim_type=0):
+    def getDissim(self,
+                  jimo=None,
+                  dissim_type: int = 0):
         """Compute the dissimilarities.
 
         Compute the dissimilarities between horizontal and vertical pairs of
@@ -1245,7 +1339,11 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         return [h_dissim, v_dissim]
 
-    def labelPixNgb(self, sec_jim_object, ox, oy, oz):
+    def labelPixNgb(self,
+                    sec_jim_object,
+                    ox: float,
+                    oy: float,
+                    oz: float):
         """Label pix ngb.
 
         Modifies the instance on which the method was called.
@@ -1260,7 +1358,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelPixNgb(sec_jim_object._jipjim,
                                                ox, oy, oz)
 
-    def morphoDilate(self, sec_jim_object, ox, oy, oz, tr_flag=0):
+    def morphoDilate(self,
+                     sec_jim_object,
+                     ox: float,
+                     oy: float,
+                     oz: float,
+                     tr_flag: bool = 0):
         """Output the dilation of im using the SE defined by imse.
 
         Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -1289,7 +1392,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
         oy = 1
         self._jim_object._jipjim.d_morphoDilateNgb4(ox, oy)
 
-    def morphoDilateLine(self, dx, dy, k, o, type=0):
+    def morphoDilateLine(self,
+                         dx: int,
+                         dy: int,
+                         k: int,
+                         o: int,
+                         type: int = 0):
         """Output the dilation of im.
 
         Uses the line SE with slope dy/dx, length k, origin o, and line type
@@ -1306,7 +1414,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_morphoDilateLine(dx, dy, k, o, type)
 
-    def morphoErode(self, sec_jim_object, ox, oy, oz, tr_flag=0):
+    def morphoErode(self,
+                    sec_jim_object,
+                    ox: float,
+                    oy: float,
+                    oz: float,
+                    tr_flag: bool = 0):
         """Output the erosion of im using the SE defined by imse.
 
         Its origin is set at coordinates (x,y,z). The reflection of the SE
@@ -1335,7 +1448,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
         oy = 1
         self._jim_object._jipjim.d_morphoErodeNgb4(ox, oy)
 
-    def morphoErodeLine(self, dx, dy, k, o, type=0):
+    def morphoErodeLine(self,
+                        dx: int,
+                        dy: int,
+                        k: int,
+                        o: int,
+                        type: bool = 0):
         """Output the erosion of im using a line segment.
 
         Uses the line SE with slope dy/dx, length k, origin o, and line type.
@@ -1374,7 +1492,12 @@ class _NgbOps(_pj.modules.JimModuleBase):
         self._jim_object -= _pj.Jim(
             self._jim_object._jipjim.morphoErodeNgb4(1, 1))
 
-    def savgolay(self, nl=None, nr=None, ld=None, m=None, **kwargs):
+    def savgolay(self,
+                 nl: int = None,
+                 nr: int = None,
+                 ld: int = None,
+                 m: int = None,
+                 **kwargs):
         """Compute the Savitzky-Golay filter in the time-spectral domain.
 
         :param nl: Number of leftward (past) data points used in Savitzky-
@@ -1413,7 +1536,10 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         self._jim_object._set(self._jim_object._jipjim.savgolay(kwargs))
 
-    def smoothNoData1d(self, nodata=0, interpolation_type=None, **kwargs):
+    def smoothNoData1d(self,
+                       nodata=0,
+                       interpolation_type: str = None,
+                       **kwargs):
         """Smooth nodata in spectral/temporal domain.
 
         :param nodata: no data value to interpolate

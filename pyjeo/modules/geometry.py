@@ -59,7 +59,9 @@ def band2plane(jim):
     return result
 
 
-def convexHull(jim_vect, output, **kwargs):
+def convexHull(jim_vect,
+               output: str,
+               **kwargs):
     """Create the convex hull on a JimVect object.
 
     :param jim_vect: JimVect object to be used for the hull generation
@@ -86,8 +88,16 @@ def convexHull(jim_vect, output, **kwargs):
     return pjvect
 
 
-def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
-         lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
+def crop(jim_object,
+         ulx: float = None,
+         uly: float = None,
+         ulz: float = None,
+         lrx: float = None,
+         lry: float = None,
+         lrz: float = None,
+         dx: float = None,
+         dy: float = None,
+         nogeo: bool = False, **kwargs):
     """Subset raster dataset.
 
     Subset raster dataset according in spatial (subset region) domain
@@ -201,7 +211,8 @@ def crop(jim_object, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
         # return _pj.Jim(jim_object._jipjim.crop(kwargs))
 
 
-def cropBand(jim_object, band):
+def cropBand(jim_object,
+             band: int):
     """Subset raster dataset.
 
     Subset raster dataset in spectral domain.
@@ -227,7 +238,9 @@ def cropBand(jim_object, band):
     return _pj.Jim(jim_object._jipjim.cropBand({'band': band}))
 
 
-def cropOgr(jim_object, extent, **kwargs):
+def cropOgr(jim_object,
+            extent,
+            **kwargs):
     """Subset raster dataset.
 
     Subset raster dataset in spatial domain defined by a vector dataset.
@@ -277,7 +290,8 @@ def cropOgr(jim_object, extent, **kwargs):
     return jim
 
 
-def cropPlane(jim_object, plane):
+def cropPlane(jim_object,
+              plane: int):
     """Subset raster dataset.
 
     Subset raster dataset in temporal domain.
@@ -303,7 +317,9 @@ def cropPlane(jim_object, plane):
     return _pj.Jim(jim_object._jipjim.cropPlane({'plane': plane}))
 
 
-def geo2image(jim_object, x, y):
+def geo2image(jim_object,
+              x: float,
+              y: float):
     """Convert georeferenced coordinates to image coordinates (col, row).
 
     :param jim_object: a Jim object
@@ -325,7 +341,9 @@ def geo2image(jim_object, x, y):
     return [int(coords[0]), int(coords[1])]
 
 
-def image2geo(jim_object, i, j):
+def image2geo(jim_object,
+              i: int,
+              j: int):
     """Convert image coordinates (col, row) to georeferenced coordinates.
 
     :param jim_object: a Jim object
@@ -344,7 +362,14 @@ def image2geo(jim_object, i, j):
     return jim_object._jipjim.image2geo(i, j)
 
 
-def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0):
+def imageFrameAdd(jim_object,
+                  l: int = 0,
+                  r: int = 0,
+                  t: int = 0,
+                  b: int = 0,
+                  u: int = 0,
+                  d: int = 0,
+                  val: int = 0):
     """Add an image frame and set its values to value val.
 
     :param jim_object: a Jim object
@@ -373,7 +398,15 @@ def imageFrameAdd(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0):
             [l, r, t, b, u, d], val))
 
 
-def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=None):
+def imageFrameSet(jim_object,
+                  l: int = 0,
+                  r: int = 0,
+                  t: int = 0,
+                  b: int = 0,
+                  u: int = 0,
+                  d: int = 0,
+                  val: int = 0,
+                  band: int = None):
     """Set the values of the image frame to value val.
 
     :param jim_object: a Jim object
@@ -395,7 +428,13 @@ def imageFrameSet(jim_object, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=None):
             [l, r, t, b, u, d], val, band))
 
 
-def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
+def imageFrameSubtract(jim_object,
+                       l: int = 0,
+                       r: int = 0,
+                       t: int = 0,
+                       b: int = 0,
+                       u: int = 0,
+                       d: int = 0):
     """Subtract an image frame.
 
     :param jim_object: a Jim object
@@ -426,7 +465,11 @@ def imageFrameSubtract(jim_object, l=0, r=0, t=0, b=0, u=0, d=0):
             [l, r, t, b, u, d]))
 
 
-def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
+def imageInsert(jim_object,
+                sec_jim_object,
+                x: float, y: float,
+                z: float,
+                band: int = None):
     """Merge Jim instance with values of sec_jim_object in given coords.
 
     :param jim_object: a Jim object
@@ -457,7 +500,14 @@ def imageInsert(jim_object, sec_jim_object, x, y, z, band=None):
     return _pj.Jim(ret_jim)
 
 
-def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
+def imageInsertCompose(jim_object,
+                       imlbl,
+                       im2,
+                       x: float,
+                       y: float,
+                       z: float,
+                       val: int,
+                       band: int = 0):
     """Merge Jim instance with values of im2 if val of imlbl == val.
 
     :param jim_object: a Jim object
@@ -493,7 +543,10 @@ def imageInsertCompose(jim_object, imlbl, im2, x, y, z, val, band=0):
     return _pj.Jim(ret_jim)
 
 
-def intersect(jvec, jim, output, **kwargs):
+def intersect(jvec,
+              jim,
+              output: str,
+              **kwargs):
     """Intersect JimVect object with Jim object.
 
     Return only those features with an intersect
@@ -533,7 +586,10 @@ def intersect(jvec, jim, output, **kwargs):
         raise TypeError('Error: can only intersect with Jim object')
 
 
-def join(jvec1, jvec2, output, **kwargs):
+def join(jvec1,
+         jvec2,
+         output: str,
+         **kwargs):
     """Join JimVect object with another JimVect object.
 
     A key field is used to find corresponding features in both objects.
@@ -598,7 +654,8 @@ def join(jvec1, jvec2, output, **kwargs):
         raise TypeError('Error: can only join two JimVect objects')
 
 
-def magnify(jim_object, n):
+def magnify(jim_object,
+            n: int):
     """Magnify the image.
 
     :param jim_object: a Jim object
@@ -653,7 +710,12 @@ def plane2band(jim):
     return result
 
 
-def plotLine(jim_object, x1, y1, x2, y2, val):
+def plotLine(jim_object,
+             x1: float,
+             y1: float,
+             x2: float,
+             y2: float,
+             val: float):
     """Draw a line from [x1, y1] to [x2, y2] by setting pixels of Jim to val.
 
     Works only for 1-plane Jims.
@@ -672,7 +734,9 @@ def plotLine(jim_object, x1, y1, x2, y2, val):
     return _pj.Jim(jim_object._jipjim.plotLine(x1, y1, x2, y2, val))
 
 
-def polygonize(jim_object, output, **kwargs):
+def polygonize(jim_object,
+               output: str,
+               **kwargs):
     """Polygonize Jim object based on GDALPolygonize.
 
     :param jim_object: a Jim object
@@ -717,8 +781,11 @@ def polygonize(jim_object, output, **kwargs):
         raise TypeError('Error: can only polygonize Jim object')
 
 
-def rasterize(jim_object, jim_vect, burn_value=1, eo=['ALL_TOUCHED'],
-              ln=None):
+def rasterize(jim_object,
+              jim_vect,
+              burn_value: int = 1,
+              eo=['ALL_TOUCHED'],
+              ln: str = None):
     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
     :param jim_object: a template Jim object
@@ -754,7 +821,10 @@ def rasterize(jim_object, jim_vect, burn_value=1, eo=['ALL_TOUCHED'],
     return ajim
 
 
-def reducePlane(jim, rule=None, ref_band=None, nodata=None):
+def reducePlane(jim,
+                rule: str = None,
+                ref_band: int = None,
+                nodata: float = None):
     """Reduce planes of Jim object.
 
     :param jim: jim object on which to reduce planes
@@ -943,7 +1013,9 @@ def reducePlane(jim, rule=None, ref_band=None, nodata=None):
     return jimreduced
 
 
-def stackBand(jim_object, jim_other=None, band=None):
+def stackBand(jim_object,
+              jim_other = None,
+              band: int = None):
     """Stack bands from raster datasets into new multiband Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the bands
@@ -1012,7 +1084,8 @@ def stackBand(jim_object, jim_other=None, band=None):
         raise TypeError('Error: expected a Jim object')
 
 
-def stackPlane(jim_object, jim_other=None):
+def stackPlane(jim_object,
+               jim_other = None):
     """Stack planes from raster datasets into new multiplane Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the planes
@@ -1053,7 +1126,9 @@ def stackPlane(jim_object, jim_other=None):
         raise TypeError('Error: expected a Jim object')
 
 
-def warp(jim_object, t_srs, **kwargs):
+def warp(jim_object,
+         t_srs,
+         **kwargs):
     """Warp a raster dataset to a target spatial reference system.
 
     :param jim_object: a Jim object
@@ -1109,7 +1184,11 @@ def warp(jim_object, t_srs, **kwargs):
 class _Geometry(_pj.modules.JimModuleBase):
     """Define all Geometry methods."""
 
-    def aggregateVector(self, jvec, rule, output, **kwargs):
+    def aggregateVector(self,
+                        jvec,
+                        rule: str,
+                        output: str,
+                        **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
         :param jvec: reference JimVect instance
@@ -1444,8 +1523,17 @@ class _Geometry(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_band2plane()
 
-    def crop(self, ulx=None, uly=None, ulz=None, lrx=None, lry=None,
-             lrz=None, dx=None, dy=None, nogeo=False, **kwargs):
+    def crop(self,
+             ulx: float = None,
+             uly: float = None,
+             ulz: float = None,
+             lrx: float = None,
+             lry: float = None,
+             lrz: float = None,
+             dx: float = None,
+             dy: float = None,
+             nogeo: bool = False,
+             **kwargs):
         """Subset raster dataset.
 
         Subset raster dataset according in spatial (subset region) domain
@@ -1617,7 +1705,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         #     self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
         #     # return _pj.Jim(self._jim_object.crop(kwargs))
 
-    def cropBand(self, band):
+    def cropBand(self,
+                 band: int):
         """Subset raster dataset.
 
         Subset raster dataset in spectral domain.
@@ -1642,7 +1731,9 @@ class _Geometry(_pj.modules.JimModuleBase):
                 for b in bands]
         self._jim_object._jipjim.d_cropBand({'band': band})
 
-    def cropOgr(self, extent, **kwargs):
+    def cropOgr(self,
+                extent,
+                **kwargs):
         """Subset raster dataset.
 
         Subset raster dataset in spatial domain defined by a vector dataset.
@@ -1695,7 +1786,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         # self._jim_object._set(
         #     self._jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
 
-    def cropPlane(self, plane):
+    def cropPlane(self,
+                  plane: int):
         """Subset raster dataset.
 
         Subset raster dataset in temporal domain.
@@ -1720,7 +1812,10 @@ class _Geometry(_pj.modules.JimModuleBase):
                  for b in planes]
         self._jim_object._jipjim.d_cropPlane({'plane': plane})
 
-    def extractImg(self, reference, output, **kwargs):
+    def extractImg(self,
+                   reference,
+                   output: str,
+                   **kwargs):
         """Extract pixel values from an input based on a raster sample dataset.
 
         :param reference: thematic raster dataset with integer values,
@@ -1835,7 +1930,11 @@ class _Geometry(_pj.modules.JimModuleBase):
         return pjvect
 
     # deprecated: use aggregate_vector instead
-    def extractOgr(self, jvec, rule, output, **kwargs):
+    def extractOgr(self,
+                   jvec,
+                   rule: str,
+                   output: str,
+                   **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
         :param jvec: reference JimVect instance
@@ -1994,7 +2093,9 @@ class _Geometry(_pj.modules.JimModuleBase):
         pjvect._set(avect)
         return pjvect
 
-    def extractSample(self, output, **kwargs):
+    def extractSample(self,
+                      output: str,
+                      **kwargs):
         """Extract a random or grid sample from a raster dataset.
 
         :output: Name of the output vector dataset in which the zonal
@@ -2077,7 +2178,9 @@ class _Geometry(_pj.modules.JimModuleBase):
                 kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object._jipjim.extractSample(kwargs)
 
-    def geo2image(self, x, y):
+    def geo2image(self,
+                  x: float,
+                  y: float):
         """Convert georeferenced coordinates to image coordinates (col, row).
 
         :param x: georeferenced coordinate in x according to the object spatial
@@ -2097,7 +2200,9 @@ class _Geometry(_pj.modules.JimModuleBase):
         coord = self._jim_object._jipjim.geo2image(x, y)
         return [int(coord[0]), int(coord[1])]
 
-    def image2geo(self, i, j):
+    def image2geo(self,
+                  i: int,
+                  j: int):
         """Convert image coordinates (col, row) to georeferenced coordinates.
 
         :param i: image column number (starting from 0)
@@ -2114,7 +2219,14 @@ class _Geometry(_pj.modules.JimModuleBase):
         """
         return self._jim_object._jipjim.image2geo(i, j)
 
-    def imageFrameAdd(self, l=0, r=0, t=0, b=0, u=0, d=0, val=0):
+    def imageFrameAdd(self,
+                      l: int = 0,
+                      r: int = 0,
+                      t: int = 0,
+                      b: int = 0,
+                      u: int = 0,
+                      d: int = 0,
+                      val: float = 0):
         """Set the values of the image frame to value val.
 
         Modifies the instance on which the method was called.
@@ -2145,7 +2257,15 @@ class _Geometry(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.d_imageFrameAdd(
                 [l, r, t, b, u, d], val)
 
-    def imageFrameSet(self, l=0, r=0, t=0, b=0, u=0, d=0, val=0, band=None):
+    def imageFrameSet(self,
+                      l: int = 0,
+                      r: int = 0,
+                      t: int = 0,
+                      b: int = 0,
+                      u: int = 0,
+                      d: int = 0,
+                      val: float = 0,
+                      band: int = None):
         """Set the values of the image frame to value val.
 
         Modifies the instance on which the method was called.
@@ -2166,7 +2286,13 @@ class _Geometry(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.d_imageFrameSet(
                 [l, r, t, b, u, d], val, band)
 
-    def imageFrameSubtract(self, l=0, r=0, t=0, b=0, u=0, d=0):
+    def imageFrameSubtract(self,
+                           l: int = 0,
+                           r: int = 0,
+                           t: int = 0,
+                           b: int = 0,
+                           u: int = 0,
+                           d: int = 0):
         """Subtract an image frame.
 
         Modifies the instance on which the method was called.
@@ -2194,7 +2320,12 @@ class _Geometry(_pj.modules.JimModuleBase):
         else:
             self._jim_object._jipjim.d_imageFrameSubtract([l, r, t, b, u, d])
 
-    def imageInsert(self, sec_jim_object, x, y, z, band=None):
+    def imageInsert(self,
+                    sec_jim_object,
+                    x: float,
+                    y: float,
+                    z: float,
+                    band: int = None):
         """Merge Jim instance with values of sec_jim_object in given coords.
 
         Modifies the instance on which the method was called.
@@ -2215,7 +2346,14 @@ class _Geometry(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.d_imageInsert(sec_jim_object._jipjim,
                                                    x, y, z, band)
 
-    def imageInsertCompose(self, imlbl, im2, x, y, z, val, band=None):
+    def imageInsertCompose(self,
+                           imlbl,
+                           im2,
+                           x: float,
+                           y: float,
+                           z: float,
+                           val: float,
+                           band: int = None):
         """Merge Jim instance with values of im2 if val of imlbl == val.
 
         Modifies the instance on which the method was called.
@@ -2241,7 +2379,8 @@ class _Geometry(_pj.modules.JimModuleBase):
                                                           im2._jipjim,
                                                           x, y, z, val, band)
 
-    def magnify(self, n):
+    def magnify(self,
+                n: int):
         """Magnify the image.
 
         Modifies the instance on which the method was called.
@@ -2293,7 +2432,12 @@ class _Geometry(_pj.modules.JimModuleBase):
                 result.geometry.stackBand(jim_plane)
         self._jim_object._set(result._jipjim)
 
-    def plotLine(self, x1, y1, x2, y2, val):
+    def plotLine(self,
+                 x1: int,
+                 y1: int,
+                 x2: int,
+                 y2: int,
+                 val: float):
         """Draw a line from [x1, y1] to [x2, y2] by setting pixels to a value.
 
         Works only for 1-plane Jims.
@@ -2311,7 +2455,9 @@ class _Geometry(_pj.modules.JimModuleBase):
                 'Error: plotLine does not support multi-plane Jim objects')
         self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
 
-    def polygonize(self, output, **kwargs):
+    def polygonize(self,
+                   output: str,
+                   **kwargs):
         """Polygonize Jim object based on GDALPolygonize.
 
         Returns a new JimVect object.
@@ -2367,7 +2513,11 @@ class _Geometry(_pj.modules.JimModuleBase):
     # def rasterize(self, jim_vect, burn_value=1,eo=['ALL_TOUCHED'],ln=None):
     #     """Rasterize Jim object based on GDALRasterizeLayersBuf
 
-    def rasterize(self, jim_vect, burn_value=1, eo=['ALL_TOUCHED'], ln=None):
+    def rasterize(self,
+                  jim_vect,
+                  burn_value: int = 1,
+                  eo=['ALL_TOUCHED'],
+                  ln: str = None):
         """
         :param jim_vect: JimVect object that needs to be rasterized
         :param burn_value: burn value
@@ -2404,7 +2554,10 @@ class _Geometry(_pj.modules.JimModuleBase):
         self._jim_object.pixops.setData(0)
         self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
 
-    def reducePlane(self, rule=None, ref_band=None, nodata=None):
+    def reducePlane(self,
+                    rule: str = None,
+                    ref_band: int = None,
+                    nodata: float = None):
         """Reduce planes of Jim object.
 
         :param rule: rule to reduce (mean, median, min or max)
@@ -2612,7 +2765,8 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         self._jim_object._set(jimreduced._jipjim)
 
-    def _reducePlaneSimple(self, rule):
+    def _reducePlaneSimple(self,
+                           rule: str):
         """Reduce planes of Jim object using callback function without nodata.
 
         (for performance reasons)
@@ -2648,7 +2802,9 @@ class _Geometry(_pj.modules.JimModuleBase):
             jimreduced = rule(jimreduced, jimplane)
         self._jim_object._set(jimreduced._jipjim)
 
-    def stackBand(self, jim_other, band=None):
+    def stackBand(self,
+                  jim_other,
+                  band: int = None):
         """Stack the bands of another Jim object to the current Jim object.
 
         Modifies the instance on which the method was called.
@@ -2682,7 +2838,8 @@ class _Geometry(_pj.modules.JimModuleBase):
             else:
                 self._jim_object._jipjim.d_stackBand(jim._jipjim)
 
-    def stackPlane(self, jim_other):
+    def stackPlane(self,
+                   jim_other):
         """Stack the planes of another Jim object to the current Jim object.
 
         Modifies the instance on which the method was called.
@@ -2704,7 +2861,9 @@ class _Geometry(_pj.modules.JimModuleBase):
         for jim in jim_other:
             self._jim_object._jipjim.d_stackPlane(jim._jipjim)
 
-    def warp(self, t_srs, **kwargs):
+    def warp(self,
+             t_srs,
+             **kwargs):
         """Warp a raster dataset to a target spatial reference system.
 
         :param t_srs: Target spatial reference system
@@ -2762,10 +2921,13 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         """Initialize the module."""
         pass
 
-    def _set_caller(self, caller):
+    def _set_caller(self,
+                    caller):
         self._jim_list = caller
 
-    def stackBand(self, jim_other=None, band=None):
+    def stackBand(self,
+                  jim_other = None,
+                  band: int = None):
         """Stack bands from raster datasets into new multiband Jim object.
 
         :param jim_other: a Jim object or jimlist from which to copy bands
@@ -2826,7 +2988,11 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         """
         return _pj.Jim(self._jim_list._jipjimlist.stackPlane())
 
-    def extractOgr(self, sample, rule, output, **kwargs):
+    def extractOgr(self,
+                   sample,
+                   rule: str,
+                   output: str,
+                   **kwargs):
         """Extract pixel values based on a JimVect vector dataset.
 
         :param sample: reference JimVect instance
@@ -3150,7 +3316,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         """Initialize the module."""
         pass
 
-    def _set_caller(self, caller):
+    def _set_caller(self,
+                    caller):
         self._jim_vect = caller
 
     # def append(self, jvec):
@@ -3166,7 +3333,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
     #     else:
     #         raise TypeError('Error: can only join with JimVect object')
 
-    def convexHull(self, **kwargs):
+    def convexHull(self,
+                   **kwargs):
         """Create the convex hull on a JimVect object.
 
         Modifies the instance on which the method was called.
@@ -3188,7 +3356,9 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         avect.write()
         self._jim_vect._set(avect)
 
-    def intersect(self, jim, **kwargs):
+    def intersect(self,
+                  jim,
+                  **kwargs):
         """Intersect JimVect object with Jim object.
 
         Keeps only those features with an intersect.
@@ -3226,7 +3396,9 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         else:
             raise TypeError('Error: can only intersect with Jim object')
 
-    def join(self, jvec2, **kwargs):
+    def join(self,
+             jvec2,
+             **kwargs):
         """Join JimVect object with another JimVect object.
 
         A key field is used to find corresponding features in both objects.

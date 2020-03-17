@@ -63,7 +63,8 @@ class _IO(_pj.modules.JimModuleBase):
         """Close Jim object."""
         self._jim_object._jipjim.close()
 
-    def dumpImg(self, **kwargs):
+    def dumpImg(self,
+                **kwargs):
         """Dump the raster dataset to output (standard output or ASCII file).
 
         Supported keys as arguments:
@@ -83,7 +84,12 @@ class _IO(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.dumpImg(kwargs)
 
-    def dumpImg3D(self, x, y, z, nx, ny):
+    def dumpImg3D(self,
+                  x: float,
+                  y: float,
+                  z: float,
+                  nx: int,
+                  ny: int):
         """
         Dump on screen a dx*dy window with the image values around coordinates.
 
@@ -97,7 +103,9 @@ class _IO(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
-    def write(self, filename, **kwargs):
+    def write(self,
+              filename: str,
+              **kwargs):
         """Write the raster dataset to file in a GDAL supported format.
 
         : param filename: output filename to write to
@@ -145,7 +153,10 @@ class _IOVect(_pj.modules.JimVectModuleBase):
         """Close JimVect object."""
         self._jim_vect._jipjimvect.close()
 
-    def dumpVect(self, name=None, output=None, **kwargs):
+    def dumpVect(self,
+                 name=None,
+                 output: str = None,
+                 **kwargs):
         """
         Dump vector content to screen or file (if output argument is provided).
 
@@ -164,7 +175,8 @@ class _IOVect(_pj.modules.JimVectModuleBase):
 
         self._jim_vect._jipjimvect.dumpOgr(kwargs)
 
-    def write(self, filename=None):
+    def write(self,
+              filename: str = None):
         """Write JimVect object to file.
 
         If no filename is provided, the original filename with which

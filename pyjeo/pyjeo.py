@@ -14,39 +14,6 @@ from .modules import pjio as io, properties, pixops, ngbops, geometry, \
 from .__init__ import _check_graph
 
 
-del _jl.Jim.__del__
-
-
-def jim2np(jim_object, band=0, copy_data=True):
-    """Return a numpy representation of a Jim object.
-
-    :param jim_object: Jim object to be converted
-    :param band: band of Jim object to be converted
-    :param copy_data: Set to False if reference image is used as a template
-        only, without copying actual pixel dat
-    :return: a numpy representation of the Jim object
-    """
-    return _jl.jim2np(jim_object._jipjim, band, copy_data)
-
-
-def np(jim_object):
-    """Return a pointer to numpy representation of values in a Jim object.
-
-    The created pointer does not consume new memory.
-
-    :param jim_object: Jim object with values to which will the pointer point
-    :return: a numpy representation of the Jim object
-    """
-    return _jl.np(jim_object._jipjim)
-
-
-def np2jim(np_object):
-    """Return a Jim representation of a numpy array.
-
-    :param np_object: a numpy array
-    :return: a Jim representation of a numpy array
-    """
-    return Jim(_jl.np2jim(np_object))
 
 
 class _ParentJim(_jl.Jim):
@@ -204,9 +171,9 @@ class Jim:
         return self._stats
 
     @staticmethod
-    def getMethods(queried_module=None):
+    def getMethods(queried_module: str = None):
         """Print an overview of available methods in format module.method."""
-        def tree_structure(module, queried_module):
+        def tree_structure(module, queried_module: str):
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -232,7 +199,7 @@ class Jim:
 
         print('\n'.join(methods))
 
-    def np(self, band=0):
+    def np(self, band: int = 0):
         """Return numpy array from Jim object.
 
         :param band: band index (starting from 0)
@@ -292,7 +259,7 @@ class Jim:
                            'the right Jim will be taken in consideration.',
                            Warning)
 
-    def _feed(self, stdev, uniform, seed, kwargs):
+    def _feed(self, stdev: int, uniform, seed: int, kwargs):
         """Feed the Jim object with either uniform or random seed of values.
 
         :param stdev: standard deviation
@@ -1173,9 +1140,9 @@ class JimList(list):
         return self._stats
 
     @staticmethod
-    def getMethods(queried_module=None):
+    def getMethods(queried_module: str = None):
         """Print an overview of available methods in format module.method."""
-        def tree_structure(module, queried_module):
+        def tree_structure(module, queried_module: str):
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -1200,14 +1167,14 @@ class JimList(list):
 
         print('\n'.join(methods))
 
-    def append(self, jim):
+    def append(self, jim: Jim):
         """Add single element to the JimList."""
         assert isinstance(jim, Jim), \
             'Only Jim instances can be appended'
         super(JimList, self).append(jim)
         self._set(self, from_list=True)
 
-    def count(self, jim):
+    def count(self, jim: Jim):
         """Count the occurrences of element in the JimList.."""
         i = 0
         for jim_object in self:
@@ -1223,26 +1190,26 @@ class JimList(list):
         super(JimList, self).extend(jim_list)
         self._set(self, from_list=True)
 
-    def index(self, jim):
+    def index(self, jim: Jim):
         """Return smallest index of element in the JimList."""
         for i in range(len(self)):
             if self[i].pixops.isEqual(jim):
                 return i
 
-    def insert(self, index, jim):
+    def insert(self, index: int, jim: Jim):
         """Insert elements to the JimList."""
         assert isinstance(jim, Jim), \
             'Only Jim instances can be inserted'
         super(JimList, self).insert(index, jim)
         self._set(self, from_list=True)
 
-    def pop(self, index):
+    def pop(self, index: int):
         """Remove and return element at given index."""
         popped = super(JimList, self).pop(index)
         self._set(self, from_list=True)
         return popped
 
-    def remove(self, jim):
+    def remove(self, jim: Jim):
         """Remove the first occurrence of an element from the JimList."""
         for i in range(len(self)):
             if self[i].pixops.isEqual(jim):
@@ -1255,7 +1222,7 @@ class JimList(list):
         super(JimList, self).reverse()
         self._set(self, from_list=True)
 
-    def _set(self, modified_list, from_list=False):
+    def _set(self, modified_list, from_list: bool = False):
         """Apply changes done in modified_list to the parent JimList instance.
 
         :param modified_object: modified JimList instance
@@ -1406,9 +1373,9 @@ class JimVect:
         return self._geometry
 
     @staticmethod
-    def getMethods(queried_module=None):
+    def getMethods(queried_module: str = None):
         """Print an overview of available methods in format module.method."""
-        def tree_structure(module, queried_module):
+        def tree_structure(module, queried_module: str):
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -1443,9 +1410,44 @@ class JimVect:
 
     def np(self):
         """Return numpy array from JimVect object.
+
         :return: 2D numpy array representation of all fields of all features
         """
         if self.properties.getFeatureCount():
             return _jl.np(self._jipjimvect)
         else:
             return None
+
+
+def jim2np(jim_object: Jim,
+           band: int = 0,
+           copy_data: bool = True) -> _np.ndarray:
+    """Return a numpy representation of a Jim object.
+
+    :param jim_object: Jim object to be converted
+    :param band: band of Jim object to be converted
+    :param copy_data: Set to False if reference image is used as a template
+        only, without copying actual pixel dat
+    :return: a numpy representation of the Jim object
+    """
+    return _jl.jim2np(jim_object._jipjim, band, copy_data)
+
+
+def np(jim_object: Jim) -> _np.ndarray:
+    """Return a pointer to numpy representation of values in a Jim object.
+
+    The created pointer does not consume new memory.
+
+    :param jim_object: Jim object with values to which will the pointer point
+    :return: a numpy representation of the Jim object
+    """
+    return _jl.np(jim_object._jipjim)
+
+
+def np2jim(np_object: _np.ndarray) -> Jim:
+    """Return a Jim representation of a numpy array.
+
+    :param np_object: a numpy array
+    :return: a Jim representation of a numpy array
+    """
+    return Jim(_jl.np2jim(np_object))

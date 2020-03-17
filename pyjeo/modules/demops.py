@@ -5,7 +5,8 @@ import numpy as _np
 import pyjeo as _pj
 
 
-def catchmentBasinConfluence(jim_object, d8):
+def catchmentBasinConfluence(jim_object,
+                             d8):
     """Compute the catchment basin confluence.
 
     :param jim_object: an image node holding labelled outlet pixels with
@@ -16,7 +17,8 @@ def catchmentBasinConfluence(jim_object, d8):
     return _pj.Jim(jim_object._jipjim.demCatchmenBasinOutlet(d8._jipjim))
 
 
-def catchmentBasinOutlet(jim_object, d8):
+def catchmentBasinOutlet(jim_object,
+                         d8):
     """Compute the catchment basin outlet.
 
     :param jim_object: an image node holding labelled outlets
@@ -26,7 +28,8 @@ def catchmentBasinOutlet(jim_object, d8):
     return _pj.Jim(jim_object._jipjim.demCatchmentBasinOutlet(d8._jipjim))
 
 
-def contribDrainArea(jim_object, graph):
+def contribDrainArea(jim_object,
+                     graph: int):
     """Output the contributing drainage areas of a DEM.
 
     Outputs the contributing drainage areas of a DEM given its
@@ -56,7 +59,9 @@ def contribDrainAreaInf(jim_object):
     return _pj.Jim(jim_object._jipjim.demContributingDrainageAreaDInf())
 
 
-def contribDrainAreaStrat(cda, threshold, dir):
+def contribDrainAreaStrat(cda,
+                          threshold,
+                          dir):
     """Extract river networks.
 
     Do it by flagging the downstreams of all points whose contributing
@@ -73,7 +78,8 @@ def contribDrainAreaStrat(cda, threshold, dir):
                                                         dir._jipjim))
 
 
-def floodDir(jim_object, graph):
+def floodDir(jim_object,
+             graph: int):
     """Compute the local flow directions.
 
     Compute them as the inverse of the flood wave
@@ -92,7 +98,8 @@ def floodDir(jim_object, graph):
     return _pj.Jim(jim_object._jipjim.demFloodDirection(graph))
 
 
-def flow(jim_object, graph):
+def flow(jim_object,
+         graph: int):
     """Compute the contributing drainage areas using D8 drainage directions.
 
     :param jim_object: a Jim object
@@ -129,7 +136,9 @@ def flowDirectionDInf(jim_object):
     return _pj.Jim(jim_object._jipjim.demFlowDirectionDInf())
 
 
-def flowDirectionFlat(jim_object, dem_jim, graph):
+def flowDirectionFlat(jim_object,
+                      dem_jim,
+                      graph: int):
     """See publication :cite:`soille2002dgci`).
 
     Flat regions (i.e., no flow direction) must be of type USHORT (with flat
@@ -144,7 +153,9 @@ def flowDirectionFlat(jim_object, dem_jim, graph):
                                                            graph))
 
 
-def flowDirectionFlatGeodesic(jim_object, dem_jim, graph):
+def flowDirectionFlatGeodesic(jim_object,
+                              dem_jim,
+                              graph: int):
     """Inverse geodesic distance Away From Ascending Border.
 
     :param jim_object: a Jim object
@@ -157,7 +168,9 @@ def flowDirectionFlatGeodesic(jim_object, dem_jim, graph):
                                                         graph))
 
 
-def flowNew(jim_object, drain_image, graph=8):
+def flowNew(jim_object,
+            drain_image,
+            graph: int = 8):
     """Compute the contributing drainage area of each pixel.
 
     Computes the contributing drainage area of each pixel of im given the
@@ -173,7 +186,10 @@ def flowNew(jim_object, drain_image, graph=8):
     return _pj.Jim(jim_object._jipjim.demFlowNew(drain_image._jipjim, graph))
 
 
-def pitRemovalCarve(labeled_jim, grey_jim, graph, maxfl):
+def pitRemovalCarve(labeled_jim,
+                    grey_jim,
+                    graph: int,
+                    maxfl: int):
     """Use for carving.
 
     Algorithm description in :cite:`soille-vogt-colombo2003wrr` and
@@ -189,7 +205,11 @@ def pitRemovalCarve(labeled_jim, grey_jim, graph, maxfl):
                                                           graph, maxfl))
 
 
-def pitRemovalOptimal(labeled_jim, grey_jim, graph, maxfl, flag):
+def pitRemovalOptimal(labeled_jim,
+                      grey_jim,
+                      graph: int,
+                      maxfl: int,
+                      flag: bool):
     """Optimal removal of spurious pits in grid digital elevation models.
 
     Note that irrelevant minima must have all an intensity greater than that
@@ -208,7 +228,10 @@ def pitRemovalOptimal(labeled_jim, grey_jim, graph, maxfl, flag):
                                                             flag))
 
 
-def slope(jim_object, scale=1.0, zscale=1.0, percent=False):
+def slope(jim_object,
+          scale: float = 1.0,
+          zscale: float = 1.0,
+          percent: bool = False):
     """Compute the slope of a Jim object.
 
     :param jim_object: Jim
@@ -326,7 +349,8 @@ def strahler(jim_object):
 class _DEMOps(_pj.modules.JimModuleBase):
     """Define all DEMOps methods."""
 
-    def catchmentBasinConfluence(self, d8):
+    def catchmentBasinConfluence(self,
+                                 d8):
         """Compute the catchment basin confluence.
 
         The Jim object on which this method is called should hold labelled
@@ -338,7 +362,8 @@ class _DEMOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_demCatchmenBasinConfluence(d8._jipjim)
 
-    def catchmentBasinOutlet(self, d8):
+    def catchmentBasinOutlet(self,
+                             d8):
         """Compute the catchment basin outlet.
 
         The Jim object on which this method is called should hold labelled
@@ -350,7 +375,8 @@ class _DEMOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.d_demCatchmentBasinOutlet(d8._jipjim)
 
-    def contribDrainArea(self, graph):
+    def contribDrainArea(self,
+                         graph: int):
         """Output the contributing drainage areas of a DEM.
 
         Outputs the contributing drainage areas of a DEM given its
@@ -387,7 +413,9 @@ class _DEMOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.demContributingDrainageAreaDInf())
 
-    def contribDrainAreaStrat(self, threshold, dir):
+    def contribDrainAreaStrat(self,
+                              threshold,
+                              dir):
         """Extract river networks.
 
         Do it by flagging the downstreams of all points whose contributing
@@ -417,7 +445,8 @@ class _DEMOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.demContributingDrainageAreaStratify(
                 threshold._jipjim, dir._jipjim))
 
-    def floodDir(self, graph):
+    def floodDir(self,
+                 graph: int):
         """Compute the local flow directions.
 
         Compute them as the inverse of the flood wave
@@ -440,7 +469,8 @@ class _DEMOps(_pj.modules.JimModuleBase):
 
         self._jim_object._jipjim.d_demFloodDirection(graph)
 
-    def flow(self, graph):
+    def flow(self,
+             graph: int):
         """
         Compute the contributing drainage areas using D8 drainage directions.
 
@@ -485,7 +515,9 @@ class _DEMOps(_pj.modules.JimModuleBase):
         """
         self._jim_object._set(self._jim_object._jipjim.demFlowDirectionDInf())
 
-    def flowDirectionFlat(self, dem_jim, graph):
+    def flowDirectionFlat(self,
+                          dem_jim,
+                          graph: int):
         """See publication (Soille, 2002).
 
         Flat regions (i.e., no flow direction) must be of type USHORT (with
@@ -502,7 +534,9 @@ class _DEMOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.demFlowDirectionFlat(dem_jim._jipjim,
                                                           graph))
 
-    def flowDirectionFlatGeodesic(self, dem_jim, graph):
+    def flowDirectionFlatGeodesic(self,
+                                  dem_jim,
+                                  graph: int):
         """Inverse geodesic distance Away From Ascending Border.
 
         Modifies the instance on which the method was called.
@@ -514,7 +548,9 @@ class _DEMOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.demFlowDirectionFlatGeodesic(
                 dem_jim._jipjim, graph))
 
-    def flowNew(self, drain_image, graph=8):
+    def flowNew(self,
+                drain_image,
+                graph: int = 8):
         """Compute the contributing drainage area of each pixel.
 
         Computes the contributing drainage area of each pixel of im given the
@@ -538,7 +574,10 @@ class _DEMOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.demFlowNew(drain_image._jipjim,
                                                 graph))
 
-    def pitRemovalCarve(self, grey_jim, graph, maxfl):
+    def pitRemovalCarve(self,
+                        grey_jim,
+                        graph: int,
+                        maxfl: int):
         """Use for carving, algorithm description in Soille et al. 2003.
 
         The Jim object on which this method is called should contain labelled
@@ -561,7 +600,11 @@ class _DEMOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.demPitRemovalCarve(grey_jim._jipjim,
                                                         graph, maxfl))
 
-    def pitRemovalOptimal(self, grey_jim, graph, maxfl, flag):
+    def pitRemovalOptimal(self,
+                          grey_jim,
+                          graph: int,
+                          maxfl: int,
+                          flag: bool):
         """Optimal removal of spurious pits in grid digital elevation models.
 
         Note that irrelevant minima must have all an intensity greater than
