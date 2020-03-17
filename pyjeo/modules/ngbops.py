@@ -138,13 +138,15 @@ def dwti2d(jim_object,
     return _pj.Jim(jim_object._jipjim.dwt2d(kwargs))
 
 
-def edgeWeight(jim_object, dir=0, type=0):
+def edgeWeight(jim_object,
+               dir: int = 0,
+               type: int = 0):
     """Compute the weights of the horizontal or vertical edges.
 
     Linking any pair of horizontally or vertically adjacent pixels.
 
     :param jim_object: Jim object on which to perform the computation
-    :param dir:  integer for coding edge direction
+    :param dir: integer for coding edge direction
         (horizontal if 0, vertical otherwise).
     :param type: integer determining how the edge weights are computed:
         0 for absolute difference (default),
@@ -662,7 +664,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         Example::
 
-            jim=pj.Jim('/path/to/image.tif')
+            jim = pj.Jim('/path/to/image.tif')
             jim.pixops.convert('GDT_Float64')
 
             jim.ngbops.dwt2d()
@@ -689,7 +691,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         Example::
 
-            jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+            jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
             jim.pixops.convert('GDT_Float64')
 
             jim.ngbops.dwt1d()
@@ -698,14 +700,14 @@ class _NgbOps(_pj.modules.JimModuleBase):
         Approximate a 3D image by setting all wavelet coefficients below
         some percentile value (e.g., 10) to 0::
 
-            jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+            jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
             jim.pixops.convert('GDT_Float64')
 
             jim.ngbops.dwt1d()
-            jimabs=pj.Jim(jim)
-            jimabs=abs(jimabs)
-            thresholds=np.percentile(jimabs.np(),90,axis=0)
-            jim[jimabs<thresholds]=0
+            jimabs = pj.Jim(jim)
+            jimabs = abs(jimabs)
+            thresholds = np.percentile(jimabs.np(), 90, axis=0)
+            jim[jimabs < thresholds] = 0
             jim.ngbops.dwti1d()
         """
         if wavelet is not None:
@@ -752,7 +754,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         Modifies the instance on which the method was called.
 
-        :param dir:  integer for coding edge direction
+        :param dir: integer for coding edge direction
             (horizontal if 0, vertical otherwise).
         :param type: integer determining how the edge weights are computed:
             0 for absolute difference (default),

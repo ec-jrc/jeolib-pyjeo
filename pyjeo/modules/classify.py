@@ -223,7 +223,7 @@ class _Classify(_pj.modules.JimModuleBase):
         Example: train a Jim object (jim) with four Sentinel-2 bands using
         a single reference image (e.g., corine land cover)::
 
-          corine=pj.Jim('/path/to/corine.tif')
+          corine = pj.Jim('/path/to/corine.tif')
           jim.classify.trainSML(
               corine, output='/path/to/model.txt', classes=[12, 40])
 
@@ -236,9 +236,9 @@ class _Classify(_pj.modules.JimModuleBase):
         NBIT bits::
 
           NBIT=3
-          jim+=2**(8-NBIT)-jim.stats.getStats(['min'])['min']
-          jim*=(2**8-1)/jim.stats.getStats(['max'])['max']
-          jim>>=8-NBIT
+          jim += 2 ** (8 - NBIT) - jim.stats.getStats(['min'])['min']
+          jim *= (2 ** 8 - 1) / jim.stats.getStats(['max'])['max']
+          jim >>= 8-NBIT
 
         .. note::
           To train a SVM or ANN classifier, use :py:meth:`~_ClassifyVect.train`
