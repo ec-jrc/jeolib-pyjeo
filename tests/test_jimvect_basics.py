@@ -19,9 +19,11 @@ class BadBasicMethods(unittest.TestCase):
 
     @staticmethod
     def test_numpy_conversions():
+        """Test JimVect.np() method."""
         vect = pj.JimVect(vector)
         anp = vect.np()
-        assert isinstance(anp,np.ndarray), \
+
+        assert isinstance(anp, np.ndarray), \
             'Error in numpy conversion: not an instance of ndarray'
         assert anp.shape[0] == 2, \
             'Error in numpy conversion: first dimension (number of features)'
