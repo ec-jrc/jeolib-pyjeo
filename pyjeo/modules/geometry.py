@@ -579,6 +579,7 @@ def intersect(jvec,
     kwargs.update({'output': output})
     if isinstance(jim, _pj.Jim):
         avect = jvec._jipjimvect.intersect(jim._jipjim, kwargs)
+        avect.write()
         pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
@@ -1838,7 +1839,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         |                  | Leave empty to extract all valid data pixels from|
         |                  | thee sample                                      |
         +------------------+--------------------------------------------------+
-        | cname            | Name of the class label in the output vector     |
+        | attribute        | Name of the class label in the output vector     |
         |                  | dataset (default is 'label')                     |
         +------------------+--------------------------------------------------+
         | fid              | Create extra field named 'fid' with this field   |
@@ -3334,11 +3335,13 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
     #         raise TypeError('Error: can only join with JimVect object')
 
     def convexHull(self,
+                   output: str,
                    **kwargs):
         """Create the convex hull on a JimVect object.
 
         Modifies the instance on which the method was called.
 
+        :param output: Name of the output vector dataset
         :param kwargs: See table below
 
         +------------------+--------------------------------------------------+
@@ -3349,15 +3352,14 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
         """
-        non_existing_path = _pj._get_random_path()
-
-        kwargs.update({'output': non_existing_path})
+        kwargs.update({'output': output})
         avect = self._jim_vect._jipjimvect.convexHull(kwargs)
         avect.write()
         self._jim_vect._set(avect)
 
     def intersect(self,
                   jim,
+                  output: str,
                   **kwargs):
         """Intersect JimVect object with Jim object.
 
@@ -3366,6 +3368,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         Modifies the instance on which the method was called.
 
         :param jim: Jim object with which to intersect
+        :param output: Name of the output vector dataset
         :param kwargs: See table below
         :return: intersected JimVect object
 
@@ -3387,23 +3390,24 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
           sampleintersect.io.write('/path/to/output.sqlite')
 
         """
-        non_existing_path = _pj._get_random_path()
-
-        kwargs.update({'output': non_existing_path})
+        kwargs.update({'output': output})
         if isinstance(jim, _pj.Jim):
             avect = self._jim_vect._jipjimvect.intersect(jim._jipjim, kwargs)
+            avect.write()
             self._jim_vect._set(avect)
         else:
             raise TypeError('Error: can only intersect with Jim object')
 
     def join(self,
              jvec2,
+             output: str,
              **kwargs):
         """Join JimVect object with another JimVect object.
 
         A key field is used to find corresponding features in both objects.
 
         :param jvec2: second JimVect object to join
+        :param output: Name of the output vector dataset
         :param kwargs: See table below
         :return: joined JimVect object
 
@@ -3441,9 +3445,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
               v1, v2, '/tmp/test.sqlite', oformat='SQLite',
               co=['OVERWRITE=YES'], key=['id'], method='OUTER_FULL')
         """
-        non_existing_path = _pj._get_random_path()
-
-        kwargs.update({'output': non_existing_path})
+        kwargs.update({'output': output})
         if isinstance(jvec2, _pj.JimVect):
             avect = self._jim_vect._jipjimvect.join(jvec2._jipjimvect, kwargs)
             self._jim_vect._set(avect)
