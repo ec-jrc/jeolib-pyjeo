@@ -681,6 +681,35 @@ def magnify(jim_object,
         return _pj.Jim(jim_object._jipjim.imageMagnify(n))
 
 
+def merge(jvec1,
+          jvec2,
+          output: str,
+          **kwargs):
+    """Mege JimVect object with another JimVect object.
+
+    :param jvec1: first JimVect object to merge
+    :param jvec2: second JimVect object to merge
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
+
+    Example: merge two vectors
+
+      v1 = pj.JimVect('/path/to/vector1.sqlite')
+      v2 = pj.JimVect('/path/to/vector2.sqlite')
+      v3 = pj.geometry.merge(
+          v1, v2, '/tmp/test.sqlite', oformat='SQLite',
+          co=['OVERWRITE=YES'])
+    """
+    kwargs.update({'output': output})
+    if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
+        avect = jvec1._jipjimvect.merge(jvec2._jipjimvect, kwargs)
+        pjvect = _pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
+    else:
+        raise TypeError('Error: can only merge two JimVect objects')
+
+
 def plane2band(jim):
     """Convert 3-dimensional 1-band Jim to a 2-dimensional multi-band one.
 
@@ -3335,31 +3364,29 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
     #         raise TypeError('Error: can only join with JimVect object')
 
     def convexHull(self,
-                   output: str,
                    **kwargs):
         """Create the convex hull on a JimVect object.
 
         Modifies the instance on which the method was called.
 
-        :param output: Name of the output vector dataset
         :param kwargs: See table below
 
         +------------------+--------------------------------------------------+
         | key              | value                                            |
         +==================+==================================================+
-        | oformat          | Output vector dataset format                     |
-        +------------------+--------------------------------------------------+
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
         """
-        kwargs.update({'output': output})
+        non_existing_path = _pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',
+                                         os.path.basename(non_existing_path))
+        kwargs.update({'output': non_existing_path})
         avect = self._jim_vect._jipjimvect.convexHull(kwargs)
         avect.write()
         self._jim_vect._set(avect)
 
     def intersect(self,
                   jim,
-                  output: str,
                   **kwargs):
         """Intersect JimVect object with Jim object.
 
@@ -3368,17 +3395,6 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         Modifies the instance on which the method was called.
 
         :param jim: Jim object with which to intersect
-        :param output: Name of the output vector dataset
-        :param kwargs: See table below
-        :return: intersected JimVect object
-
-        +------------------+--------------------------------------------------+
-        | key              | value                                            |
-        +==================+==================================================+
-        | oformat          | Output vector dataset format                     |
-        +------------------+--------------------------------------------------+
-        | co               | Creation option for output vector dataset        |
-        +------------------+--------------------------------------------------+
 
         Example: intersect a sample with a Jim object::
 
@@ -3390,7 +3406,10 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
           sampleintersect.io.write('/path/to/output.sqlite')
 
         """
-        kwargs.update({'output': output})
+        non_existing_path = _pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',
+                                         os.path.basename(non_existing_path))
+        kwargs.update({'output': non_existing_path})
         if isinstance(jim, _pj.Jim):
             avect = self._jim_vect._jipjimvect.intersect(jim._jipjim, kwargs)
             avect.write()
@@ -3400,14 +3419,14 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
 
     def join(self,
              jvec2,
-             output: str,
              **kwargs):
         """Join JimVect object with another JimVect object.
 
         A key field is used to find corresponding features in both objects.
 
+        Modifies the instance on which the method was called.
+
         :param jvec2: second JimVect object to join
-        :param output: Name of the output vector dataset
         :param kwargs: See table below
         :return: joined JimVect object
 
@@ -3418,10 +3437,6 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         +------------------+--------------------------------------------------+
         | method           | Join method: "INNER","OUTER_LEFT","OUTER_RIGHT", |
         |                  | "OUTER_FULL". (default is INNER)                 |
-        +------------------+--------------------------------------------------+
-        | oformat          | Output vector dataset format                     |
-        +------------------+--------------------------------------------------+
-        | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
 
         The join methods currently supported are:
@@ -3445,9 +3460,40 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
               v1, v2, '/tmp/test.sqlite', oformat='SQLite',
               co=['OVERWRITE=YES'], key=['id'], method='OUTER_FULL')
         """
-        kwargs.update({'output': output})
+        non_existing_path = _pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',
+                                         os.path.basename(non_existing_path))
+        kwargs.update({'output': non_existing_path})
         if isinstance(jvec2, _pj.JimVect):
             avect = self._jim_vect._jipjimvect.join(jvec2._jipjimvect, kwargs)
             self._jim_vect._set(avect)
         else:
             raise TypeError('Error: can only join two JimVect objects')
+
+    def merge(self,
+              jvec,
+              **kwargs):
+        """Mege JimVect object with another JimVect object.
+
+        :param jvec: JimVect object to merge
+        :param kwargs: See table below
+        :return: joined JimVect object
+
+        Modifies the instance on which the method was called.
+
+        Example: merge two vectors
+
+        v1 = pj.JimVect('/path/to/vector1.sqlite')
+        mergedv1.geometry.merge(v2,'/path/to/merged.sqlite',
+                )
+        """
+        non_existing_path = _pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',
+                                         os.path.basename(non_existing_path))
+        kwargs.update({'output': non_existing_path})
+        if isinstance(jvec, _pj.JimVect):
+            avect = self._jim_vect._jipjimvect.merge(jvec._jipjimvect, kwargs)
+            self._jim_vect._set(avect)
+        else:
+            raise TypeError('Error: can only merge two JimVect objects')
+

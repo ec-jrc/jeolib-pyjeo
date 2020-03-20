@@ -10,6 +10,7 @@ tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 
 rasterfn = 'tests/data/modis_ndvi_2010.tif'
 vectorfn = 'tests/data/modis_ndvi_training.sqlite'
+nutsfn = 'tests/data/nuts_italy.sqlite'
 outputfn = pj._get_random_path()
 warpedfn = pj._get_random_path()
 
@@ -2050,6 +2051,9 @@ class BadGeometryVects(unittest.TestCase):
             'Error in catching a call of geometry.intersect(Jim) method ' \
             'where the argument is not an instance of a Jim object'
 
+        os.remove(non_existing_path)
+
+
     @staticmethod
     def test_convexhull():
         """Test the convexHull() function and method."""
@@ -2076,6 +2080,8 @@ class BadGeometryVects(unittest.TestCase):
         assert orig_bbox == jimv.properties.getBBox(), \
             'Error in geometry.convexHull() ' \
             '(BBox of hull is not the same as of the original JimVect)'
+
+        os.remove(non_existing_path)
 
     @staticmethod
     def test_join():
@@ -2158,15 +2164,59 @@ class BadGeometryVects(unittest.TestCase):
             'Error in catching a call of geometry.join(Jim) method ' \
             'where the argument is not an instance of a JimVect object'
 
-    # @staticmethod
-    # def test_stack():
-    #     """Test the stackBand and stackPlane methods."""
-    #     jim = pj.Jim(rasterfn)
-    #
-    #     # Test stackBand()
-    #     jim0to11 = pj.geometry.cropBand(jim,
-    #                                     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    #     jim12 = pj.geometry.cropBand(jim, 11)
+        os.remove(non_existing_path0)
+        os.remove(non_existing_path1)
+        os.remove(non_existing_path_joined)
+
+
+    @staticmethod
+    def test_merge():
+        """Test the merge methods."""
+        jimv1 = pj.JimVect(nutsfn)
+        nfeatures1 = jimv1.properties.getFeatureCount()
+
+        jimv2 = pj.JimVect(nutsfn,ln='milano')
+        nfeatures2 = jimv2.properties.getFeatureCount()
+        print(jimv2.np().shape)
+        print(jimv2.np())
+
+        jimv3 = pj.JimVect(nutsfn,ln='lodi')
+        nfeatures3 = jimv3.properties.getFeatureCount()
+        print(jimv3.np(0).shape)
+        print(jimv3.np(0))
+
+        non_existing_path = pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',os.path.basename(non_existing_path))
+        mergedv = pj.geometry.merge(jimv2,jimv3,non_existing_path,co=['OVERWRITE=YES'])
+
+        assert nfeatures1 == nfeatures2 + nfeatures3, \
+            'Error in opening layers ' \
+            '(feature count opening layers)'
+
+        assert jimv1.np(0).all() == mergedv.np(0).all(), \
+            'Error in geometry.merge() layer 0' \
+
+        assert jimv1.np(1).all() == mergedv.np(1).all(), \
+            'Error in geometry.merge() layer 1' \
+
+        assert mergedv.properties.getFeatureCount() == nfeatures2 + nfeatures3, \
+            'Error in geometry.merge() ' \
+            '(feature count merge)'
+
+        assert np.append(jimv2.np(0),jimv3.np(0),axis=0).all() == \
+            np.append(jimv1.np(0),jimv1.np(1),axis=0).all(), \
+            'Error in geometry.merge() ' \
+            '(append)'
+
+        jimv2.geometry.merge(jimv3)
+        print(jimv2.np())
+        print(mergedv.np())
+        assert mergedv.np().all() == jimv2.np().all(), \
+            'Error in geometry.merge() ' \
+            '(function is not equal to method)'
+        non_existing_path = pj._get_random_path()
+        mergedv.io.write(non_existing_path)
+        os.remove(non_existing_path)
 
 
 def load_tests(loader=None, tests=None, pattern=None):

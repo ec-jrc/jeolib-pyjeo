@@ -1408,13 +1408,13 @@ class JimVect:
         """
         self._jipjimvect.__dict__.update(modified_object.__dict__)
 
-    def np(self):
+    def np(self, band: int = 0):
         """Return numpy array from JimVect object.
 
         :return: 2D numpy array representation of all fields of all features
         """
         if self.properties.getFeatureCount():
-            return _jl.np(self._jipjimvect)
+            return _jl.np(self._jipjimvect, band)
         else:
             return None
 

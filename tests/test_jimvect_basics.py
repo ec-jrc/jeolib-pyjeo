@@ -21,14 +21,23 @@ class BadBasicMethods(unittest.TestCase):
     def test_numpy_conversions():
         """Test JimVect.np() method."""
         vect = pj.JimVect(vector)
-        anp = vect.np()
+        anp0 = vect.np(0) #layer 0
+        anp1 = vect.np(1) #layer 1
 
-        assert isinstance(anp, np.ndarray), \
-            'Error in numpy conversion: not an instance of ndarray'
-        assert anp.shape[0] == 2, \
+        assert isinstance(anp0, np.ndarray), \
+            'Error in numpy conversion layer 0: not an instance of ndarray'
+        assert isinstance(anp1, np.ndarray), \
+            'Error in numpy conversion layer 1: not an instance of ndarray'
+        assert anp0.shape[0] == 1, \
             'Error in numpy conversion: first dimension (number of features)'
-        assert anp.shape[1] == 12, \
+        assert anp0.shape[1] == 12, \
             'Error in numpy conversion: second dimension (number of fields)'
+        assert np.append(anp0,anp1,axis=0).shape[0] == 2 ,\
+            'Error in geometry.merge() ' \
+            '(append first dimension)'
+        assert np.append(anp0,anp1,axis=0).shape[1] == 12 ,\
+            'Error in geometry.merge() ' \
+            '(append second dimension)'
 
     @staticmethod
     def test_jimvect_creations():
