@@ -1874,18 +1874,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         | fid              | Create extra field named 'fid' with this field   |
         |                  | identifier (sequence of features)                |
         +------------------+--------------------------------------------------+
-        | band             | List of bands to extract (0 indexed). Default is |
-        |                  | to use extract all bands                         |
-        +------------------+--------------------------------------------------+
         | bandname         | List of band name corresponding to list of bands |
         |                  | to extract                                       |
-        +------------------+--------------------------------------------------+
-        | startband        | Start band sequence number (0 indexed)           |
-        +------------------+--------------------------------------------------+
-        | endband          | End band sequence number (0 indexed)             |
-        +------------------+--------------------------------------------------+
-        | down             | Down sampling factor to extract a subset of      |
-        |                  | the sample based on a grid                       |
         +------------------+--------------------------------------------------+
         | ln               | Layer name of output vector dataset              |
         +------------------+--------------------------------------------------+
@@ -1936,9 +1926,8 @@ class _Geometry(_pj.modules.JimModuleBase):
 
             outputfn='/path/to/output.sqlite'
             sample=jim.extractImg(reference,srcnodata=[0],output=outputfn,
-                                  class=classes,threshold=thresholds,
-                                  bandname=['B02','B03','B04','B08'],
-                                  band=[0,1,2,3])
+                                  classes=classes,threshold=thresholds,
+                                  bandname=['B02','B03','B04','B08'])
         """
         kwargs.update({'output': output})
 

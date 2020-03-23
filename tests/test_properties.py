@@ -1,6 +1,7 @@
 """Test suite for module pyjeo.properties."""
 
 import pyjeo as pj
+import numpy as np
 import unittest
 
 
@@ -129,6 +130,20 @@ class BadProps(unittest.TestCase):
         assert self.jim.properties.getProjection() != proj, \
             'Error in properties.getProjection() or setProjection()'
 
+    def test_georeference(self):
+        """Test georeference (projection + geotransform) methods."""
+        jim1 = pj.Jim(testFile)
+        np1 = jim1.np()[:]
+        jim_1 = pj.np2jim(np1)
+        jim_1.properties.copyGeoReference(jim1)
+
+        assert jim_1.properties.getProjection() == \
+        jim1.properties.getProjection() ,\
+            'Error in properties.copyGeoReference getProjection()'
+
+        assert jim_1.properties.getGeoTransform() == \
+        jim1.properties.getGeoTransform() ,\
+            'Error in properties.copyGeoReference getGeoTransform()'
 
 class BadPropsLists(unittest.TestCase):
     """Test JimList funcs and methods for getting and setting properties."""

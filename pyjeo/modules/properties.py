@@ -21,6 +21,11 @@ class _Properties(_pj.modules.JimModuleBase):
         """Copy geotransform information from another georeferenced image."""
         self._jim_object._jipjim.copyGeoTransform(sec_jim_object._jipjim)
 
+    def copyGeoReference(self,
+                         sec_jim_object):
+        """Copy projection and geotransform information from another georeferenced image."""
+        self._jim_object._jipjim.copyGeoReference(sec_jim_object._jipjim)
+
     def covers(self,
                *args):
         """Check if a geolocation is covered by this dataset.

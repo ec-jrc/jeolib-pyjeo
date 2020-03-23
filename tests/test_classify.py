@@ -8,7 +8,8 @@ import os
 
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
-reference = 'tests/data/clc_32632.tif'
+clc = 'tests/data/clc_32632.tif'
+trainingfn = 'tests/data/modis_ndvi_training.sqlite'
 model = pj._get_random_path()
 
 
@@ -16,7 +17,7 @@ class BadClassify(unittest.TestCase):
     """Test functions and methods from clasisfy module."""
 
     @staticmethod
-    def test_classify():
+    def test_sml():
         """Test the Symbolic Machine Learning classifier."""
         class_dict = {'urban': 2, 'agriculture': 12, 'forest': 25,
                       'water': 41, 'rest': 50}
@@ -34,7 +35,7 @@ class BadClassify(unittest.TestCase):
             else:
                 class_to[i] = class_dict['rest']
 
-        jim_ref = pj.Jim(reference, dx=1000, dy=1000)
+        jim_ref = pj.Jim(clc, dx=1000, dy=1000)
         jim_ref.classify.reclass(classes=list(class_from), reclasses=class_to)
 
         bbox = [4246000, 2547000, 4349500, 2441000]
