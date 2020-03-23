@@ -17,3 +17,5 @@ doc/_build
 ### Coverage info ###
 .coverage
 
+### virtualenv environment
+env

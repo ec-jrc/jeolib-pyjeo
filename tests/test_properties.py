@@ -76,6 +76,12 @@ class BadProps(unittest.TestCase):
                                                  self.lrx, self.lry], \
             'Error in properties.getBBox()'
 
+    def test_refpix(self):
+        """Test getRefPix() method."""
+        assert self.jim.properties.getRefPix() == [402520.0,
+                                                   5097440.0] ,\
+            'Error in properties.getRefPix()'
+
     def test_geo_transform(self):
         """Test GeoTransform() methods."""
         gt = self.jim.properties.getGeoTransform()
