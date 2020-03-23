@@ -661,6 +661,94 @@ Classification
 Classification functions
 ========================
 
+===========================================
+Classification from sklearn (ndimage)
+===========================================
+
+The classification operations from sklearn can be applied to a :py:class:`Jim` object by using its numpy representation (:py:meth:`Jim.np`)
+
+Random Forest ensemble classifier::
+
+  from sklearn.ensemble import RandomForestClassifier
+  from sklearn.model_selection import train_test_split
+  from sklearn.metrics import confusion_matrix
+  from sklearn.metrics import accuracy_score
+
+  reference=pj.JimVect('training.sqlite')
+
+
+  featurevect = jim.geometry.extractOgr(reference, rule=['allpoints'],
+                                        output='/vsimem/features.sqlite', oformat='SQLite',
+                                        co=['OVERWRITE=YES'],
+                                        classes=[1, 2, 3, 4],
+                                        copy='label',
+                                        fid='fid')
+  x = featurevect[:,1:]
+  y = featurevect[:,0:1]
+
+  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+
+  rfModel = RandomForestClassifier(n_estimators=100, max_depth=9, min_samples_leaf=5, min_samples_split=3, criterion='gini')
+  rfModel.fit(x_train,y_train.ravel())
+
+  y_predict=rfModel.predict(x_test)
+  print(confusion_matrix(y_test, y_predict))
+  print(accuracy_score(y_test, y_predict))
+
+  jim=pj.Jim('/path/to/image.tif,band2plane=True)
+  x=jim.np()
+  x=x.reshape(jim.properties.nrOfPlane(),jim.properties.nrOfRow()*jim.properties.nrOfCol()).T
+
+  y=rfModel.predict(x).astype(np.dtype(np.uint8))
+  y=y.reshape(jim.properties.nrOfRow(),jim.properties.nrOfCol())
+
+  jim_class=pj.Jim(ncol=jim.properties.nrOfCol(),nrow=jim.properties.nrOfRow(), otype='Byte')
+  jim_class.properties.copyGeoReference(jim)
+  jim_class.np()[:]=y
+
+Support Vector Machine classifier::
+
+  from sklearn.svm import SVC
+  from sklearn import preprocessing
+  from sklearn.model_selection import train_test_split
+  from sklearn.metrics import confusion_matrix
+  from sklearn.metrics import accuracy_score
+
+  reference=pj.JimVect('training.sqlite')
+
+
+  featurevect = jim.geometry.extractOgr(reference, rule=['allpoints'],
+                                        output='/vsimem/features.sqlite', oformat='SQLite',
+                                        co=['OVERWRITE=YES'],
+                                        classes=[1, 2, 3, 4],
+                                        copy='label',
+                                        fid='fid')
+  x = featurevect[:,1:]
+  y = featurevect[:,0:1]
+
+  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+
+  svmModel = SVC(gamma='auto')
+  svmModel.fit(preprocessing.MinMaxScaler().fit_transform(x_train),y_train.ravel())
+
+  y_predict=svmModel.predict(preprocessing.MinMaxScaler().fit_transform(x_test))
+  print(confusion_matrix(y_test, y_predict))
+  print(accuracy_score(y_test, y_predict))
+
+  print(confusion_matrix(y_test, y_predict))
+  print(accuracy_score(y_test, y_predict))
+
+  jim=pj.Jim('/path/to/image.tif,band2plane=True)
+  x=jim.np()
+  x=x.reshape(jim.properties.nrOfPlane(),jim.properties.nrOfRow()*jim.properties.nrOfCol()).T
+
+  y=svmModel.predict(preprocessing.MinMaxScaler().fit_transform(x)).astype(np.dtype(np.uint8))
+  y=y_svm.reshape(jim.properties.nrOfRow(),jim.properties.nrOfCol())
+
+  jim_class=pj.Jim(ncol=jim.properties.nrOfCol(),nrow=jim.properties.nrOfRow(), otype='Byte')
+  jim_class.properties.copyGeoReference(jim)
+  jim_class.np()[:]=y
+
 .. automodule:: classify
    :members:
 

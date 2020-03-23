@@ -3,37 +3,6 @@
 import pyjeo as _pj
 
 
-def classify(jim_object,
-             method: str,
-             model: str,
-             **kwargs):
-    """Supervised classification of a raster dataset.
-
-    The classifier must have been trained via the train() method.
-    The classifier can be selected with the key 'method'.
-
-    :param jim_object: a Jim object
-
-    :param method: Classification method (:ref:`svm <svm>` or :ref:`ann <ann>`)
-    :param model: Model filename for trained classifier
-    :param kwargs: See below
-    :return: a Jim object with the classification result
-
-    :keyword arguments:
-        :band: (list of) band index(indices), starting from 0. The band order
-            must correspond to the band names defined in the model. Leave
-            empty to use all bands
-        :srcnodata: No data values in input image not to consider for
-            classification
-        :dstnodata: No data value to put where input image is no data
-        :priors: list of prior probabilities (one for each class)
-
-    see :py:meth:`~_Classify.classify` for an example how to use this function
-    """
-    kwargs.update({'method': method, 'model': model})
-    return _pj.Jim(jim_object._jipjim.classify(kwargs))
-
-
 def reclass(jim_object,
             classes: list,
             reclasses: list,
@@ -61,8 +30,9 @@ def reclass(jim_object,
 
 
 def sml(jim_object,
-        reflist,
+        reflist = None,
         classes: list = None,
+        model: str = None,
         **kwargs):
     """Perform supervised classification of a Jim object using SML.
 
@@ -83,52 +53,21 @@ def sml(jim_object,
 
     see :py:meth:`~_Classify.sml` for an example how to use this function
     """
-    if classes is not None:
-        kwargs.update({'class': classes})
-    return _pj.Jim(jim_object._jipjim.classifySML(
-        reflist, kwargs))
+
+    if model is not None:
+        kwargs.update({'method': 'sml', 'model': model})
+        return _pj.Jim(jim_object._jipjim.classify(kwargs))
+    elif reflist is not None:
+        if classes is not None:
+            kwargs.update({'class': classes})
+        return _pj.Jim(jim_object._jipjim.classifySML(
+            reflist, kwargs))
+    else:
+        raise ValueError('Error: no training found through model or reflist')
 
 
 class _Classify(_pj.modules.JimModuleBase):
     """Define all classification methods for Jims."""
-
-    def classify(self,
-                 method: str,
-                 model: str,
-                 **kwargs):
-        """Supervised classification of a raster dataset.
-
-        The classifier must have been trained via the train() method.
-        The classifier can be selected with the key 'method'.
-
-        Modifies the instance on which the method was called.
-
-        :param method: Classification method
-            (:ref:`svm <svm>` or :ref:`ann <ann>`)
-        :param model: Model filename for trained classifier
-        :param kwargs: See below
-
-        :keyword arguments:
-            :band: (list of) band index(indices), starting from 0. The band
-                order must correspond to the band names defined in the model.
-                Leave empty to use all bands.
-            :srcnodata: No data values in input image not to consider for
-                classification
-            :dstnodata: No data value to put where input image is no data
-            :priors: list of prior probabilities (one for each class)
-
-        Perform a SVM classification using the model obtained
-        via :py:meth:`~_ClassifyVect.train`::
-
-          jim_svm=pj.classify.classify('svm', jim,model='/path/to/model.txt')
-
-        Perform an ANN classification using the model obtained
-        via :py:meth:`~_ClassifyVect.train`::
-
-          jim_ann=pj.classify.classify('ann', jim,model='/path/to/model.txt')
-        """
-        kwargs.update({'method': method, 'model': model})
-        self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
 
     def reclass(self,
                 classes: list,
@@ -155,8 +94,9 @@ class _Classify(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_reclass(kwargs)
 
     def sml(self,
-            reflist,
+            reflist = None,
             classes: list = None,
+            model: str = None,
             **kwargs):
         """Perform supervised classification of a Jim object using SML.
 
@@ -169,6 +109,9 @@ class _Classify(_pj.modules.JimModuleBase):
 
         Modifies the instance on which the method was called.
 
+        :param reflist: JimList of reference raster datasets containing with
+            reference classes
+        :param model: Model filename for trained classifier
         :param reflist: JimList of reference raster datasets containing with
             reference classes
         :param classes: list of classes to extract from the reference.
@@ -192,10 +135,16 @@ class _Classify(_pj.modules.JimModuleBase):
         Use :py:meth:`~_Classify.reclass` to convert the indices to the actual
         class numbers.
         """
-        if classes is not None:
-            kwargs.update({'class': classes})
-        self._jim_object._set(self._jim_object._jipjim.classifySML(
-            reflist._jipjimlist, kwargs))
+        if model is not None:
+            kwargs.update({'method': 'sml', 'model': model})
+            self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
+        elif reflist is not None:
+            if classes is not None:
+                kwargs.update({'class': classes})
+            self._jim_object._set(self._jim_object._jipjim.classifySML(
+                reflist._jipjimlist, kwargs))
+        else:
+            raise ValueError('Error: no training found through model or reflist')
 
     def trainSML(self,
                  reference,
@@ -265,171 +214,3 @@ class _ClassifyList(_pj.modules.JimListModuleBase):
 
 class _ClassifyVect(_pj.modules.JimVectModuleBase):
     """Define all classification methods for JimVects."""
-
-    def classify(self,
-                 method: str,
-                 model: str,
-                 **kwargs):
-        """Supervised classification of a raster dataset.
-
-        The classifier must have been trained via the train() method.
-        The classifier can be selected with the key 'method'.
-
-        Modifies the instance on which the method was called.
-
-        :param method: Classification method ('svm', 'ann')
-        :param model: Model filename for trained classifier
-        :param kwargs: See below
-
-        :keyword arguments:
-            :band: Band index (starting from 0). The band order must correspond
-                to the band names defined in the model. Leave empty to use all
-                bands
-            :priors: list of prior probabilities (one for each class)
-            :output: output filename of classified vector dataset
-            :f: output filename of classified vector dataset
-            :co: creation option for output file. Multiple options can be
-                specified as list
-            :copy: copy these fields from input to output vector dataset
-        """
-        kwargs.update({'method': method, 'model': model})
-        self._jim_vect._set(self._jim_vect._jipjimvect.classify(kwargs))
-
-    def train(self,
-              method: str,
-              output: str,
-              **kwargs):
-        """Train a supervised classifier based on extracted data.
-
-        Includes label information (typically obtained via
-        :py:func:`geometry:extractOgr`).
-
-        :param method: Classification method
-            (:ref:`svm <svm>` or :ref:`ann <ann>`)
-        :param output: output filepath where model will be written
-        :param kwargs: See below
-
-        keyword arguments:
-
-        ======== ==============================================================
-        label    Attribute name for class label in training vector file
-                 (default: 'label')
-        bandname List of band names to use that correspond to the fields in
-                 the vector dataset. This parameter is mandatory if vector
-                 contains more attributes than just label
-        class    List of alpha numeric class names as defined in the label
-                 attribute (use only if labels contain not numerical values)
-        reclass  List of numeric class values corresponding to the list defined
-                 by the class key
-        ======== ==============================================================
-
-        .. note::
-          To train a symbolic machine learning classifier,
-          use :py:meth:`~_Classify.trainSML`
-
-        **Balancing the training sample**
-
-        Keys used to balance the training sample:
-
-        ======== ==============================================================
-        balance  Balance the input data to this number of samples for each
-                 class
-        random   Randomize training data for balancing
-        min      Set to a value to not take classes into account with a sample
-                 size that is lower than this value
-        ======== ==============================================================
-
-
-        .. _svm:
-
-        **Support vector machine**
-
-        The support vector machine (SVM) supervised classifier is
-        described `here <http://dx.doi.org/10.1007/BF00994018>`_.
-        The implementation in JIPlib is based on the open source
-        libsvm <https://www.csie.ntu.edu.tw/~cjlin/libsvm/>`_.
-
-        Keys specific to the SVM:
-
-        ========== ============================================================
-        svmtype    Type of SVM (C_SVC, nu_SVC,one_class, epsilon_SVR, nu_SVR)",
-                   "C_SVC")
-        kerneltype Type of kernel function (linear,polynomial,radial,sigmoid)
-                   ","radial")
-        kd         Degree in kernel function",3)
-        gamma      Gamma in kernel function",1.0)
-        coef0      Coef0 in kernel function",0)
-        ccost      The parameter C of C_SVC, epsilon_SVR, and nu_SVR",1000)
-        nu         The parameter nu of nu_SVC, one_class SVM, and nu_SVR",0.5)
-        eloss      The epsilon in loss function of epsilon_SVR",0.1)
-        cache      Cache memory size in MB",100)
-        etol       The tolerance of termination criterion",0.001)
-        shrink     Whether to use the shrinking heuristics",false)
-        probest    Whether to train a SVC or SVR model for probability
-                   estimates",true,2)
-        ========== ============================================================
-
-        Extract training data from a sample containing labeled features
-        (fieldname is 'label') and write the result to a vector in memory
-        (using the method :py:meth:`~geometry._Geometry.extractOgr` on
-        a :py:class:`Jim` object in module :py:mod:`geometry`). The field
-        'label' is copied from the sample that will be used by the training.
-        Then use the extracted vector to train a SVM and write the model to
-        a file.::
-
-           jim = pj.Jim('/path/to/multiband/raster.tif')
-           training = jim.geometry.extractOgr(sample, rule='centroid',
-                                              oformat='Memory', copy='label')
-           training.classify.train(method='svm', label='label',
-                                   output='/path/to/model.txt')
-
-        Use :py:meth:`~_Classify.classify` to perform the classification
-
-        .. _ann:
-
-        **Artificial neural network**
-
-        The artificial neural network (ANN) supervised classifier is based on
-        the back propagation model as introduced by D. E. Rumelhart,
-        G. E. Hinton, and R. J. Williams (Nature, vol. 323, pp. 533-536, 1986).
-        The implementation is based on the open source
-        C++ library `fann <http://leenissen.dk/fann/wp/>`_.
-
-
-        Keys specific to the ANN:
-
-        ========== ============================================================
-        nneuron    List defining the number of neurons in each hidden layer in
-                   the neural network
-        connection Connection rate (default: 1.0 for a fully connected network
-        learning   Learning rate (default: 0.7)
-        weights    Weights for neural network. Apply to fully connected network
-                   only, starting from first input neuron to last output
-                   neuron, including the bias neurons (last neuron in each
-                   but last layer)
-        maxit      Maximum epochs used for training the neural network
-                   (default: 500)
-        ========== ============================================================
-
-        .. note::
-          To define two hidden layers with 3 and 5 neurons respectively, define
-          a list of two values for the key 'nneuron': [3, 5].
-
-        Extract training data from a sample containing labeled features
-        (fieldname is 'label') and write the result to a vector in memory
-        (using the method :py:meth:`~geometry._Geometry.extractOgr` on
-        a :py:class:`Jim` object in module :py:mod:`geometry`). The field
-        'label' is copied from the sample that will be used by the training.
-        Then use the extracted vector to train an ANN and write the model to
-        a file.::
-
-           jim = pj.Jim('/path/to/multiband/raster.tif')
-           training = jim.geometry.extractOgr(sample, rule='centroid',
-                                              oformat='Memory', copy='label')
-           training.classify.train(method='ann', label='label',
-                                   output='/path/to/model.txt')
-
-        Use :py:meth:`~_Classify.classify` to perform the classification
-        """
-        kwargs.update({'method': method, 'model': output})
-        self._jim_vect._jipjimvect.train(kwargs)

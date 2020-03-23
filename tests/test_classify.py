@@ -46,7 +46,7 @@ class BadClassify(unittest.TestCase):
         reflist = pj.JimList([jim_ref])
         jim.classify.trainSML(reflist, output=model,
                               classes=sorted(class_dict.values()))
-        sml = pj.classify.classify(jim, method='sml', model=model)
+        sml = pj.classify.sml(jim, model=model)
         sml.geometry.band2plane()
         sml.np()[:] = np.argmax(sml.np(), axis=0)
         sml.properties.clearNoData()
