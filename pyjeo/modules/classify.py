@@ -189,9 +189,6 @@ class _Classify(_pj.modules.JimModuleBase):
           jim *= (2 ** 8 - 1) / jim.stats.getStats(['max'])['max']
           jim >>= 8-NBIT
 
-        .. note::
-          To train a SVM or ANN classifier, use :py:meth:`~_ClassifyVect.train`
-
         """
         # convert list of Jim to JimList
         if not isinstance(reference, _pj.JimList):
