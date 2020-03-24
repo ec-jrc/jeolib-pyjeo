@@ -55,12 +55,12 @@ How to create basic data structures (Jim) and (JimVect)
 *******************************************************
 
 =================================
-Creating a Jim raster data object
+Create a Jim raster data object
 =================================
 
 To create a new Jim object, use the constructor :py:meth:`Jim`. A Jim object can be created by opening an existing raster data :ref:`from file <create_Jim_from_file>`. Alternatively, a :ref:`new Jim <create_Jim_new>` object can be created by defining image attributes.
 
-Creating a Jim raster data object from file
+Create a Jim raster data object from file
 ===========================================
 
    Examples:
@@ -91,7 +91,7 @@ Creating a Jim raster data object from file
         #do stuff with jim ...
 
 
-Creating a new Jim raster data object (not from file)
+Create a new Jim raster data object (not from file)
 =====================================================
 
    Create a new georeferenced Jim image object by defining the projection epsg
@@ -133,11 +133,38 @@ Creating a new Jim raster data object (not from file)
 
         im=pj.Jim(otype='float32',ncol=256,nrow=256,uniform=[100,200])
 
-Creating a new copy of a Jim raster data object
+Create a new copy of a Jim raster data object
 ===============================================
 
+   Create a new Jim object from an existing Jim object, copying all data ::
+
+        jim_copy=pj.Jim(jim)
+
+   Create a new Jim object, using an existing Jim object as a template, without copying data.
+   The new jim object will be initialized with all data set to 0::
+
+        jim_copy=pj.Jim(jim, copy_data=False)
+
+Create a new Jim raster data object from a Numpy array
+========================================================
+
+   Create a new Jim object by copying data from a Numpy array object (mynp).
+
+        jim=pj.np2jim(mynp)
+
+   The Numpy array can be a 2D or 3D array::
+
+        jim=pj.np2jim(mynp3d)
+        jim.properties.nrOfPlane()
+        12
+
+   Notice that the newly created Jim object is not geo-referenced.
+   We can add this information, e.g., by using a geo-reference object as a template::
+
+        jim.properties.copyGeoReference(geojim)
+
 =================================
-Creating a JimVect data object
+Create a JimVect data object
 =================================
 
 To create a new JimVect vector data object, use the constructor :py:meth:`JimVect`. A JimVect object is typically created by opening an existing vector dataset from file or as the result from a function or method, e.g., the method :py:meth:`~geometry._Geometry.extractOgr` in module :py:mod:`geometry` on a Jim object.

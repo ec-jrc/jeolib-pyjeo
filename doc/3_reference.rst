@@ -12,6 +12,10 @@ Reference Manual
 Data structures: rasters (Jim) and vectors (JimVect)
 ****************************************************
 
+===
+Jim
+===
+
 .. method:: Jim(filename=None, **kwargs)
 
   Creates a new Jim object, either :ref:`from file <create_Jim_from_file>`
@@ -24,7 +28,6 @@ Data structures: rasters (Jim) and vectors (JimVect)
 
 .. _create_Jim_from_file:
 
-===========================
 Create Jim object from file
 ===========================
 
@@ -85,7 +88,6 @@ Create Jim object from file
 
 .. _create_Jim_new:
 
-===============================================================================
 Create a new Jim image object by defining image attributes (not read from file)
 ===============================================================================
 
@@ -134,63 +136,23 @@ the projection epsg code, bounding box and number of rows and columns::
         #do stuff with jim ...
 
 
-=====================================
-Converting Jim object to numpy arrays
-=====================================
+Convert Jim object to numpy array
+=================================
 
-.. method:: Jim.np()
+.. method:: Jim.np(self, band: int = 0)
 
-   Return numpy array from Jim object
+   Return numpy array from Jim object.
+
+   :param band: band index (starting from 0)
    :return: numpy array representation
-
-=================================
-Creating a JimVect data object
-=================================
-
-.. method:: JimVect(filename, **kwargs)
-
-  Create a new JimVect object from file
-
-:param filename:        Path to a vector dataset
-:param ln:              Layer name to read (default is to read all layers)
-:param attributeFilter: Set an attribute filter in restricted SQL WHERE format
-:ulx:                   Upper left x value bounding box
-:uly:                   Upper left y value bounding box
-:lrx:                   Lower right x value bounding box
-:lry:                   Lower right y value bounding box
-:param noread:          Set this flag to True to not read data when opening
-:return: a JimVect object
-
-Example:
-
-Open a vector and read all layers::
-
-  v=pj.JimVect('/path/to/vector.sqlite')
-
-Open a vector and read layer named lodi::
-
-  v=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
-
-Open a vector and read layer named lodi and save vector to new filename::
-
-  v=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
-  vnew=pj.JimVect(v,output='/path/to/newvect.sqlite')
-  vnew.io.write()
-
-Open a vector and use an attribute filter (the field intern_id must be between 10000 and 10500)::
-
-  v=pj.JimVect('/path/to/vector.sqlite', attributeFilter='(intern_id>10000) AND (intern_id<10500)')
-
 
 .. _indexing:
 
-********************
-Indexing Jim objects
-********************
+Indexing: get and set Jim items
+===============================
 
-=============
-Get Jim items
-=============
+get Jim items
+-------------
 
    .. method:: Jim[item]
 
@@ -226,9 +188,8 @@ Get Jim items
         v=pj.JimVect(cfn)
         jimcloud=jim[v]
 
-=============
 Set Jim items
-=============
+-------------
 
    .. method:: Jim[item]=
 
@@ -268,6 +229,60 @@ Set Jim items
           jim=pj.Jim(ifn)
           v=pj.JimVect(cfn)
           jim[v]=255
+
+=======
+JimVect
+=======
+
+Create a JimVect data object
+=============================
+
+.. method:: JimVect(filename, **kwargs)
+
+  Create a new JimVect object from file
+
+:param filename:        Path to a vector dataset
+:param ln:              Layer name to read (default is to read all layers)
+:param attributeFilter: Set an attribute filter in restricted SQL WHERE format
+:ulx:                   Upper left x value bounding box
+:uly:                   Upper left y value bounding box
+:lrx:                   Lower right x value bounding box
+:lry:                   Lower right y value bounding box
+:param noread:          Set this flag to True to not read data when opening
+:return: a JimVect object
+
+Example:
+
+Open a vector and read all layers::
+
+  v=pj.JimVect('/path/to/vector.sqlite')
+
+Open a vector and read layer named lodi::
+
+  v=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
+
+Open a vector and read layer named lodi and save vector to new filename::
+
+  v=pj.JimVect('/path/to/nuts.sqlite', ln='lodi')
+  vnew=pj.JimVect(v,output='/path/to/newvect.sqlite')
+  vnew.io.write()
+
+Open a vector and use an attribute filter (the field intern_id must be between 10000 and 10500)::
+
+  v=pj.JimVect('/path/to/vector.sqlite', attributeFilter='(intern_id>10000) AND (intern_id<10500)')
+
+
+Convert JimVect object to numpy array
+=====================================
+
+
+.. method:: JimVect.np(self, ln: int = 0)
+
+   Return numpy array from JimVect object.
+
+   :param ln: Layer to return
+   :return: 2D numpy array representation of all fields of all features
+
 
 *********
 Operators
@@ -657,56 +672,113 @@ Connected component operation methods on Jim
 Classification
 **************
 
-========================
-Classification functions
-========================
-
-===========================================
+=====================================
 Classification from sklearn (ndimage)
-===========================================
+=====================================
 
 The classification operations from sklearn can be applied to a :py:class:`Jim` object by using its numpy representation (:py:meth:`Jim.np`)
 
-Random Forest ensemble classifier::
+.. _random_forest_classifier:
+
+Random Forest ensemble classifier
+=================================
+
+Import relevant modules::
 
   from sklearn.ensemble import RandomForestClassifier
   from sklearn.model_selection import train_test_split
   from sklearn.metrics import confusion_matrix
   from sklearn.metrics import accuracy_score
 
+We will use a vector file that contains reference data (in a numerical field 'label')
+
+.. image:: figures/labels.png
+   :width: 100 %
+
+Load the vector file in a JimVect object::
+
   reference=pj.JimVect('training.sqlite')
 
+Create a 3D Jim object that loads the raster data containing all features (read bands as planes)::
+
+  jim = pj.Jim('/path/to/raster.tif',band2plane=True)
+
+Extract features from the Jim object::
 
   featurevect = jim.geometry.extractOgr(reference, rule=['allpoints'],
-                                        output='/vsimem/features.sqlite', oformat='SQLite',
+                                        output='/vsimem/features.sqlite',
+                                        oformat='SQLite',
                                         co=['OVERWRITE=YES'],
                                         classes=[1, 2, 3, 4],
                                         copy='label',
                                         fid='fid')
-  x = featurevect[:,1:]
-  y = featurevect[:,0:1]
 
-  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+Use the Numpy representation of the vector feature data to create arrays for the features (x) and label data (y)::
 
-  rfModel = RandomForestClassifier(n_estimators=100, max_depth=9, min_samples_leaf=5, min_samples_split=3, criterion='gini')
+  x = featurevect.np()[:,1:]
+  y = featurevect.np()[:,0:1]
+
+Split the data in a training and test set::
+
+  x_train, x_test, y_train, y_test = train_test_split(x, y,
+                                                      test_size=0.33,
+                                                      random_state=42)
+
+Create a Random Forest classifier from sklearn and fit the model using the training data ::
+
+  rfModel = RandomForestClassifier(n_estimators=100,
+                                   max_depth=9,
+                                   min_samples_leaf=5,
+                                   min_samples_split=3,
+                                   criterion='gini')
   rfModel.fit(x_train,y_train.ravel())
+
+Use the unseen test set to perform an accuracy assessment::
 
   y_predict=rfModel.predict(x_test)
   print(confusion_matrix(y_test, y_predict))
-  print(accuracy_score(y_test, y_predict))
+  print('accuracy score: {}'.format(accuracy_score(y_test, y_predict)))
 
-  jim=pj.Jim('/path/to/image.tif,band2plane=True)
+  [[29  8  2  6  0]
+  [ 2 14  2  5  2]
+  [ 0  2 13  3  9]
+  [ 6  2  1 24  0]
+  [ 0  0 15  0 20]]
+
+  accuracy score: 0.606060606061
+
+
+Classify the image using the Numpy representation of the Jim object::
+
   x=jim.np()
-  x=x.reshape(jim.properties.nrOfPlane(),jim.properties.nrOfRow()*jim.properties.nrOfCol()).T
+  x=x.reshape(jim.properties.nrOfPlane(),jim.properties.nrOfRow()* \
+              jim.properties.nrOfCol()).T
 
-  y=rfModel.predict(x).astype(np.dtype(np.uint8))
-  y=y.reshape(jim.properties.nrOfRow(),jim.properties.nrOfCol())
-
-  jim_class=pj.Jim(ncol=jim.properties.nrOfCol(),nrow=jim.properties.nrOfRow(), otype='Byte')
+  jim_class=pj.Jim(ncol=jim.properties.nrOfCol(),nrow=jim.properties.nrOfRow(),
+                   otype='Byte')
   jim_class.properties.copyGeoReference(jim)
-  jim_class.np()[:]=y
+  jim_class.np()[:]=rfModel.predict(x).astype(np.dtype(np.uint8)).\
+                    reshape(jim.properties.nrOfRow(),jim.properties.nrOfCol())
 
-Support Vector Machine classifier::
+Show the classified map with matplotlib::
+
+  import matplotlib.pyplot as plt
+
+  fig = plt.figure()
+  ax1 = fig.add_subplot(111)
+  ax1.imshow(jim_class.np())
+  plt.show()
+
+
+.. image:: figures/rf_class.png
+   :width: 100 %
+
+.. _svm_classifier:
+
+Support Vector Machine classifier
+=================================
+
+Import relevant modules::
 
   from sklearn.svm import SVC
   from sklearn import preprocessing
@@ -714,40 +786,30 @@ Support Vector Machine classifier::
   from sklearn.metrics import confusion_matrix
   from sklearn.metrics import accuracy_score
 
-  reference=pj.JimVect('training.sqlite')
+Refer to random_forest_classifier_ to create a training and test data set
 
-
-  featurevect = jim.geometry.extractOgr(reference, rule=['allpoints'],
-                                        output='/vsimem/features.sqlite', oformat='SQLite',
-                                        co=['OVERWRITE=YES'],
-                                        classes=[1, 2, 3, 4],
-                                        copy='label',
-                                        fid='fid')
-  x = featurevect[:,1:]
-  y = featurevect[:,0:1]
-
-  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+Create a support vector machine (SVM) classifier from sklearn and fit the model using the training data ::
 
   svmModel = SVC(gamma='auto')
-  svmModel.fit(preprocessing.MinMaxScaler().fit_transform(x_train),y_train.ravel())
+  svmModel.fit(preprocessing.MinMaxScaler().fit_transform(x_train),
+                                                          y_train.ravel())
 
-  y_predict=svmModel.predict(preprocessing.MinMaxScaler().fit_transform(x_test))
-  print(confusion_matrix(y_test, y_predict))
-  print(accuracy_score(y_test, y_predict))
+Classify the image using the Numpy representation of the Jim object::
 
-  print(confusion_matrix(y_test, y_predict))
-  print(accuracy_score(y_test, y_predict))
-
-  jim=pj.Jim('/path/to/image.tif,band2plane=True)
   x=jim.np()
-  x=x.reshape(jim.properties.nrOfPlane(),jim.properties.nrOfRow()*jim.properties.nrOfCol()).T
+  x=x.reshape(jim.properties.nrOfPlane(),jim.properties.nrOfRow()*\
+              jim.properties.nrOfCol()).T
 
-  y=svmModel.predict(preprocessing.MinMaxScaler().fit_transform(x)).astype(np.dtype(np.uint8))
-  y=y_svm.reshape(jim.properties.nrOfRow(),jim.properties.nrOfCol())
 
   jim_class=pj.Jim(ncol=jim.properties.nrOfCol(),nrow=jim.properties.nrOfRow(), otype='Byte')
   jim_class.properties.copyGeoReference(jim)
-  jim_class.np()[:]=y
+  jim_class.np()[:]=svmModel.predict(preprocessing.MinMaxScaler().fit_transform(x)).\
+                    astype(np.dtype(np.uint8)).\
+                    reshape(jim.properties.nrOfRow(),jim.properties.nrOfCol())
+
+========================
+Classification functions
+========================
 
 .. automodule:: classify
    :members:

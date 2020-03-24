@@ -14,7 +14,7 @@
     :align: left
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    1_intro
