@@ -362,6 +362,35 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() feature count'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names'
+        print(len(v.properties.getFieldNames()))
+        assert len(v.properties.getFieldNames()) == 14, \
+            'Error in geometry.extractOgr() field names'
+        sample.io.close()
+        v.io.close()
+        os.remove(outputfn)
+
+        sample = pj.JimVect(nutsfn)
+        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3, 4, 5])
+        jim1 = pj.Jim(rasterfn, band=[6, 7, 8, 9, 10, 11])
+        jim0.geometry.stackPlane(jim1)
+        planename = []
+        bandname = []
+        for plane in range(0, jim0.properties.nrOfPlane()):
+            planename.append('Time' + str(plane))
+        for band in range(0, jim0.properties.nrOfBand()):
+            bandname.append('Band' + str(band))
+        v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
+                                    output=outputfn, oformat='SQLite',
+                                    co=['OVERWRITE=YES'],
+                                    attribute='nuts3id',
+                                    classes=[53,62],
+                                    bandname=bandname,
+                                    planename=planename,
+                                    threshold=[10,10],
+                                    fid='fid')
+        v.io.write()
+        assert v.properties.getFeatureCount() == 20, \
+            'Error in geometry.extractOgr() feature count'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names'
         print(len(v.properties.getFieldNames()))

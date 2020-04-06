@@ -3300,10 +3300,13 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             kwargs.update({'rule': rule})
             kwargs.update({'output': output})
             if 'threshold' in kwargs:
-                if '%' in kwargs['threshold']:
-                    kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
-                else:
-                    kwargs['threshold'] = -kwargs['threshold']
+                if not isinstance(kwargs['threshold'],list):
+                    kwargs['threshold']=[kwargs['threshold']]
+                kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+                # if '%' in kwargs['threshold']:
+                #     kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+                # else:
+                #     kwargs['threshold'] = -kwargs['threshold']
 
             bandname = kwargs.pop('bandname', None)
 
