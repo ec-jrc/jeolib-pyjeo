@@ -1375,10 +1375,11 @@ class _Geometry(_pj.modules.JimModuleBase):
         kwargs.update({'output': output})
         kwargs.update({'rule': rules})
         if 'threshold' in kwargs:
-            if '%' in kwargs['threshold']:
-                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
-            else:
-                kwargs['threshold'] = -kwargs['threshold']
+            if kwargs['threshold'] is not None:
+                if '%' in kwargs['threshold']:
+                    kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+                else:
+                    kwargs['threshold'] = -kwargs['threshold']
 
         bandnames = kwargs.pop('bandname', None)
         if bandnames is None:
@@ -2098,9 +2099,10 @@ class _Geometry(_pj.modules.JimModuleBase):
         kwargs.update({'output': output})
         kwargs.update({'rule': rule})
         if 'threshold' in kwargs:
-            if not isinstance(kwargs['threshold'],list):
-                kwargs['threshold']=[kwargs['threshold']]
-            kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+            if kwargs['threshold'] is not None:
+                if not isinstance(kwargs['threshold'],list):
+                    kwargs['threshold']=[kwargs['threshold']]
+                kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
 
         if 'classes' in kwargs:
             classes = kwargs.pop('classes')
@@ -2190,10 +2192,11 @@ class _Geometry(_pj.modules.JimModuleBase):
         """
         kwargs.update({'output': output})
         if 'threshold' in kwargs:
-            if '%' in kwargs['threshold']:
-                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
-            else:
-                kwargs['threshold'] = -kwargs['threshold']
+            if kwargs['threshold'] is not None:
+                if '%' in kwargs['threshold']:
+                    kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+                else:
+                    kwargs['threshold'] = -kwargs['threshold']
         return self._jim_object._jipjim.extractSample(kwargs)
 
     def geo2image(self,
@@ -3300,9 +3303,10 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             kwargs.update({'rule': rule})
             kwargs.update({'output': output})
             if 'threshold' in kwargs:
-                if not isinstance(kwargs['threshold'],list):
-                    kwargs['threshold']=[kwargs['threshold']]
-                kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+                if kwargs['threshold'] is not None:
+                    if not isinstance(kwargs['threshold'],list):
+                        kwargs['threshold']=[kwargs['threshold']]
+                    kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
                 # if '%' in kwargs['threshold']:
                 #     kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
                 # else:
