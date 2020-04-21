@@ -277,6 +277,33 @@ class BadPropsVects(unittest.TestCase):
 
     jimv = pj.JimVect(vector)
 
+    def test_isEqual(self):
+        """Test JimVect isEqual method."""
+
+        assert self.jimv.properties.isEqual(self.jimv) == True, \
+            'Error in properties.isEqual(): not equal to itself (2 layers)'
+        assert pj.properties.isEqual(self.jimv,self.jimv) == True, \
+            'Error in function properties.isEqual(): not equal to itself'
+        jimv1 = pj.JimVect(vector, ln='milano')
+        jimv2 = pj.JimVect(vector, ln='lodi')
+        assert self.jimv.properties.isEqual(jimv1) == False, \
+            'Error in properties.isEqual(): \
+            2 layer vector should be different from 1 layer vector'
+        assert pj.properties.isEqual(self.jimv,jimv1) == False, \
+            'Error in function properties.isEqual(): \
+            2 layer vector should be different from 1 layer vector'
+        assert jimv1.properties.isEqual(jimv1) == True, \
+            'Error in properties.isEqual(): not equal to itself (1 layer)'
+        assert pj.properties.isEqual(jimv1,jimv1) == True, \
+            'Error in function properties.isEqual(): \
+            not equal to itself (1 layer)'
+        assert jimv1.properties.isEqual(jimv2) == False, \
+            'Error in properties.isEqual(): \
+            layer milano should be different from lodi'
+        assert pj.properties.isEqual(jimv1,jimv2) == False, \
+            'Error in function properties.isEqual(): \
+            layer milano should be different from lodi'
+
     def test_geospatial_infos(self):
         """Test JimVect methods connected to geospatial informations."""
         bbox = self.jimv.properties.getBBox()

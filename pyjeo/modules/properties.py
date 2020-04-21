@@ -74,7 +74,7 @@ def isEqual(first_jim,
                 #todo: check geometry equality for each feature
                 if first_jim.properties.getFieldNames() != second_jim.properties.getFieldNames():
                     return False
-                if _np.array_equal(first_jim.np(ilayer),second_jim.np(ilayer)):
+                if not _np.array_equal(first_jim.np(ilayer),second_jim.np(ilayer)):
                     return False
             return True
         else:
@@ -600,6 +600,7 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
             raise ValueError(
                 'self is empty')
         if isinstance(other, _pj.JimVect):
+
             if other.properties.isEmpty():
                 raise ValueError(
                     'other is empty')
@@ -628,7 +629,7 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
                 #todo: check geometry equality for each feature
                 if self._jim_vect.properties.getFieldNames() != other.properties.getFieldNames():
                     return False
-                if _np.array_equal(self._jim_vect.np(ilayer),other.np(ilayer)):
+                if not _np.array_equal(self._jim_vect.np(ilayer),other.np(ilayer)):
                     return False
             return True
         else:
