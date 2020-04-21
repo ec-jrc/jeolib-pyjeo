@@ -47,5 +47,5 @@ To get help on a function, e.g., :py:func:`geometry.warp`::
 
 To get help on a class method, e.g., :py:meth:`~geometry._Geometry.warp`::
 
-  jim=pj.Jim()
+  jim = pj.Jim()
   help(jim.geometry.warp)
