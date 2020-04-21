@@ -48,12 +48,12 @@ def sml(jim_object,
         reference classes
     :param classes: List of classes to extract from the reference
         (leave empty to extract all classes in reference)
+    :param model: Model filename for trained classifier
     :return: multi-band Jim object, where each band represents the probability
         for each class
 
     see :py:meth:`~_Classify.sml` for an example how to use this function
     """
-
     if model is not None:
         kwargs.update({'method': 'sml', 'model': model})
         return _pj.Jim(jim_object._jipjim.classify(kwargs))

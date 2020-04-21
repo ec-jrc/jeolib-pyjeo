@@ -332,10 +332,10 @@ def geo2image(jim_object,
     Get column and row index (0 based) of some georeferenced coordinates
     x and y (in this case first pixel: 0, 0)::
 
-      jim=pj.Jim('/path/to/raster.tif')
-      x=jim.properties.getUlx()
-      y=jim.properties.getUly()
-      pj.geometry.geo2image(jim,x,y)
+      jim = pj.Jim('/path/to/raster.tif')
+      x = jim.properties.getUlx()
+      y = jim.properties.getUly()
+      pj.geometry.geo2image(jim, x, y)
     """
     coords = jim_object._jipjim.geo2image(x, y)
     return [int(coords[0]), int(coords[1])]
@@ -355,8 +355,8 @@ def image2geo(jim_object,
     Get upper left corner in georeferenced coordinates
     (in SRS of the Jim object)::
 
-      jim=pj.Jim('/path/to/raster.tif')
-      pj.geometry.image2geo(jim,0,0)
+      jim = pj.Jim('/path/to/raster.tif')
+      pj.geometry.image2geo(jim, 0, 0)
 
     """
     return jim_object._jipjim.image2geo(i, j)
@@ -816,7 +816,7 @@ def rasterize(jim_object,
               burn_value: int = 1,
               eo=['ALL_TOUCHED'],
               ln: str = None):
-    """Rasterize Jim object based on GDALRasterizeLayersBuf
+    """Rasterize Jim object based on GDALRasterizeLayersBuf.
 
     :param jim_object: a template Jim object
     :param jim_vect: JimVect object that needs to be rasterized
@@ -3476,11 +3476,10 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
 
         Modifies the instance on which the method was called.
 
-        Example: merge two vectors
+        Example: merge two vectors::
 
-        v1 = pj.JimVect('/path/to/vector1.sqlite')
-        mergedv1.geometry.merge(v2,'/path/to/merged.sqlite',
-                )
+          v1 = pj.JimVect('/path/to/vector1.sqlite')
+          mergedv1.geometry.merge(v2, '/path/to/merged.sqlite')
         """
         non_existing_path = _pj._get_random_path()
         non_existing_path = os.path.join('/vsimem',

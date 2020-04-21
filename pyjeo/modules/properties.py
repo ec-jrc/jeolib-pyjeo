@@ -18,12 +18,20 @@ class _Properties(_pj.modules.JimModuleBase):
 
     def copyGeoTransform(self,
                          sec_jim_object):
-        """Copy geotransform information from another georeferenced image."""
+        """Copy geotransform information from another georeferenced image.
+
+        :param sec_jim_object: Jim from which the geotransform information
+            should be copied.
+        """
         self._jim_object._jipjim.copyGeoTransform(sec_jim_object._jipjim)
 
     def copyGeoReference(self,
                          sec_jim_object):
-        """Copy projection and geotransform information from another georeferenced image."""
+        """Copy projection and geotransform information from another image.
+
+        :param sec_jim_object: Jim from which the projection and geotransform
+            information should be copied.
+        """
         self._jim_object._jipjim.copyGeoReference(sec_jim_object._jipjim)
 
     def covers(self,
