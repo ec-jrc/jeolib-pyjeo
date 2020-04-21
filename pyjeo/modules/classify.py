@@ -63,7 +63,7 @@ def sml(jim_object,
         return _pj.Jim(jim_object._jipjim.classifySML(
             reflist, kwargs))
     else:
-        raise ValueError('Error: no training found through model or reflist')
+        raise ValueError('No training found through model or reflist')
 
 
 class _Classify(_pj.modules.JimModuleBase):
@@ -144,7 +144,7 @@ class _Classify(_pj.modules.JimModuleBase):
             self._jim_object._set(self._jim_object._jipjim.classifySML(
                 reflist._jipjimlist, kwargs))
         else:
-            raise ValueError('Error: no training found through model or reflist')
+            raise ValueError('No training found through model or reflist')
 
     def trainSML(self,
                  reference,
