@@ -22,12 +22,12 @@ class BadBasicMethods(unittest.TestCase):
         jim2 = pj.Jim(jim1, copy_data=True)
         jim3 = pj.Jim(jim1, copy_data=False)
 
-        assert jim1.pixops.isEqual(jim2), 'Error in creating Jim object'
-        assert not jim1.pixops.isEqual(jim3), 'Error in creating Jim object'
+        assert jim1.properties.isEqual(jim2), 'Error in creating Jim object'
+        assert not jim1.properties.isEqual(jim3), 'Error in creating Jim object'
 
         jim4 = pj.Jim(jim1, nrow=5)
 
-        assert jim1.pixops.isEqual(jim4), 'Error in ignoring kwargs when ' \
+        assert jim1.properties.isEqual(jim4), 'Error in ignoring kwargs when ' \
                                           'creating Jim object with ' \
                                           'Jim(jim, kwargs)'
 
@@ -55,13 +55,13 @@ class BadBasicMethods(unittest.TestCase):
         jim8 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
                       seed=0)
 
-        assert jim7.pixops.isEqual(jim8), \
+        assert jim7.properties.isEqual(jim8), \
             'Error in usage of seed keyword argument when creating Jim()'
 
         jim8_2 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=2,
                         seed=0)
 
-        assert jim7.pixops.isEqual(jim8_2), \
+        assert jim7.properties.isEqual(jim8_2), \
             'Error in using only one value for uniform creation of Jim()' \
             '(created Jim is not the same as the one created with[0, value])'
 
@@ -96,7 +96,7 @@ class BadBasicMethods(unittest.TestCase):
         jim10_2 = pj.Jim(nrow=500, ncol=500, otype='Byte', mean=0, stdev=1,
                          seed=0)
 
-        assert jim10.pixops.isEqual(jim10_2), \
+        assert jim10.properties.isEqual(jim10_2), \
             'Error when creating Jim with Jim(nrow, nncol, otype, seed) ' \
             '(not equal to Jim(nrow, nncol, otype, seed, mean=0, stdev=1))'
 
@@ -133,7 +133,7 @@ class BadBasicMethods(unittest.TestCase):
 
         new_jim = pj.np2jim(jim_np)
 
-        assert jim.pixops.isEqual(new_jim), 'Error in jim2np() or np2jim()'
+        assert jim.properties.isEqual(new_jim), 'Error in jim2np() or np2jim()'
 
         anp = np.arange(2 * 100 * 256).reshape((2, 100, 256)).astype(
             np.float64)
@@ -240,7 +240,7 @@ class BadBasicMethods(unittest.TestCase):
 
         jim_same = jim1[:]
 
-        assert jim1.pixops.isEqual(jim_same), \
+        assert jim1.properties.isEqual(jim_same), \
             'Error in Jim[:] (get all items)'
 
         # first = jim1[0, 0, 0, 0]
@@ -369,8 +369,8 @@ class BadBasicMethods(unittest.TestCase):
 
         modis[vect] = modis + 5
 
-        assert modis[vect].pixops.isEqual(fives * 2) and \
-               not modis[0, 0].pixops.isEqual(fives[0, 0]), \
+        assert modis[vect].properties.isEqual(fives * 2) and \
+               not modis[0, 0].properties.isEqual(fives[0, 0]), \
             'Error in using JimVect as an argument in Jim[JimVect] = Jim'
 
         # Test Jim usage in getters and setters as an argument
@@ -501,7 +501,7 @@ class BadBasicMethods(unittest.TestCase):
 
             zeros = jim3 + -jim3
 
-            assert zeros.pixops.isEqual(empty), \
+            assert zeros.properties.isEqual(empty), \
                 'Error in -Jim (not returning negative values)'
 
             minus_ones = empty - 1
@@ -510,32 +510,32 @@ class BadBasicMethods(unittest.TestCase):
 
             jim3_plus_one = jim3 + abs(minus_ones)
 
-            assert jim3_plus_one.pixops.isEqual(jim3 + 1), \
+            assert jim3_plus_one.properties.isEqual(jim3 + 1), \
                 'Error in abs(Jim)'
 
-            assert (~jim3).pixops.isEqual(-1 - jim3), \
+            assert (~jim3).properties.isEqual(-1 - jim3), \
                 'Error in a bit-wise inversion (~Jim)'
 
             # Test __radd__
 
-            assert jim3_plus_one.pixops.isEqual(1 + jim3), \
+            assert jim3_plus_one.properties.isEqual(1 + jim3), \
                 'Error in Jim.__radd__() (number + Jim)'
 
             # Test __rmul__ and __rsub__
 
-            assert (-jim3 - jim3).pixops.isEqual(-2 * jim3), \
+            assert (-jim3 - jim3).properties.isEqual(-2 * jim3), \
                 'Error in operation of type Jim - Jim or number * Jim '
 
             # Test -=
 
             jim3_plus_one -= 1
 
-            assert jim3.pixops.isEqual(jim3_plus_one), \
+            assert jim3.properties.isEqual(jim3_plus_one), \
                 'Error in operation of type Jim -= number'
 
             jim3_plus_one -= jim3
 
-            assert jim3_plus_one.pixops.isEqual(empty), \
+            assert jim3_plus_one.properties.isEqual(empty), \
                 'Error in operation of type Jim -= Jim'
 
             # Test divisions
@@ -667,7 +667,7 @@ class BadBasicMethods(unittest.TestCase):
 
             test **= 2
 
-            assert test.pixops.isEqual(nines), 'Error in Jim **= number'
+            assert test.properties.isEqual(nines), 'Error in Jim **= number'
 
             # Test shifts
             test.pixops.convert('int32')
@@ -686,18 +686,18 @@ class BadBasicMethods(unittest.TestCase):
 
             test = seventy_twos >> 3
 
-            assert test.pixops.isEqual(nines), \
+            assert test.properties.isEqual(nines), \
                 'Error in Jim >> number'
 
             test = pj.Jim(seventy_twos)
             test >>= 3
 
-            assert test.pixops.isEqual(nines), \
+            assert test.properties.isEqual(nines), \
                 'Error in Jim >>= number'
 
             test <<= 3
 
-            assert test.pixops.isEqual(seventy_twos), \
+            assert test.properties.isEqual(seventy_twos), \
                 'Error in Jim <<= number'
 
             try:
@@ -739,23 +739,23 @@ class BadBasicMethods(unittest.TestCase):
             # Test |
             ones.pixops.convert('int32')
 
-            assert (seventy_twos | 1).pixops.isEqual(73 * ones), \
+            assert (seventy_twos | 1).properties.isEqual(73 * ones), \
                 'Error in operation of type Jim | number'
 
-            assert (1 | seventy_twos).pixops.isEqual(73 * ones), \
+            assert (1 | seventy_twos).properties.isEqual(73 * ones), \
                 'Error in operation of type number | Jim'
 
             test |= 1
 
-            assert test.pixops.isEqual(73 * ones), \
+            assert test.properties.isEqual(73 * ones), \
                 'Error in operation of type Jim |= number'
 
-            assert (seventy_twos | ones).pixops.isEqual(73 * ones), \
+            assert (seventy_twos | ones).properties.isEqual(73 * ones), \
                 'Error in operation of type Jim | Jim'
 
             test |= 9 * ones
 
-            assert test.pixops.isEqual(73 * ones), \
+            assert test.properties.isEqual(73 * ones), \
                 'Error in operation of type Jim |= Jim'
 
             try:
@@ -787,23 +787,23 @@ class BadBasicMethods(unittest.TestCase):
 
             # Test ^
 
-            assert (seventy_twos ^ 9).pixops.isEqual(65 * ones), \
+            assert (seventy_twos ^ 9).properties.isEqual(65 * ones), \
                 'Error in operation of type Jim ^ number'
 
-            assert (9 ^ seventy_twos).pixops.isEqual(65 * ones), \
+            assert (9 ^ seventy_twos).properties.isEqual(65 * ones), \
                 'Error in operation of type number ^ Jim'
 
             test ^= 10
 
-            assert test.pixops.isEqual(67 * ones), \
+            assert test.properties.isEqual(67 * ones), \
                 'Error in operation of type Jim ^= number'
 
-            assert (seventy_twos ^ (9 * ones)).pixops.isEqual(65 * ones), \
+            assert (seventy_twos ^ (9 * ones)).properties.isEqual(65 * ones), \
                 'Error in operation of type Jim ^ Jim'
 
             test ^= (68 * ones)
 
-            assert test.pixops.isEqual(7 * ones), \
+            assert test.properties.isEqual(7 * ones), \
                 'Error in operation of type Jim ^= Jim'
 
             try:
@@ -835,24 +835,24 @@ class BadBasicMethods(unittest.TestCase):
 
             # Test &
 
-            assert (seventy_twos & 9).pixops.isEqual(8 * ones), \
+            assert (seventy_twos & 9).properties.isEqual(8 * ones), \
                 'Error in operation of type Jim & number'
 
-            assert (9 & seventy_twos).pixops.isEqual(8 * ones), \
+            assert (9 & seventy_twos).properties.isEqual(8 * ones), \
                 'Error in operation of type number & Jim'
 
             test &= 9
 
-            assert test.pixops.isEqual(ones), \
+            assert test.properties.isEqual(ones), \
                 'Error in operation of type Jim &= number'
 
-            assert (seventy_twos & (9 * ones)).pixops.isEqual(8 * ones), \
+            assert (seventy_twos & (9 * ones)).properties.isEqual(8 * ones), \
                 'Error in operation of type Jim & Jim'
 
             test += 10
             test &= (5 * ones)
 
-            assert test.pixops.isEqual(ones), \
+            assert test.properties.isEqual(ones), \
                 'Error in operation of type Jim &= Jim'
 
             try:
@@ -1172,9 +1172,9 @@ class BadBasicMethods(unittest.TestCase):
         jim1 = pj.Jim(u'tests/data/red1.tif')
         jim2 = pj.Jim(b'tests/data/red1.tif')
 
-        assert jim1.pixops.isEqual(jim0), \
+        assert jim1.properties.isEqual(jim0), \
             'Error in creating Jim object with unicode path'
-        assert jim2.pixops.isEqual(jim0), \
+        assert jim2.properties.isEqual(jim0), \
             'Error in creating Jim object with byte path'
 
         jim0 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
@@ -1184,9 +1184,9 @@ class BadBasicMethods(unittest.TestCase):
         jim2 = pj.Jim(nrow=500, ncol=500, otype=b'Float32', uniform=[0, 2],
                       seed=0)
 
-        assert jim1.pixops.isEqual(jim0), \
+        assert jim1.properties.isEqual(jim0), \
             'Error in the usage of unicode strings inside arguments'
-        assert jim2.pixops.isEqual(jim0), \
+        assert jim2.properties.isEqual(jim0), \
             'Error in the usage of byte strings inside arguments'
 
 

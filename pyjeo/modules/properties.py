@@ -1,5 +1,6 @@
 """Module for accessing Jim attributes and geospatial informations."""
 
+import numpy as _np
 import pyjeo as _pj
 
 # def imageInfo(jim_object):
@@ -7,6 +8,80 @@ import pyjeo as _pj
 
 #     """
 #     return _pj.Jim(jim_object._jipjim.imageInfo())
+
+def isEqual(first_jim,
+            second_jim):
+    """Check if the values of one Jim object are the same as in another one.
+
+    :param first_jim: a Jim or JimVect object
+    :param second_jim: a Jim or JimVect object
+    :return: True if the values are equal, zero otherwise
+    """
+    if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
+        if first_jim.properties.nrOfPlane() != \
+                second_jim.properties.nrOfPlane() or \
+                first_jim.properties.nrOfBand() != \
+                second_jim.properties.nrOfBand():
+            return False
+        if first_jim.properties.nrOfPlane() == 1:
+            for iband in range(0, first_jim.properties.nrOfBand()):
+                if not _np.array_equal(first_jim.np(iband),
+                                       second_jim.np(iband)):
+                    return False
+            return True
+        else:
+            for iplane in range(0, first_jim.properties.nrOfPlane()):
+                first_plane = _pj.geometry.cropPlane(first_jim, iplane)
+                second_plane = _pj.geometry.cropPlane(second_jim, iplane)
+                if first_plane.properties.nrOfBand() != \
+                        second_plane.properties.nrOfBand():
+                    return False
+                for iband in range(0, first_plane.properties.nrOfBand()):
+                    if not _np.array_equal(first_plane.np(iband),
+                                           second_plane.np(iband)):
+                        return False
+            return True
+    elif isinstance(second_jim, _pj.JimVect) and isinstance(first_jim, _pj.JimVect):
+        if first_jim.properties.isEmpty():
+            raise ValueError(
+                'first_jim is empty')
+        if isinstance(second_jim, _pj.JimVect):
+            if second_jim.properties.isEmpty():
+                raise ValueError(
+                    'second_jim is empty')
+            if first_jim.properties.getLayerCount() != \
+                    second_jim.properties.getLayerCount():
+                return False
+            if first_jim.properties.getFeatureCount() != \
+                    second_jim.properties.getFeatureCount():
+                return False
+            if first_jim.properties.getProjection() != \
+                    second_jim.properties.getProjection():
+                return False
+            if first_jim.properties.getUlx() != \
+                    second_jim.properties.getUlx():
+                return False
+            if first_jim.properties.getUly() != \
+                    second_jim.properties.getUly():
+                return False
+            if first_jim.properties.getLrx() != \
+                    second_jim.properties.getLrx():
+                return False
+            if first_jim.properties.getLry() != \
+                    second_jim.properties.getLry():
+                return False
+            for ilayer in range(0, first_jim.properties.getLayerCount()):
+                #todo: check geometry equality for each feature
+                if first_jim.properties.getFieldNames() != second_jim.properties.getFieldNames():
+                    return False
+                if _np.array_equal(first_jim.np(ilayer),second_jim.np(ilayer)):
+                    return False
+            return True
+        else:
+            return False
+    else:
+        return False
+
 
 
 class _Properties(_pj.modules.JimModuleBase):
@@ -213,6 +288,42 @@ class _Properties(_pj.modules.JimModuleBase):
     def imageInfo(self):
         """Return image information (number of lines, columns, etc.)."""
         self._jim_object._jipjim.imageInfo()
+
+    def isEqual(self,
+                other):
+        """Check if the values of one Jim object are the same as in another.
+
+        :param other: a Jim object
+        :return: True if the values are equal, zero otherwise
+        """
+        if isinstance(other, _pj.Jim):
+            if self._jim_object.properties.nrOfPlane() != \
+                    other.properties.nrOfPlane() or \
+                    self._jim_object.properties.nrOfBand() != \
+                    other.properties.nrOfBand():
+                return False
+            if self._jim_object.properties.nrOfPlane() == 1:
+                for iband in range(0, self._jim_object.properties.nrOfBand()):
+                    if not _np.array_equal(self._jim_object.np(iband),
+                                           other.np(iband)):
+                        return False
+                return True
+            else:
+                for iplane in range(0,
+                                    self._jim_object.properties.nrOfPlane()):
+                    first_plane = _pj.geometry.cropPlane(self._jim_object,
+                                                         iplane)
+                    second_plane = _pj.geometry.cropPlane(other, iplane)
+                    if first_plane.properties.nrOfBand() != \
+                            second_plane.properties.nrOfBand():
+                        return False
+                    for iband in range(0, first_plane.properties.nrOfBand()):
+                        if not _np.array_equal(first_plane.np(iband),
+                                               second_plane.np(iband)):
+                            return False
+                return True
+        else:
+            return False
 
     def nrOfBand(self):
         """Get number of bands in this raster dataset.
@@ -477,3 +588,48 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         :return: True if empty, False if not
         """
         return self._jim_vect._jipjimvect.isEmpty()
+
+    def isEqual(self,
+                other):
+        """Check if the values of one Jim object are the same as in another.
+
+        :param other: a Jim object
+        :return: True if the values are equal, zero otherwise
+        """
+        if self._jim_vect.properties.isEmpty():
+            raise ValueError(
+                'self is empty')
+        if isinstance(other, _pj.JimVect):
+            if other.properties.isEmpty():
+                raise ValueError(
+                    'other is empty')
+            if self._jim_vect.properties.getLayerCount() != \
+                    other.properties.getLayerCount():
+                return False
+            if self._jim_vect.properties.getFeatureCount() != \
+                    other.properties.getFeatureCount():
+                return False
+            if self._jim_vect.properties.getProjection() != \
+                    other.properties.getProjection():
+                return False
+            if self._jim_vect.properties.getUlx() != \
+                    other.properties.getUlx():
+                return False
+            if self._jim_vect.properties.getUly() != \
+                    other.properties.getUly():
+                return False
+            if self._jim_vect.properties.getLrx() != \
+                    other.properties.getLrx():
+                return False
+            if self._jim_vect.properties.getLry() != \
+                    other.properties.getLry():
+                return False
+            for ilayer in range(0, self._jim_vect.properties.getLayerCount()):
+                #todo: check geometry equality for each feature
+                if self._jim_vect.properties.getFieldNames() != other.properties.getFieldNames():
+                    return False
+                if _np.array_equal(self._jim_vect.np(ilayer),other.np(ilayer)):
+                    return False
+            return True
+        else:
+            return False

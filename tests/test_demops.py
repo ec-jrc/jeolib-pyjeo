@@ -42,7 +42,7 @@ class BadDEMOps(unittest.TestCase):
 
         destructive_object.demops.flowDirectionD8()
 
-        assert destructive_object.pixops.isEqual(flow), \
+        assert destructive_object.properties.isEqual(flow), \
             'Error in demops.flowDirectionD8()'
 
         flow_2 = pj.demops.flow(destructive_object, 8)
@@ -53,7 +53,7 @@ class BadDEMOps(unittest.TestCase):
 
         destructive_object.demops.flow(8)
 
-        assert destructive_object.pixops.isEqual(flow_2), \
+        assert destructive_object.properties.isEqual(flow_2), \
             'Error in demops.flowDirectionD8()'
 
         destructive_object = pj.Jim(jim)
@@ -61,7 +61,7 @@ class BadDEMOps(unittest.TestCase):
         flow_new = pj.demops.flowNew(destructive_object, flow, 8)
         destructive_object.demops.flowNew(flow, 8)
 
-        assert destructive_object.pixops.isEqual(flow_new), \
+        assert destructive_object.properties.isEqual(flow_new), \
             'Error in demops.flowNew()'
         assert flow_new.stats.getStats(band=0)['min'] > 0, \
             'Error in demops.flowNew()'
@@ -73,7 +73,7 @@ class BadDEMOps(unittest.TestCase):
         jim.demops.flowDirectionDInf()
         stats = jim.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(flow), \
+        assert jim.properties.isEqual(flow), \
             'Error in demops.demFlowDirectionDInf()'
         assert stats['min'] >= -1, \
             'Error in demops.demFlowDirectionDInf()'
@@ -88,7 +88,7 @@ class BadDEMOps(unittest.TestCase):
         # destructive_object.demops.flowDirectionFlat(jim2, 8)
         # stats = destructive_object.stats.getStats(band=0)
 
-        # assert destructive_object.pixops.isEqual(flow), \
+        # assert destructive_object.properties.isEqual(flow), \
         #     'Error in demops.flowDirectionFlat()'
         # TODO: Uncomment after realizing why jim is changed during flow = ...
         #       and fixing the test / mialib / jiplib
@@ -98,7 +98,7 @@ class BadDEMOps(unittest.TestCase):
         # flow = pj.demops.flowDirectionFlatGeodesic(jim, jim2, 8)
         # jim.demops.flowDirectionFlatGeodesic(jim2, 8)
 
-        # assert jim.pixops.isEqual(flow), \
+        # assert jim.properties.isEqual(flow), \
         #     'Error in demops.flowDirectionFlatGeodesic()'
         # # TODO: Uncomment after bug in jiplib fixed
 
@@ -112,7 +112,7 @@ class BadDEMOps(unittest.TestCase):
         destructive_object = pj.Jim(d8)
         destructive_object.demops.contribDrainArea(8)
 
-        assert destructive_object.pixops.isEqual(cda), \
+        assert destructive_object.properties.isEqual(cda), \
             'Error in demops.contribDrainArea()'
         assert destructive_object.stats.getStats(band=0)['min'] >= 1, \
             'Error in demops.contribDrainArea()'
@@ -122,7 +122,7 @@ class BadDEMOps(unittest.TestCase):
         strat = pj.demops.contribDrainAreaStrat(cda, thresh, d8)
         destructive_object.demops.contribDrainAreaStrat(thresh, d8)
         stats = destructive_object.stats.getStats(band=0)
-        assert destructive_object.pixops.isEqual(strat), \
+        assert destructive_object.properties.isEqual(strat), \
             'Error in demops.contribDrainAreaStrat()'
         assert stats['min'] == 0, 'Error in demops.contribDrainAreaStrat()'
         assert stats['max'] == 1, 'Error in demops.contribDrainAreaStrat()'
@@ -133,7 +133,7 @@ class BadDEMOps(unittest.TestCase):
         cda_inf = pj.demops.contribDrainAreaInf(inf)
         inf.demops.contribDrainAreaInf()
 
-        assert inf.pixops.isEqual(cda_inf), \
+        assert inf.properties.isEqual(cda_inf), \
             'Error in demops.contribDrainAreaInf()'
         assert abs(inf.stats.getStats(band=0)['min']) == 1, \
             'Error in demops.contribDrainAreaInf()'
@@ -151,12 +151,12 @@ class BadDEMOps(unittest.TestCase):
             'Error in demops.slopeD8()'
 
         destructive_object.demops.slopeD8()
-        assert destructive_object.pixops.isEqual(slope), \
+        assert destructive_object.properties.isEqual(slope), \
             'Error in demops.slopeD8()'
 
         inf = pj.demops.slopeDInf(jim)
         jim.demops.slopeDInf()
-        assert jim.pixops.isEqual(inf), 'Error in demops.slopeDInf()'
+        assert jim.properties.isEqual(inf), 'Error in demops.slopeDInf()'
         assert inf.stats.getStats(band=0)['min'] >= 0, \
             'Error in demops.slopeDInf()'
 
@@ -169,7 +169,7 @@ class BadDEMOps(unittest.TestCase):
         jim.demops.floodDir(8)
         stats = jim.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(flood_dir), 'Error in demops.floodDir()'
+        assert jim.properties.isEqual(flood_dir), 'Error in demops.floodDir()'
         assert stats['min'] >= 0, 'Error in demops.floodDir()'
 
         assert stats['max'] <= 8, 'Error in demops.floodDir()'
@@ -187,7 +187,7 @@ class BadDEMOps(unittest.TestCase):
         # outlet = pj.demops.catchmentBasinOutlet(jim, d8)
         # jim.demops.catchmentBasinOutlet(d8)
 
-        # assert jim.pixops.isEqual(outlet), \
+        # assert jim.properties.isEqual(outlet), \
         #     'Error in demops.catchmentBasinOutlet()'
         # # TODO: Uncomment after bug in jiplib fixed
 
@@ -203,7 +203,7 @@ class BadDEMOps(unittest.TestCase):
         jim.demops.strahler()
         stats = jim.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(strahler), 'Error in demops.strahler()'
+        assert jim.properties.isEqual(strahler), 'Error in demops.strahler()'
         assert stats['min'] >= 0, 'Error in demops.strahler()'
         assert stats['max'] <= 8, 'Error in demops.strahler()'
 
@@ -217,14 +217,14 @@ class BadDEMOps(unittest.TestCase):
         pit_label = pj.Jim(label)
         pit_label.demops.pitRemovalCarve(jim, 8, 212)
 
-        assert unpit.pixops.isEqual(pit_label), \
+        assert unpit.properties.isEqual(pit_label), \
             'Error in demops.pitRemovalCarve()'
 
         # TODO: Suppress output originating in mialib (flag `quiet`, please?)
         unpit = pj.demops.pitRemovalOptimal(label, jim, 8, 212, 0)
         label.demops.pitRemovalOptimal(jim, 8, 212, 0)
 
-        assert unpit.pixops.isEqual(label), \
+        assert unpit.properties.isEqual(label), \
             'Error in demops.pitRemovalOptimal()'
 
 

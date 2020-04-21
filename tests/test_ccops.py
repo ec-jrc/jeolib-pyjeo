@@ -22,7 +22,7 @@ class BadCCOps(unittest.TestCase):
         distances = pj.ccops.distance2dEuclideanSquared(jim)
         jim.ccops.distance2dEuclideanSquared()
 
-        assert jim.pixops.isEqual(distances), \
+        assert jim.properties.isEqual(distances), \
             'Error in ccops.distance2dEuclideanSquared()'
 
         stats = jim.stats.getStats(band=0)
@@ -40,7 +40,7 @@ class BadCCOps(unittest.TestCase):
         jim.ccops.distance2d4()
         stats = jim.stats.getStats(['max', 'min'])
 
-        assert jim.pixops.isEqual(distances), \
+        assert jim.properties.isEqual(distances), \
             'Inconsistency in ccops.distance2d4() ' \
             '(method returns different result than function)'
 
@@ -58,7 +58,7 @@ class BadCCOps(unittest.TestCase):
         jim.ccops.distance2dChamfer(chamfer_type)
         stats = jim.stats.getStats(['max', 'min'])
 
-        assert jim.pixops.isEqual(distances), \
+        assert jim.properties.isEqual(distances), \
             'Inconsistency in ccops.distance2dChamfer() ' \
             '(method returns different result than function)'
 
@@ -70,7 +70,7 @@ class BadCCOps(unittest.TestCase):
         chamfer_type = 5711
         jim.ccops.distance2dChamfer(chamfer_type)
 
-        assert not jim.pixops.isEqual(distances), \
+        assert not jim.properties.isEqual(distances), \
             'Suspicious values for distance2dChamfer() ' \
             '(same results for different types of distance)'
 
@@ -90,11 +90,11 @@ class BadCCOps(unittest.TestCase):
         stats = jim_byte.stats.getStats(band=0)
         max = stats['max']
 
-        assert jim_byte.pixops.isEqual(distances), \
+        assert jim_byte.properties.isEqual(distances), \
             'Inconsistency in ccops.distance2dEuclideanConstrained() ' \
             '(method returns different result than function)'
 
-        assert not jim2.pixops.isEqual(distances), \
+        assert not jim2.properties.isEqual(distances), \
             'Error in ccops.distance2dEuclideanConstrained() ' \
             '(did not have any effect)'
 
@@ -119,11 +119,11 @@ class BadCCOps(unittest.TestCase):
 
         stats = jim_byte.stats.getStats(['max', 'min'])
 
-        assert jim_byte.pixops.isEqual(distances), \
+        assert jim_byte.properties.isEqual(distances), \
             'Inconsistency in ccops.distanceInfluenceZones2dEuclidean() ' \
             '(method returns different result than function)'
 
-        assert not jim.pixops.isEqual(distances), \
+        assert not jim.properties.isEqual(distances), \
             'Error in ccops.distanceInfluenceZones2dEuclidean() ' \
             '(did not have any effect)'
 
@@ -152,11 +152,11 @@ class BadCCOps(unittest.TestCase):
         stats = jim_byte1.stats.getStats(band=0)
         mean = stats['mean']
 
-        assert jim_byte1.pixops.isEqual(distances), \
+        assert jim_byte1.properties.isEqual(distances), \
             'Inconsistency in ccops.distanceGeodesic() ' \
             '(method returns different result than function)'
 
-        assert not jim1.pixops.isEqual(distances), \
+        assert not jim1.properties.isEqual(distances), \
             'Error in ccops.distanceGeodesic() ' \
             '(did not have any effect)'
 
@@ -171,11 +171,11 @@ class BadCCOps(unittest.TestCase):
         jim_byte2.ccops.distanceGeodesic(jim2, 8)
         stats = jim_byte2.stats.getStats(band=0)
 
-        assert jim_byte2.pixops.isEqual(distances), \
+        assert jim_byte2.properties.isEqual(distances), \
             'Inconsistency in ccops.distanceGeodesic() ' \
             '(method returns different result than function)'
 
-        assert not jim_byte2.pixops.isEqual(jim_byte1), \
+        assert not jim_byte2.properties.isEqual(jim_byte1), \
             'Error in ccops.distanceGeodesic() ' \
             '(the same result for graph=8 and graph=4)'
 
@@ -206,11 +206,11 @@ class BadCCOps(unittest.TestCase):
 
         stats = labelled.stats.getStats()
 
-        # assert jim1_copy.pixops.isEqual(labelled), \
+        # assert jim1_copy.properties.isEqual(labelled), \
         #     'Inconsistency in ccops.dissimToAlphaCCs() ' \
         #     '(method returns different result than function)'
 
-        assert not labelled.pixops.isEqual(labelled_different), \
+        assert not labelled.properties.isEqual(labelled_different), \
             'Error in ccops.dissimToAlphaCCs() ' \
             'created the same object for different alpha value)'
 
@@ -234,11 +234,11 @@ class BadCCOps(unittest.TestCase):
 
         stats = labelled.stats.getStats(band=0)
 
-        assert jim1_copy.pixops.isEqual(labelled), \
+        assert jim1_copy.properties.isEqual(labelled), \
             'Inconsistency in ccops.labelConstrainedCCsVariance() ' \
             '(method returns different result than function)'
 
-        assert not labelled.pixops.isEqual(labelled_different), \
+        assert not labelled.properties.isEqual(labelled_different), \
             'Error in ccops.labelConstrainedCCsVariance() ' \
             '(created the same object for different alpha value)'
 
@@ -297,10 +297,10 @@ class BadCCOps(unittest.TestCase):
 
         stats = jim.stats.getStats(['min', 'max'])
 
-        assert jim.pixops.isEqual(labelled), \
+        assert jim.properties.isEqual(labelled), \
             'Inconsistency in ccops.labelFlatZonesSeeded() ' \
             '(method returns different result than function)'
-        assert not labelled.pixops.isEqual(labelled_different), \
+        assert not labelled.properties.isEqual(labelled_different), \
             'Error in ccops.labelFlatZonesSeeded() ' \
             '(created the same object for different ox and oy)'
         assert stats['min'] == 0, \

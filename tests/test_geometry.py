@@ -24,14 +24,14 @@ class BadGeometry(unittest.TestCase):
         jim3d = pj.Jim(rasterfn, band2plane=True)
         jim2d = pj.Jim(rasterfn, band2plane=False)
         jim2d.geometry.band2plane()
-        assert jim2d.pixops.isEqual(jim3d), \
+        assert jim2d.properties.isEqual(jim3d), \
             'Error in geometry.band2plane() ' \
             '(read as 3d is not equal to convert to 3d)'
         jim2d.geometry.plane2band()
-        assert pj.geometry.plane2band(jim3d).pixops.isEqual(jim2d), \
+        assert pj.geometry.plane2band(jim3d).properties.isEqual(jim2d), \
             'Error in geometry.plane2band() ' \
             '(function is not equal to method)'
-        assert pj.geometry.band2plane(jim2d).pixops.isEqual(jim3d), \
+        assert pj.geometry.band2plane(jim2d).properties.isEqual(jim3d), \
             'Error in geometry.band2plane() ' \
             '(function is not equal to method)'
 
@@ -54,10 +54,10 @@ class BadGeometry(unittest.TestCase):
 
         jim0to11.geometry.stackBand(jim12)
 
-        assert jim_stacked.pixops.isEqual(jim0to11), \
+        assert jim_stacked.properties.isEqual(jim0to11), \
             'Inconsistency in geometry.stackBand() ' \
             '(method returns different result than function)'
-        assert jim_stacked.pixops.isEqual(jim), \
+        assert jim_stacked.properties.isEqual(jim), \
             'Error in geometry.stackBand() ' \
             '(stacked bands are not equal to an object from which they were ' \
             'cropped)'
@@ -74,10 +74,10 @@ class BadGeometry(unittest.TestCase):
 
         jim0to11.geometry.stackBand(jim, band=11)
 
-        assert jim_stacked.pixops.isEqual(jim0to11), \
+        assert jim_stacked.properties.isEqual(jim0to11), \
             'Inconsistency in geometry.stackBand(band) ' \
             '(method returns different result than function)'
-        assert jim_stacked.pixops.isEqual(jim), \
+        assert jim_stacked.properties.isEqual(jim), \
             'Error in geometry.stackBand(band) ' \
             '(stacked bands are not equal to an object from which they were ' \
             'cropped)'
@@ -90,21 +90,21 @@ class BadGeometry(unittest.TestCase):
         jimliststack = pj.geometry.stackPlane(jimlist)
         jimstack = pj.geometry.stackPlane(pj.geometry.stackPlane(jim0, jim1),
                                           jim2)
-        assert jimliststack.pixops.isEqual(jimstack), \
+        assert jimliststack.properties.isEqual(jimstack), \
             'Error in geometry.stackPlane() ' \
             '(jimliststack not equal to jimstack)'
         jim3 = pj.JimList([jim0, jim1, jim2]).geometry.stackPlane()
         jim3.geometry.cropPlane([0, 1])
-        assert pj.geometry.cropPlane(jim3, 0).pixops.isEqual(jim0), \
+        assert pj.geometry.cropPlane(jim3, 0).properties.isEqual(jim0), \
             'Error jim3 not equal to jim0'
         jim4 = pj.JimList([jim0, jim1, jim2]).geometry.stackPlane()
         jim4.geometry.cropPlane([1, 2])
-        assert pj.geometry.cropPlane(jim4, 0).pixops.isEqual(jim1), \
+        assert pj.geometry.cropPlane(jim4, 0).properties.isEqual(jim1), \
             'Error jim3 not equal to jim1'
         jim = pj.JimList([jim3, jim4]).geometry.stackPlane()
         jim.geometry.cropPlane([1, 2])
         jim.geometry.cropPlane(0)
-        assert jim.pixops.isEqual(jim1), \
+        assert jim.properties.isEqual(jim1), \
             'Error jim not equal to jim1'
 
         # Test the reducePlane() method
@@ -121,28 +121,28 @@ class BadGeometry(unittest.TestCase):
                                              rule='max')
         jim0.geometry.cropPlane(0)
         jim0[pj.geometry.cropBand(jim0, 0) == 0] = 0
-        assert pj.geometry.cropBand(jimreduce0, 0).pixops.isEqual(
+        assert pj.geometry.cropBand(jimreduce0, 0).properties.isEqual(
             pj.geometry.cropBand(jim0, 0)), \
             'Error in geometry.reducePlane(): jimreduce0 band 0!= jim0 band 0'
-        assert pj.geometry.cropBand(jimreduce0, 1).pixops.isEqual(
+        assert pj.geometry.cropBand(jimreduce0, 1).properties.isEqual(
             pj.geometry.cropBand(jim0, 1)), \
             'Error in geometry.reducePlane(): jimreduce0 band 1!= jim0 band 1'
-        assert pj.geometry.cropBand(jimreduce0, 2).pixops.isEqual(
+        assert pj.geometry.cropBand(jimreduce0, 2).properties.isEqual(
             pj.geometry.cropBand(jim0, 2)), \
             'Error in geometry.reducePlane(): jimreduce0 band 2!= jim0 band 2'
-        assert jimreduce0.pixops.isEqual(jimreduce1), \
+        assert jimreduce0.properties.isEqual(jimreduce1), \
             'Error in geometry.reducePlane(): jimreduce0 != jimreduce1'
         assert jimreduce.properties.nrOfPlane() == 1
         jimstack.geometry.reducePlane(rule='max')
         assert jimstack.properties.nrOfPlane() == 1
-        assert jimreduce.pixops.isEqual(jimstack), \
+        assert jimreduce.properties.isEqual(jimstack), \
             'Error in geometry.reducePlane()'
 
         # Test the band2plane() method
         jimband = pj.Jim(rasterfn, band=[0, 1, 2])
         jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
         jimband.geometry.band2plane()
-        assert jimband.pixops.isEqual(jimplane), \
+        assert jimband.properties.isEqual(jimplane), \
             'Error in geometry.band2plane() ' \
             '(jimband not equal to jimsplane)'
 
@@ -418,7 +418,7 @@ class BadGeometry(unittest.TestCase):
         mod_x = (raster_bbox_cropped[2] - raster_bbox_cropped[0]) % raster_dx
         mod_y = (raster_bbox_cropped[3] - raster_bbox_cropped[1]) % raster_dy
 
-        assert raster.pixops.isEqual(cropped), \
+        assert raster.properties.isEqual(cropped), \
             'Inconsistency in geometry.cropOgr() ' \
             '(method returns different result than function)'
         assert raster_bbox != raster_bbox_cropped, \
@@ -493,7 +493,7 @@ class BadGeometry(unittest.TestCase):
         added = pj.geometry.imageFrameAdd(jim, 1, 2, 1, 2, 1, 2, 5)
         jim.geometry.imageFrameAdd(1, 2, 1, 2, 1, 2, 5)
 
-        assert jim.pixops.isEqual(added), \
+        assert jim.properties.isEqual(added), \
             'Inconsistency in geometry.imageFrameAdd() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfCol() == ncol + 3, \
@@ -524,7 +524,7 @@ class BadGeometry(unittest.TestCase):
         subtracted = pj.geometry.imageFrameSubtract(jim, 1, 2, 1, 2, 1, 2)
         jim.geometry.imageFrameSubtract(1, 2, 1, 2, 1, 2)
 
-        assert jim.pixops.isEqual(subtracted), \
+        assert jim.properties.isEqual(subtracted), \
             'Inconsistency in geometry.imageFrameSubtract() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfCol() == ncol, \
@@ -548,7 +548,7 @@ class BadGeometry(unittest.TestCase):
         setted = pj.geometry.imageFrameSet(jim, 1, 2, 1, 2, 1, 0, 5)
         jim.geometry.imageFrameSet(1, 2, 1, 2, 1, 0, 5)
 
-        assert jim.pixops.isEqual(setted), \
+        assert jim.properties.isEqual(setted), \
             'Inconsistency in geometry.imageFrameSet() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfCol() == ncol, \
@@ -575,7 +575,7 @@ class BadGeometry(unittest.TestCase):
         setted = pj.geometry.imageFrameSet(jim, 1, 2, 1, 2, 0, 1, 10, band=0)
         jim.geometry.imageFrameSet(1, 2, 1, 2, 0, 1, 10, band=0)
 
-        assert jim.pixops.isEqual(setted), \
+        assert jim.properties.isEqual(setted), \
             'Inconsistency in geometry.imageFrameSet() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfCol() == ncol, \
@@ -605,7 +605,7 @@ class BadGeometry(unittest.TestCase):
         added = pj.geometry.imageFrameAdd(jim, 1, 2, 1, 2, 1, 2, 10)
         jim.geometry.imageFrameAdd(1, 2, 1, 2, 1, 2, 10)
 
-        assert jim.pixops.isEqual(added), \
+        assert jim.properties.isEqual(added), \
             'Inconsistency in geometry.imageFrameAdd() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfCol() == ncol + 3, \
@@ -635,7 +635,7 @@ class BadGeometry(unittest.TestCase):
         subtracted = pj.geometry.imageFrameSubtract(jim, 1, 2, 1, 2, 1, 2)
         jim.geometry.imageFrameSubtract(1, 2, 1, 2, 1, 2)
 
-        assert jim.pixops.isEqual(subtracted), \
+        assert jim.properties.isEqual(subtracted), \
             'Inconsistency in geometry.imageFrameSubtract() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfCol() == ncol, \
@@ -685,7 +685,7 @@ class BadGeometry(unittest.TestCase):
     #     magnified = pj.geometry.magnify(jim, 2)
     #     jim.geometry.magnify(2)
     #
-    #     assert jim.pixops.isEqual(magnified), \
+    #     assert jim.properties.isEqual(magnified), \
     #         'Inconsistency in geometry.magnify() ' \
     #         '(method returns different result than function)'
     #     assert jim.properties.nrOfCol() == ncol * 2, \
@@ -709,7 +709,7 @@ class BadGeometry(unittest.TestCase):
     #     magnified = pj.geometry.magnify(jim, 3)
     #     jim.geometry.magnify(3)
     #
-    #     assert jim.pixops.isEqual(magnified), \
+    #     assert jim.properties.isEqual(magnified), \
     #         'Inconsistency in geometry.magnify() ' \
     #         '(method returns different result than function)'
     #     assert jim.properties.nrOfCol() == ncol * 2 * 3, \
@@ -743,7 +743,7 @@ class BadGeometry(unittest.TestCase):
 
         new_avg = jim.stats.getStats('mean')['mean']
 
-        assert jim.pixops.isEqual(plotted), \
+        assert jim.properties.isEqual(plotted), \
             'Inconsistency in geometry.plotLine() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfCol() == ncol, \
@@ -896,7 +896,7 @@ class BadGeometry(unittest.TestCase):
         rasterized = pj.geometry.rasterize(jim0, sample,
                                            eo=['ATTRIBUTE=label'])
 
-        assert rasterized.pixops.isEqual(mask), \
+        assert rasterized.properties.isEqual(mask), \
             'Error in geometry.rasterize() ' \
             '(function is not equal to method)'
 
@@ -930,7 +930,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -968,7 +968,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1012,7 +1012,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1068,7 +1068,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1127,7 +1127,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1165,7 +1165,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1209,7 +1209,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1265,7 +1265,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1325,7 +1325,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1360,7 +1360,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1398,7 +1398,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1445,7 +1445,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function for more than ' \
             '2-planes Jim)'
@@ -1508,7 +1508,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1583,7 +1583,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1642,7 +1642,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1677,7 +1677,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1715,7 +1715,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1762,7 +1762,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function for more than ' \
             '2-planes Jim)'
@@ -1826,7 +1826,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1904,7 +1904,7 @@ class BadGeometry(unittest.TestCase):
 
         stats_reduced = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(reduced), \
+        assert jim.properties.isEqual(reduced), \
             'Error in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \

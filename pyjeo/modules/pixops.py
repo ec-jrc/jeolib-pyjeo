@@ -110,42 +110,6 @@ def infimum(jim,
     return inf
 
 
-def isEqual(first_jim,
-            second_jim):
-    """Check if the values of one Jim object are the same as in another one.
-
-    :param first_jim: a Jim object
-    :param second_jim: a Jim object
-    :return: True if the values are equal, zero otherwise
-    """
-    if isinstance(second_jim, _pj.Jim) and isinstance(first_jim, _pj.Jim):
-        if first_jim.properties.nrOfPlane() != \
-                second_jim.properties.nrOfPlane() or \
-                first_jim.properties.nrOfBand() != \
-                second_jim.properties.nrOfBand():
-            return False
-        if first_jim.properties.nrOfPlane() == 1:
-            for iband in range(0, first_jim.properties.nrOfBand()):
-                if not _np.array_equal(first_jim.np(iband),
-                                       second_jim.np(iband)):
-                    return False
-            return True
-        else:
-            for iplane in range(0, first_jim.properties.nrOfPlane()):
-                first_plane = _pj.geometry.cropPlane(first_jim, iplane)
-                second_plane = _pj.geometry.cropPlane(second_jim, iplane)
-                if first_plane.properties.nrOfBand() != \
-                        second_plane.properties.nrOfBand():
-                    return False
-                for iband in range(0, first_plane.properties.nrOfBand()):
-                    if not _np.array_equal(first_plane.np(iband),
-                                           second_plane.np(iband)):
-                        return False
-            return True
-    else:
-        return False
-
-
 # def modulo(jim_object, val):
 #     """Set all pixels to their value modulo val.
 
@@ -466,42 +430,6 @@ class _PixOps(_pj.modules.JimModuleBase):
                     self._jim_object._jipjim.d_pointOpArith(newJim._jipjim, 4)
             else:
                 self._jim_object._jipjim.d_pointOpArith(jim._jipjim, 4)
-
-    def isEqual(self,
-                other):
-        """Check if the values of one Jim object are the same as in another.
-
-        :param other: a Jim object
-        :return: True if the values are equal, zero otherwise
-        """
-        if isinstance(other, _pj.Jim):
-            if self._jim_object.properties.nrOfPlane() != \
-                    other.properties.nrOfPlane() or \
-                    self._jim_object.properties.nrOfBand() != \
-                    other.properties.nrOfBand():
-                return False
-            if self._jim_object.properties.nrOfPlane() == 1:
-                for iband in range(0, self._jim_object.properties.nrOfBand()):
-                    if not _np.array_equal(self._jim_object.np(iband),
-                                           other.np(iband)):
-                        return False
-                return True
-            else:
-                for iplane in range(0,
-                                    self._jim_object.properties.nrOfPlane()):
-                    first_plane = _pj.geometry.cropPlane(self._jim_object,
-                                                         iplane)
-                    second_plane = _pj.geometry.cropPlane(other, iplane)
-                    if first_plane.properties.nrOfBand() != \
-                            second_plane.properties.nrOfBand():
-                        return False
-                    for iband in range(0, first_plane.properties.nrOfBand()):
-                        if not _np.array_equal(first_plane.np(iband),
-                                               second_plane.np(iband)):
-                            return False
-                return True
-        else:
-            return False
 
     # def modulo(self, val):
     #     """Set all pixels to their value modulo val
