@@ -685,7 +685,7 @@ def merge(jvec1,
           jvec2,
           output: str,
           **kwargs):
-    """Mege JimVect object with another JimVect object.
+    """Merge JimVect object with another JimVect object.
 
     :param jvec1: first JimVect object to merge
     :param jvec2: second JimVect object to merge
@@ -3468,7 +3468,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
     def merge(self,
               jvec,
               **kwargs):
-        """Mege JimVect object with another JimVect object.
+        """Merge JimVect object with another JimVect object.
 
         :param jvec: JimVect object to merge
         :param kwargs: See table below
