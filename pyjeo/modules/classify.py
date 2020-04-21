@@ -30,7 +30,7 @@ def reclass(jim_object,
 
 
 def sml(jim_object,
-        reflist = None,
+        reflist=None,
         classes: list = None,
         model: str = None,
         **kwargs):
@@ -94,7 +94,7 @@ class _Classify(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_reclass(kwargs)
 
     def sml(self,
-            reflist = None,
+            reflist=None,
             classes: list = None,
             model: str = None,
             **kwargs):
