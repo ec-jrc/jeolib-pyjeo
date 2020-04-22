@@ -20,7 +20,7 @@ class BadBasicMethodLists(unittest.TestCase):
 
         assert len(jiml) == 2, 'Error in JimList creation from a list of ' \
                                'Jims (wrong number of items afterwards)'
-        assert jiml[0].pixops.isEqual(jim1) and jiml[1].pixops.isEqual(jim1), \
+        assert jiml[0].properties.isEqual(jim1) and jiml[1].properties.isEqual(jim1), \
             'Error in JimList creation from a list of Jims ' \
             '(items at positions do not correspond with the used ones)'
 
@@ -29,8 +29,8 @@ class BadBasicMethodLists(unittest.TestCase):
 
         assert len(jiml2) == 2, 'Error in JimList creation from a JimList ' \
                                 '(wrong number of items afterwards)'
-        assert jiml2[0].pixops.isEqual(jim1) and \
-               jiml2[1].pixops.isEqual(jim1), \
+        assert jiml2[0].properties.isEqual(jim1) and \
+               jiml2[1].properties.isEqual(jim1), \
             'Error in JimList creation from a JimList object ' \
             '(items at positions do not correspond with the used ones)'
 
@@ -40,7 +40,7 @@ class BadBasicMethodLists(unittest.TestCase):
         print(jiml)
         assert len(jiml) == 1, 'Error in JimList creation from a Jim object ' \
                                '(wrong number of items afterwards)'
-        assert jiml[0].pixops.isEqual(jim1), \
+        assert jiml[0].properties.isEqual(jim1), \
             'Error in JimList creation from a Jim object ' \
             '(item at position 0 does not correspond with the used Jim)'
 
@@ -72,9 +72,9 @@ class BadBasicMethodLists(unittest.TestCase):
         assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
-        assert jiml1[2].pixops.isEqual(jiml1[0]), 'Error in JimList.append()'
-        assert not jiml1[2].pixops.isEqual(jiml1[1]), 'Error in JimList[index]'
-        assert jiml1[2].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(2))),\
+        assert jiml1[2].properties.isEqual(jiml1[0]), 'Error in JimList.append()'
+        assert not jiml1[2].properties.isEqual(jiml1[1]), 'Error in JimList[index]'
+        assert jiml1[2].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(2))),\
             'Error in JimList.append()'
 
         assert jiml1.count(jim1) == 2, 'Error in JimList.count(Jim)'
@@ -86,7 +86,7 @@ class BadBasicMethodLists(unittest.TestCase):
             'Error in JimList._set() with argument from_list=True'
 
         assert jiml1.count(jim1) == 3, 'Error in JimList.count(Jim)'
-        assert jiml1[4].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(4))),\
+        assert jiml1[4].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(4))),\
             'Error in JimList.extend()'
 
         jiml1.insert(1, jim3)
@@ -97,7 +97,7 @@ class BadBasicMethodLists(unittest.TestCase):
 
         # TODO: the following line results in segmentation fault...
         # assert jiml1.count(jim3) == 2, 'Error in JimList.insert(Jim)'
-        assert jiml1[1].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
+        assert jiml1[1].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
             'Error in JimList.insert()'
 
         assert jiml1.index(jim3) == 1, 'Error in JimList.index() or insert()'
@@ -108,7 +108,7 @@ class BadBasicMethodLists(unittest.TestCase):
         assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
         assert jiml1.count(jim3) == 1, 'Error in JimList.pop(Jim)'
-        assert popped.pixops.isEqual(jim3), 'Error in JimList.pop()'
+        assert popped.properties.isEqual(jim3), 'Error in JimList.pop()'
 
         jiml1.remove(jim3)
 
@@ -120,7 +120,7 @@ class BadBasicMethodLists(unittest.TestCase):
         jiml2.reverse()
 
         assert jiml2.index(jim1) == 2, 'Error in JimList.reverse()'
-        assert jiml1[1].pixops.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
+        assert jiml1[1].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
             'Error in JimList.reverse()'
 
 

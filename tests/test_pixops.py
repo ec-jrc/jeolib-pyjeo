@@ -13,78 +13,6 @@ class BadPixOps(unittest.TestCase):
     """Test functions and methods from pixops modules."""
 
     @staticmethod
-    def test_isEqual():
-        """Test isEqual() function."""
-        jim1 = pj.Jim(tiles[0])
-        jim2 = pj.Jim(tiles[0])
-        jim3 = pj.Jim(tiles[1])
-
-        assert jim1.pixops.isEqual(jim2), \
-            'Error in pixops.isEqual() method (for two Jims)'
-        assert not jim1.pixops.isEqual(jim3), \
-            'Error in pixops.isEqual() method (non-equality)'
-        assert not jim1.pixops.isEqual(1), \
-            'Error in pixops.isEqual() method (for not Jim object)'
-
-        assert pj.pixops.isEqual(jim1, jim2), \
-            'Error in pixops.isEqual() function (for two Jims)'
-        assert not pj.pixops.isEqual(jim1, jim3), \
-            'Error in pixops.isEqual() function (non-equality)'
-        assert not pj.pixops.isEqual(jim1, 1), \
-            'Error in pixops.isEqual() function (for not Jim object)'
-
-        jim_oneplane = pj.Jim(ncol=5, nrow=5, nband=2, otype='GDT_Byte')
-        jim_twoplanes = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
-                               otype='GDT_Byte')
-
-        jim_oneplane.pixops.setData(5)
-        jim_twoplanes.pixops.setData(5)
-
-        assert not jim_oneplane.pixops.isEqual(jim_twoplanes), \
-            'Error in Jim.pixops.isEqual() ' \
-            '(not False for different number of planes)'
-
-        assert not pj.pixops.isEqual(jim_oneplane, jim_twoplanes), \
-            'Error in pj.pixops.isEqual() ' \
-            '(not False for different number of planes)'
-
-        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
-                                otype='GDT_Byte')
-        jim_twoplanes2.pixops.setData(5)
-
-        assert jim_twoplanes.pixops.isEqual(jim_twoplanes2), \
-            'Error in pj.pixops.isEqual() ' \
-            '(wrong result for multiplane Jim object)'
-
-        assert pj.pixops.isEqual(jim_twoplanes, jim_twoplanes2), \
-            'Error in pj.pixops.isEqual() ' \
-            '(wrong result for multiplane Jim object)'
-
-        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=3, nplane=2,
-                                otype='GDT_Byte')
-        jim_twoplanes2.pixops.setData(5)
-
-        assert not jim_twoplanes.pixops.isEqual(jim_twoplanes2), \
-            'Error in Jim.pixops.isEqual() ' \
-            '(not False for different number of bands for multiplane Jim)'
-
-        assert not pj.pixops.isEqual(jim_twoplanes, jim_twoplanes2), \
-            'Error in pj.pixops.isEqual() ' \
-            '(not False for different number of bands for multiplane Jim)'
-
-        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
-                                otype='GDT_Byte')
-        jim_twoplanes2.pixops.setData(6)
-
-        assert not jim_twoplanes.pixops.isEqual(jim_twoplanes2), \
-            'Error in pj.pixops.isEqual() ' \
-            '(wrong result for multiplane multiband Jim object)'
-
-        assert not pj.pixops.isEqual(jim_twoplanes, jim_twoplanes2), \
-            'Error in pj.pixops.isEqual() ' \
-            '(wrong result for multiplane multiband Jim object)'
-
-    @staticmethod
     def test_NDVI():
         """Test computing NDVI in different ways."""
         jim = pj.Jim(testFile)
@@ -96,21 +24,21 @@ class BadPixOps(unittest.TestCase):
         ndvi = pj.pixops.NDVI(jim, 0, 1)
         jim.pixops.NDVI(0, 1)
 
-        assert jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
+        assert jim.properties.isEqual(ndvi), 'Error in computing NDVI'
 
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
         jim_red.pixops.NDVISeparateBands(jim_nir)
 
-        assert jim_red.pixops.isEqual(ndvi), 'Error in computing ' \
+        assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
                                              'NDVISeparateBands'
 
-        assert jim_red.pixops.isEqual(jim), 'Error in computing NDVI or ' \
+        assert jim_red.properties.isEqual(jim), 'Error in computing NDVI or ' \
                                             'NDVISeparateBands'
 
         jim_nir.pixops.convert('Float32')
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
 
-        assert not jim.pixops.isEqual(ndvi), 'Error in computing NDVI'
+        assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
 
     @staticmethod
     def test_supremum_infimum():
@@ -130,16 +58,16 @@ class BadPixOps(unittest.TestCase):
                 max_ndvi4.pixops.supremum(pj.JimList([b, max_ndvi2]))
                 max_ndvi5 = pj.JimList([max_ndvi2, b]).pixops.supremum()
 
-                assert max_ndvi.pixops.isEqual(max_ndvi2), \
+                assert max_ndvi.properties.isEqual(max_ndvi2), \
                     'Inconsistency in pixops.supremum() ' \
                     '(method returns different result than function)'
-                assert max_ndvi.pixops.isEqual(max_ndvi_func), \
+                assert max_ndvi.properties.isEqual(max_ndvi_func), \
                     'Error in pixops.supremum or jim[a>jim] = a'
-                assert max_ndvi.pixops.isEqual(max_ndvi3), \
+                assert max_ndvi.properties.isEqual(max_ndvi3), \
                     'Error in pixops.supremum JimList 3'
-                assert max_ndvi.pixops.isEqual(max_ndvi4), \
+                assert max_ndvi.properties.isEqual(max_ndvi4), \
                     'Error in pixops.supremum JimList 4'
-                assert max_ndvi.pixops.isEqual(max_ndvi5), \
+                assert max_ndvi.properties.isEqual(max_ndvi5), \
                     'Error in pixops.supremum JimList 5'
 
                 min_ndvi[b < min_ndvi] = b
@@ -150,16 +78,16 @@ class BadPixOps(unittest.TestCase):
                 min_ndvi4.pixops.infimum(pj.JimList([b, min_ndvi2]))
                 min_ndvi5 = pj.JimList([min_ndvi2, b]).pixops.infimum()
 
-                assert min_ndvi.pixops.isEqual(min_ndvi2), \
+                assert min_ndvi.properties.isEqual(min_ndvi2), \
                     'Inconsistency in pixops.infimum() ' \
                     '(method returns different result than function)'
-                assert min_ndvi.pixops.isEqual(min_ndvi_func), \
+                assert min_ndvi.properties.isEqual(min_ndvi_func), \
                     'Error in pixops.infimum or jim[a<jim] = a'
-                assert min_ndvi.pixops.isEqual(min_ndvi3), \
+                assert min_ndvi.properties.isEqual(min_ndvi3), \
                     'Error in pixops.infimum JimList 3'
-                assert min_ndvi.pixops.isEqual(min_ndvi4), \
+                assert min_ndvi.properties.isEqual(min_ndvi4), \
                     'Error in pixops.infimum JimList 4'
-                assert min_ndvi.pixops.isEqual(min_ndvi5), \
+                assert min_ndvi.properties.isEqual(min_ndvi5), \
                     'Error in pixops.infimum JimList 5'
             else:
                 max_ndvi = pj.pixops.NDVISeparateBands(jim4, jim8)
@@ -181,7 +109,7 @@ class BadPixOps(unittest.TestCase):
                                              eq=True)
             jim.pixops.stretch(otype='GDT_Byte', dst_min=0, dst_max=255,
                                cc_min=2, cc_max=98)
-            assert jim.pixops.isEqual(stretched), \
+            assert jim.properties.isEqual(stretched), \
                 'Inconsistency in pixops.stretch() ' \
                 '(method returns different result than function)'
 
@@ -236,7 +164,7 @@ class BadPixOps(unittest.TestCase):
 
         levelled_stats = levelled.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(levelled), \
+        assert jim.properties.isEqual(levelled), \
             'Inconsistency in pixops.setLevel() ' \
             '(method returns different result than function)'
         assert levelled_stats != stats, \
@@ -249,14 +177,14 @@ class BadPixOps(unittest.TestCase):
         fives = pj.pixops.setData(jim, 5, bands=[0, 1])
         jim.pixops.setData(5, bands=[0, 1])
 
-        assert jim.pixops.isEqual(fives), \
+        assert jim.properties.isEqual(fives), \
             'Inconsistency in pixops.setData() ' \
             '(method returns different result than function)'
 
         fives = pj.pixops.setData(jim, 5)
         jim.pixops.setData(5)
 
-        assert jim.pixops.isEqual(fives), \
+        assert jim.properties.isEqual(fives), \
             'Inconsistency in pixops.setData() ' \
             '(method returns different result than function)'
 
@@ -440,7 +368,7 @@ class BadPixOps(unittest.TestCase):
         compressed = pj.pixops.histoCompress(destructive_object)
         destructive_object.pixops.histoCompress()
 
-        assert destructive_object.pixops.isEqual(compressed), \
+        assert destructive_object.properties.isEqual(compressed), \
             'Error in pixops.histoCompress()'
         assert destructive_object.stats.getStats(band=0)['min'] == 0, \
             'Error in pixops.histoCompress() (minimum value not 0)'
@@ -448,7 +376,7 @@ class BadPixOps(unittest.TestCase):
         compressed = pj.pixops.histoCompress(jim, 0)
         jim.pixops.histoCompress(0)
 
-        assert jim.pixops.isEqual(compressed), \
+        assert jim.properties.isEqual(compressed), \
             'Error in pixops.histoCompress()'
         assert jim.stats.getStats(band=0)['min'] == 0, \
             'Error in pixops.histoCompress() (minimum value not 0)'
@@ -464,11 +392,11 @@ class BadPixOps(unittest.TestCase):
         jim_plus_one_arith = pj.pixops.simpleArithOp(jim, ones, 0)
         jim.pixops.simpleArithOp(ones, 0)
 
-        assert jim.pixops.isEqual(jim_plus_one_arith), \
+        assert jim.properties.isEqual(jim_plus_one_arith), \
             'Inconsistency in pixops.simpleArithOp() ' \
             '(method returns different result than function)'
 
-        assert jim.pixops.isEqual(jim_plus_one), \
+        assert jim.properties.isEqual(jim_plus_one), \
             'Error in pixops.simpleArithOp(op=0) or Jim + int ' \
             '(Results not equal)'
 
@@ -476,11 +404,11 @@ class BadPixOps(unittest.TestCase):
         jim_minus_one_arith = pj.pixops.simpleArithOp(jim, ones, 1)
         jim.pixops.simpleArithOp(ones, 1)
 
-        assert jim.pixops.isEqual(jim_minus_one_arith), \
+        assert jim.properties.isEqual(jim_minus_one_arith), \
             'Inconsistency in pixops.simpleArithOp() ' \
             '(method returns different result than function)'
 
-        assert jim.pixops.isEqual(jim_minus_one), \
+        assert jim.properties.isEqual(jim_minus_one), \
             'Error in pixops.simpleArithOp(op=1) or Jim - int ' \
             '(Results not equal)'
 
@@ -489,11 +417,11 @@ class BadPixOps(unittest.TestCase):
         jim_and_bitwise = pj.pixops.simpleBitwiseOp(jim, ones, 10)
         jim.pixops.simpleBitwiseOp(ones, 10)
 
-        assert jim.pixops.isEqual(jim_and_bitwise), \
+        assert jim.properties.isEqual(jim_and_bitwise), \
             'Inconsistency in pixops.simpleBitwiseOp() ' \
             '(method returns different result than function)'
 
-        assert jim.pixops.isEqual(jim_and), \
+        assert jim.properties.isEqual(jim_and), \
             'Error in pixops.simpleBitwiseOp(op=10) or Jim & Jim ' \
             '(Results not equal)'
 
@@ -501,11 +429,11 @@ class BadPixOps(unittest.TestCase):
         jim_or_bitwise = pj.pixops.simpleBitwiseOp(jim, jim_minus_one, 11)
         jim.pixops.simpleBitwiseOp(jim_minus_one, 11)
 
-        assert jim.pixops.isEqual(jim_or_bitwise), \
+        assert jim.properties.isEqual(jim_or_bitwise), \
             'Inconsistency in pixops.simpleBitwiseOp() ' \
             '(method returns different result than function)'
 
-        assert jim.pixops.isEqual(jim_or), \
+        assert jim.properties.isEqual(jim_or), \
             'Error in pixops.simpleBitwiseOp(op=11) or Jim & Jim ' \
             '(Results not equal)'
 
@@ -528,9 +456,9 @@ class BadPixOpsLists(unittest.TestCase):
         comp3 = jiml2.pixops.composite()
         comp4 = jiml1.pixops.composite(otype='Byte')
 
-        assert comp1.pixops.isEqual(comp2)
-        assert not comp1.pixops.isEqual(comp3)
-        assert not comp2.pixops.isEqual(comp4)
+        assert comp1.properties.isEqual(comp2)
+        assert not comp1.properties.isEqual(comp3)
+        assert not comp2.properties.isEqual(comp4)
 
 
 def load_tests(loader=None, tests=None, pattern=None):

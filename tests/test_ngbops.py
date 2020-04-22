@@ -30,7 +30,7 @@ class BadNgbOps(unittest.TestCase):
         stats_min_min_jim = min(jim.stats.getStats('min',
                                                    band=[0, 1, 2])['min'])
 
-        assert min_jim.pixops.isEqual(jim), \
+        assert min_jim.properties.isEqual(jim), \
             'Inconsistency in ngbops.filter2d() ' \
             '(method returns different result than function)'
         assert stats_min_min_jim == stats_min_jim, \
@@ -47,7 +47,7 @@ class BadNgbOps(unittest.TestCase):
         stats_min_max_jim = min(jim.stats.getStats('min',
                                                    band=[0, 1, 2])['min'])
 
-        assert max_jim.pixops.isEqual(jim), \
+        assert max_jim.properties.isEqual(jim), \
             'Inconsistency in ngbops.filter1d() ' \
             '(method returns different result than function)'
         assert stats_max_max_jim == stats_max_min_jim, \
@@ -63,11 +63,11 @@ class BadNgbOps(unittest.TestCase):
         filtered = pj.ngbops.firfilter1d(jim3d, taps=filt)
         jim3d.ngbops.firfilter1d(taps=filt)
 
-        assert jim3d.pixops.isEqual(filtered), \
+        assert jim3d.properties.isEqual(filtered), \
             'Inconsistency in ngbops.filter1d(taps) ' \
             '(method returns different result than function)'
 
-        assert jim3d[1].pixops.isEqual(
+        assert jim3d[1].properties.isEqual(
             2 * jimorig[0] + 2 * jimorig[1] + 2 * jimorig[2]), \
             'Error in ngbops.filter1d(numpy.array) (returning wrong values)'
 
@@ -78,7 +78,7 @@ class BadNgbOps(unittest.TestCase):
         filtered = pj.ngbops.firfilter2d(jim2d, taps=filt)
         jim2d.ngbops.firfilter2d(taps=filt)
 
-        assert jim2d.pixops.isEqual(filtered), \
+        assert jim2d.properties.isEqual(filtered), \
             'Inconsistency in ngbops.filter2d(taps) ' \
             '(method returns different result than function)'
 
@@ -92,7 +92,7 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.smoothNoData1d (wrong values)'
 
         jim.ngbops.smoothNoData1d(0)
-        assert smoothed.pixops.isEqual(jim), \
+        assert smoothed.properties.isEqual(jim), \
             'Inconsistency in smoothNoData1d ' \
             '(method returns different result than function'
         # jimorig = pj.Jim(jim)
@@ -101,7 +101,7 @@ class BadNgbOps(unittest.TestCase):
         # double_jim = pj.ngbops.firfilter1d(jim, taps=filt)
         # jim.ngbops.firfilter1d(taps=filt)
 
-        # assert jim.pixops.isEqual(double_jim), \
+        # assert jim.properties.isEqual(double_jim), \
         #     'Inconsistency in ngbops.filter1d(taps) ' \
         #     '(method returns different result than function)'
         # assert jim[1].np() == \
@@ -114,7 +114,7 @@ class BadNgbOps(unittest.TestCase):
         # double_jim = pj.ngbops.firfilter2d(jim, taps=filt)
         # jim.ngbops.firfilter2d(taps=filt)
 
-        # assert jim.pixops.isEqual(double_jim), \
+        # assert jim.properties.isEqual(double_jim), \
         #     'Inconsistency in ngbops.filter2d(taps) ' \
         #     '(method returns different result than function)'
         # assert jim[1, 1].np()[0, 0] == 2 * max_jim[0:3, 0:3].np().sum(), \
@@ -153,7 +153,7 @@ class BadNgbOps(unittest.TestCase):
             'Error in ngbops.smoothNoData1d (wrong values)'
         jim.ngbops.smoothNoData1d(0)
 
-        assert smoothed.pixops.isEqual(jim), \
+        assert smoothed.properties.isEqual(jim), \
             'Inconsistency in smoothNoData1d ' \
             '(method returns different result than function'
 
@@ -177,7 +177,7 @@ class BadNgbOps(unittest.TestCase):
 
         stats_dilated = jim.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(dilated), \
+        assert jim.properties.isEqual(dilated), \
             'Inconsistency in ngbops.morphoDilateDiamond() ' \
             '(method returns different result than function)'
         assert stats_dilated['max'] == 1, \
@@ -206,7 +206,7 @@ class BadNgbOps(unittest.TestCase):
 
         stats_eroded = jim.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(eroded), \
+        assert jim.properties.isEqual(eroded), \
             'Inconsistency in ngbops.morphoErodeDiamond() ' \
             '(method returns different result than function)'
         assert stats_eroded['max'] == 1, \
@@ -235,7 +235,7 @@ class BadNgbOps(unittest.TestCase):
 
         stats_dilated = jim.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(dilated), \
+        assert jim.properties.isEqual(dilated), \
             'Inconsistency in ngbops.morphoDilateLine() ' \
             '(method returns different result than function)'
         assert stats_dilated['max'] == 1, \
@@ -264,7 +264,7 @@ class BadNgbOps(unittest.TestCase):
 
         stats_eroded = jim.stats.getStats(band=0)
 
-        assert jim.pixops.isEqual(dilated), \
+        assert jim.properties.isEqual(dilated), \
             'Inconsistency in ngbops.morphoErodeLine() ' \
             '(method returns different result than function)'
         assert stats_eroded['max'] == 1, \
@@ -293,7 +293,7 @@ class BadNgbOps(unittest.TestCase):
 
         stats_dilated = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(dilated), \
+        assert jim.properties.isEqual(dilated), \
             'Inconsistency in ngbops.morphoDilate() ' \
             '(method returns different result than function)'
         assert stats_dilated['max'] == 1, \
@@ -322,7 +322,7 @@ class BadNgbOps(unittest.TestCase):
 
         stats_eroded = jim.stats.getStats()
 
-        assert jim.pixops.isEqual(eroded), \
+        assert jim.properties.isEqual(eroded), \
             'Inconsistency in ngbops.morphoErode() ' \
             '(method returns different result than function)'
         assert stats_eroded['max'] == 1, \
@@ -348,10 +348,10 @@ class BadNgbOps(unittest.TestCase):
         dilated = pj.ngbops.morphoGradientByDilationDiamond(jim)
         jim.ngbops.morphoGradientByDilationDiamond()
 
-        assert jim.pixops.isEqual(dilated), \
+        assert jim.properties.isEqual(dilated), \
             'Inconsistency in ngbops.morphoGradientByDilationDiamond() ' \
             '(method returns different result than function)'
-        assert jim.pixops.isEqual(
+        assert jim.properties.isEqual(
             pj.ngbops.morphoDilateDiamond(jim_copy)) - jim_copy, \
             'Error in ngbops.morphoGradientByDilationDiamond() ' \
             '(jim.ngbops.morphoGradientByDilationDiamond() not equal to ' \
@@ -363,10 +363,10 @@ class BadNgbOps(unittest.TestCase):
         eroded = pj.ngbops.morphoGradientByErosionDiamond(jim)
         jim.ngbops.morphoGradientByErosionDiamond()
 
-        assert jim.pixops.isEqual(eroded), \
+        assert jim.properties.isEqual(eroded), \
             'Inconsistency in ngbops.morphoGradientByErosionDiamond() ' \
             '(method returns different result than function)'
-        assert jim.pixops.isEqual(
+        assert jim.properties.isEqual(
             jim_copy - pj.ngbops.morphoErodeDiamond(jim_copy)), \
             'Error in ngbops.morphoGradientByErosionDiamond() ' \
             '(jim.ngbops.morphoGradientByErosionDiamond() not equal to ' \
@@ -386,7 +386,7 @@ class BadNgbOps(unittest.TestCase):
         jim.ngbops.edgeWeight()
         stats = jim.stats.getStats(['max', 'min'])
 
-        assert jim.pixops.isEqual(hori_diff), \
+        assert jim.properties.isEqual(hori_diff), \
             'Inconsistency in ngbops.edgeWeight() ' \
             '(method returns different result than function)'
         assert stats['max'] <= max_value, \
@@ -411,7 +411,7 @@ class BadNgbOps(unittest.TestCase):
         jim.ngbops.edgeWeight(1, 1)
         stats = jim.stats.getStats(['max', 'min'])
 
-        assert jim.pixops.isEqual(verti_max), \
+        assert jim.properties.isEqual(verti_max), \
             'Inconsistency in ngbops.edgeWeight(dir=1, type=1) ' \
             '(method returns different result than function)'
         assert stats['max'] <= max_value, \
@@ -436,7 +436,7 @@ class BadNgbOps(unittest.TestCase):
         jim.ngbops.edgeWeight(type=2)
         stats = jim.stats.getStats(['max', 'min'])
 
-        assert jim.pixops.isEqual(hori_min), \
+        assert jim.properties.isEqual(hori_min), \
             'Inconsistency in ngbops.edgeWeight(type=2) ' \
             '(method returns different result than function)'
         assert stats['max'] <= max_value, \

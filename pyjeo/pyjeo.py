@@ -1178,7 +1178,7 @@ class JimList(list):
         """Count the occurrences of element in the JimList.."""
         i = 0
         for jim_object in self:
-            if jim.pixops.isEqual(jim_object):
+            if jim.properties.isEqual(jim_object):
                 i += 1
 
         return i
@@ -1193,7 +1193,7 @@ class JimList(list):
     def index(self, jim: Jim):
         """Return smallest index of element in the JimList."""
         for i in range(len(self)):
-            if self[i].pixops.isEqual(jim):
+            if self[i].properties.isEqual(jim):
                 return i
 
     def insert(self, index: int, jim: Jim):
@@ -1212,7 +1212,7 @@ class JimList(list):
     def remove(self, jim: Jim):
         """Remove the first occurrence of an element from the JimList."""
         for i in range(len(self)):
-            if self[i].pixops.isEqual(jim):
+            if self[i].properties.isEqual(jim):
                 del self[i]
                 break
         self._set(self, from_list=True)

@@ -13,6 +13,78 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadProps(unittest.TestCase):
     """Test functions and methods for getting and setting properties."""
 
+    @staticmethod
+    def test_isEqual():
+        """Test isEqual() function."""
+        jim1 = pj.Jim(tiles[0])
+        jim2 = pj.Jim(tiles[0])
+        jim3 = pj.Jim(tiles[1])
+
+        assert jim1.properties.isEqual(jim2), \
+            'Error in properties.isEqual() method (for two Jims)'
+        assert not jim1.properties.isEqual(jim3), \
+            'Error in properties.isEqual() method (non-equality)'
+        assert not jim1.properties.isEqual(1), \
+            'Error in properties.isEqual() method (for not Jim object)'
+
+        assert pj.properties.isEqual(jim1, jim2), \
+            'Error in properties.isEqual() function (for two Jims)'
+        assert not pj.properties.isEqual(jim1, jim3), \
+            'Error in properties.isEqual() function (non-equality)'
+        assert not pj.properties.isEqual(jim1, 1), \
+            'Error in properties.isEqual() function (for not Jim object)'
+
+        jim_oneplane = pj.Jim(ncol=5, nrow=5, nband=2, otype='GDT_Byte')
+        jim_twoplanes = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
+                               otype='GDT_Byte')
+
+        jim_oneplane.pixops.setData(5)
+        jim_twoplanes.pixops.setData(5)
+
+        assert not jim_oneplane.properties.isEqual(jim_twoplanes), \
+            'Error in Jim.properties.isEqual() ' \
+            '(not False for different number of planes)'
+
+        assert not pj.properties.isEqual(jim_oneplane, jim_twoplanes), \
+            'Error in pj.properties.isEqual() ' \
+            '(not False for different number of planes)'
+
+        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
+                                otype='GDT_Byte')
+        jim_twoplanes2.pixops.setData(5)
+
+        assert jim_twoplanes.properties.isEqual(jim_twoplanes2), \
+            'Error in pj.properties.isEqual() ' \
+            '(wrong result for multiplane Jim object)'
+
+        assert pj.properties.isEqual(jim_twoplanes, jim_twoplanes2), \
+            'Error in pj.properties.isEqual() ' \
+            '(wrong result for multiplane Jim object)'
+
+        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=3, nplane=2,
+                                otype='GDT_Byte')
+        jim_twoplanes2.pixops.setData(5)
+
+        assert not jim_twoplanes.properties.isEqual(jim_twoplanes2), \
+            'Error in Jim.properties.isEqual() ' \
+            '(not False for different number of bands for multiplane Jim)'
+
+        assert not pj.properties.isEqual(jim_twoplanes, jim_twoplanes2), \
+            'Error in pj.properties.isEqual() ' \
+            '(not False for different number of bands for multiplane Jim)'
+
+        jim_twoplanes2 = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
+                                otype='GDT_Byte')
+        jim_twoplanes2.pixops.setData(6)
+
+        assert not jim_twoplanes.properties.isEqual(jim_twoplanes2), \
+            'Error in pj.properties.isEqual() ' \
+            '(wrong result for multiplane multiband Jim object)'
+
+        assert not pj.properties.isEqual(jim_twoplanes, jim_twoplanes2), \
+            'Error in pj.properties.isEqual() ' \
+            '(wrong result for multiplane multiband Jim object)'
+
     jim = pj.Jim(tiles[0])
     ulx = jim.properties.getUlx()
     uly = jim.properties.getUly()
@@ -204,6 +276,33 @@ class BadPropsVects(unittest.TestCase):
     """Test JimVect funcs and methods for getting and setting properties."""
 
     jimv = pj.JimVect(vector)
+
+    def test_isEqual(self):
+        """Test JimVect isEqual method."""
+
+        assert self.jimv.properties.isEqual(self.jimv) == True, \
+            'Error in properties.isEqual(): not equal to itself (2 layers)'
+        assert pj.properties.isEqual(self.jimv,self.jimv) == True, \
+            'Error in function properties.isEqual(): not equal to itself'
+        jimv1 = pj.JimVect(vector, ln='milano')
+        jimv2 = pj.JimVect(vector, ln='lodi')
+        assert self.jimv.properties.isEqual(jimv1) == False, \
+            'Error in properties.isEqual(): \
+            2 layer vector should be different from 1 layer vector'
+        assert pj.properties.isEqual(self.jimv,jimv1) == False, \
+            'Error in function properties.isEqual(): \
+            2 layer vector should be different from 1 layer vector'
+        assert jimv1.properties.isEqual(jimv1) == True, \
+            'Error in properties.isEqual(): not equal to itself (1 layer)'
+        assert pj.properties.isEqual(jimv1,jimv1) == True, \
+            'Error in function properties.isEqual(): \
+            not equal to itself (1 layer)'
+        assert jimv1.properties.isEqual(jimv2) == False, \
+            'Error in properties.isEqual(): \
+            layer milano should be different from lodi'
+        assert pj.properties.isEqual(jimv1,jimv2) == False, \
+            'Error in function properties.isEqual(): \
+            layer milano should be different from lodi'
 
     def test_geospatial_infos(self):
         """Test JimVect methods connected to geospatial informations."""

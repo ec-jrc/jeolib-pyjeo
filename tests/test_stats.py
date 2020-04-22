@@ -82,7 +82,7 @@ class BadStats(unittest.TestCase):
         assert histo1d.stats.getStats(band=0)['max'] <= jim1_rows * jim1_cols,\
             'Error in computing 1D histogram'
 
-        assert histo1d.pixops.isEqual(pj.stats.getHisto1d(jim1)), \
+        assert histo1d.properties.isEqual(pj.stats.getHisto1d(jim1)), \
             'Function and method getHisto1d() return different results'
 
         jim2 = pj.Jim(tiles[0][:-8] + 'nir' + tiles[0][-5] + '.tif')
@@ -96,7 +96,7 @@ class BadStats(unittest.TestCase):
         assert histo2d.stats.getStats(band=0)['max'] <= jim1_rows * jim1_cols,\
             'Error in computing 2D histogram'
 
-        assert histo2d.pixops.isEqual(pj.stats.getHisto2d(jim1, jim2)), \
+        assert histo2d.properties.isEqual(pj.stats.getHisto2d(jim1, jim2)), \
             'Function and method getHisto2d() return different results'
 
         # TODO: Cover histo3d()
@@ -130,12 +130,12 @@ class BadStats(unittest.TestCase):
         if jim_min != 20:
             assert jim_stretched.stats.getStats(band=0)['min'] != jim_min, \
                 'Error in stretching Jim'
-            assert not jim.pixops.isEqual(jim_stretched), \
+            assert not jim.properties.isEqual(jim_stretched), \
                 'Error in stretching Jim'
 
         jim.stats.stretch(dst_min=20)
 
-        assert jim.pixops.isEqual(jim_stretched), 'Error in stretching Jim'
+        assert jim.properties.isEqual(jim_stretched), 'Error in stretching Jim'
 
     @staticmethod
     def test_getStatProfile():
