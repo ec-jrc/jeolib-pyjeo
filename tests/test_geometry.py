@@ -942,6 +942,41 @@ class BadGeometry(unittest.TestCase):
         assert minmax['max'] == 2,\
             'Error in geometry.rasterize() max != 2'
 
+        # Test wrong calls
+
+        try:
+            _ = pj.geometry.rasterize('spam', sample)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.rasterize(jim, jimvect) ' \
+            'function where the jim argument is not an instance of a Jim ' \
+            'object'
+
+        try:
+            _ = pj.geometry.rasterize(jim0, 'spam')
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.rasterize(jim, jimvect) ' \
+            'function where the jimvect argument is not an instance of a ' \
+            'JimVect object'
+
+        try:
+            _ = jim0.geometry.rasterize('spam')
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.rasterize(jim, jimvect) ' \
+            'function where the jimvect argument is not an instance of a ' \
+            'JimVect object'
+
         sample.io.close()
         jim0.io.close()
         mask.io.close()
