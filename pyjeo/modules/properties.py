@@ -90,7 +90,6 @@ def isEqual(first_jim,
         return False
 
 
-
 class _Properties(_pj.modules.JimModuleBase):
     """Define all properties methods."""
 

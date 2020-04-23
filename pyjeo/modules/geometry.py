@@ -3499,4 +3499,3 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             self._jim_vect._set(avect)
         else:
             raise TypeError('Error: can only merge two JimVect objects')
-

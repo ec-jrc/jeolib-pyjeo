@@ -2091,7 +2091,6 @@ class BadGeometryVects(unittest.TestCase):
 
         os.remove(non_existing_path)
 
-
     @staticmethod
     def test_convexhull():
         """Test the convexHull() function and method."""
