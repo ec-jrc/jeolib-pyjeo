@@ -1044,7 +1044,7 @@ def reducePlane(jim,
 
 
 def stackBand(jim_object,
-              jim_other = None,
+              jim_other=None,
               band: int = None):
     """Stack bands from raster datasets into new multiband Jim object.
 
@@ -2947,7 +2947,7 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         self._jim_list = caller
 
     def stackBand(self,
-                  jim_other = None,
+                  jim_other=None,
                   band: int = None):
         """Stack bands from raster datasets into new multiband Jim object.
 
