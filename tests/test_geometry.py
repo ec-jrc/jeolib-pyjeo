@@ -370,7 +370,6 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() feature count'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names'
-        print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names'
 
@@ -402,7 +401,6 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extractOgr() feature count'
         assert 'fid' in v.properties.getFieldNames(), \
             'Error in geometry.extractOgr() field names'
-        print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names'
 
@@ -2245,8 +2243,7 @@ class BadGeometryVects(unittest.TestCase):
             '(append)'
 
         jimv2.geometry.merge(jimv3)
-        print(jimv2.np())
-        print(mergedv.np())
+
         assert mergedv.np().all() == jimv2.np().all(), \
             'Error in geometry.merge() ' \
             '(function is not equal to method)'
