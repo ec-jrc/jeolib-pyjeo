@@ -2543,7 +2543,8 @@ class _Geometry(_pj.modules.JimModuleBase):
                   burn_value: int = 1,
                   eo=['ALL_TOUCHED'],
                   ln: str = None):
-        """
+        """Rasterize Jim object based on GDALRasterizeLayersBuf.
+
         :param jim_vect: JimVect object that needs to be rasterized
         :param burn_value: burn value
         :param eo: option (default is ALL_TOUCHED)
