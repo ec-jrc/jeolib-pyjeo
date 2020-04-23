@@ -411,22 +411,23 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_crop():
         """Test crop...() functions and methods."""
-        raster = pj.geometry.stackPlane(pj.Jim(rasterfn), pj.Jim(rasterfn))
+        raster = pj.Jim(rasterfn)
+        raster_stacked = pj.geometry.stackPlane(raster, raster)
         vector = pj.JimVect(vectorfn)
-        raster_bbox = raster.properties.getBBox()
-        raster_dx = raster.properties.getDeltaX()
-        raster_dy = raster.properties.getDeltaY()
+        raster_bbox = raster_stacked.properties.getBBox()
+        raster_dx = raster_stacked.properties.getDeltaX()
+        raster_dy = raster_stacked.properties.getDeltaY()
         vector_bbox = vector.properties.getBBox()
 
         # Test cropOgr()
-        cropped = pj.geometry.cropOgr(raster, vector)
-        raster.geometry.cropOgr(vector)
-        raster_bbox_cropped = raster.properties.getBBox()
+        cropped = pj.geometry.cropOgr(raster_stacked, vector)
+        raster_stacked.geometry.cropOgr(vector)
+        raster_bbox_cropped = raster_stacked.properties.getBBox()
 
         mod_x = (raster_bbox_cropped[2] - raster_bbox_cropped[0]) % raster_dx
         mod_y = (raster_bbox_cropped[3] - raster_bbox_cropped[1]) % raster_dy
 
-        assert raster.properties.isEqual(cropped), \
+        assert raster_stacked.properties.isEqual(cropped), \
             'Inconsistency in geometry.cropOgr() ' \
             '(method returns different result than function)'
         assert raster_bbox != raster_bbox_cropped, \
@@ -436,6 +437,32 @@ class BadGeometry(unittest.TestCase):
                mod_y == 0, \
             'Error in geometry.cropOgr() ' \
             '(new BBox values not equal to the vector one)'
+
+        # Test cropPlane()
+        raster2 = pj.Jim(tiles[0])
+        raster_stacked2 = pj.geometry.stackPlane(raster2, raster2, raster2)
+        planes12 = pj.geometry.cropPlane(raster_stacked2, [0, 1])
+        raster_stacked2.geometry.cropPlane([0, 1])
+
+        assert planes12.pixops.isEqual(raster_stacked2), \
+            'Error in geometry.cropPlane()' \
+            '(method returns different result than function for list argument)'
+        assert planes12.properties.nrOfPlane() == 2, \
+            'Error in geometry.cropPlane()' \
+            '(not cropped to the right amount of planes for list argument)'
+
+        plane1 = pj.geometry.cropPlane(raster_stacked2, 0)
+        raster_stacked2.geometry.cropPlane(0)
+
+        assert plane1.pixops.isEqual(raster_stacked2), \
+            'Error in geometry.cropPlane()' \
+            '(method returns different result than function for int argument)'
+        assert plane1.properties.nrOfPlane() == 1, \
+            'Error in geometry.cropPlane()' \
+            '(not cropped to the right amount of planes for int argument)'
+        assert plane1.pixops.isEqual(raster2), \
+            'Error in geometry.cropPlane()' \
+            '(returned planes were changed)'
 
     @staticmethod
     def test_coords_transformations():
