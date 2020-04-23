@@ -23,13 +23,14 @@ class BadBasicMethods(unittest.TestCase):
         jim3 = pj.Jim(jim1, copy_data=False)
 
         assert jim1.properties.isEqual(jim2), 'Error in creating Jim object'
-        assert not jim1.properties.isEqual(jim3), 'Error in creating Jim object'
+        assert not jim1.properties.isEqual(jim3), \
+            'Error in creating Jim object'
 
         jim4 = pj.Jim(jim1, nrow=5)
 
-        assert jim1.properties.isEqual(jim4), 'Error in ignoring kwargs when ' \
-                                          'creating Jim object with ' \
-                                          'Jim(jim, kwargs)'
+        assert jim1.properties.isEqual(jim4), \
+            'Error in ignoring kwargs when creating Jim object with ' \
+            'Jim(jim, kwargs)'
 
         jim5 = pj.Jim(tiles[0], nrow=5)
 

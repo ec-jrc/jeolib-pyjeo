@@ -373,6 +373,7 @@ class BadGeometry(unittest.TestCase):
         print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names'
+
         sample.io.close()
         v.io.close()
         os.remove(outputfn)

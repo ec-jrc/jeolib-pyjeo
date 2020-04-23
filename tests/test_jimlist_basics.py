@@ -20,7 +20,8 @@ class BadBasicMethodLists(unittest.TestCase):
 
         assert len(jiml) == 2, 'Error in JimList creation from a list of ' \
                                'Jims (wrong number of items afterwards)'
-        assert jiml[0].properties.isEqual(jim1) and jiml[1].properties.isEqual(jim1), \
+        assert jiml[0].properties.isEqual(jim1) and \
+               jiml[1].properties.isEqual(jim1), \
             'Error in JimList creation from a list of Jims ' \
             '(items at positions do not correspond with the used ones)'
 
@@ -72,9 +73,13 @@ class BadBasicMethodLists(unittest.TestCase):
         assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
-        assert jiml1[2].properties.isEqual(jiml1[0]), 'Error in JimList.append()'
-        assert not jiml1[2].properties.isEqual(jiml1[1]), 'Error in JimList[index]'
-        assert jiml1[2].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(2))),\
+        image2 = pj.Jim(jiml1._jipjimlist.getImage(2))
+
+        assert jiml1[2].properties.isEqual(jiml1[0]), \
+            'Error in JimList.append()'
+        assert not jiml1[2].properties.isEqual(jiml1[1]), \
+            'Error in JimList[index]'
+        assert jiml1[2].properties.isEqual(image2),\
             'Error in JimList.append()'
 
         assert jiml1.count(jim1) == 2, 'Error in JimList.count(Jim)'
@@ -85,8 +90,10 @@ class BadBasicMethodLists(unittest.TestCase):
         assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
+        image4 = pj.Jim(jiml1._jipjimlist.getImage(4))
+
         assert jiml1.count(jim1) == 3, 'Error in JimList.count(Jim)'
-        assert jiml1[4].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(4))),\
+        assert jiml1[4].properties.isEqual(image4),\
             'Error in JimList.extend()'
 
         jiml1.insert(1, jim3)
@@ -95,9 +102,11 @@ class BadBasicMethodLists(unittest.TestCase):
         assert len(jiml1) == jiml1._jipjimlist.getSize(), \
             'Error in JimList._set() with argument from_list=True'
 
+        image1 = pj.Jim(jiml1._jipjimlist.getImage(1))
+
         # TODO: the following line results in segmentation fault...
         # assert jiml1.count(jim3) == 2, 'Error in JimList.insert(Jim)'
-        assert jiml1[1].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
+        assert jiml1[1].properties.isEqual(image1),\
             'Error in JimList.insert()'
 
         assert jiml1.index(jim3) == 1, 'Error in JimList.index() or insert()'
@@ -119,8 +128,10 @@ class BadBasicMethodLists(unittest.TestCase):
 
         jiml2.reverse()
 
+        image1 = pj.Jim(jiml1._jipjimlist.getImage(1))
+
         assert jiml2.index(jim1) == 2, 'Error in JimList.reverse()'
-        assert jiml1[1].properties.isEqual(pj.Jim(jiml1._jipjimlist.getImage(1))),\
+        assert jiml1[1].properties.isEqual(image1),\
             'Error in JimList.reverse()'
 
 
