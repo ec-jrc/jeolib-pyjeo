@@ -938,9 +938,9 @@ class BadGeometry(unittest.TestCase):
         minmax = mask.stats.getStats(function=['min', 'max'])
 
         assert minmax['min'] == 0,\
-            'Error in geometry.reducePlane() min != 0'
+            'Error in geometry.rasterize() min != 0'
         assert minmax['max'] == 2,\
-            'Error in geometry.reducePlane() max != 2'
+            'Error in geometry.rasterize() max != 2'
 
         sample.io.close()
         jim0.io.close()
