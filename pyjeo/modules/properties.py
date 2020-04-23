@@ -9,6 +9,7 @@ import pyjeo as _pj
 #     """
 #     return _pj.Jim(jim_object._jipjim.imageInfo())
 
+
 def isEqual(first_jim,
             second_jim):
     """Check if the values of one Jim object are the same as in another one.
@@ -41,7 +42,8 @@ def isEqual(first_jim,
                                            second_plane.np(iband)):
                         return False
             return True
-    elif isinstance(second_jim, _pj.JimVect) and isinstance(first_jim, _pj.JimVect):
+    elif isinstance(second_jim, _pj.JimVect) and \
+            isinstance(first_jim, _pj.JimVect):
         if first_jim.properties.isEmpty():
             raise ValueError(
                 'first_jim is empty')
