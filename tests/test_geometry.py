@@ -444,7 +444,7 @@ class BadGeometry(unittest.TestCase):
         planes12 = pj.geometry.cropPlane(raster_stacked2, [0, 1])
         raster_stacked2.geometry.cropPlane([0, 1])
 
-        assert planes12.pixops.isEqual(raster_stacked2), \
+        assert planes12.properties.isEqual(raster_stacked2), \
             'Error in geometry.cropPlane()' \
             '(method returns different result than function for list argument)'
         assert planes12.properties.nrOfPlane() == 2, \
@@ -454,13 +454,13 @@ class BadGeometry(unittest.TestCase):
         plane1 = pj.geometry.cropPlane(raster_stacked2, 0)
         raster_stacked2.geometry.cropPlane(0)
 
-        assert plane1.pixops.isEqual(raster_stacked2), \
+        assert plane1.properties.isEqual(raster_stacked2), \
             'Error in geometry.cropPlane()' \
             '(method returns different result than function for int argument)'
         assert plane1.properties.nrOfPlane() == 1, \
             'Error in geometry.cropPlane()' \
             '(not cropped to the right amount of planes for int argument)'
-        assert plane1.pixops.isEqual(raster2), \
+        assert plane1.properties.isEqual(raster2), \
             'Error in geometry.cropPlane()' \
             '(returned planes were changed)'
 
