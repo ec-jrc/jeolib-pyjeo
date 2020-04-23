@@ -1115,7 +1115,8 @@ def stackBand(jim_object,
 
 
 def stackPlane(jim_object,
-               jim_other = None):
+               jim_other=None,
+               *args):
     """Stack planes from raster datasets into new multiplane Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the planes
@@ -1146,7 +1147,7 @@ def stackPlane(jim_object,
     elif isinstance(jim_object, _pj.Jim):
         ret_jim = _pj.Jim(jim_object)
         if not isinstance(jim_other, list):
-            jim_other = [jim_other]
+            jim_other = [jim_other, *args]
 
         for jim in jim_other:
             ret_jim.geometry.stackPlane(jim)
@@ -2860,7 +2861,8 @@ class _Geometry(_pj.modules.JimModuleBase):
                 self._jim_object._jipjim.d_stackBand(jim._jipjim)
 
     def stackPlane(self,
-                   jim_other):
+                   jim_other,
+                   *args):
         """Stack the planes of another Jim object to the current Jim object.
 
         Modifies the instance on which the method was called.
@@ -2877,7 +2879,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             jim0.geometry.stackPlane(jim1)
         """
         if not isinstance(jim_other, list):
-            jim_other = [jim_other]
+            jim_other = [jim_other, *args]
 
         for jim in jim_other:
             self._jim_object._jipjim.d_stackPlane(jim._jipjim)
