@@ -388,14 +388,14 @@ class BadGeometry(unittest.TestCase):
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('Band' + str(band))
         v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
-                                    output=outputfn, oformat='SQLite',
-                                    co=['OVERWRITE=YES'],
-                                    attribute='nuts3id',
-                                    classes=[53,62],
-                                    bandname=bandname,
-                                    planename=planename,
-                                    threshold=[10,10],
-                                    fid='fid')
+                                     output=outputfn, oformat='SQLite',
+                                     co=['OVERWRITE=YES'],
+                                     attribute='nuts3id',
+                                     classes=[53, 62],
+                                     bandname=bandname,
+                                     planename=planename,
+                                     threshold=[10, 10],
+                                     fid='fid')
         v.io.write()
         assert v.properties.getFeatureCount() == 20, \
             'Error in geometry.extractOgr() feature count'
@@ -404,6 +404,7 @@ class BadGeometry(unittest.TestCase):
         print(len(v.properties.getFieldNames()))
         assert len(v.properties.getFieldNames()) == 14, \
             'Error in geometry.extractOgr() field names'
+
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
@@ -2205,26 +2206,23 @@ class BadGeometryVects(unittest.TestCase):
         os.remove(non_existing_path1)
         os.remove(non_existing_path_joined)
 
-
     @staticmethod
     def test_merge():
         """Test the merge methods."""
         jimv1 = pj.JimVect(nutsfn)
         nfeatures1 = jimv1.properties.getFeatureCount()
 
-        jimv2 = pj.JimVect(nutsfn,ln='milano')
+        jimv2 = pj.JimVect(nutsfn, ln='milano')
         nfeatures2 = jimv2.properties.getFeatureCount()
-        print(jimv2.np().shape)
-        print(jimv2.np())
 
-        jimv3 = pj.JimVect(nutsfn,ln='lodi')
+        jimv3 = pj.JimVect(nutsfn, ln='lodi')
         nfeatures3 = jimv3.properties.getFeatureCount()
-        print(jimv3.np(0).shape)
-        print(jimv3.np(0))
 
         non_existing_path = pj._get_random_path()
-        non_existing_path = os.path.join('/vsimem',os.path.basename(non_existing_path))
-        mergedv = pj.geometry.merge(jimv2,jimv3,non_existing_path,co=['OVERWRITE=YES'])
+        non_existing_path = os.path.join('/vsimem',
+                                         os.path.basename(non_existing_path))
+        mergedv = pj.geometry.merge(jimv2, jimv3, non_existing_path,
+                                    co=['OVERWRITE=YES'])
 
         assert nfeatures1 == nfeatures2 + nfeatures3, \
             'Error in opening layers ' \
@@ -2236,12 +2234,13 @@ class BadGeometryVects(unittest.TestCase):
         assert jimv1.np(1).all() == mergedv.np(1).all(), \
             'Error in geometry.merge() layer 1' \
 
-        assert mergedv.properties.getFeatureCount() == nfeatures2 + nfeatures3, \
+        nfeatures23 = nfeatures2 + nfeatures3
+        assert mergedv.properties.getFeatureCount() == nfeatures23, \
             'Error in geometry.merge() ' \
             '(feature count merge)'
 
-        assert np.append(jimv2.np(0),jimv3.np(0),axis=0).all() == \
-            np.append(jimv1.np(0),jimv1.np(1),axis=0).all(), \
+        assert np.append(jimv2.np(0), jimv3.np(0), axis=0).all() == \
+            np.append(jimv1.np(0), jimv1.np(1), axis=0).all(), \
             'Error in geometry.merge() ' \
             '(append)'
 
@@ -2251,6 +2250,7 @@ class BadGeometryVects(unittest.TestCase):
         assert mergedv.np().all() == jimv2.np().all(), \
             'Error in geometry.merge() ' \
             '(function is not equal to method)'
+
         non_existing_path = pj._get_random_path()
         mergedv.io.write(non_existing_path)
         os.remove(non_existing_path)

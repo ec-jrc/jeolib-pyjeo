@@ -45,6 +45,7 @@ def isEqual(first_jim,
         if first_jim.properties.isEmpty():
             raise ValueError(
                 'first_jim is empty')
+
         if isinstance(second_jim, _pj.JimVect):
             if second_jim.properties.isEmpty():
                 raise ValueError(
@@ -70,11 +71,15 @@ def isEqual(first_jim,
             if first_jim.properties.getLry() != \
                     second_jim.properties.getLry():
                 return False
+
             for ilayer in range(0, first_jim.properties.getLayerCount()):
                 #todo: check geometry equality for each feature
-                if first_jim.properties.getFieldNames() != second_jim.properties.getFieldNames():
+                jim1_fieldnames = first_jim.properties.getFieldNames()
+                jim2_fieldnames = second_jim.properties.getFieldNames()
+                if jim1_fieldnames != jim2_fieldnames:
                     return False
-                if not _np.array_equal(first_jim.np(ilayer),second_jim.np(ilayer)):
+                if not _np.array_equal(first_jim.np(ilayer),
+                                       second_jim.np(ilayer)):
                     return False
             return True
         else:
@@ -599,8 +604,8 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         if self._jim_vect.properties.isEmpty():
             raise ValueError(
                 'self is empty')
-        if isinstance(other, _pj.JimVect):
 
+        if isinstance(other, _pj.JimVect):
             if other.properties.isEmpty():
                 raise ValueError(
                     'other is empty')
@@ -625,11 +630,15 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
             if self._jim_vect.properties.getLry() != \
                     other.properties.getLry():
                 return False
+
             for ilayer in range(0, self._jim_vect.properties.getLayerCount()):
                 #todo: check geometry equality for each feature
-                if self._jim_vect.properties.getFieldNames() != other.properties.getFieldNames():
+                jim1_fieldnames = self._jim_vect.properties.getFieldNames()
+                jim2_fieldnames = other.properties.getFieldNames()
+                if jim1_fieldnames != jim2_fieldnames:
                     return False
-                if not _np.array_equal(self._jim_vect.np(ilayer),other.np(ilayer)):
+                if not _np.array_equal(self._jim_vect.np(ilayer),
+                                       other.np(ilayer)):
                     return False
             return True
         else:

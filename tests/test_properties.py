@@ -152,7 +152,7 @@ class BadProps(unittest.TestCase):
     def test_refpix(self):
         """Test getRefPix() method."""
         assert self.jim.properties.getRefPix() == [402520.0,
-                                                   5097440.0] ,\
+                                                   5097440.0],\
             'Error in properties.getRefPix()'
 
     def test_geo_transform(self):
@@ -210,12 +210,13 @@ class BadProps(unittest.TestCase):
         jim_1.properties.copyGeoReference(jim1)
 
         assert jim_1.properties.getProjection() == \
-        jim1.properties.getProjection() ,\
+               jim1.properties.getProjection(),\
             'Error in properties.copyGeoReference getProjection()'
 
         assert jim_1.properties.getGeoTransform() == \
-        jim1.properties.getGeoTransform() ,\
+               jim1.properties.getGeoTransform(),\
             'Error in properties.copyGeoReference getGeoTransform()'
+
 
 class BadPropsLists(unittest.TestCase):
     """Test JimList funcs and methods for getting and setting properties."""

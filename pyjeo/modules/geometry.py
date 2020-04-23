@@ -2101,9 +2101,12 @@ class _Geometry(_pj.modules.JimModuleBase):
         kwargs.update({'rule': rule})
         if 'threshold' in kwargs:
             if kwargs['threshold'] is not None:
-                if not isinstance(kwargs['threshold'],list):
-                    kwargs['threshold']=[kwargs['threshold']]
-                kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+                if not isinstance(kwargs['threshold'], list):
+                    kwargs['threshold'] = [kwargs['threshold']]
+                kwargs['threshold'] = [
+                    float(t.strip('%')) if isinstance(t, str)
+                    else -t for t in kwargs['threshold']
+                ]
 
         if 'classes' in kwargs:
             classes = kwargs.pop('classes')
@@ -3306,9 +3309,12 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             kwargs.update({'output': output})
             if 'threshold' in kwargs:
                 if kwargs['threshold'] is not None:
-                    if not isinstance(kwargs['threshold'],list):
-                        kwargs['threshold']=[kwargs['threshold']]
-                    kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+                    if not isinstance(kwargs['threshold'], list):
+                        kwargs['threshold'] = [kwargs['threshold']]
+                    kwargs['threshold'] = [
+                        float(t.strip('%')) if isinstance(t, str)
+                        else -t for t in kwargs['threshold']
+                    ]
                 # if '%' in kwargs['threshold']:
                 #     kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
                 # else:
