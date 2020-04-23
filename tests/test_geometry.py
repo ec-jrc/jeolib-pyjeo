@@ -138,6 +138,14 @@ class BadGeometry(unittest.TestCase):
         assert jimreduce.properties.isEqual(jimstack), \
             'Error in geometry.reducePlane()'
 
+        #test the rule callback function
+        jimstack = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
+        def getMax(reduced, plane):
+            return pj.pixops.supremum(reduced, plane)
+        jimstack.geometry.reducePlane(getMax)
+        assert jimreduce.properties.isEqual(jimstack), \
+            'Error in geometry.reducePlane() callback function'
+
         # Test the band2plane() method
         jimband = pj.Jim(rasterfn, band=[0, 1, 2])
         jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
