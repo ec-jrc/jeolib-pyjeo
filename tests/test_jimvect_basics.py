@@ -42,10 +42,7 @@ class BadBasicMethods(unittest.TestCase):
     @staticmethod
     def test_jimvect_creations():
         """Test creating of JimVect objects."""
-        out_path = os.sep.join(
-            [os.sep + 'tmp',
-             ''.join(random.choice(string.ascii_lowercase) for _ in range(11))
-                + '.sqlite'])
+        out_path = pj._get_random_path()
 
         # Test empty vector
 
