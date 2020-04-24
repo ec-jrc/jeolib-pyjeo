@@ -6,7 +6,7 @@ import random as _random
 import string as _string
 
 
-__version__ = '0.5.0'
+__version__ = '0.6.0'
 
 
 def _check_graph(graph, allowed_values):

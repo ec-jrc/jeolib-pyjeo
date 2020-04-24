@@ -13,7 +13,7 @@ from setuptools import find_packages
 
 setup(
     name='pyjeo',
-    version='0.5.0',
+    version='0.6.0',
     author_email='ondrej.pesek@ext.ec.europa.eu',
     url='https://cidportal.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO',
     description='https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp',
