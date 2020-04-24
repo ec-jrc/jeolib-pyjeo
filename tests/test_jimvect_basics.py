@@ -88,7 +88,7 @@ class BadBasicMethods(unittest.TestCase):
         vect.io.close()
         os.remove(out_path)
 
-        # Test with parent vector
+        # Test with JSON
 
         jsonstring = \
             '{"polygons": ' \
