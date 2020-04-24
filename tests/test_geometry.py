@@ -2314,6 +2314,36 @@ class BadGeometryVects(unittest.TestCase):
         mergedv.io.write(non_existing_path)
         os.remove(non_existing_path)
 
+        # Test wrong calls
+
+        jim_raster = pj.Jim(tiles[0])
+
+        try:
+            _ = pj.geometry.merge(jimv1, jim_raster)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.merge(JimVect, Jim) ' \
+            'function where one of arguments is not an instance of a JimVect ' \
+            'object'
+
+        try:
+            jimv1.geometry.merge(jim_raster)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.merge(JimVect, Jim) ' \
+            'method where one of arguments is not an instance of a JimVect ' \
+            'object'
+
+        jimv1.io.close()
+        jimv2.io.close()
+        jimv3.io.close()
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
