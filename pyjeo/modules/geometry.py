@@ -872,7 +872,7 @@ def reducePlane(jim,
         _warnings.warn(
             'Single-plane Jim: No plane reduction performed', SyntaxWarning
         )
-        return self
+        return jim
 
     jimreduced = _pj.geometry.cropPlane(jim, 0)
 
