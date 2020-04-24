@@ -13,6 +13,7 @@ class BadBasicMethodLists(unittest.TestCase):
 
     @staticmethod
     def test_jimlist_creations():
+        """Test different ways to create JimList."""
         jim1 = pj.Jim(tiles[0])
 
         # Test JimList creation from a list of jims
