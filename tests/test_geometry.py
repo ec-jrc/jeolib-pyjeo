@@ -2319,7 +2319,8 @@ class BadGeometryVects(unittest.TestCase):
         jim_raster = pj.Jim(tiles[0])
 
         try:
-            _ = pj.geometry.merge(jimv1, jim_raster)
+            _ = pj.geometry.merge(jimv1, jim_raster,
+                                  output=pj._get_random_path())
             raised = False
         except TypeError:
             raised = True
