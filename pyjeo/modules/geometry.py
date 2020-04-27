@@ -33,7 +33,7 @@ def band2plane(jim):
     Example: convert a multi-band object with 12 bands to a 3-dimensional
     single band object with 12 planes::
 
-        jim2d=pj.Jim('/path/to/multi/band/image.tif')
+        jim2d = pj.Jim('/path/to/multi/band/image.tif')
         jim2d.properties.nrOfBand()
         12
         jim2d.properties.nrOfPlane()
@@ -47,7 +47,7 @@ def band2plane(jim):
     Notice that a multi-band image can also be read directly as
     a multi-plane object::
 
-        jim3d=pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
+        jim3d = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
         jim3d.properties.nrOfBand()
         1
         jim3d.properties.nrOfPlane()
@@ -225,8 +225,8 @@ def cropBand(jim_object,
 
     Crop the first three bands from raster dataset jim::
 
-        jim=pj.Jim('/path/to/raster.tif')
-        jim3=pj.geometry.cropBand(jim,band=[0,1,2])
+        jim = pj.Jim('/path/to/raster.tif')
+        jim3 = pj.geometry.cropBand(jim, band=[0, 1, 2])
 
     """
     if isinstance(band, list):
@@ -1188,7 +1188,7 @@ def warp(jim_object,
     system::
 
         jim = pj.Jim('/path/to/file.tif')
-        jim_warped=pj.geometry.warp(jim, 'epsg:3035')
+        jim_warped = pj.geometry.warp(jim, 'epsg:3035')
 
     Read a raster dataset from disk that is in lat lon (epsg:4326), select
     a bounding box in a different spatial reference system (epsg:3035).
@@ -1198,7 +1198,7 @@ def warp(jim_object,
 
         jim = pj.Jim('/path/to/file.tif', t_srs='epsg:3035', ulx=1000000,
                      uly=4000000, lrx=1500000, lry=3500000)
-        jim_warped=pj.geometry.warp(jim, 'epsg:3035', s_srs='epsg:4326')
+        jim_warped = pj.geometry.warp(jim, 'epsg:3035', s_srs='epsg:4326')
 
     """
     kwargs.update({'t_srs': t_srs})
@@ -1532,7 +1532,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         Example: convert a multi-band object with 12 bands to a 3-dimensional
         single band object with 12 planes::
 
-           jim=pj.Jim('/path/to/multi/band/image.tif')
+           jim = pj.Jim('/path/to/multi/band/image.tif')
            jim.properties.nrOfBand()
            12
            jim.properties.nrOfPlane()
@@ -1546,7 +1546,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         Notice that a multi-band image can also be read directly as
         a multi-plane object::
 
-           jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+           jim = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
            jim.properties.nrOfBand()
            1
            jim.properties.nrOfPlane()
