@@ -942,6 +942,22 @@ class BadGeometry(unittest.TestCase):
         assert minmax['max'] == 2,\
             'Error in geometry.rasterize() max != 2'
 
+        # Test with ln parameter
+        rasterized2 = pj.geometry.rasterize(jim0, sample,
+                                            eo=['ATTRIBUTE=label'],
+                                            ln='training')
+
+        assert rasterized.properties.isEqual(rasterized2), \
+            'Error in geometry.rasterize() ' \
+            '(when using "ln" parameter to get all layers, the object is ' \
+            'different than with ln=None)'
+
+        jim0.geometry.rasterize(sample, eo=['ATTRIBUTE=label'], ln='training')
+
+        assert rasterized.properties.isEqual(jim0), \
+            'Inconsistency in geometry.rasterize() ' \
+            '(method returns different result than function)'
+
         # Test wrong calls
 
         try:
