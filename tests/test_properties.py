@@ -91,6 +91,13 @@ class BadProps(unittest.TestCase):
             'Error in pj.properties.isEqual() ' \
             '(wrong result for multiplane multiband Jim object)'
 
+        # Test different band number recognition
+
+        jim_oneplane_oneband = pj.geometry.cropBand(jim_oneplane, 0)
+
+        assert not jim_oneplane_oneband.properties.isEqual(jim_oneplane), \
+            'Error in properties.isEqual() ' \
+            '(did not recognize different number of bands)'
 
     def test_no_data_vals(self):
         """Test functions connected to no data values."""
