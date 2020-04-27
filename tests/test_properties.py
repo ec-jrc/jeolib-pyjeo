@@ -13,26 +13,32 @@ vector = 'tests/data/nuts_italy.sqlite'
 class BadProps(unittest.TestCase):
     """Test functions and methods for getting and setting properties."""
 
-    @staticmethod
-    def test_isEqual():
-        """Test isEqual() function."""
-        jim1 = pj.Jim(tiles[0])
+    jim = pj.Jim(tiles[0])
+    ulx = jim.properties.getUlx()
+    uly = jim.properties.getUly()
+    lrx = jim.properties.getLrx()
+    lry = jim.properties.getLry()
+
+    def test_isEqual(self):
+        """Test isEqual() method."""
         jim2 = pj.Jim(tiles[0])
         jim3 = pj.Jim(tiles[1])
 
-        assert jim1.properties.isEqual(jim2), \
+        assert self.jim.properties.isEqual(jim2), \
             'Error in properties.isEqual() method (for two Jims)'
-        assert not jim1.properties.isEqual(jim3), \
+        assert not self.jim.properties.isEqual(jim3), \
             'Error in properties.isEqual() method (non-equality)'
-        assert not jim1.properties.isEqual(1), \
+        assert not self.jim.properties.isEqual(1), \
             'Error in properties.isEqual() method (for not Jim object)'
 
-        assert pj.properties.isEqual(jim1, jim2), \
+        assert pj.properties.isEqual(self.jim, jim2), \
             'Error in properties.isEqual() function (for two Jims)'
-        assert not pj.properties.isEqual(jim1, jim3), \
+        assert not pj.properties.isEqual(self.jim, jim3), \
             'Error in properties.isEqual() function (non-equality)'
-        assert not pj.properties.isEqual(jim1, 1), \
+        assert not pj.properties.isEqual(self.jim, 1), \
             'Error in properties.isEqual() function (for not Jim object)'
+
+        # Test multi-plane objects
 
         jim_oneplane = pj.Jim(ncol=5, nrow=5, nband=2, otype='GDT_Byte')
         jim_twoplanes = pj.Jim(ncol=5, nrow=5, nband=2, nplane=2,
@@ -85,11 +91,6 @@ class BadProps(unittest.TestCase):
             'Error in pj.properties.isEqual() ' \
             '(wrong result for multiplane multiband Jim object)'
 
-    jim = pj.Jim(tiles[0])
-    ulx = jim.properties.getUlx()
-    uly = jim.properties.getUly()
-    lrx = jim.properties.getLrx()
-    lry = jim.properties.getLry()
 
     def test_no_data_vals(self):
         """Test functions connected to no data values."""
