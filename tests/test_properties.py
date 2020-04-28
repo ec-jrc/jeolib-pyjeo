@@ -315,6 +315,60 @@ class BadPropsVects(unittest.TestCase):
             'Error in function properties.isEqual(): \
             layer milano should be different from lodi'
 
+        jimv1_double = pj.geometry.merge(jimv1, jimv1,
+                                         output=pj._get_random_path())
+
+        assert not jimv1_double.properties.isEqual(jimv1), \
+            'Error in properties.isEqual() method ' \
+            '(JimVects with different number of features considered equal)'
+        assert not pj.properties.isEqual(jimv1_double, jimv1), \
+            'Error in properties.isEqual() function ' \
+            '(JimVects with different number of features considered equal)'
+
+        # Test wrong calls
+
+        jimv_empty = pj.JimVect()
+
+        try:
+            _ = jimv_empty.properties.isEqual(jimv1)
+            raised = False
+        except ValueError:
+            raised = True
+
+        assert raised, \
+            'Error in properties.isEqual() method ' \
+            '(ValueError not raised when called on an empty JimVect)'
+
+        try:
+            _ = pj.properties.isEqual(jimv_empty, jimv1)
+            raised = False
+        except ValueError:
+            raised = True
+
+        assert raised, \
+            'Error in properties.isEqual() function ' \
+            '(ValueError not raised when called on an empty JimVect)'
+
+        try:
+            _ = jimv1.properties.isEqual(jimv_empty)
+            raised = False
+        except ValueError:
+            raised = True
+
+        assert raised, \
+            'Error in properties.isEqual() method (ValueError not ' \
+            'raised when called with an empty JimVect as parameter)'
+
+        try:
+            _ = pj.properties.isEqual(jimv1, jimv_empty)
+            raised = False
+        except ValueError:
+            raised = True
+
+        assert raised, \
+            'Error in properties.isEqual() function (ValueError not ' \
+            'raised when called with an empty JimVect as parameter)'
+
     def test_geospatial_infos(self):
         """Test JimVect methods connected to geospatial informations."""
         bbox = self.jimv.properties.getBBox()
