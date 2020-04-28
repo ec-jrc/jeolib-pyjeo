@@ -38,7 +38,7 @@ def band2plane(jim):
         12
         jim2d.properties.nrOfPlane()
         1
-        jim3d=pj.geometry.band2plane(jim2d)
+        jim3d = pj.geometry.band2plane(jim2d)
         jim3d.properties.nrOfPlane()
         12
         jim3d.properties.nrOfBand()
@@ -1588,27 +1588,27 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         Crop bounding box in georeferenced coordinates::
 
-            jim=pj.Jim('/path/to/raster.tif')
-            jim.crop(ulx=1000000,uly=5000000,lrx=2000000,lry=4000000,
-                     dx=1000,dy=1000)
+            jim = pj.Jim('/path/to/raster.tif')
+            jim.crop(ulx=1000000, uly=5000000, lrx=2000000, lry=4000000,
+                     dx=1000, dy=1000)
 
         Crop bounding box in image coordinates (starting from upper left pixel
         coordinate 0, 0). For instance, get first 10 columns in first 10 rows::
 
-            jim=pj.Jim('/path/to/raster.tif')
-            jim.crop(ulx=0,uly=0,lrx=10,lry=10, nogeo=True)
+            jim = pj.Jim('/path/to/raster.tif')
+            jim.crop(ulx=0, uly=0, lrx=10, lry=10, nogeo=True)
 
         Notice that for this case, a more pythonic way to is available
         via :ref:`indexing`::
 
-            jim0[0:10,0:10]
+            jim0[0:10, 0:10]
 
         However, crop can also be used to enlarge a Jim object. For instance,
         to add a border of one pixel use::
 
-            jim=pj.Jim('/path/to/raster.tif')
-            jim.geometry.crop(ulx=-1,uly=-1,lrx=jim.properties.nrOfCol()+1,
-                              lry=jim.properties.nrOfRow()+1,nogeo=True)
+            jim = pj.Jim('/path/to/raster.tif')
+            jim.geometry.crop(ulx=-1, uly=-1, lrx=jim.properties.nrOfCol()+1,
+                              lry=jim.properties.nrOfRow()+1, nogeo=True)
 
         """
         if ulz is not None or lrz is not None:
@@ -1752,7 +1752,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         Crop the first three bands from raster dataset jim0::
 
-            jim0=pj.Jim('/path/to/raster0.tif')
+            jim0 = pj.Jim('/path/to/raster0.tif')
             jim0.cropBand(band=[0,1,2])
 
         """
@@ -1920,17 +1920,17 @@ class _Geometry(_pj.modules.JimModuleBase):
         Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
         41 (water) and an aggregated (rest) class 50::
 
-            reference=pj.Jim('/path/to/landcovermap.tif')
+            reference = pj.Jim('/path/to/landcovermap.tif')
 
-            classes=[2,12,25,41,50]
-            thresholds=['20%','25%','25%','10%','5%']
+            classes = [2, 12, 25, 41, 50]
+            thresholds = ['20%', '25%', '25%', '10%', '5%']
 
-            jim=pj.Jim('/path/to/s2_multiband.tif')
+            jim = pj.Jim('/path/to/s2_multiband.tif')
 
-            outputfn='/path/to/output.sqlite'
-            sample=jim.extractImg(reference,srcnodata=[0],output=outputfn,
-                                  classes=classes,threshold=thresholds,
-                                  bandname=['B02','B03','B04','B08'])
+            outputfn = '/path/to/output.sqlite'
+            sample = jim.extractImg(reference, srcnodata=[0], output=outputfn,
+                                    classes=classes, threshold=thresholds,
+                                    bandname=['B02', 'B03', 'B04', 'B08'])
         """
         kwargs.update({'output': output})
 
@@ -2218,10 +2218,10 @@ class _Geometry(_pj.modules.JimModuleBase):
         Get column and row index (0 based) of some georeferenced coordinates
         x and y (in this case first pixel: 0, 0)::
 
-          jim=pj.Jim('/path/to/raster.tif')
-          x=jim.properties.getUlx()
-          y=jim.properties.getUly()
-          jim.geometry.geo2image(x,y)
+          jim = pj.Jim('/path/to/raster.tif')
+          x = jim.properties.getUlx()
+          y = jim.properties.getUly()
+          jim.geometry.geo2image(x, y)
         """
         coord = self._jim_object._jipjim.geo2image(x, y)
         return [int(coord[0]), int(coord[1])]
@@ -2239,8 +2239,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         Get upper left corner in georeferenced coordinates
         (in SRS of the Jim object)::
 
-          jim=pj.Jim('/path/to/raster.tif')
-          jim.geometry.image2geo(0,0)
+          jim = pj.Jim('/path/to/raster.tif')
+          jim.geometry.image2geo(0, 0)
 
         """
         return self._jim_object._jipjim.image2geo(i, j)
@@ -2437,7 +2437,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         Example: convert a single band object with 12 planes to a 2-dimensional
         multi-band object with 1 plane::
 
-           jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+           jim = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
            jim.properties.nrOfBand()
            1
            jim.properties.nrOfPlane()
