@@ -210,7 +210,8 @@ class BadProps(unittest.TestCase):
         assert self.jim.properties.getProjection() != proj, \
             'Error in properties.getProjection() or setProjection()'
 
-    def test_georeference(self):
+    @staticmethod
+    def test_georeference():
         """Test georeference (projection + geotransform) methods."""
         jim1 = pj.Jim(testFile)
         np1 = jim1.np()[:]
