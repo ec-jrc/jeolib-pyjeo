@@ -1004,13 +1004,42 @@ class BadGeometry(unittest.TestCase):
         min = 0
         max = 10
         nodata = int((max + min) / 2)
+
+        # Test with no rule specified (=overwrite)
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3, otype='Byte',
+                     uniform=[min, max])
+        jim_copy = pj.Jim(jim)
+        last_plane = pj.Jim(jim[-1])
+
+        reduced = pj.geometry.reducePlane(jim)
+        reduced2 = pj.geometry.reducePlane(jim, rule='overwrite')
+        jim.geometry.reducePlane()
+        jim_copy.geometry.reducePlane(rule='overwrite')
+
+        assert jim.properties.isEqual(reduced), \
+            'Inconsistency in geometry.reducePlane() ' \
+            '(method returns different result than function when no rule ' \
+            'specified)'
+        assert jim_copy.properties.isEqual(reduced2), \
+            'Inconsistency in geometry.reducePlane() ' \
+            '(method returns different result than function for ' \
+            'rule="overwrite")'
+        assert jim.properties.isEqual(reduced2), \
+            'Error in geometry.reducePlane() ' \
+            '(different result for no rule and rule="overwrite" - the ' \
+            'default value not passed)'
+        assert jim.properties.isEqual(last_plane), \
+            'Error in geometry.reducePlane() ' \
+            '(returned Jim is not equal to the last plane for ' \
+            'rule="overwrite")'
+
+        # Test with rule == 'max'
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3, otype='Byte',
                      uniform=[min, max])
         jim[1, 0, 0] = max
         jim[0, 0, 0] = min
         stats = jim.stats.getStats()
 
-        # Test with rule == 'max'
         reduced = pj.geometry.reducePlane(jim, 'max')
         jim.geometry.reducePlane('max')
 
