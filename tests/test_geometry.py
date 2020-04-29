@@ -1046,7 +1046,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1084,7 +1084,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1128,7 +1128,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1184,7 +1184,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1243,7 +1243,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1281,7 +1281,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1325,7 +1325,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1381,7 +1381,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1441,7 +1441,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1476,7 +1476,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1514,7 +1514,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1561,7 +1561,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function for more than ' \
             '2-planes Jim)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1624,7 +1624,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1699,7 +1699,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1758,7 +1758,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1793,7 +1793,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1831,7 +1831,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -1878,7 +1878,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function for more than ' \
             '2-planes Jim)'
         assert jim.properties.nrOfPlane() == 1, \
@@ -1942,7 +1942,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
@@ -2020,7 +2020,7 @@ class BadGeometry(unittest.TestCase):
         stats_reduced = jim.stats.getStats()
 
         assert jim.properties.isEqual(reduced), \
-            'Error in geometry.reducePlane() ' \
+            'Inconsistency in geometry.reducePlane() ' \
             '(method returns different result than function)'
         assert jim.properties.nrOfPlane() == 1, \
             'Error in geometry.reducePlane() ' \
