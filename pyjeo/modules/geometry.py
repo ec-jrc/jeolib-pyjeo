@@ -1004,7 +1004,7 @@ def reducePlane(jim,
     else:
         if nodata is not None or ref_band is not None:
             raise AttributeError('Error: nodata and ref_band are not '
-                                 'supported for this rule')
+                                 'supported for callback rules')
         jimreduced = _pj.geometry.cropPlane(jim, 0)
         for iplane in range(1, nr_of_planes):
             jimplane = _pj.geometry.cropPlane(jim, iplane)
@@ -2745,7 +2745,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         else:
             if nodata is not None or ref_band is not None:
                 raise AttributeError('Error: nodata and ref_band are not '
-                                     'supported for this rule')
+                                     'supported for callback rules')
             jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
             for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
