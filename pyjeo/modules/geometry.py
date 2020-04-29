@@ -852,7 +852,7 @@ def rasterize(jim_object,
 
 
 def reducePlane(jim,
-                rule: str = None,
+                rule: str = 'overwrite',
                 ref_band: int = None,
                 nodata: float = None):
     """Reduce planes of Jim object.
@@ -876,8 +876,6 @@ def reducePlane(jim,
 
     jimreduced = _pj.geometry.cropPlane(jim, 0)
 
-    if rule is None:
-        rule = 'overwrite'
     if isinstance(rule, str):
         nr_of_row = jim.properties.nrOfRow()
         nr_of_col = jim.properties.nrOfCol()
@@ -2582,7 +2580,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
 
     def reducePlane(self,
-                    rule: str = None,
+                    rule: str = 'overwrite',
                     ref_band: int = None,
                     nodata: float = None):
         """Reduce planes of Jim object.
@@ -2614,8 +2612,6 @@ class _Geometry(_pj.modules.JimModuleBase):
             jim_stacked.geometry.reducePlane(getMax)
 
         """
-        if rule is None:
-            rule = 'overwrite'
         nr_of_planes = self._jim_object.properties.nrOfPlane()
         if nr_of_planes < 2:
             _warnings.warn(
