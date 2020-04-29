@@ -1009,9 +1009,6 @@ def reducePlane(jim,
             jimplane = _pj.geometry.cropPlane(jim, iplane)
             jimreduced = rule(jimreduced, jimplane)
         # else:
-        #     #default behavior is overwrite
-        #     def rule(reduced, plane):
-        #         return plane
         #     if ref_band is not None:
         #         maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
 
@@ -2753,12 +2750,6 @@ class _Geometry(_pj.modules.JimModuleBase):
                 jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
                 jimreduced = rule(jimreduced, jimplane)
             # else:
-            #     #default behavior is overwrite
-            #     def rule(reduced, plane):
-            #         ones=_pj.Jim(plane,copy_data=False)
-            #         ones.pixops.setData(1)
-            #         ones.pixops.convert('GDT_Byte')
-            #         return ones
             #     if ref_band is not None:
             #         maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
 
