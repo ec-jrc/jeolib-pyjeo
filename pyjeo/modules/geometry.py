@@ -1071,8 +1071,16 @@ def stackBand(jim_object,
         jim_stacked = pj.geometry.stackBand(jim0, jim1, band=[0, 1, 2])
 
     """
+    def _check_number_of_bands(queried_band: int, nr_of_band: int):
+        """Raise an error if the user wants to use a band out of bounds."""
+        if queried_band is not None and queried_band > nr_of_band:
+            raise AttributeError('Band out of bounds')
+
     if isinstance(jim_object, _pj.JimList):
         if band:
+            nr_of_band = jim_object[0].properties.nrOfBand()
+            _check_number_of_bands(band, nr_of_band)
+
             ret_jim = _pj.Jim(
                 jim_object._jipjimlist.stackBand({'band': band}))
         else:
@@ -1093,6 +1101,8 @@ def stackBand(jim_object,
             ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                 jim_to_stack._jipjim))
     elif isinstance(jim_object, _pj.Jim):
+        _check_number_of_bands(band, jim_object.properties.nrOfBand())
+
         ret_jim = jim_object
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
@@ -2844,6 +2854,9 @@ class _Geometry(_pj.modules.JimModuleBase):
             jim1 = pj.Jim('/path/to/multiband.tif')
             jim0.geometry.stackBand(jim1, band=[0, 1, 2])
         """
+        if band is not None and band > self._jim_object.properties.nrOfBand():
+            raise AttributeError('Band out of bounds')
+
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
 
@@ -2968,6 +2981,10 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             jim_stacked = jimlist.geometry.stackBand([0, 2])
         """
         if band:
+            nr_of_band = self._jim_list[0].properties.nrOfBand()
+            if band is not None and band > nr_of_band:
+                raise AttributeError('Band out of bounds')
+
             ret_jim = _pj.Jim(
                 self._jim_list._jipjimlist.stackBand({'band': band}))
         else:
