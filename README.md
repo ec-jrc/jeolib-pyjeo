@@ -67,7 +67,7 @@ make html
 `master` branch is the development branch of `pyJEO`. It contains the newest
 features, but it can also contain some API changes against previous versions.
 Therefore, it is recommended to use more stable releases: To get them, please
-see our [tags](tags).
+see our [tags](../../tags).
 
 ### Development
 
