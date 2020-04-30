@@ -60,6 +60,32 @@ cd doc
 make html
 ```
 
+## Versions
+
+### Getting the right version
+
+`master` branch is the development branch of `pyJEO`. It contains the newest
+features, but it can also contain some API changes against previous versions.
+Therefore, it is recommended to use more stable releases: To get them, please
+see our [tags](tags).
+
+### Development
+
+All development should be done in the development branch (`master`). If
+a commit fixes also an issue present in some of the releases, it should be
+cherry-picked to the corresponding branch. Later, a patch version will be
+released from these cherry-picked fixes.
+
+An example showing how to cherry-pick commit `commit_hash` into branch
+`0.5.x` (to fix an issue in release `0.5.0`):
+
+```
+git checkout 0.5.x
+git cherry-pick commit_hash
+git push
+git checkout master
+```
+
 ## See the code coverage
 
 ```
