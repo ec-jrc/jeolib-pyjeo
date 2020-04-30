@@ -1074,7 +1074,7 @@ def stackBand(jim_object,
     if isinstance(jim_object, _pj.JimList):
         if band:
             ret_jim = _pj.Jim(
-                jim_object._jipjimlist.stackBand(band=band))
+                jim_object._jipjimlist.stackBand({'band': band}))
         else:
             ret_jim = _pj.Jim(jim_object._jipjimlist.stackBand())
 
@@ -2969,7 +2969,7 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         """
         if band:
             ret_jim = _pj.Jim(
-                self._jim_list._jipjimlist.stackBand(band=band))
+                self._jim_list._jipjimlist.stackBand({'band': band}))
         else:
             ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackBand())
 
