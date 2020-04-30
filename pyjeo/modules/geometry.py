@@ -1759,7 +1759,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         Crop the first three bands from raster dataset jim0::
 
             jim0 = pj.Jim('/path/to/raster0.tif')
-            jim0.cropBand(band=[0,1,2])
+            jim0.cropBand(band=[0, 1, 2])
 
         """
         if isinstance(band, list):
@@ -2928,9 +2928,9 @@ class _Geometry(_pj.modules.JimModuleBase):
         (epsg:4326). Then warp the raster dataset to the target spatial
         reference system (epsg:3035)::
 
-            jim = pj.Jim('/path/to/file.tif',t_srs='epsg:3035',
-                         ulx=1000000,uly=4000000,lrx=1500000,lry=3500000)
-            jim.warp('epsg:3035',s_srs='epsg:4326')
+            jim = pj.Jim('/path/to/file.tif', t_srs='epsg:3035',
+                         ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
+            jim.warp('epsg:3035', s_srs='epsg:4326')
 
         """
         kwargs.update({'t_srs': t_srs})
@@ -3166,7 +3166,7 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         the calculation. Then write the result to the final destination
         on disk::
 
-            jiml = pj.JimList([jim0,jim1,jim2])
+            jiml = pj.JimList([jim0, jim1, jim2])
             v = jiml.geometry.extractOgr(
                 reference, bandname, buffer=-10, rule=['mean'],
                 output='/vsimem/temp.sqlite', oformat='SQLite')
