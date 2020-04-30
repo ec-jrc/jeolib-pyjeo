@@ -42,7 +42,7 @@ python -W ignore -m unittest -v tests
 To run tests only for one module:
 
 ```
- python -W ignore -m unittest -v tests/test_classify.py
+python -W ignore -m unittest -v tests/test_classify.py
 ```
 
 ## Build documentation
