@@ -469,7 +469,7 @@ def imageInsert(jim_object,
                 sec_jim_object,
                 x: float, y: float,
                 z: float,
-                band: int = None):
+                band: list = None):
     """Merge Jim instance with values of sec_jim_object in given coords.
 
     :param jim_object: a Jim object
@@ -507,7 +507,7 @@ def imageInsertCompose(jim_object,
                        y: float,
                        z: float,
                        val: int,
-                       band: int = 0):
+                       band: list = None):
     """Merge Jim instance with values of im2 if val of imlbl == val.
 
     :param jim_object: a Jim object
