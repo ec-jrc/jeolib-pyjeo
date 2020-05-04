@@ -115,6 +115,42 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.band2plane() ' \
             '(jimband not equal to jimsplane)'
 
+        # Test wrong call with parameter band exceeding the nrOfBand in Jims
+        try:
+            _ = pj.geometry.stackBand(jim0, jim1,
+                                      band=jim0.properties.nrOfBand() + 1)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'function where the band argument exceeds the number of bands of' \
+            ' Jims'
+
+        try:
+            jim0.geometry.stackBand(jim1, band=jim0.properties.nrOfBand() + 1)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'method where the band argument exceeds the number of bands of' \
+            ' Jims'
+
+        # Test wrong call with wrong object type
+        try:
+            _ = pj.geometry.stackBand(1, jim1,
+                                      band=jim0.properties.nrOfBand() + 1)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'function where the first argument is not a Jim or a JimList'
+
     @staticmethod
     def test_warp():
         """Test the warp method."""
