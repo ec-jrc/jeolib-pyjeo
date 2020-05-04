@@ -1115,7 +1115,7 @@ def stackBand(jim_object,
                 ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                     jim._jipjim))
     else:
-        raise TypeError('Error: expected a Jim object')
+        raise TypeError('Error: expected a Jim or JimList object')
 
     return ret_jim
 
