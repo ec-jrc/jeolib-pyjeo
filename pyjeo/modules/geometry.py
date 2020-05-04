@@ -1145,22 +1145,21 @@ def stackPlane(jim_object,
     """
     if isinstance(jim_object, _pj.JimList):
         ret_jim = _pj.Jim(jim_object._jipjimlist.stackPlane())
+
         if isinstance(jim_other, _pj.Jim):
             ret_jim.geometry.stackPlane(jim_other)
-            return ret_jim
-        else:
-            return ret_jim
     elif isinstance(jim_object, _pj.Jim):
         ret_jim = _pj.Jim(jim_object)
+
         if not isinstance(jim_other, list):
             jim_other = [jim_other, *args]
 
         for jim in jim_other:
             ret_jim.geometry.stackPlane(jim)
-
-        return ret_jim
     else:
         raise TypeError('Error: expected a Jim object')
+
+    return ret_jim
 
 
 def warp(jim_object,
