@@ -61,17 +61,8 @@ def isEqual(first_jim,
             if first_jim.properties.getProjection() != \
                     second_jim.properties.getProjection():
                 return False
-            if first_jim.properties.getUlx() != \
-                    second_jim.properties.getUlx():
-                return False
-            if first_jim.properties.getUly() != \
-                    second_jim.properties.getUly():
-                return False
-            if first_jim.properties.getLrx() != \
-                    second_jim.properties.getLrx():
-                return False
-            if first_jim.properties.getLry() != \
-                    second_jim.properties.getLry():
+            if first_jim.properties.getBBox() != \
+                    second_jim.properties.getBBox():
                 return False
 
             for ilayer in range(0, first_jim.properties.getLayerCount()):
@@ -619,17 +610,8 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
             if self._jim_vect.properties.getProjection() != \
                     other.properties.getProjection():
                 return False
-            if self._jim_vect.properties.getUlx() != \
-                    other.properties.getUlx():
-                return False
-            if self._jim_vect.properties.getUly() != \
-                    other.properties.getUly():
-                return False
-            if self._jim_vect.properties.getLrx() != \
-                    other.properties.getLrx():
-                return False
-            if self._jim_vect.properties.getLry() != \
-                    other.properties.getLry():
+            if self._jim_vect.properties.getBBox() != \
+                    other.properties.getBBox():
                 return False
 
             for ilayer in range(0, self._jim_vect.properties.getLayerCount()):
