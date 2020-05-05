@@ -814,7 +814,7 @@ def polygonize(jim_object,
 def rasterize(jim_object,
               jim_vect,
               burn_value: int = 1,
-              eo=['ALL_TOUCHED'],
+              eo: list = None,
               ln: str = None):
     """Rasterize Jim object based on GDALRasterizeLayersBuf.
 
@@ -841,10 +841,13 @@ def rasterize(jim_object,
     kwargs = {}
     if burn_value is not None:
         kwargs.update({'burn': float(burn_value)})
-    if eo is not None:
-        kwargs.update({'eo': eo})
     if ln is not None:
         kwargs.update({'ln': ln})
+
+    if eo is not None:
+        kwargs.update({'eo': eo})
+    else:
+        kwargs.update({'eo': ['ALL_TOUCHED']})
 
     ajim = _pj.Jim(jim_object, copy_data=False)
     ajim._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
@@ -2547,7 +2550,7 @@ class _Geometry(_pj.modules.JimModuleBase):
     def rasterize(self,
                   jim_vect,
                   burn_value: int = 1,
-                  eo=['ALL_TOUCHED'],
+                  eo: list = None,
                   ln: str = None):
         """Rasterize Jim object based on GDALRasterizeLayersBuf.
 
@@ -2579,10 +2582,14 @@ class _Geometry(_pj.modules.JimModuleBase):
         kwargs = {}
         if burn_value is not None:
             kwargs.update({'burn': float(burn_value)})
-        if eo is not None:
-            kwargs.update({'eo': eo})
         if ln is not None:
             kwargs.update({'ln': ln})
+
+        if eo is not None:
+            kwargs.update({'eo': eo})
+        else:
+            kwargs.update({'eo': ['ALL_TOUCHED']})
+
         self._jim_object.pixops.setData(0)
         self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
 
