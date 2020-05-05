@@ -1118,7 +1118,8 @@ def stackBand(jim_object,
                 ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                     jim._jipjim))
     else:
-        raise TypeError('Error: expected a Jim or JimList object')
+        raise TypeError('Error: expected a Jim or JimList object as '
+                        'the first argument')
 
     return ret_jim
 
@@ -1160,7 +1161,8 @@ def stackPlane(jim_object,
         for jim in jim_other:
             ret_jim.geometry.stackPlane(jim)
     else:
-        raise TypeError('Error: expected a Jim object')
+        raise TypeError('Error: expected a Jim or JimList object as '
+                        'the first argument')
 
     return ret_jim
 
