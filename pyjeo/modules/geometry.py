@@ -2361,7 +2361,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                     x: float,
                     y: float,
                     z: float,
-                    band: int = None):
+                    band: list = None):
         """Merge Jim instance with values of sec_jim_object in given coords.
 
         Modifies the instance on which the method was called.
@@ -2389,7 +2389,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                            y: float,
                            z: float,
                            val: float,
-                           band: int = None):
+                           band: list = None):
         """Merge Jim instance with values of im2 if val of imlbl == val.
 
         Modifies the instance on which the method was called.
