@@ -1,0 +1,7 @@
+# CHANGELOG
+
+## 0.5.0 -> 0.6.0
+
+* pixops.isEqual() -> properties.isEqual()
+* support of properties.isEqual() for JimVects
+* multiple Jim objects allowed as arguments for geometry.stackPlane()
