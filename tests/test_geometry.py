@@ -2167,9 +2167,6 @@ class BadGeometry(unittest.TestCase):
                        'reducePlane method with a non-supported function'
 
         # Test call with max and nodata defined, but no ref_band defined
-        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2, otype='Byte',
-                     uniform=[min, max])
-
         try:
             _ = pj.geometry.reducePlane(jim, rule='max', nodata=nodata)
             raised = False
