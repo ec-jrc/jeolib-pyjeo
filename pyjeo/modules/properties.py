@@ -42,41 +42,38 @@ def isEqual(first_jim,
                                            second_plane.np(iband)):
                         return False
             return True
-    elif isinstance(second_jim, _pj.JimVect) and \
-            isinstance(first_jim, _pj.JimVect):
+    elif isinstance(first_jim, _pj.JimVect):
         if first_jim.properties.isEmpty():
-            raise ValueError(
-                'first_jim is empty')
+            raise ValueError('first_jim is empty')
 
-        if isinstance(second_jim, _pj.JimVect):
-            if second_jim.properties.isEmpty():
-                raise ValueError(
-                    'second_jim is empty')
-            if first_jim.properties.getLayerCount() != \
-                    second_jim.properties.getLayerCount():
-                return False
-            if first_jim.properties.getFeatureCount() != \
-                    second_jim.properties.getFeatureCount():
-                return False
-            if first_jim.properties.getProjection() != \
-                    second_jim.properties.getProjection():
-                return False
-            if first_jim.properties.getBBox() != \
-                    second_jim.properties.getBBox():
-                return False
-
-            for ilayer in range(0, first_jim.properties.getLayerCount()):
-                #todo: check geometry equality for each feature
-                jim1_fieldnames = first_jim.properties.getFieldNames()
-                jim2_fieldnames = second_jim.properties.getFieldNames()
-                if jim1_fieldnames != jim2_fieldnames:
-                    return False
-                if not _np.array_equal(first_jim.np(ilayer),
-                                       second_jim.np(ilayer)):
-                    return False
-            return True
-        else:
+        if not isinstance(second_jim, _pj.JimVect):
             return False
+
+        if second_jim.properties.isEmpty():
+            raise ValueError('second_jim is empty')
+        if first_jim.properties.getLayerCount() != \
+                second_jim.properties.getLayerCount():
+            return False
+        if first_jim.properties.getFeatureCount() != \
+                second_jim.properties.getFeatureCount():
+            return False
+        if first_jim.properties.getProjection() != \
+                second_jim.properties.getProjection():
+            return False
+        if first_jim.properties.getBBox() != second_jim.properties.getBBox():
+            return False
+
+        for ilayer in range(0, first_jim.properties.getLayerCount()):
+            #todo: check geometry equality for each feature
+            jim1_fieldnames = first_jim.properties.getFieldNames()
+            jim2_fieldnames = second_jim.properties.getFieldNames()
+            if jim1_fieldnames != jim2_fieldnames:
+                return False
+            if not _np.array_equal(first_jim.np(ilayer),
+                                   second_jim.np(ilayer)):
+                return False
+
+        return True
     else:
         return False
 
@@ -590,39 +587,37 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
                 other):
         """Check if the values of one Jim object are the same as in another.
 
-        :param other: a Jim object
+        :param other: a JimVect object
         :return: True if the values are equal, zero otherwise
         """
         if self._jim_vect.properties.isEmpty():
-            raise ValueError(
-                'self is empty')
+            raise ValueError('self is empty')
 
-        if isinstance(other, _pj.JimVect):
-            if other.properties.isEmpty():
-                raise ValueError(
-                    'other is empty')
-            if self._jim_vect.properties.getLayerCount() != \
-                    other.properties.getLayerCount():
-                return False
-            if self._jim_vect.properties.getFeatureCount() != \
-                    other.properties.getFeatureCount():
-                return False
-            if self._jim_vect.properties.getProjection() != \
-                    other.properties.getProjection():
-                return False
-            if self._jim_vect.properties.getBBox() != \
-                    other.properties.getBBox():
-                return False
-
-            for ilayer in range(0, self._jim_vect.properties.getLayerCount()):
-                #todo: check geometry equality for each feature
-                jim1_fieldnames = self._jim_vect.properties.getFieldNames()
-                jim2_fieldnames = other.properties.getFieldNames()
-                if jim1_fieldnames != jim2_fieldnames:
-                    return False
-                if not _np.array_equal(self._jim_vect.np(ilayer),
-                                       other.np(ilayer)):
-                    return False
-            return True
-        else:
+        if not isinstance(other, _pj.JimVect):
             return False
+
+        if other.properties.isEmpty():
+            raise ValueError('other is empty')
+        if self._jim_vect.properties.getLayerCount() != \
+                other.properties.getLayerCount():
+            return False
+        if self._jim_vect.properties.getFeatureCount() != \
+                other.properties.getFeatureCount():
+            return False
+        if self._jim_vect.properties.getProjection() != \
+                other.properties.getProjection():
+            return False
+        if self._jim_vect.properties.getBBox() != other.properties.getBBox():
+            return False
+
+        for ilayer in range(0, self._jim_vect.properties.getLayerCount()):
+            #todo: check geometry equality for each feature
+            jim1_fieldnames = self._jim_vect.properties.getFieldNames()
+            jim2_fieldnames = other.properties.getFieldNames()
+            if jim1_fieldnames != jim2_fieldnames:
+                return False
+            if not _np.array_equal(self._jim_vect.np(ilayer),
+                                   other.np(ilayer)):
+                return False
+
+        return True
