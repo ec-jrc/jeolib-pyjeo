@@ -2184,7 +2184,7 @@ class BadGeometry(unittest.TestCase):
             raised = True
 
         assert raised, 'Error in raising an error when performing ' \
-                       'reducePlane function with a max/min rule and only ' \
+                       'reducePlane method with a max/min rule and only ' \
                        'nodata without ref_band defined'
 
 
