@@ -5,3 +5,4 @@
 * pixops.isEqual() -> properties.isEqual()
 * support of properties.isEqual() for JimVects
 * multiple Jim objects allowed as arguments for geometry.stackPlane()
+* allowed usage of Jim.geometry.stackPlane() with only one Jim parameter
