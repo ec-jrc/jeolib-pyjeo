@@ -2065,6 +2065,60 @@ class BadGeometry(unittest.TestCase):
             '(for rule="median", the min value of returned object is not >= ' \
             'the mean of the original object)'
 
+        # Test call with a callback rule
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
+                     nband=2, otype='int16', uniform=[min, max])
+        jim[2, 0, 0] = max
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        jim.np(1)[2, 0, 0] = nodata
+
+        stats = jim.stats.getStats()
+
+        reduced = pj.geometry.reducePlane(
+            jim, rule=lambda stacked, plane: stacked * plane)
+        jim.geometry.reducePlane(rule=lambda stacked, plane: stacked * plane)
+
+        stats_reduced = jim.stats.getStats(['max', 'min', 'mean'])
+
+        assert jim.properties.isEqual(reduced), \
+            'Inconsistency in geometry.reducePlane() ' \
+            '(method returns different result than function for a callback ' \
+            'rule)'
+        assert jim.properties.nrOfPlane() == 1, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 1 for a callback rule)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed for a callback rule)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed for a callback rule)'
+        assert jim.np()[0, 0] == max * max * min, \
+            'Error in geometry.reducePlane() ' \
+            '(callback rule not doing what it is supposed to do)'
+        assert jim.np(1)[0, 0] == 3 * max * 2 * max * nodata, \
+            'Error in geometry.reducePlane() ' \
+            '(callback rule not working for all bands)'
+        assert stats_reduced['max'][0] >= stats['max'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(callback rule not doing what it is supposed to do - the max ' \
+            'value after using a multiplication rule not >= the max of the ' \
+            'original object)'
+        assert stats_reduced['min'][0] >= stats['min'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(callback rule not doing what it is supposed to do - the min ' \
+            'value after using a multiplication rule not >= the min of the ' \
+            'original object)'
+        assert stats_reduced['mean'][0] >= stats['mean'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(callback rule not doing what it is supposed to do - the mean ' \
+            'value after using a multiplication rule not >= the mean of the ' \
+            'original object)'
+
         # Test wrong call with one-plane Jim
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=1, otype='Byte',
                      uniform=[min, max])
