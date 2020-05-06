@@ -2879,7 +2879,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                 self._jim_object._jipjim.d_stackBand(jim._jipjim)
 
     def stackPlane(self,
-                   jim_other,
+                   jim_other=None,
                    *args):
         """Stack the planes of another Jim object to the current Jim object.
 
