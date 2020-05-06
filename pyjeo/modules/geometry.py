@@ -1144,6 +1144,9 @@ def stackPlane(jim_object,
         else:
             return ret_jim
     elif isinstance(jim_object, _pj.Jim):
+        if jim_other is None:
+            return _pj.Jim(jim_object)
+
         ret_jim = _pj.Jim(jim_object)
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
@@ -2876,6 +2879,9 @@ class _Geometry(_pj.modules.JimModuleBase):
             jim1 = pj.Jim('/path/to/multiplane.tif')
             jim0.geometry.stackPlane(jim1)
         """
+        if jim_other is None:
+            return None
+
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
 
