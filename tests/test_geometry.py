@@ -128,7 +128,8 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.band2plane() ' \
             '(jimband not equal to jimsplane)'
 
-        # Test wrong call with parameter band exceeding the nrOfBand in Jims
+        # Test wrong call of stackBand with the parameter band exceeding
+        # the nrOfBand in Jims
         try:
             _ = pj.geometry.stackBand(jim0, jim1,
                                       band=jim0.properties.nrOfBand() + 1)
@@ -152,7 +153,7 @@ class BadGeometry(unittest.TestCase):
             'method where the band argument exceeds the number of bands of' \
             ' Jims'
 
-        # Test wrong call with wrong object type
+        # Test wrong call of stackBand with wrong object type
         try:
             _ = pj.geometry.stackBand(1, jim1,
                                       band=jim0.properties.nrOfBand() + 1)
