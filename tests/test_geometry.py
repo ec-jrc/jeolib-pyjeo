@@ -155,14 +155,13 @@ class BadGeometry(unittest.TestCase):
 
         # Test wrong call of stackBand with wrong object type
         try:
-            _ = pj.geometry.stackBand(1, jim1,
-                                      band=jim0.properties.nrOfBand() + 1)
+            _ = pj.geometry.stackBand(1, jim1)
             raised = False
         except TypeError:
             raised = True
 
         assert raised, \
-            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'Error in catching a call of geometry.stackBand(jim, jim) ' \
             'function where the first argument is not a Jim or a JimList'
 
     @staticmethod
