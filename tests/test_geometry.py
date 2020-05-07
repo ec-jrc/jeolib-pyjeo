@@ -178,7 +178,7 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_warp():
         """Test the warp method."""
-        jim0 = pj.Jim(rasterfn)
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
         jim_warped = pj.geometry.warp(jim0, 'epsg:4326')
 
         assert jim_warped.properties.getProjection()[-7:-3] == '4326', \
