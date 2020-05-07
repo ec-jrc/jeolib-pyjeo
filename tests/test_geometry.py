@@ -164,6 +164,17 @@ class BadGeometry(unittest.TestCase):
             'Error in catching a call of geometry.stackBand(jim, jim) ' \
             'function where the first argument is not a Jim or a JimList'
 
+        # Test wrong call of stackPlane with wrong object type
+        try:
+            _ = pj.geometry.stackPlane(1, jim1)
+            raised = False
+        except TypeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackPlane(jim, jim) ' \
+            'function where the first argument is not a Jim or a JimList'
+
     @staticmethod
     def test_warp():
         """Test the warp method."""
