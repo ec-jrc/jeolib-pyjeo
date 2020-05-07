@@ -107,6 +107,19 @@ class BadGeometry(unittest.TestCase):
         assert jim.properties.isEqual(jim1), \
             'Error jim not equal to jim1'
 
+        # Test stackPlane() with only one Jim as a parameter
+        stacked = pj.geometry.stackPlane(jim)
+
+        assert stacked.properties.isEqual(jim), \
+            'Error in geometry.stackPlane(Jim) ' \
+            '(returned object not equal to the only Jim used as a parameter)'
+
+        jim.geometry.stackPlane()
+
+        assert stacked.properties.isEqual(jim), \
+            'Inconsistency in geometry.stackPlane(Jim) ' \
+            '(method returns different result than function)'
+
         # Test the band2plane() method
         jimband = pj.Jim(rasterfn, band=[0, 1, 2])
         jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
