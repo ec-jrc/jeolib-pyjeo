@@ -16,8 +16,7 @@ class BadNgbOps(unittest.TestCase):
     @staticmethod
     def test_filters():
         """Test filter1d() and filter2d() functions and methods."""
-        jim = pj.Jim(testFile)
-        jim.geometry.cropBand(band=[0, 1, 2])
+        jim = pj.Jim(testFile, band=[0, 1, 2])
 
         stats_max_jim = max(jim.stats.getStats('max', band=[0, 1, 2])['max'])
         stats_min_jim = min(jim.stats.getStats('min', band=[0, 1, 2])['min'])
@@ -55,7 +54,7 @@ class BadNgbOps(unittest.TestCase):
         assert stats_min_max_jim >= stats_min_min_jim, \
             'Error in ngbops.filter1d() (wrong values)'
 
-        jim3d = pj.Jim(testFile, band2plane=True)
+        jim3d = pj.Jim(testFile, band=[0, 1, 2], band2plane=True)
         jim3d.pixops.convert(otype='UInt16')
         jimorig = pj.Jim(jim3d)
         filt = np.array([2.0, 2.0, 2.0])
@@ -71,7 +70,7 @@ class BadNgbOps(unittest.TestCase):
             2 * jimorig[0] + 2 * jimorig[1] + 2 * jimorig[2]), \
             'Error in ngbops.filter1d(numpy.array) (returning wrong values)'
 
-        jim2d = pj.Jim(testFile)
+        jim2d = pj.Jim(testFile, band=[0, 1, 2])
         jimorig = pj.Jim(jim2d)
         filt = np.array([[2.0, 2.0, 2.0], [2.0, 2.0, 2.0], [2.0, 2.0, 2.0]])
 
@@ -123,14 +122,14 @@ class BadNgbOps(unittest.TestCase):
     @staticmethod
     def test_dwt():
         """Test dwt() and dwti() functions and methods."""
-        jim = pj.Jim(testFile, band2plane=True)
+        jim = pj.Jim(testFile, band=[0, 1], band2plane=True)
 
         jim.pixops.convert('GDT_Float64')
         dwt = pj.ngbops.dwt1d(jim)
         dwt.ngbops.dwti1d()
 
-        dwt6 = pj.geometry.cropPlane(dwt, 6)
-        jim6 = pj.geometry.cropPlane(jim, 6)
+        dwt6 = pj.geometry.cropPlane(dwt, 1)
+        jim6 = pj.geometry.cropPlane(jim, 1)
         assert np.max((abs((jim6-dwt6))).np()) < 1e-10, \
             'Inconsistency in dwt2d() ' \
             '(method returns different result than function or dwt+dwti!=id)'
@@ -141,16 +140,19 @@ class BadNgbOps(unittest.TestCase):
         dwt.ngbops.dwti2d()
         assert np.max((abs((dwt.np()-jim.np())))) < 1e-10, \
             'Inconsistency in dwt2d() ' \
-            '(method returns different result than function or dwt+dwti!=id)'
+            '(method returns different result than function or dwt+dwti != id)'
 
     @staticmethod
     def test_smoothNoData1d():
         """Test smoothNoData1d functions and methods."""
-        jim = pj.Jim(testFile, band2plane=True)
+        jim = pj.Jim(testFile, band=[0, 1, 2, 3, 4, 5], band2plane=True)
+
         smoothed = pj.ngbops.smoothNoData1d(jim, 0)
+
         assert smoothed.stats.getStats('mean')['mean'] > \
                jim.stats.getStats('mean')['mean'], \
             'Error in ngbops.smoothNoData1d (wrong values)'
+
         jim.ngbops.smoothNoData1d(0)
 
         assert smoothed.properties.isEqual(jim), \

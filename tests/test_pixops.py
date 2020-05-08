@@ -15,7 +15,7 @@ class BadPixOps(unittest.TestCase):
     @staticmethod
     def test_NDVI():
         """Test computing NDVI in different ways."""
-        jim = pj.Jim(testFile)
+        jim = pj.Jim(testFile, band=[0, 1])
 
         jim_red = pj.geometry.cropBand(jim, 0)
         jim_nir = pj.geometry.cropBand(jim, 1)
@@ -30,10 +30,10 @@ class BadPixOps(unittest.TestCase):
         jim_red.pixops.NDVISeparateBands(jim_nir)
 
         assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
-                                             'NDVISeparateBands'
+                                                 'NDVISeparateBands'
 
         assert jim_red.properties.isEqual(jim), 'Error in computing NDVI or ' \
-                                            'NDVISeparateBands'
+                                                'NDVISeparateBands'
 
         jim_nir.pixops.convert('Float32')
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
@@ -127,7 +127,7 @@ class BadPixOps(unittest.TestCase):
     @staticmethod
     def test_setFunctions():
         """Test setData, setLevel and setThreshold functions and methods."""
-        jim = pj.Jim(testFile)
+        jim = pj.Jim(testFile, band=[0, 1])
 
         stats = jim.stats.getStats(band=0)
         min = stats['min']
@@ -157,7 +157,7 @@ class BadPixOps(unittest.TestCase):
         assert jim.properties.getNoDataVals() == nodata, \
             'Error in pixops.setThreshold() or properties.getNoDataVals()'
 
-        jim = pj.Jim(testFile)
+        jim = pj.Jim(testFile, band=[0, 1])
 
         levelled = pj.pixops.setLevel(jim, min=min+1, max=max-1, val=max+1)
         jim.pixops.setLevel(min=min+1, max=max-1, val=max+1)

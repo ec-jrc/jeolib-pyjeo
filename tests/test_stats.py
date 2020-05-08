@@ -121,7 +121,7 @@ class BadStats(unittest.TestCase):
     @staticmethod
     def test_stretch():
         """Test stretching a Jim object."""
-        jim = pj.Jim(testFile)
+        jim = pj.Jim(testFile, band=[0, 1])
 
         jim_min = jim.stats.getStats(band=0)['min']
 

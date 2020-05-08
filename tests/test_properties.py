@@ -213,7 +213,7 @@ class BadProps(unittest.TestCase):
     @staticmethod
     def test_georeference():
         """Test georeference (projection + geotransform) methods."""
-        jim1 = pj.Jim(testFile)
+        jim1 = pj.Jim(testFile, band=[0, 1])
         np1 = jim1.np()[:]
         jim_1 = pj.np2jim(np1)
         jim_1.properties.copyGeoReference(jim1)
@@ -230,7 +230,7 @@ class BadProps(unittest.TestCase):
 class BadPropsLists(unittest.TestCase):
     """Test JimList funcs and methods for getting and setting properties."""
 
-    jim1 = pj.Jim(testFile)
+    jim1 = pj.Jim(testFile, band=[0, 1])
     jim2 = pj.Jim(tiles[1])
 
     jiml = pj.JimList([jim1, jim2])

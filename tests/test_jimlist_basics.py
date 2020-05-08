@@ -62,7 +62,7 @@ class BadBasicMethodLists(unittest.TestCase):
         """Test basic methods originating in list() inheritance."""
         jim1 = pj.Jim(tiles[0])
         jim2 = pj.Jim(tiles[1])
-        jim3 = pj.Jim(testFile)
+        jim3 = pj.Jim(testFile, band=[0, 1])
         jiml1 = pj.JimList([jim1, jim2])
         jiml2 = pj.JimList([jim1, jim2, jim3])
 

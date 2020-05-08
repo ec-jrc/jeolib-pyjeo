@@ -21,8 +21,8 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_band2plane():
         """Test the band2plane method."""
-        jim3d = pj.Jim(rasterfn, band2plane=True)
-        jim2d = pj.Jim(rasterfn, band2plane=False)
+        jim3d = pj.Jim(rasterfn, band=[0, 1], band2plane=True)
+        jim2d = pj.Jim(rasterfn, band=[0, 1], band2plane=False)
         jim2d.geometry.band2plane()
         assert jim2d.properties.isEqual(jim3d), \
             'Error in geometry.band2plane() ' \
@@ -38,23 +38,22 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_stack():
         """Test the stackBand and stackPlane methods."""
-        jim = pj.Jim(rasterfn)
+        jim = pj.Jim(rasterfn, band=[0, 1, 2])
 
         # Test stackBand()
-        jim0to11 = pj.geometry.cropBand(jim,
-                                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        jim12 = pj.geometry.cropBand(jim, 11)
+        jim0to1 = pj.geometry.cropBand(jim, [0, 1])
+        jim2 = pj.geometry.cropBand(jim, 2)
 
-        jim_stacked = pj.geometry.stackBand(jim0to11, jim12)
+        jim_stacked = pj.geometry.stackBand(jim0to1, jim2)
         assert jim_stacked.properties.nrOfBand() == \
-               jim0to11.properties.nrOfBand() + jim12.properties.nrOfBand(), \
+               jim0to1.properties.nrOfBand() + jim2.properties.nrOfBand(), \
             'Error in geometry.stackBand() ' \
             '(number of bands after stack not equal to the sum of number of ' \
             'bands of parameters)'
 
-        jim0to11.geometry.stackBand(jim12)
+        jim0to1.geometry.stackBand(jim2)
 
-        assert jim_stacked.properties.isEqual(jim0to11), \
+        assert jim_stacked.properties.isEqual(jim0to1), \
             'Inconsistency in geometry.stackBand() ' \
             '(method returns different result than function)'
         assert jim_stacked.properties.isEqual(jim), \
@@ -63,18 +62,17 @@ class BadGeometry(unittest.TestCase):
             'cropped)'
 
         # Test stackBand() with band specified
-        jim0to11 = pj.geometry.cropBand(jim,
-                                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        jim0to1 = pj.geometry.cropBand(jim, [0, 1])
 
-        jim_stacked = pj.geometry.stackBand(jim0to11, jim, band=11)
+        jim_stacked = pj.geometry.stackBand(jim0to1, jim, band=2)
         assert jim_stacked.properties.nrOfBand() == \
                jim.properties.nrOfBand(), \
             'Error in geometry.stackBand(band) ' \
             '(number of bands after stack not equal to the expected one)'
 
-        jim0to11.geometry.stackBand(jim, band=11)
+        jim0to1.geometry.stackBand(jim, band=2)
 
-        assert jim_stacked.properties.isEqual(jim0to11), \
+        assert jim_stacked.properties.isEqual(jim0to1), \
             'Inconsistency in geometry.stackBand(band) ' \
             '(method returns different result than function)'
         assert jim_stacked.properties.isEqual(jim), \
@@ -212,9 +210,12 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_extractOgr_loop():
         """Test the extractOgr method looping over bands using join function."""
-        jim0 = pj.Jim(rasterfn)
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
-        for band in range(0, jim0.properties.nrOfBand()):
+
+        nband = jim0.properties.nrOfBand()
+
+        for band in range(0, nband):
             jl0 = pj.JimList([pj.geometry.cropBand(jim0, band)])
             bandname = 'B' + str(band)
             if not band:
@@ -241,7 +242,7 @@ class BadGeometry(unittest.TestCase):
                 assert 'fid' in v.properties.getFieldNames(), \
                     'Error in geometry.extractOgr() field names (1)'
                 if band == 11:
-                    assert len(v.properties.getFieldNames()) == 14, \
+                    assert len(v.properties.getFieldNames()) == nband + 2, \
                         'Error in geometry.extractOgr() number of field names'
                 v1.io.close()
                 v2.io.close()
@@ -254,25 +255,32 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_extractOgr_list_multiband():
         """Test the extractOgr method for list with multibands."""
-        jim0 = pj.Jim(rasterfn)
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
         jl0 = pj.JimList([jim0])
+
+        nband = jim0.properties.nrOfBand()
+
         bandname = []
-        for band in range(0, jim0.properties.nrOfBand()):
+        for band in range(0, nband):
             bandname.append('B' + str(band))
         v = jl0.geometry.extractOgr(sample, rule='mean',
                                     output=outputfn, oformat='SQLite',
                                     co=['OVERWRITE=YES'],
                                     bandname=bandname, fid='fid')
         v.io.write()
+
+        field_names = v.properties.getFieldNames()
+
         assert v.properties.getFeatureCount() == 11, \
             'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + 2, \
             'Error in geometry.extractOgr() field names (1)'
+
         jl0.io.close()
         sample.io.close()
         v.io.close()
@@ -281,27 +289,35 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_extractOgr_multiband():
         """Test the extractOgr method for jim with multibands."""
-        jim0 = pj.Jim(rasterfn)
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
+
+        nband = jim0.properties.nrOfBand()
+
         planename = []
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('T' + str(plane))
         bandname = []
-        for band in range(0, jim0.properties.nrOfBand()):
+        for band in range(0, nband):
             bandname.append('B' + str(band))
+
         v = jim0.geometry.extractOgr(sample, rule='mean',
                                      output=outputfn, oformat='SQLite',
                                      co=['OVERWRITE=YES'],
                                      bandname=bandname, fid='fid')
         v.io.write()
+
+        field_names = v.properties.getFieldNames()
+
         assert v.properties.getFeatureCount() == 11, \
             'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + 2, \
             'Error in geometry.extractOgr() field names (1)'
+
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
@@ -309,28 +325,36 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_extractOgr_plane():
         """Test the extractOgr method for multiplanes."""
-        jim0 = pj.Jim(rasterfn)
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
+
+        nband = jim0.properties.nrOfBand()
+
         planename = []
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('T' + str(plane))
         bandname = []
-        for band in range(0, jim0.properties.nrOfBand()):
+        for band in range(0, nband):
             bandname.append('B' + str(band))
+
         v = jim0.geometry.extractOgr(sample, rule='mean',
                                      output=outputfn, oformat='SQLite',
                                      co=['OVERWRITE=YES'],
                                      planename=planename,
                                      bandname=bandname, fid='fid')
         v.io.write()
+
+        field_names = v.properties.getFieldNames()
+
         assert v.properties.getFeatureCount() == 11, \
             'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'label' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + 2, \
             'Error in geometry.extractOgr() field names (1)'
+
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
@@ -339,29 +363,40 @@ class BadGeometry(unittest.TestCase):
     def test_extractOgr_band_plane():
         """Test the extractOgr method for multiband multiplanes."""
         sample = pj.JimVect(vectorfn)
-        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3, 4, 5])
-        jim1 = pj.Jim(rasterfn, band=[6, 7, 8, 9, 10, 11])
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
+        jim1 = pj.Jim(rasterfn, band=[6, 7])
         jim0.geometry.stackPlane(jim1)
+
+        nband = jim0.properties.nrOfBand()
+        nplane = jim0.properties.nrOfPlane()
+
+        rule = ['mean', 'stdev']
+
         planename = []
         bandname = []
-        for plane in range(0, jim0.properties.nrOfPlane()):
+        for plane in range(0, nplane):
             planename.append('Time' + str(plane))
-        for band in range(0, jim0.properties.nrOfBand()):
+        for band in range(0, nband):
             bandname.append('Band' + str(band))
-        v = jim0.geometry.extractOgr(sample, rule=['mean', 'stdev'],
+
+        v = jim0.geometry.extractOgr(sample, rule=rule,
                                      output=outputfn, oformat='SQLite',
                                      co=['OVERWRITE=YES'],
                                      bandname=bandname,
                                      planename=planename, fid='fid')
         v.io.write()
+
+        field_names = v.properties.getFieldNames()
+
         assert v.properties.getFeatureCount() == 11, \
             'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'label' in field_names, \
             'Error in geometry.extractOgr() field names (1)'
-        assert len(v.properties.getFieldNames()) == 26, \
+        assert len(field_names) == (nband + nplane) * len(rule) + 2, \
             'Error in geometry.extractOgr() field names (1)'
+
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
@@ -370,15 +405,20 @@ class BadGeometry(unittest.TestCase):
     def test_extractOgr_allpoints():
         """Test the extractOgr method for allpoints."""
         sample = pj.JimVect(vectorfn)
-        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3, 4, 5])
-        jim1 = pj.Jim(rasterfn, band=[6, 7, 8, 9, 10, 11])
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
+        jim1 = pj.Jim(rasterfn, band=[6, 7])
         jim0.geometry.stackPlane(jim1)
+
+        nband = jim0.properties.nrOfBand()
+        nplane = jim0.properties.nrOfPlane()
+
         planename = []
         bandname = []
         for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('Time' + str(plane))
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('Band' + str(band))
+
         v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
                                      output=outputfn, oformat='SQLite',
                                      co=['OVERWRITE=YES'],
@@ -387,11 +427,14 @@ class BadGeometry(unittest.TestCase):
                                      bandname=bandname,
                                      planename=planename, fid='fid')
         v.io.write()
+
+        field_names = v.properties.getFieldNames()
+
         assert v.properties.getFeatureCount() == 307, \
             'Error in geometry.extractOgr() feature count'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + nplane + 2, \
             'Error in geometry.extractOgr() field names'
 
         sample.io.close()
@@ -399,15 +442,7 @@ class BadGeometry(unittest.TestCase):
         os.remove(outputfn)
 
         sample = pj.JimVect(nutsfn)
-        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3, 4, 5])
-        jim1 = pj.Jim(rasterfn, band=[6, 7, 8, 9, 10, 11])
-        jim0.geometry.stackPlane(jim1)
-        planename = []
-        bandname = []
-        for plane in range(0, jim0.properties.nrOfPlane()):
-            planename.append('Time' + str(plane))
-        for band in range(0, jim0.properties.nrOfBand()):
-            bandname.append('Band' + str(band))
+
         v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
                                      output=outputfn, oformat='SQLite',
                                      co=['OVERWRITE=YES'],
@@ -418,11 +453,14 @@ class BadGeometry(unittest.TestCase):
                                      threshold=[10, 10],
                                      fid='fid')
         v.io.write()
+
+        field_names = v.properties.getFieldNames()
+
         assert v.properties.getFeatureCount() == 20, \
             'Error in geometry.extractOgr() feature count'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extractOgr() field names'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + nplane + 2, \
             'Error in geometry.extractOgr() field names'
 
         sample.io.close()
@@ -432,7 +470,7 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_crop():
         """Test crop...() functions and methods."""
-        raster = pj.Jim(rasterfn)
+        raster = pj.Jim(rasterfn, band=[0, 1])
         raster_stacked = pj.geometry.stackPlane(raster, raster)
         vector = pj.JimVect(vectorfn)
         raster_bbox = raster_stacked.properties.getBBox()
@@ -538,7 +576,7 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_image_frames():
         """Test imageFrame...() functions and methods."""
-        nrow = ncol = 500
+        nrow = ncol = 50
         nband = nplane = 2
         jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,
                      otype='Byte', uniform=[0, 2], seed=0)
@@ -564,7 +602,7 @@ class BadGeometry(unittest.TestCase):
         assert jim.properties.nrOfBand() == nband, \
             'Error in geometry.imageFrameAdd() ' \
             '(number of bands changed)'
-        assert jim[0, 100, 100].np() == 5, \
+        assert jim[0, 25, 25].np() == 5, \
             'Error in geometry.imageFrameAdd() ' \
             '(value not used for new planes)'
         assert jim[1, 0, 0].np() == 5, \
@@ -676,7 +714,7 @@ class BadGeometry(unittest.TestCase):
         assert jim.properties.nrOfBand() == nband, \
             'Error in geometry.imageFrameAdd() ' \
             '(number of bands changed)'
-        assert jim[0, 100, 100].np() == 10, \
+        assert jim[0, 25, 25].np() == 10, \
             'Error in geometry.imageFrameAdd() ' \
             '(value not used for new planes)'
         assert jim[1, 0, 0].np() == 10, \
@@ -2327,7 +2365,7 @@ class BadGeometryVects(unittest.TestCase):
     def test_join():
         """Test the join() function and method."""
         jimv = pj.JimVect(vectorfn)
-        jimr = pj.Jim(rasterfn)
+        jimr = pj.Jim(rasterfn, band=[0, 1])
 
         non_existing_path0 = pj._get_random_path()
         non_existing_path1 = pj._get_random_path()

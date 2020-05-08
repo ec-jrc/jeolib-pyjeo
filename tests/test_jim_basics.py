@@ -46,20 +46,20 @@ class BadBasicMethods(unittest.TestCase):
         assert jim6.all.nrOfCol() == 5, \
             'Error in creating Jim with Jim(kwargs)'
 
-        jim7 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
+        jim7 = pj.Jim(nrow=50, ncol=50, otype='Float32', uniform=[0, 2],
                       seed=0)
         stats7 = jim7.stats.getStats(['min', 'max'], band=0)
 
         assert stats7['max'] < 2 and stats7['min'] > 0, \
             'Error in creating Jim with uniform distribution'
 
-        jim8 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
+        jim8 = pj.Jim(nrow=50, ncol=50, otype='Float32', uniform=[0, 2],
                       seed=0)
 
         assert jim7.properties.isEqual(jim8), \
             'Error in usage of seed keyword argument when creating Jim()'
 
-        jim8_2 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=2,
+        jim8_2 = pj.Jim(nrow=50, ncol=50, otype='Float32', uniform=2,
                         seed=0)
 
         assert jim7.properties.isEqual(jim8_2), \
@@ -78,7 +78,7 @@ class BadBasicMethods(unittest.TestCase):
 
         # Test creation with mean and stdev
 
-        jim9 = pj.Jim(nrow=500, ncol=500, otype='Float32', mean=500, stdev=50,
+        jim9 = pj.Jim(nrow=50, ncol=50, otype='Float32', mean=500, stdev=50,
                       seed=0)
 
         stats = jim9.stats.getStats(['mean', 'stdev'])
@@ -92,9 +92,9 @@ class BadBasicMethods(unittest.TestCase):
 
         # Test creation with only seed (mean=0, stdev=1)
 
-        jim10 = pj.Jim(nrow=500, ncol=500, otype='Byte', seed=0)
+        jim10 = pj.Jim(nrow=50, ncol=50, otype='Byte', seed=0)
 
-        jim10_2 = pj.Jim(nrow=500, ncol=500, otype='Byte', mean=0, stdev=1,
+        jim10_2 = pj.Jim(nrow=50, ncol=50, otype='Byte', mean=0, stdev=1,
                          seed=0)
 
         assert jim10.properties.isEqual(jim10_2), \
@@ -233,7 +233,7 @@ class BadBasicMethods(unittest.TestCase):
         assert raised, \
             'Error in catching wrong indices in jim[index, index]'
 
-        jim1 = pj.Jim(ncol=256, nrow=256, nband=2, nplane=2)
+        jim1 = pj.Jim(ncol=50, nrow=50, nband=2, nplane=2)
         jim1.properties.setProjection('epsg:5514')
         jim1.geometry.cropBand(0)
         jim1.pixops.setData(5)
@@ -334,7 +334,7 @@ class BadBasicMethods(unittest.TestCase):
         assert raised, 'Error in catching a JimVect used as an index ' \
                        'for a multiplanar Jim (set item)'
 
-        modis = pj.Jim(testFile)
+        modis = pj.Jim(testFile, band=[0, 1])
         modis.properties.clearNoData()
         modis_clipped = modis[vect]
         modis.properties.setNoDataVals(0)
@@ -1178,11 +1178,11 @@ class BadBasicMethods(unittest.TestCase):
         assert jim2.properties.isEqual(jim0), \
             'Error in creating Jim object with byte path'
 
-        jim0 = pj.Jim(nrow=500, ncol=500, otype='Float32', uniform=[0, 2],
+        jim0 = pj.Jim(nrow=50, ncol=50, otype='Float32', uniform=[0, 2],
                       seed=0)
-        jim1 = pj.Jim(nrow=500, ncol=500, otype=u'Float32', uniform=[0, 2],
+        jim1 = pj.Jim(nrow=50, ncol=50, otype=u'Float32', uniform=[0, 2],
                       seed=0)
-        jim2 = pj.Jim(nrow=500, ncol=500, otype=b'Float32', uniform=[0, 2],
+        jim2 = pj.Jim(nrow=50, ncol=50, otype=b'Float32', uniform=[0, 2],
                       seed=0)
 
         assert jim1.properties.isEqual(jim0), \
