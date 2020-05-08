@@ -2211,6 +2211,31 @@ class BadGeometry(unittest.TestCase):
                        'reducePlane method with a max/min rule and only ' \
                        'nodata without ref_band defined'
 
+        # Test call with rule=callback and nodata specified
+        try:
+            _ = pj.geometry.reducePlane(
+                jim,
+                rule=lambda stacked, plane: stacked * plane,
+                nodata=nodata)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, 'Error in raising an error when performing ' \
+                       'reducePlane function with a callback rule and nodata' \
+                       ' defined'
+
+        try:
+            jim.geometry.reducePlane(
+                rule=lambda stacked, plane: stacked * plane, nodata=nodata)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, 'Error in raising an error when performing ' \
+                       'reducePlane method with a callback rule and nodata' \
+                       ' defined'
+
 
 class BadGeometryVects(unittest.TestCase):
     """Test functions and methods from geometry module."""
