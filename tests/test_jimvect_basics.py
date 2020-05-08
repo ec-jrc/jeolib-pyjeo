@@ -9,8 +9,6 @@ import string
 import numpy as np
 
 
-testFile = 'tests/data/modis_ndvi_2010.tif'
-tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 vector = 'tests/data/nuts_italy.sqlite'
 
 

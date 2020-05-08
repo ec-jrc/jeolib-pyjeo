@@ -8,7 +8,6 @@ import random
 import string
 
 
-testFile = 'tests/data/modis_ndvi_2010.tif'
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 vector = 'tests/data/modis_ndvi_training.sqlite'
 
