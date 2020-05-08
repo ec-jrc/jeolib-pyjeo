@@ -83,17 +83,6 @@ class BadNgbOps(unittest.TestCase):
 
         assert jim2d[1, 1].np().sum() == 2 * np.sum(jimorig[0:3, 0:3].np()), \
             'Error in ngbops.filter2d(numpy.array) (returning wrong values)'
-
-        jim = pj.Jim(testFile, band2plane=True)
-        smoothed = pj.ngbops.smoothNoData1d(jim, 0)
-        assert smoothed.stats.getStats('mean')['mean'] > \
-               jim.stats.getStats('mean')['mean'], \
-            'Error in ngbops.smoothNoData1d (wrong values)'
-
-        jim.ngbops.smoothNoData1d(0)
-        assert smoothed.properties.isEqual(jim), \
-            'Inconsistency in smoothNoData1d ' \
-            '(method returns different result than function'
         # jimorig = pj.Jim(jim)
         # filt = np.array([2.0, 2.0, 2.0])
 
