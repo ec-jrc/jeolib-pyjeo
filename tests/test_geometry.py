@@ -177,12 +177,37 @@ class BadGeometry(unittest.TestCase):
     def test_warp():
         """Test the warp method."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
-        jim_warped = pj.geometry.warp(jim0, 'epsg:4326')
+        jim1 = pj.Jim(rasterfn, band=[2, 3])
+        jim0.geometry.stackPlane(jim1)
+        jim0_2 = pj.Jim (jim0)
 
+        orig_proj = jim0.properties.getProjection()
+
+        jim_warped = pj.geometry.warp(jim0, 'epsg:4326')
+        jim0_2.geometry.warp('epsg:4326')
+
+        assert jim_warped.properties.isEqual(jim0_2), \
+            'Inconsistency in geometry.warp() ' \
+            '(method returns different result than function)'
+        assert jim_warped.properties.getProjection() != orig_proj, \
+            'Error in geometry.warp() ' \
+            '(EPSG not changed)'
         assert jim_warped.properties.getProjection()[-7:-3] == '4326', \
-            'Error in geometry.warp(): EPSG not changed'
+            'Error in geometry.warp() ' \
+            '(EPSG not changed to the right one)'
 
         jim_warped.geometry.warp('epsg:3035')
+
+        assert jim_warped.properties.getProjection()[-7:-3] == '3035', \
+            'Error in geometry.warp() ' \
+            '(EPSG not changed to the right one when called for the second ' \
+            'time)'
+        assert jim_warped.properties.nrOfBand() == 2, \
+            'Error in geometry.warp() ' \
+            '(number of bands changed)'
+        assert jim_warped.properties.nrOfPlane() == 2, \
+            'Error in geometry.warp() ' \
+            '(number of planes changed)'
 
         jim_warped.geometry.crop(ulx=jim0.properties.getUlx(),
                                  uly=jim0.properties.getUly(),
@@ -190,22 +215,15 @@ class BadGeometry(unittest.TestCase):
                                  lry=jim0.properties.getLry(),
                                  dx=jim0.properties.getDeltaX(),
                                  dy=jim0.properties.getDeltaY())
-        jim0.geometry.crop(ulx=jim0.properties.getUlx(),
-                           uly=jim0.properties.getUly(),
-                           lrx=jim0.properties.getLrx(),
-                           lry=jim0.properties.getLry(),
-                           dx=jim0.properties.getDeltaX(),
-                           dy=jim0.properties.getDeltaY())
-        jim_warped.io.write(warpedfn)
-        assert jim0.properties.getBBox() == jim_warped.properties.getBBox(), \
-            'Error in geometry.warp(): BBox'
+
         assert jim0.properties.nrOfCol() == jim_warped.properties.nrOfCol(), \
-            'Error in geometry.warp(): nrOfCol'
+            'Error in geometry.warp() ' \
+            '(after warping to a different projection and back and ' \
+            'after cropping to the original extent, nrOfCol changed)'
         assert jim0.properties.nrOfRow() == jim_warped.properties.nrOfRow(), \
-            'Error in geometry.warp(): nrOfRow'
-        assert jim0.properties.nrOfBand() == jim_warped.properties.nrOfBand(),\
-            'Error in geometry.warp(): nrOfBand'
-        os.remove(warpedfn)
+            'Error in geometry.warp() ' \
+            '(after warping to a different projection and back and ' \
+            'after cropping to the original extent, nrOfRow changed)'
 
     @staticmethod
     def test_extractOgr_loop():
