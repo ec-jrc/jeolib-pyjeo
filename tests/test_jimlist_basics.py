@@ -39,7 +39,6 @@ class BadBasicMethodLists(unittest.TestCase):
         # Test JimList creation from a Jim
         jiml = pj.JimList(jim1)
 
-        print(jiml)
         assert len(jiml) == 1, 'Error in JimList creation from a Jim object ' \
                                '(wrong number of items afterwards)'
         assert jiml[0].properties.isEqual(jim1), \
