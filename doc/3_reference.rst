@@ -175,7 +175,7 @@ Create a new Jim raster data object from a Numpy array
    :param band: band index (starting from 0)
    :return: numpy array representation
 
-   Create a new Jim object by copying data from a Numpy array object (mynp).
+   Create a new Jim object by copying data from a Numpy array object (mynp)::
 
         jim = pj.np2jim(mynp)
 
