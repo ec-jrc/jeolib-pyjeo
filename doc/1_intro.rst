@@ -31,7 +31,7 @@ Operations on pyJEO objects are distinguished in functions and methods. Methods 
      
 Functions that operate on objects must have the objects passed as arguments. An example of a function (functionY) that belongs to the same module (moduleA) and operates on myobject using an extra boolean argument (flag1) is::
 
-  newobject=pyjeo.moduleA.functionY(myobject, flag1=True)
+  newobject = pyjeo.moduleA.functionY(myobject, flag1=True)
 
 In this case a new object (newobject) is returned. The functions that return a new object are non-destructive, i.e., they do not alter the object that was passed as an argument. This follows the principle of command-query-separation. 
 
@@ -41,7 +41,7 @@ Methods can be either destructive or non-destructive. Destructive methods do not
   
 the object is altered and no object is returned. Methods that are non-destructive can return a new object, for instance, the method getMethodZ in module properties returns the attributeZ from myobject::
 
-   myattributeZ=myobject.properties.getAttributeZ()
+   myattributeZ = myobject.properties.getAttributeZ()
 
 
 Design of pyJEO

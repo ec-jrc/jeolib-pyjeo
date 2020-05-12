@@ -177,7 +177,7 @@ Create a new Jim raster data object from a Numpy array
 
    Create a new Jim object by copying data from a Numpy array object (mynp).
 
-        jim=pj.np2jim(mynp)
+        jim = pj.np2jim(mynp)
 
    The Numpy array can be a 2D or 3D array::
 
