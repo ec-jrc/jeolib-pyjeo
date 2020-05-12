@@ -2336,11 +2336,6 @@ class BadGeometry(unittest.TestCase):
                        'reducePlane method with a callback rule and nodata' \
                        ' defined'
 
-    @staticmethod
-    def test_aggregateVector():
-        """Test the aggregateVector() function and method."""
-        jim = pj.Jim(rasterfn)
-
 
 class BadGeometryLists(unittest.TestCase):
     """Test functions and methods from geometry module."""
