@@ -1535,7 +1535,6 @@ class _Geometry(_pj.modules.JimModuleBase):
             v = _pj.JimVect(joinfn)
             return v
         else:
-            print("Error: joinfn is None, no valid features found")
             raise ValueError('joinfn is None, no valid features found')
 
     def band2plane(self):
