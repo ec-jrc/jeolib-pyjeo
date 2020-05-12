@@ -1230,7 +1230,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
     def aggregateVector(self,
                         jvec,
-                        rule: str,
+                        rule: list,
                         output: str,
                         **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
