@@ -3,6 +3,9 @@
 ## 0.5.0 -> 0.6.0
 
 * pixops.isEqual() -> properties.isEqual()
-* support of properties.isEqual() for JimVects
+* geometry.aggregateVector(), geometry.extractImg() and
+  geometry.extractVector() merged into geometry.extract()
+* added support of properties.isEqual() for JimVects
 * multiple Jim objects allowed as arguments for geometry.stackPlane()
-* allowed usage of Jim.geometry.stackPlane() with only one Jim parameter
+* added support of Jim.geometry.stackPlane() with only one Jim parameter
+* added support of JimList.geometry.stackPlane(JimList)

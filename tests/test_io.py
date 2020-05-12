@@ -51,12 +51,8 @@ class BadIOVects(unittest.TestCase):
 
         jimv_2 = pj.geometry.convexHull(jimv, output=output2)
 
-        jimv_3 = pj.JimVect(output2)
-
         jimv.io.close()
-        jimv_2.io.write()
         jimv_2.io.close()
-        jimv_3.io.close()
 
         jimv_3 = pj.JimVect(output2)
         jimv_3.io.close()

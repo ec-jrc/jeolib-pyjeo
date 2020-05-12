@@ -2336,6 +2336,289 @@ class BadGeometry(unittest.TestCase):
                        'reducePlane method with a callback rule and nodata' \
                        ' defined'
 
+    @staticmethod
+    def test_aggregateVector():
+        """Test the aggregateVector() function and method."""
+        jim = pj.Jim(rasterfn)
+
+
+class BadGeometryLists(unittest.TestCase):
+    """Test functions and methods from geometry module."""
+
+    @staticmethod
+    def test_stack():
+        """Test the stackBand and stackPlane methods."""
+        nrow = ncol = 5
+        nplane = nband = 2
+        jim1 = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,
+                      otype='Byte', uniform=10)
+        jim2 = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,
+                      otype='Byte', uniform=10)
+        jiml = pj.JimList([jim1, jim2])
+
+        # Test stacking bands of a JimList
+        stacked = pj.geometry.stackBand(jiml)
+        stacked2 = jiml.geometry.stackBand()
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackBand(JimList) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfBand() == 2 * nband, \
+            'Error in geometry.stackBand(JimList) ' \
+            '(number of bands of the returned object not equal to count of ' \
+            'bands of all contained Jims)'
+        assert (stacked.np(0) == jim1.np(0)).all(), \
+            'Error in geometry.stackBand(JimList) ' \
+            '(the first band not corresponding to the first band of the ' \
+            'first Jim contained)'
+        assert (stacked.np(1) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList) ' \
+            '(the second band not corresponding to the second band of the ' \
+            'first Jim contained)'
+        assert (stacked.np(2) == jim2.np(0)).all(), \
+            'Error in geometry.stackBand(JimList) ' \
+            '(not working for the second Jim contained)'
+        assert (stacked.np(3) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList) ' \
+            '(not working for other bands than the first one for the second ' \
+            'Jim contained)'
+
+        # Test stacking bands of a JimList with band specified
+        stacked = pj.geometry.stackBand(jiml, band=1)
+        stacked2 = jiml.geometry.stackBand(band=1)
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackBand(JimList, band=band) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfBand() == 2, \
+            'Error in geometry.stackBand(JimList, band=band) ' \
+            '(number of bands of the returned object not equal to count of ' \
+            'of contained Jims)'
+        assert (stacked.np(0) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, band=band) ' \
+            '(the first band not corresponding to the specified band of the ' \
+            'first Jim contained)'
+        assert (stacked.np(1) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, band=band) ' \
+            '(band x not corresponding to the specified band of the x-th Jim ' \
+            'contained for x > 1)'
+
+        # Test stacking bands of two JimLists
+        stacked = pj.geometry.stackBand(jiml, jiml)
+        stacked2 = jiml.geometry.stackBand(jiml)
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackBand(JimList, JimList) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfBand() == 2 * 2 * nband, \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(number of bands of the returned object not equal to count of ' \
+            'bands of all contained Jims in all JimLists)'
+        assert (stacked.np(0) == jim1.np(0)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(the first band not corresponding to the first band of the ' \
+            'first Jim contained in the first JimList)'
+        assert (stacked.np(1) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(the second band not corresponding to the second band of the ' \
+            'first Jim contained in the first JimList)'
+        assert (stacked.np(2) == jim2.np(0)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(not working for the second Jim contained in the first JimList)'
+        assert (stacked.np(3) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(not working for other bands than the first one for the second ' \
+            'Jim contained in the first JimList)'
+        assert (stacked.np(4) == jim1.np(0)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(not stacking the second JimList after the first one)'
+        assert (stacked.np(5) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(not working for other bands than the first one for the second ' \
+            'JimList)'
+        assert (stacked.np(6) == jim2.np(0)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(not working for the second Jim contained in the second JimList)'
+        assert (stacked.np(7) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList) ' \
+            '(not working for other bands than the first one for the second ' \
+            'Jim contained in the second JimList)'
+
+        # Test stacking bands of two JimLists with band specified
+        stacked = pj.geometry.stackBand(jiml, jiml, band=1)
+        stacked2 = jiml.geometry.stackBand(jiml, band=1)
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackBand(JimList, JimList, ' \
+            'band=band) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfBand() == 2 * len(jiml), \
+            'Error in geometry.stackBand(JimList, JimList, band=band) ' \
+            '(number of bands of the returned object not equal to count of ' \
+            'of contained Jims)'
+        assert (stacked.np(0) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList, band=band) ' \
+            '(the first band not corresponding to the specified band of the ' \
+            'first Jim contained)'
+        assert (stacked.np(1) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList, band=band) ' \
+            '(band x not corresponding to the specified band of the x-th Jim' \
+            ' contained for x > 1)'
+        assert (stacked.np(2) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList, band=band) ' \
+            '(not stacking the second JimList after the first one)'
+        assert (stacked.np(3) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, JimList, band=band) ' \
+            '(band b+x not corresponding to the specified band of the x-th ' \
+            'Jim contained for x > 1 for the second JimList, if b is the sum' \
+            ' of bands of the first JimList)'
+
+        # Test stacking bands of a JimList and a Jim
+        stacked = pj.geometry.stackBand(jiml, jim1)
+        stacked2 = jiml.geometry.stackBand(jim1)
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackBand(JimList, Jim) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfBand() == 2 * nband + nband, \
+            'Error in geometry.stackBand(JimList, Jim) ' \
+            '(number of bands of the returned object not equal to count of ' \
+            'bands of all contained Jims in all JimLists)'
+        assert (stacked.np(0) == jim1.np(0)).all(), \
+            'Error in geometry.stackBand(JimList, Jim) ' \
+            '(the first band not corresponding to the first band of the ' \
+            'first Jim contained in the JimList)'
+        assert (stacked.np(1) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, Jim) ' \
+            '(the second band not corresponding to the second band of the ' \
+            'first Jim contained in the first JimList)'
+        assert (stacked.np(2) == jim2.np(0)).all(), \
+            'Error in geometry.stackBand(JimList, Jim) ' \
+            '(the second Jim contained in the JimList is not following the ' \
+            'first Jim)'
+        assert (stacked.np(3) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, Jim) ' \
+            '(not working for other bands than the first one for the second ' \
+            'Jim contained in the JimList)'
+        assert (stacked.np(4) == jim1.np(0)).all(), \
+            'Error in geometry.stackBand(JimList, Jim) ' \
+            '(not stacking the Jim after the JimList)'
+
+        # Test stacking bands of a JimList and a Jim with band specified
+        stacked = pj.geometry.stackBand(jiml, jim1, band=1)
+        stacked2 = jiml.geometry.stackBand(jim1, band=1)
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackBand(JimList, Jim, ' \
+            'band=band) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfBand() == len(jiml) + 1, \
+            'Error in geometry.stackBand(JimList, Jim, band=band) ' \
+            '(number of bands of the returned object not equal to count of ' \
+            'of contained Jims)'
+        assert (stacked.np(0) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, Jim, band=band) ' \
+            '(the first band not corresponding to the specified band of the ' \
+            'first Jim contained)'
+        assert (stacked.np(1) == jim2.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, Jim, band=band) ' \
+            '(band x not corresponding to the specified band of the x-th Jim' \
+            ' contained in the JimList for x > 1)'
+        assert (stacked.np(2) == jim1.np(1)).all(), \
+            'Error in geometry.stackBand(JimList, Jim, band=band) ' \
+            '(not stacking the second JimList after the first one)'
+
+        # Test stacking planes of a JimList
+        stacked = pj.geometry.stackPlane(jiml)
+        stacked2 = jiml.geometry.stackPlane()
+
+        stacked_first_two_planes = pj.geometry.cropPlane(stacked, [0, 1])
+        stacked_last_two_planes = pj.geometry.cropPlane(stacked, [2, 3])
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackPlane(JimList) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfPlane() == len(jiml) * nplane, \
+            'Error in geometry.stackPlane(JimList) ' \
+            '(number of planes of the returned object not equal to count of ' \
+            'planes of all contained Jims)'
+        assert stacked_first_two_planes.properties.isEqual(jim1), \
+            'Error in geometry.stackPlane(JimList) ' \
+            '(the first planes not corresponding to the planes of the ' \
+            'first Jim contained)'
+        assert stacked_last_two_planes.properties.isEqual(jim2), \
+            'Error in geometry.stackPlane(JimList) ' \
+            '(the second Jim contained not stacked after the first Jim)'
+
+        # Test stacking planes of two JimLists
+        stacked = pj.geometry.stackPlane(jiml, jiml)
+        stacked2 = jiml.geometry.stackPlane(jiml)
+
+        stacked_first_two_planes = pj.geometry.cropPlane(stacked, [0, 1])
+        stacked_second_two_planes = pj.geometry.cropPlane(stacked, [2, 3])
+        stacked_third_two_planes = pj.geometry.cropPlane(stacked, [4, 5])
+        stacked_fourth_two_planes = pj.geometry.cropPlane(stacked, [6, 7])
+
+        assert stacked.properties.isEqual(stacked2), \
+            'Inconsistency in geometry.stackPlane(JimList, JimList) ' \
+            '(method returns different result than function)'
+        assert stacked.properties.nrOfPlane() == 2 * len(jiml) * nplane, \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(number of planes of the returned object not equal to count of ' \
+            'planes of all contained Jims in all JimLists)'
+        assert stacked_first_two_planes.properties.isEqual(jim1), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(the first planes not corresponding to the first Jim of the ' \
+            'first Jim contained in the first JimList)'
+        assert stacked_second_two_planes.properties.isEqual(jim2), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(not working for the second Jim contained in the first JimList)'
+        assert stacked_third_two_planes.properties.isEqual(jim1), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(not stacking the second JimList after the first one)'
+        assert stacked_fourth_two_planes.properties.isEqual(jim2), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(not working for the second Jim contained in the second JimList)'
+        assert (stacked_first_two_planes.np(1) == jim1.np(1)).all(), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(not working for other bands than the first one)'
+        assert (stacked_second_two_planes.np(1) == jim2.np(1)).all(), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(not working for other bands than the first one for the second ' \
+            'Jim contained in the first JimList)'
+        assert (stacked_third_two_planes.np(1) == jim1.np(1)).all(), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(not working for other bands than the first one for the first ' \
+            'Jim contained in the second JimList)'
+        assert (stacked_fourth_two_planes.np(1) == jim2.np(1)).all(), \
+            'Error in geometry.stackPlane(JimList, JimList) ' \
+            '(not working for other bands than the first one for the second ' \
+            'Jim contained in the second JimList)'
+
+        # Test wrong call with parameter band exceeding the nrOfBand in Jims
+        try:
+            _ = pj.geometry.stackBand(jiml, jim1,
+                                      band=jim1.properties.nrOfBand() + 1)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'function where the band argument exceeds the number of bands of' \
+            ' Jims'
+
+        try:
+            jiml.geometry.stackBand(jim1, band=jim1.properties.nrOfBand() + 1)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'method where the band argument exceeds the number of bands of' \
+            ' Jims'
+
 
 class BadGeometryVects(unittest.TestCase):
     """Test functions and methods from geometry module."""
@@ -2358,9 +2641,6 @@ class BadGeometryVects(unittest.TestCase):
         intersected = pj.geometry.intersect(jimv, jim_cropped,
                                             non_existing_path)
         jimv.geometry.intersect(jim_cropped)
-
-        intersected.io.write()
-        jimv.io.write()
 
         feature_count_func = intersected.properties.getFeatureCount()
         feature_count_meth = jimv.properties.getFeatureCount()
@@ -2391,6 +2671,9 @@ class BadGeometryVects(unittest.TestCase):
         assert raised, \
             'Error in catching a call of geometry.intersect(Jim) method ' \
             'where the argument is not an instance of a Jim object'
+
+        intersected.io.close()
+        jimv.io.close()
 
         os.remove(non_existing_path)
 
@@ -2604,5 +2887,6 @@ def load_tests(loader=None, tests=None, pattern=None):
     if not loader:
         loader = unittest.TestLoader()
     suite_list = [loader.loadTestsFromTestCase(BadGeometry),
+                  loader.loadTestsFromTestCase(BadGeometryLists),
                   loader.loadTestsFromTestCase(BadGeometryVects)]
     return unittest.TestSuite(suite_list)

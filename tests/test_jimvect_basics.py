@@ -129,6 +129,18 @@ class BadBasicMethods(unittest.TestCase):
             'Error in creating JimVect object based on kwarg output=... ' \
             '(wrong number of layers)'
 
+        # Test JimVect creation based on WKT
+
+        a = pj.JimVect(vector, output=pj._get_random_path())
+        wkt = a.properties.getProjection()
+
+        wkt_jimvect = pj.JimVect(wkt=wkt, output=pj._get_random_path())
+        wkt_jimvect.io.write()
+
+        assert wkt == wkt_jimvect.properties.getProjection(), \
+            'Error in creating JimVect object based on kwarg wkt=... ' \
+            '(object not equal to the object from which we got the WKT)'
+
         # Test wrong JimVects catches
 
         try:

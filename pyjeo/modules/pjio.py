@@ -103,6 +103,10 @@ class _IO(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
+    def open(self):
+        """Open Jim object."""
+        self._jim_object._jipjim.open()
+
     def write(self,
               filename: str,
               **kwargs):
