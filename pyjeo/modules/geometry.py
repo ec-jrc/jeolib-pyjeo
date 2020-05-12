@@ -1147,22 +1147,24 @@ def stackPlane(jim_object,
         jimlist = pj.JimList([jim0, jim1])
         jim_stacked = pj.geometry.stackPlane(jimlist)
     """
+    if not isinstance(jim_other, list):
+        args_list = [jim_other, *args]
+
     if isinstance(jim_object, _pj.JimList):
         ret_jim = _pj.Jim(jim_object._jipjimlist.stackPlane())
 
-        if isinstance(jim_other, _pj.Jim):
-            ret_jim.geometry.stackPlane(jim_other)
+        if jim_other is not None:
+            for jim in args_list:
+                ret_jim.geometry.stackPlane(jim)
     elif isinstance(jim_object, _pj.Jim):
         if jim_other is None:
             return _pj.Jim(jim_object)
 
         ret_jim = _pj.Jim(jim_object)
 
-        if not isinstance(jim_other, list):
-            jim_other = [jim_other, *args]
-
-        for jim in jim_other:
-            ret_jim.geometry.stackPlane(jim)
+        if jim_other is not None:
+            for jim in args_list:
+                ret_jim.geometry.stackPlane(jim)
     else:
         raise TypeError('Error: expected a Jim or JimList object as '
                         'the first argument')
@@ -3020,9 +3022,11 @@ class _GeometryList(_pj.modules.JimListModuleBase):
 
         return ret_jim
 
-    def stackPlane(self):
+    def stackPlane(self, jim_other=None, *args):
         """Stack planes from raster datasets into new multiplane Jim object.
 
+        :param jim_other: Either Jim or JimList to be stacked on top of
+            the JimList on which the method was called
         :return: multiplane Jim object
 
         Stack planes from another raster dataset to current raster dataset.
@@ -3033,7 +3037,15 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             jim1 = pj.Jim('/path/to/raster1.tif')
             jim_stacked = pj.JimList([jim0, jim1]).geometry.stackPlane()
         """
-        return _pj.Jim(self._jim_list._jipjimlist.stackPlane())
+        if not isinstance(jim_other, list):
+            args_list = [jim_other, *args]
+
+        ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackPlane())
+
+        if jim_other is not None:
+            for jim in args_list:
+                ret_jim._jipjim.d_stackPlane(jim._jipjim)
+        return ret_jim
 
     def extractOgr(self,
                    sample,
