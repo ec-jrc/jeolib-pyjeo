@@ -11,7 +11,7 @@ tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 rasterfn = 'tests/data/modis_ndvi_2010.tif'
 vectorfn = 'tests/data/modis_ndvi_training.sqlite'
 nutsfn = 'tests/data/nuts_italy.sqlite'
-clc = 'tests/data/clc_32632'
+clc = 'tests/data/clc_32632.tif'
 outputfn = pj._get_random_path()
 warpedfn = pj._get_random_path()
 
@@ -227,15 +227,9 @@ class BadGeometry(unittest.TestCase):
             'after cropping to the original extent, nrOfRow changed)'
 
     @staticmethod
-<<<<<<< Updated upstream
-    def test_extractOgr_loop():
-        """Test the extractOgr method looping over bands using join function."""
-        jim0 = pj.Jim(rasterfn, band=[0, 1])
-=======
     def test_extract_loop():
         """Test the extract method looping over bands using join function."""
         jim0 = pj.Jim(rasterfn)
->>>>>>> Stashed changes
         sample = pj.JimVect(vectorfn)
 
         nband = jim0.properties.nrOfBand()
@@ -269,13 +263,8 @@ class BadGeometry(unittest.TestCase):
                 assert 'fid' in v.properties.getFieldNames(), \
                     'Error in geometry.extract() field names (1)'
                 if band == 11:
-<<<<<<< Updated upstream
                     assert len(v.properties.getFieldNames()) == nband + 2, \
-                        'Error in geometry.extractOgr() number of field names'
-=======
-                    assert len(v.properties.getFieldNames()) == 14, \
                         'Error in geometry.extract() number of field names'
->>>>>>> Stashed changes
                 v1.io.close()
                 v2.io.close()
                 v.io.write()
@@ -285,15 +274,9 @@ class BadGeometry(unittest.TestCase):
         os.remove(outputfn)
 
     @staticmethod
-<<<<<<< Updated upstream
-    def test_extractOgr_list_multiband():
+    def test_extract_list_multiband():
         """Test the extractOgr method for list with multibands."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
-=======
-    def test_extract_list_multiband():
-        """Test the extract method for list with multibands."""
-        jim0 = pj.Jim(rasterfn)
->>>>>>> Stashed changes
         sample = pj.JimVect(vectorfn)
         jl0 = pj.JimList([jim0])
 
@@ -311,39 +294,22 @@ class BadGeometry(unittest.TestCase):
         field_names = v.properties.getFieldNames()
 
         assert v.properties.getFeatureCount() == 11, \
-<<<<<<< Updated upstream
-            'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert len(field_names) == nband + 2, \
-            'Error in geometry.extractOgr() field names (1)'
-
-=======
             'Error in geometry.extract() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + 2, \
             'Error in geometry.extract() field names (1)'
->>>>>>> Stashed changes
         jl0.io.close()
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
 
     @staticmethod
-<<<<<<< Updated upstream
-    def test_extractOgr_multiband():
+    def test_extract_multiband():
         """Test the extractOgr method for jim with multibands."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
-=======
-    def test_extract_multiband():
-        """Test the extract method for jim with multibands."""
-        jim0 = pj.Jim(rasterfn)
->>>>>>> Stashed changes
         sample = pj.JimVect(vectorfn)
 
         nband = jim0.properties.nrOfBand()
@@ -354,38 +320,21 @@ class BadGeometry(unittest.TestCase):
         bandname = []
         for band in range(0, nband):
             bandname.append('B' + str(band))
-<<<<<<< Updated upstream
-
-        v = jim0.geometry.extractOgr(sample, rule='mean',
-                                     output=outputfn, oformat='SQLite',
-                                     co=['OVERWRITE=YES'],
-                                     bandname=bandname, fid='fid')
-=======
         v = pj.geometry.extract(sample, jim0, rule='mean',
                                    output=outputfn, oformat='SQLite',
                                    co=['OVERWRITE=YES'],
                                    bandname=bandname, fid='fid')
->>>>>>> Stashed changes
         v.io.write()
 
         field_names = v.properties.getFieldNames()
 
         assert v.properties.getFeatureCount() == 11, \
-<<<<<<< Updated upstream
-            'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert len(field_names) == nband + 2, \
-            'Error in geometry.extractOgr() field names (1)'
-=======
             'Error in geometry.extract() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + 2, \
             'Error in geometry.extract() field names (1)'
 
         newsamplefn = pj._get_random_path()
@@ -396,22 +345,15 @@ class BadGeometry(unittest.TestCase):
         sample.io.write()
         assert sample.properties.isEqual(v), \
             'Error in geometry.extract() function not equal to method'
->>>>>>> Stashed changes
 
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
 
     @staticmethod
-<<<<<<< Updated upstream
-    def test_extractOgr_plane():
+    def test_extract_plane():
         """Test the extractOgr method for multiplanes."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
-=======
-    def test_extract_plane():
-        """Test the extract method for multiplanes."""
-        jim0 = pj.Jim(rasterfn)
->>>>>>> Stashed changes
         sample = pj.JimVect(vectorfn)
 
         nband = jim0.properties.nrOfBand()
@@ -422,43 +364,23 @@ class BadGeometry(unittest.TestCase):
         bandname = []
         for band in range(0, nband):
             bandname.append('B' + str(band))
-<<<<<<< Updated upstream
-
-        v = jim0.geometry.extractOgr(sample, rule='mean',
-                                     output=outputfn, oformat='SQLite',
-                                     co=['OVERWRITE=YES'],
-                                     planename=planename,
-                                     bandname=bandname, fid='fid')
-=======
         v = pj.geometry.extract(sample, jim0, rule='mean',
                                    output=outputfn, oformat='SQLite',
                                    co=['OVERWRITE=YES'],
                                    planename=planename,
                                    bandname=bandname, fid='fid')
->>>>>>> Stashed changes
         v.io.write()
 
         field_names = v.properties.getFieldNames()
 
         assert v.properties.getFeatureCount() == 11, \
-<<<<<<< Updated upstream
-            'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert 'label' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert len(field_names) == nband + 2, \
-            'Error in geometry.extractOgr() field names (1)'
-
-=======
             'Error in geometry.extract() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'label' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + 2, \
             'Error in geometry.extract() field names (1)'
->>>>>>> Stashed changes
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
@@ -482,43 +404,23 @@ class BadGeometry(unittest.TestCase):
             planename.append('Time' + str(plane))
         for band in range(0, nband):
             bandname.append('Band' + str(band))
-<<<<<<< Updated upstream
-
-        v = jim0.geometry.extractOgr(sample, rule=rule,
-                                     output=outputfn, oformat='SQLite',
-                                     co=['OVERWRITE=YES'],
-                                     bandname=bandname,
-                                     planename=planename, fid='fid')
-=======
         v = pj.geometry.extract(sample, jim0, rule=['mean', 'stdev'],
                                    output=outputfn, oformat='SQLite',
                                    co=['OVERWRITE=YES'],
                                    bandname=bandname,
                                    planename=planename, fid='fid')
->>>>>>> Stashed changes
         v.io.write()
 
         field_names = v.properties.getFieldNames()
 
         assert v.properties.getFeatureCount() == 11, \
-<<<<<<< Updated upstream
-            'Error in geometry.extractOgr() feature count (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert 'label' in field_names, \
-            'Error in geometry.extractOgr() field names (1)'
-        assert len(field_names) == (nband + nplane) * len(rule) + 2, \
-            'Error in geometry.extractOgr() field names (1)'
-
-=======
             'Error in geometry.extract() feature count (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'label' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert len(v.properties.getFieldNames()) == 26, \
+        assert len(field_names) == (nband + nplane) * len(rule) + 2, \
             'Error in geometry.extract() field names (1)'
->>>>>>> Stashed changes
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
@@ -540,64 +442,28 @@ class BadGeometry(unittest.TestCase):
             planename.append('Time' + str(plane))
         for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('Band' + str(band))
-<<<<<<< Updated upstream
-
-        v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
-                                     output=outputfn, oformat='SQLite',
-                                     co=['OVERWRITE=YES'],
-                                     attribute='label',
-                                     classes=[1, 2],
-                                     bandname=bandname,
-                                     planename=planename, fid='fid')
-=======
         v = pj.geometry.extract(sample, jim0, rule=['allpoints'],
-                                   output=outputfn, oformat='SQLite',
-                                   co=['OVERWRITE=YES'],
-                                   attribute='label',
-                                   classes=[1, 2],
-                                   bandname=bandname,
-                                   planename=planename, fid='fid')
->>>>>>> Stashed changes
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'],
+                                attribute='label',
+                                classes=[1, 2],
+                                bandname=bandname,
+                                planename=planename, fid='fid')
         v.io.write()
 
         field_names = v.properties.getFieldNames()
 
         assert v.properties.getFeatureCount() == 307, \
-<<<<<<< Updated upstream
-            'Error in geometry.extractOgr() feature count'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names'
-        assert len(field_names) == nband + nplane + 2, \
-            'Error in geometry.extractOgr() field names'
-
-=======
             'Error in geometry.extract() feature count'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names'
-        print(len(v.properties.getFieldNames()))
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + nplane + 2, \
             'Error in geometry.extract() field names'
->>>>>>> Stashed changes
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
 
         sample = pj.JimVect(nutsfn)
-<<<<<<< Updated upstream
-
-        v = jim0.geometry.extractOgr(sample, rule=['allpoints'],
-                                     output=outputfn, oformat='SQLite',
-                                     co=['OVERWRITE=YES'],
-                                     attribute='nuts3id',
-                                     classes=[53, 62],
-                                     bandname=bandname,
-                                     planename=planename,
-                                     threshold=[10, 10],
-                                     fid='fid')
-=======
-        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3, 4, 5])
-        jim1 = pj.Jim(rasterfn, band=[6, 7, 8, 9, 10, 11])
-        jim0.geometry.stackPlane(jim1)
         planename = []
         bandname = []
         for plane in range(0, jim0.properties.nrOfPlane()):
@@ -613,27 +479,16 @@ class BadGeometry(unittest.TestCase):
                                    planename=planename,
                                    threshold=[10,10],
                                    fid='fid')
->>>>>>> Stashed changes
         v.io.write()
 
         field_names = v.properties.getFieldNames()
 
         assert v.properties.getFeatureCount() == 20, \
-<<<<<<< Updated upstream
-            'Error in geometry.extractOgr() feature count'
-        assert 'fid' in field_names, \
-            'Error in geometry.extractOgr() field names'
-        assert len(field_names) == nband + nplane + 2, \
-            'Error in geometry.extractOgr() field names'
-
-=======
             'Error in geometry.extract() feature count'
-        assert 'fid' in v.properties.getFieldNames(), \
+        assert 'fid' in field_names, \
             'Error in geometry.extract() field names'
-        print(len(v.properties.getFieldNames()))
-        assert len(v.properties.getFieldNames()) == 14, \
+        assert len(field_names) == nband + nplane + 2, \
             'Error in geometry.extract() field names'
->>>>>>> Stashed changes
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
@@ -2701,7 +2556,6 @@ class BadGeometryVects(unittest.TestCase):
         mergedv.io.write(non_existing_path)
         os.remove(non_existing_path)
 
-<<<<<<< Updated upstream
         # Test wrong calls
 
         jim_raster = pj.Jim(tiles[0])
@@ -2732,17 +2586,17 @@ class BadGeometryVects(unittest.TestCase):
         jimv1.io.close()
         jimv2.io.close()
         jimv3.io.close()
-=======
+
     @staticmethod
     def test_sample():
         """Test the sample function."""
 
-        v01 = jim0.sample(random=100, buffer=100, rule=['mean'],
-                          output='mem01', oformat='Memory')
-        v01.io.write()
-        assert v01.np().shape == (100, jim0.properties.nrOfBand())
+        jim0 = pj.Jim(rasterfn, band=[0,1,2,3])
+        v = pj.geometry.sample(jim0, random=100, buffer=100, rule=['mean'],
+                               output='mem01', oformat='Memory')
+        v.io.write()
+        assert v.np().shape == (100, jim0.properties.nrOfBand())
         v.io.close()
->>>>>>> Stashed changes
 
 
 def load_tests(loader=None, tests=None, pattern=None):
