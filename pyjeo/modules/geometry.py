@@ -1452,7 +1452,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             co=['OVERWRITE=YES'])
         if sampleintersect.properties.isEmpty():
             sampleintersect.io.close()
-            raise ValueError('intersect is empty')
+            raise ValueError('Intersect is empty')
         else:
             sampleintersect.io.write()
 
@@ -1494,7 +1494,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                         v.io.close()
                 except SystemError:
                     _warnings.Warning(
-                        "no coverage for plane {}, continue with next "
+                        "No coverage for plane {}, continue with next "
                         "product".format(planenames[iplane]))
                     if v in locals():
                         v.io.close()
@@ -1526,7 +1526,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                 else:
                     v.io.close()
             except SystemError:
-                print("raised exception dataset in for plane {}".format(
+                print("Raised exception dataset in for plane {}".format(
                     planenames[iplane]))
                 continue
 
@@ -1536,7 +1536,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             return v
         else:
             print("Error: joinfn is None, no valid features found")
-            raise ValueError('Error: joinfn is None, no valid features found')
+            raise ValueError('joinfn is None, no valid features found')
 
     def band2plane(self):
         """Convert 2-dimensional multi-band object to a 3-dimensional.
