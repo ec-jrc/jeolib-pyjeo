@@ -82,9 +82,10 @@ To test the installation, run::
 
   python -W ignore -m unittest -v tests
 
-To build the documentation, go to directory doc and run::
+To build the documentation, go to directory doc and run make::
 
-  make html.
+  cd doc
+  make html
 
 Usage
 -----
