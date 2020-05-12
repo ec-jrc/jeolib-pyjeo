@@ -317,6 +317,205 @@ def cropPlane(jim_object,
     return _pj.Jim(jim_object._jipjim.cropPlane({'plane': plane}))
 
 
+def extract(jvec,
+            jim,
+            output: str,
+            rule: str = None,
+            **kwargs):
+    """Extract pixel values from raster image based on a vector dataset.
+
+    :param jvec: overlay JimVec object or Jim thematic raster
+    :param jim: Jim object (list) on which vector is overlaid to extract from
+    :param rule: Rule how to calculate zonal statistics per feature
+        (see list of :ref:`supported rules <extract_rules>`)
+    :param output: Name of the output vector dataset in which the zonal
+        statistics will be saved
+    :param kwargs: See table below
+    :return: A VectorOgr with the same geometry as the sample vector
+        dataset and an extra field for each of the calculated raster value
+        (zonal) statistics. The same layer name(s) of the sample will be
+        used for the output vector dataset
+
+
+    +------------------+--------------------------------------------------+
+    | key              | value                                            |
+    +==================+==================================================+
+    | copy             | Copy these fields from the sample vector dataset |
+    |                  | (default is to copy all fields)                  |
+    +------------------+--------------------------------------------------+
+    | label            | Create extra field named 'label' with this value |
+    +------------------+--------------------------------------------------+
+    | classes          | Only when overlaying Jim thematic raster dataset |
+    |                  | dataset.                                         |
+    |                  | Leave empty to extract all valid data pixels from|
+    |                  | thee sample                                      |
+    +------------------+--------------------------------------------------+
+    | fid              | Create extra field named 'fid' with this field   |
+    |                  | identifier (sequence of features)                |
+    +------------------+--------------------------------------------------+
+    | bandname         | List of band names corresponding to list of      |
+    |                  | bands to extract                                 |
+    +------------------+--------------------------------------------------+
+    | planename        | List of plane names corresponding to list of     |
+    |                  | planes to extract                                |
+    +------------------+--------------------------------------------------+
+    | oformat          | Output vector dataset format                     |
+    +------------------+--------------------------------------------------+
+    | co               | Creation option for output vector dataset        |
+    +------------------+--------------------------------------------------+
+
+    .. extract_rules:
+
+    :Supported rules to extract (only when overlaying JimVect vector dataset):
+
+    +------------------+--------------------------------------------------+
+    | rule             | description                                      |
+    +==================+==================================================+
+    | point            | extract a single pixel within the polygon or on  |
+    |                  | each point feature                               |
+    +------------------+--------------------------------------------------+
+    | allpoints        | Extract all pixel values covered by the polygon  |
+    +------------------+--------------------------------------------------+
+    | centroid         | Extract pixel value at the centroid of           |
+    |                  | the polygon                                      |
+    +------------------+--------------------------------------------------+
+    | mean             | Extract average of all pixel values within the   |
+    |                  | polygon                                          |
+    +------------------+--------------------------------------------------+
+    | stdev            | Extract standard deviation of all pixel values   |
+    |                  | within the polygon                               |
+    +------------------+--------------------------------------------------+
+    | median           | Extract median of all pixel values within        |
+    |                  | the polygon                                      |
+    +------------------+--------------------------------------------------+
+    | min              | Extract minimum value of all pixels within       |
+    |                  | the polygon                                      |
+    +------------------+--------------------------------------------------+
+    | max              | Extract maximum value of all pixels within       |
+    |                  | the polygon                                      |
+    +------------------+--------------------------------------------------+
+    | sum              | Extract sum of the values of all pixels within   |
+    |                  | the polygon                                      |
+    +------------------+--------------------------------------------------+
+    | mode             | Extract the mode of classes within the polygon   |
+    |                  | (classes must be set with the option class)      |
+    +------------------+--------------------------------------------------+
+    | proportion       | Extract proportion of class(es) within           |
+    |                  | the polygon                                      |
+    |                  | (classes must be set with the option class)      |
+    +------------------+--------------------------------------------------+
+    | count            | Extract count of class(es) within the polygon    |
+    |                  | (classes must be set with the option class)      |
+    +------------------+--------------------------------------------------+
+    | percentile       | Extract percentile as defined by option perc     |
+    |                  | (e.g, 95th percentile of values covered by       |
+    |                  | polygon)                                         |
+    +------------------+--------------------------------------------------+
+
+
+    .. note::
+        To ignore some pixels from the extraction process, see list
+        of :ref:`mask key values <extract_mask>`
+
+    .. extract_mask:
+
+    :Supported key values to mask pixels that must be ignored in \
+    the extraction process:
+
+    +------------------+--------------------------------------------------+
+    | key              | value                                            |
+    +==================+==================================================+
+    | srcnodata        | List of nodata values not to extract             |
+    +------------------+--------------------------------------------------+
+    | buffer           | Buffer (in geometric units of raster dataset).   |
+    |                  | Use neg. value to exclude pixels within buffer   |
+    +------------------+--------------------------------------------------+
+    | bndnodata        | List of band in input image to check if pixel is |
+    |                  | valid (used for srcnodata)                       |
+    +------------------+--------------------------------------------------+
+    | mask             | Use the the specified file as a validity mask    |
+    +------------------+--------------------------------------------------+
+    | mskband          | Use the the specified band of the mask file      |
+    |                  | defined                                          |
+    +------------------+--------------------------------------------------+
+    | msknodata        | List of mask values not to extract               |
+    +------------------+--------------------------------------------------+
+    | threshold        | Maximum number of features to extract. Use       |
+    |                  | percentage value as string                       |
+    |                  | (e.g., '10%') or integer value for absolute      |
+    |                  | threshold                                        |
+    +------------------+--------------------------------------------------+
+
+    Example:
+
+    Extract the mean value of the pixels within the polygon of the provided
+    reference vector. Exclude the pixels within a buffer of 10m of
+    the polygon boundary. Use a temporary vector in memory for
+    the calculation. Then write the result to the final destination
+    on disk::
+
+        reference = pj.JimVect('/path/to/reference.sqlite')
+        jim0 = pj.Jim('/path/to/raster.tif')
+        v = reference.geometry.extract(jim0,
+            buffer=-10, rule=['mean'],
+            output='/vsimem/temp.sqlite', oformat='SQLite')
+        v.io.write('/path/to/output.sqlite)
+
+    Open a raster sample dataset based on land cover map (e.g., Corine) and
+    use it to extract a stratified sample of 100 points from an input
+    raster dataset with four spectral bands ('B02', 'B03', 'B04', 'B08').
+    Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
+    41 (water) and an aggregated (rest) class 50::
+
+        reference=pj.Jim('/path/to/landcovermap.tif')
+
+        classes=[2,12,25,41,50]
+        thresholds=['20%','25%','25%','10%','5%']
+
+        jim=pj.Jim('/path/to/s2_multiband.tif')
+
+        outputfn='/path/to/output.sqlite'
+        sample=pj.geometry.extract(jim, reference, srcnodata=[0],
+                                    output=outputfn,
+                                    classes=classes,
+                                    threshold=thresholds,
+                                    bandname=['B02','B03','B04','B08'])
+    """
+    kwargs.update({'output': output})
+    if 'threshold' in kwargs:
+        if kwargs['threshold'] is not None:
+            if not isinstance(kwargs['threshold'],list):
+                kwargs['threshold']=[kwargs['threshold']]
+            kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+
+    if 'classes' in kwargs:
+        classes = kwargs.pop('classes')
+        kwargs['class'] = classes
+
+    pjvect = _pj.JimVect()
+    if isinstance(jvec, _pj.JimVect):
+        kwargs.update({'rule': rule})
+        if isinstance(jim, _pj.Jim):
+            avect = jim._jipjim.extractOgr(jvec._jipjimvect, kwargs)
+        elif isinstance(jim, _pj.JimList):
+            bandname = kwargs.pop('bandname', None)
+            #todo: support multi-band images in JimList...
+            if bandname is None:
+                bandname = [
+                    't'+str(ifile) for ifile in range(0, len(jim._jim_list))]
+            kwargs.update({'bandname': bandname})
+
+            avect = jim._jipjimlist.extractOgr(jvec._jipjimvect, kwargs)
+        else:
+            raise TypeError('Error: extract must operate on Jim or JimList')
+    elif isinstance(jvec, _pj.Jim):
+        avect = jim._jipjim.extractImg(jvec._jipjim, kwargs)
+    else:
+        raise TypeError('Error: sample to extract must be either JimVect or Jim')
+    pjvect._set(avect)
+    return pjvect
+
+
 def geo2image(jim_object,
               x: float,
               y: float):
@@ -1042,6 +1241,95 @@ def reducePlane(jim,
     return jimreduced
 
 
+def sample(jim,
+           output: str,
+           **kwargs):
+    """Extract a random or grid sample from a raster dataset.
+
+    :jim: Jim object to sample (multi-band supported, but multi-plane not yet)
+    :output: Name of the output vector dataset in which the zonal
+        statistics will be saved
+    :param output: path to the output
+    :param kwargs: See table below
+    :return: A JimVect with sample
+
+    +------------------+--------------------------------------------------+
+    | key              | value                                            |
+    +==================+==================================================+
+    | random           | Extract a random sample with a size equal to     |
+    |                  | the defined value                                |
+    +------------------+--------------------------------------------------+
+    | grid             | Extract a grid sample with a grid size equal to  |
+    |                  | the defined value                                |
+    +------------------+--------------------------------------------------+
+    | rule             | Rule how to calculate zonal statistics per       |
+    |                  | feature                                          |
+    |                  | (see list of                                     |
+    |                  | :ref:`supported rules <extract_rules>`)          |
+    +------------------+--------------------------------------------------+
+    | buffer           | Buffer for calculating statistics for point      |
+    |                  | features (in geometric units of raster dataset)  |
+    +------------------+--------------------------------------------------+
+    | label            | Create extra field named 'label' with this value |
+    +------------------+--------------------------------------------------+
+    | fid              | Create extra field named 'fid' with this field   |
+    |                  | identifier (sequence of features)                |
+    +------------------+--------------------------------------------------+
+    | band             | List of bands to extract (0 indexed). Default is |
+    |                  | to use extract all bands                         |
+    +------------------+--------------------------------------------------+
+    | bandname         | List of band name corresponding to list of bands |
+    |                  | to extract                                       |
+    +------------------+--------------------------------------------------+
+    | startband        | Start band sequence number (0 indexed)           |
+    +------------------+--------------------------------------------------+
+    | endband          | End band sequence number (0 indexed)             |
+    +------------------+--------------------------------------------------+
+    | ln               | Layer name of output vector dataset              |
+    +------------------+--------------------------------------------------+
+    | oformat          | Output vector dataset format                     |
+    +------------------+--------------------------------------------------+
+    | co               | Creation option for output vector dataset        |
+    +------------------+--------------------------------------------------+
+
+    .. note::
+        To ignore some pixels from the extraction process, see list
+        of :ref:`mask <extract_mask>` key values:
+
+    Example:
+
+    Extract a random sample of 100 points, calculating the mean value based
+    on a 3x3 window (buffer value of 100 m) in a vector
+    dataset in memory::
+
+        v01 = jim0.sample(random=100, buffer=100, rule=['mean'],
+                          output='mem01', oformat='Memory')
+
+    Extract a sample of 100 points using a regular grid sampling scheme.
+    For each grid point, calculate the median value based on a 3x3 window
+    (buffer value of 100 m neighborhood). Write the result in a SQLite
+    vector dataset on disk::
+
+        outputfn = '/path/to/output.sqlite'
+        npoint = 100
+        gridsize = int(jim.nrOfCol()*jim.getDeltaX()/math.sqrt(npoint))
+        v = jim.sample(grid=gridsize, buffer=100, rule=['median'],
+                       output=outputfn, oformat='SQLite')
+        v.write()
+
+    """
+    kwargs.update({'output': output})
+    if 'threshold' in kwargs:
+        if kwargs['threshold'] is not None:
+            if '%' in kwargs['threshold']:
+                kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+            else:
+                kwargs['threshold'] = -kwargs['threshold']
+
+    pjvect = _pj.JimVect()
+    pjvect._set(jim._jipjim.extractSample(kwargs))
+    return pjvect
+
 def stackBand(jim_object,
               jim_other=None,
               band: int = None):
@@ -1230,115 +1518,75 @@ def warp(jim_object,
 class _Geometry(_pj.modules.JimModuleBase):
     """Define all Geometry methods."""
 
+<<<<<<< Updated upstream
     def aggregateVector(self,
                         jvec,
                         rule: list,
                         output: str,
                         **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
+=======
+    def band2plane(self):
+        """Convert 2-dimensional multi-band object to a 3-dimensional.
+>>>>>>> Stashed changes
 
-        :param jvec: reference JimVect instance
-        :param rule: Rule how to calculate zonal statistics per feature
-            (see list of :ref:`supported rules <extract_rules>`)
-        :param output: Name of the output vector dataset in which the zonal
-            statistics will be saved
-        :param kwargs: See table below
-        :return: A VectorOgr with the same geometry as the sample vector
-            dataset and an extra field for each of the calculated raster value
-            (zonal) statistics. The same layer name(s) of the sample will be
-            used for the output vector dataset
+        The result will be a single band multi-plane object
 
+        Example: convert a multi-band object with 12 bands to a 3-dimensional
+        single band object with 12 planes::
 
-        +------------------+--------------------------------------------------+
-        | key              | value                                            |
-        +==================+==================================================+
-        | copy             | Copy these fields from the sample vector dataset |
-        |                  | (default is to copy all fields)                  |
-        +------------------+--------------------------------------------------+
-        | label            | Create extra field named 'label' with this value |
-        +------------------+--------------------------------------------------+
-        | fid              | Create extra field named 'fid' with this field   |
-        |                  | identifier (sequence of features)                |
-        +------------------+--------------------------------------------------+
-        | band             | List of bands to extract (0 indexed). Default is |
-        |                  | to use extract all bands                         |
-        +------------------+--------------------------------------------------+
-        | bandname         | List of band name corresponding to list of bands |
-        |                  | to extract                                       |
-        +------------------+--------------------------------------------------+
-        | planename        | List of plane names corresponding to list of     |
-        |                  | planes to extract                                |
-        +------------------+--------------------------------------------------+
-        | startband        | Start band sequence number (0 indexed)           |
-        +------------------+--------------------------------------------------+
-        | endband          | End band sequence number (0 indexed)             |
-        +------------------+--------------------------------------------------+
-        | plane            | List of planes to extract (0 indexed). Default is|
-        |                  | to use extract all planes                        |
-        +------------------+--------------------------------------------------+
-        | planename        | List of plane name corresponding to list of      |
-        |                  | planes to extract                                |
-        +------------------+--------------------------------------------------+
-        | oformat          | Output vector dataset format                     |
-        +------------------+--------------------------------------------------+
-        | co               | Creation option for output vector dataset        |
-        +------------------+--------------------------------------------------+
+           jim=pj.Jim('/path/to/multi/band/image.tif')
+           jim.properties.nrOfBand()
+           12
+           jim.properties.nrOfPlane()
+           1
+           jim.geometry.band2plane()
+           jim.properties.nrOfPlane()
+           12
+           jim.properties.nrOfBand()
+           1
 
-        .. _extract_rules:
+        Notice that a multi-band image can also be read directly as
+        a multi-plane object::
 
-        :Supported rules to extract:
+           jim=pj.Jim('/path/to/multi/band/image.tif',band2plane=True)
+           jim.properties.nrOfBand()
+           1
+           jim.properties.nrOfPlane()
+           12
 
-        +------------------+--------------------------------------------------+
-        | rule             | description                                      |
-        +==================+==================================================+
-        | point            | extract a single pixel within the polygon or on  |
-        |                  | each point feature                               |
-        +------------------+--------------------------------------------------+
-        | allpoints        | Extract all pixel values covered by the polygon  |
-        +------------------+--------------------------------------------------+
-        | centroid         | Extract pixel value at the centroid of           |
-        |                  | the polygon                                      |
-        +------------------+--------------------------------------------------+
-        | mean             | Extract average of all pixel values within the   |
-        |                  | polygon                                          |
-        +------------------+--------------------------------------------------+
-        | stdev            | Extract standard deviation of all pixel values   |
-        |                  | within the polygon                               |
-        +------------------+--------------------------------------------------+
-        | median           | Extract median of all pixel values within        |
-        |                  | the polygon                                      |
-        +------------------+--------------------------------------------------+
-        | min              | Extract minimum value of all pixels within       |
-        |                  | the polygon                                      |
-        +------------------+--------------------------------------------------+
-        | max              | Extract maximum value of all pixels within       |
-        |                  | the polygon                                      |
-        +------------------+--------------------------------------------------+
-        | sum              | Extract sum of the values of all pixels within   |
-        |                  | the polygon                                      |
-        +------------------+--------------------------------------------------+
-        | mode             | Extract the mode of classes within the polygon   |
-        |                  | (classes must be set with the option class)      |
-        +------------------+--------------------------------------------------+
-        | proportion       | Extract proportion of class(es) within           |
-        |                  | the polygon                                      |
-        |                  | (classes must be set with the option class)      |
-        +------------------+--------------------------------------------------+
-        | count            | Extract count of class(es) within the polygon    |
-        |                  | (classes must be set with the option class)      |
-        +------------------+--------------------------------------------------+
-        | percentile       | Extract percentile as defined by option perc     |
-        |                  | (e.g, 95th percentile of values covered by       |
-        |                  | polygon)                                         |
-        +------------------+--------------------------------------------------+
+        """
+        self._jim_object._jipjim.d_band2plane()
 
+    def crop(self,
+             ulx: float = None,
+             uly: float = None,
+             ulz: float = None,
+             lrx: float = None,
+             lry: float = None,
+             lrz: float = None,
+             dx: float = None,
+             dy: float = None,
+             nogeo: bool = False,
+             **kwargs):
+        """Subset raster dataset.
 
-        .. note::
-            To ignore some pixels from the extraction process, see list
-            of :ref:`mask <extract_mask>` key values:
+        Subset raster dataset according in spatial (subset region) domain
 
-        .. _extract_mask:
+        :param ulx: Upper left x value of bounding box to crop
+        :param uly: Upper left y value of bounding box to crop
+        :param ulz: Upper left z value of bounding box to crop
+        :param lrx: Lower right x value of bounding box to crop
+        :param lry: Lower right y value of bounding box to crop
+        :param lrz: Lower right y value of bounding box to crop
+        :param dx: spatial resolution in x to crop (stride if nogeo is True)
+        :param dy: spatial resolution in y to crop (stride if nogeo is True)
+        :param nogeo: use image coordinates if True, default is spatial
+            reference system coordinates
+        :param nodata: set no data in case the specified bounding box is not
+            within the object boundaries (default is 0)
 
+<<<<<<< Updated upstream
         :Supported key values to mask pixels that must be ignored in \
         the extraction process:
 
@@ -1598,6 +1846,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param nodata: set no data in case the specified bounding box is not
             within the object boundaries (default is 0)
 
+=======
+>>>>>>> Stashed changes
         Example:
 
         Crop bounding box in georeferenced coordinates::
@@ -1832,6 +2082,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         self._jim_object._set(jim._jipjim)
         # self._jim_object._set(
         #     self._jim_object._jipjim.cropOgr(extent._jipjimvect, kwargs))
+<<<<<<< Updated upstream
 
     def cropPlane(self,
                   plane: int):
@@ -2095,22 +2346,18 @@ class _Geometry(_pj.modules.JimModuleBase):
         |                  | (e.g., '10%') or integer value for absolute      |
         |                  | threshold                                        |
         +------------------+--------------------------------------------------+
+=======
+>>>>>>> Stashed changes
 
-        Example:
+    def cropPlane(self,
+                  plane: int):
+        """Subset raster dataset.
 
-        Extract the mean value of the pixels within the polygon of the provided
-        reference vector. Exclude the pixels within a buffer of 10m of
-        the polygon boundary. Use a temporary vector in memory for
-        the calculation. Then write the result to the final destination
-        on disk::
+        Subset raster dataset in temporal domain.
 
-            reference = pj.JimVect('/path/to/reference.sqlite')
-            jim0 = pj.Jim('/path/to/raster.tif')
-            v = jim0.geometry.extractOgr(
-                reference, buffer=-10, rule=['mean'],
-                output='/vsimem/temp.sqlite', oformat='SQLite')
-            v.io.write('/path/to/output.sqlite)
+        Modifies the instance on which the method was called.
 
+<<<<<<< Updated upstream
         """
         kwargs.update({'output': output})
         kwargs.update({'rule': rule})
@@ -2122,23 +2369,34 @@ class _Geometry(_pj.modules.JimModuleBase):
                     float(t.strip('%')) if isinstance(t, str)
                     else -t for t in kwargs['threshold']
                 ]
+=======
+        :param plane: List of plane indices to crop (index is 0 based)
+>>>>>>> Stashed changes
 
-        if 'classes' in kwargs:
-            classes = kwargs.pop('classes')
-            kwargs['class'] = classes
+        Example:
 
-        avect = self._jim_object._jipjim.extractOgr(jvec._jipjimvect, kwargs)
-        pjvect = _pj.JimVect()
-        pjvect._set(avect)
-        return pjvect
+        Crop the first three planes from raster dataset jim0::
 
-    def extractSample(self,
-                      output: str,
-                      **kwargs):
-        """Extract a random or grid sample from a raster dataset.
+            jim0 = pj.Jim('/path/to/raster0.tif')
+            jim0.cropPlane(plane=[0, 1, 2])
 
-        :output: Name of the output vector dataset in which the zonal
-            statistics will be saved
+        """
+        if isinstance(plane, list):
+            planes = plane
+        else:
+            planes = [plane]
+        plane = [self._jim_object.properties.nrOfPlane() + b if b < 0 else b
+                 for b in planes]
+        self._jim_object._jipjim.d_cropPlane({'plane': plane})
+
+    def extractImg(self,
+                   reference,
+                   output: str,
+                   **kwargs):
+        """Extract pixel values from an input based on a raster sample dataset.
+
+        :param reference: thematic raster dataset with integer values,
+            typically a land cover map
         :param output: path to the output
         :param kwargs: See table below
         :return: A VectorOgr with fields for each of the calculated raster
@@ -2147,34 +2405,24 @@ class _Geometry(_pj.modules.JimModuleBase):
         +------------------+--------------------------------------------------+
         | key              | value                                            |
         +==================+==================================================+
-        | random           | Extract a random sample with a size equal to     |
-        |                  | the defined value                                |
-        +------------------+--------------------------------------------------+
-        | grid             | Extract a grid sample with a grid size equal to  |
-        |                  | the defined value                                |
-        +------------------+--------------------------------------------------+
         | rule             | Rule how to calculate zonal statistics per       |
         |                  | feature                                          |
         |                  | (see list of                                     |
         |                  | :ref:`supported rules <extract_rules>`)          |
         +------------------+--------------------------------------------------+
-        | buffer           | Buffer for calculating statistics for point      |
-        |                  | features (in geometric units of raster dataset)  |
+        | classes          | List of classes to extract from the raster sample|
+        |                  | dataset.                                         |
+        |                  | Leave empty to extract all valid data pixels from|
+        |                  | thee sample                                      |
         +------------------+--------------------------------------------------+
-        | label            | Create extra field named 'label' with this value |
+        | attribute        | Name of the class label in the output vector     |
+        |                  | dataset (default is 'label')                     |
         +------------------+--------------------------------------------------+
         | fid              | Create extra field named 'fid' with this field   |
         |                  | identifier (sequence of features)                |
         +------------------+--------------------------------------------------+
-        | band             | List of bands to extract (0 indexed). Default is |
-        |                  | to use extract all bands                         |
-        +------------------+--------------------------------------------------+
         | bandname         | List of band name corresponding to list of bands |
         |                  | to extract                                       |
-        +------------------+--------------------------------------------------+
-        | startband        | Start band sequence number (0 indexed)           |
-        +------------------+--------------------------------------------------+
-        | endband          | End band sequence number (0 indexed)             |
         +------------------+--------------------------------------------------+
         | ln               | Layer name of output vector dataset              |
         +------------------+--------------------------------------------------+
@@ -2185,38 +2433,67 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         .. note::
             To ignore some pixels from the extraction process, see list
-            of :ref:`mask <extract_mask>` key values:
+            of :ref:`nodata <extract_nodata>` key values:
+
+        .. _extract_nodata:
+
+        :Supported key values to mask pixels that must be ignored in \
+        the extraction process:
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | srcnodata        | List of nodata values not to extract             |
+        +------------------+--------------------------------------------------+
+        | bndnodata        | List of band in input image to check if pixel is |
+        |                  | valid (used for srcnodata)                       |
+        +------------------+--------------------------------------------------+
+        | threshold        | Maximum number of features to extract. Use       |
+        |                  | percentage value as string                       |
+        |                  | (e.g., '10%') or integer value for absolute      |
+        |                  | threshold.                                       |
+        |                  | You can provide a list of threshold values, one  |
+        |                  | for each class.                                  |
+        +------------------+--------------------------------------------------+
 
         Example:
 
-        Extract a random sample of 100 points, calculating the mean value based
-        on a 3x3 window (buffer value of 100 m) in a vector
-        dataset in memory::
+        Open a raster sample dataset based on land cover map (e.g., Corine) and
+        use it to extract a stratified sample of 100 points from an input
+        raster dataset with four spectral bands ('B02', 'B03', 'B04', 'B08').
+        Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
+        41 (water) and an aggregated (rest) class 50::
 
-            v01 = jim0.extractSample(random=100, buffer=100, rule=['mean'],
-                                     output='mem01', oformat='Memory')
+            reference=pj.Jim('/path/to/landcovermap.tif')
 
-        Extract a sample of 100 points using a regular grid sampling scheme.
-        For each grid point, calculate the median value based on a 3x3 window
-        (buffer value of 100 m neighborhood). Write the result in a SQLite
-        vector dataset on disk::
+            classes=[2,12,25,41,50]
+            thresholds=['20%','25%','25%','10%','5%']
 
-            outputfn = '/path/to/output.sqlite'
-            npoint = 100
-            gridsize = int(jim.nrOfCol()*jim.getDeltaX()/math.sqrt(npoint))
-            v = jim.extractSample(grid=gridsize, buffer=100, rule=['median'],
-                                  output=outputfn, oformat='SQLite')
-            v.write()
+            jim=pj.Jim('/path/to/s2_multiband.tif')
 
+            outputfn='/path/to/output.sqlite'
+            sample=jim.extractImg(reference,srcnodata=[0],output=outputfn,
+                                  classes=classes,threshold=thresholds,
+                                  bandname=['B02','B03','B04','B08'])
         """
         kwargs.update({'output': output})
+
+        if 'classes' in kwargs:
+            kwargs['class'] = kwargs.pop('classes')
         if 'threshold' in kwargs:
-            if kwargs['threshold'] is not None:
-                if '%' in kwargs['threshold']:
-                    kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
+            if not isinstance(kwargs['threshold'], list):
+                kwargs['threshold'] = [kwargs['threshold']]
+            for index, threshold in enumerate(kwargs['threshold']):
+                if isinstance(threshold, str):
+                    threshold = float(threshold.strip('%'))
                 else:
-                    kwargs['threshold'] = -kwargs['threshold']
-        return self._jim_object._jipjim.extractSample(kwargs)
+                    threshold = -threshold
+                kwargs['threshold'][index] = threshold
+
+        avect = self._jim_object._jipjim.extractImg(reference._jipjim, kwargs)
+        pjvect = _pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
 
     def geo2image(self,
                   x: float,
@@ -3047,14 +3324,61 @@ class _GeometryList(_pj.modules.JimListModuleBase):
                 ret_jim._jipjim.d_stackPlane(jim._jipjim)
         return ret_jim
 
-    def extractOgr(self,
-                   sample,
-                   rule: str,
-                   output: str,
-                   **kwargs):
-        """Extract pixel values based on a JimVect vector dataset.
 
-        :param sample: reference JimVect instance
+class _GeometryVect(_pj.modules.JimVectModuleBase):
+    """Define all Geometry methods for JimVects."""
+
+    def __init__(self):
+        """Initialize the module."""
+        pass
+
+    def _set_caller(self,
+                    caller):
+        self._jim_vect = caller
+
+    # def append(self, jvec):
+    #     """Append JimVect object with another JimVect object.
+
+    #     :param jvec: JimVect object to append
+    #     """
+    #     if isinstance(jvec, _pj.JimVect):
+    #         self._jim_vect._jipjimvect.append(jvec._jipjimvect)
+    #         # return pjvect
+    #         # return _pj.JimVect(
+    #               # self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
+    #     else:
+    #         raise TypeError('Error: can only join with JimVect object')
+
+    def convexHull(self,
+                   **kwargs):
+        """Create the convex hull on a JimVect object.
+
+        Modifies the instance on which the method was called.
+
+        :param kwargs: See table below
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | co               | Creation option for output vector dataset        |
+        +------------------+--------------------------------------------------+
+        """
+        non_existing_path = _pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',
+                                         os.path.basename(non_existing_path))
+        kwargs.update({'output': non_existing_path})
+        avect = self._jim_vect._jipjimvect.convexHull(kwargs)
+        avect.write()
+        self._jim_vect._set(avect)
+
+    def extract(self,
+                jim,
+                output: str,
+                rule: str = None,
+                **kwargs):
+        """Extract pixel values from raster image based on a vector dataset.
+
+        :param jim: Jim object (list) on which vector is overlaid to extract from
         :param rule: Rule how to calculate zonal statistics per feature
             (see list of :ref:`supported rules <extract_rules>`)
         :param output: Name of the output vector dataset in which the zonal
@@ -3077,23 +3401,10 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         | fid              | Create extra field named 'fid' with this field   |
         |                  | identifier (sequence of features)                |
         +------------------+--------------------------------------------------+
-        | band             | List of bands to extract (0 indexed). Default is |
-        |                  | to use extract all bands                         |
-        +------------------+--------------------------------------------------+
-        | bandname         | List of band name corresponding to list of bands |
-        |                  | to extract                                       |
+        | bandname         | List of band names corresponding to list of      |
+        |                  | bands to extract                                 |
         +------------------+--------------------------------------------------+
         | planename        | List of plane names corresponding to list of     |
-        |                  | planes to extract                                |
-        +------------------+--------------------------------------------------+
-        | startband        | Start band sequence number (0 indexed)           |
-        +------------------+--------------------------------------------------+
-        | endband          | End band sequence number (0 indexed)             |
-        +------------------+--------------------------------------------------+
-        | plane            | List of planes to extract (0 indexed). Default is|
-        |                  | to use extract all planes                        |
-        +------------------+--------------------------------------------------+
-        | planename        | List of plane name corresponding to list of      |
         |                  | planes to extract                                |
         +------------------+--------------------------------------------------+
         | oformat          | Output vector dataset format                     |
@@ -3152,12 +3463,12 @@ class _GeometryList(_pj.modules.JimListModuleBase):
 
         .. note::
             To ignore some pixels from the extraction process, see list
-            of :ref:`mask key values <extract_mask>`:
+            of :ref:`mask key values <extract_mask>`
 
         .. extract_mask:
 
         :Supported key values to mask pixels that must be ignored in \
-            the extraction process:
+        the extraction process:
 
         +------------------+--------------------------------------------------+
         | key              | value                                            |
@@ -3174,7 +3485,7 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         +------------------+--------------------------------------------------+
         | mskband          | Use the the specified band of the mask file      |
         |                  | defined                                          |
-        +------------------+------------------------------------------------  +
+        +------------------+--------------------------------------------------+
         | msknodata        | List of mask values not to extract               |
         +------------------+--------------------------------------------------+
         | threshold        | Maximum number of features to extract. Use       |
@@ -3191,13 +3502,21 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         the calculation. Then write the result to the final destination
         on disk::
 
+<<<<<<< Updated upstream
             jiml = pj.JimList([jim0, jim1, jim2])
             v = jiml.geometry.extractOgr(
                 reference, bandname, buffer=-10, rule=['mean'],
+=======
+            reference = pj.JimVect('/path/to/reference.sqlite')
+            jim0 = pj.Jim('/path/to/raster.tif')
+            v = reference.geometry.extract(
+                jim0, buffer=-10, rule=['mean'],
+>>>>>>> Stashed changes
                 output='/vsimem/temp.sqlite', oformat='SQLite')
             v.io.write('/path/to/output.sqlite)
 
         """
+<<<<<<< Updated upstream
         # make list of rules
         # if not isinstance(rule, Iterable) or isinstance(rule, basestring):
         #     rules = [rule]
@@ -3352,73 +3671,35 @@ class _GeometryList(_pj.modules.JimListModuleBase):
                 #     kwargs['threshold'] = float(kwargs['threshold'].strip('%'))
                 # else:
                 #     kwargs['threshold'] = -kwargs['threshold']
+=======
+        kwargs.update({'output': output})
+        kwargs.update({'rule': rule})
+        if 'threshold' in kwargs:
+            if kwargs['threshold'] is not None:
+                if not isinstance(kwargs['threshold'],list):
+                    kwargs['threshold']=[kwargs['threshold']]
+                kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+>>>>>>> Stashed changes
 
+        if 'classes' in kwargs:
+            classes = kwargs.pop('classes')
+            kwargs['class'] = classes
+
+        pjvect = _pj.JimVect()
+        if isinstance(jim, _pj.Jim):
+            avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect, kwargs)
+            pjvect._set(avect)
+        elif isinstance(jim, _pj.JimList):
             bandname = kwargs.pop('bandname', None)
-
             #todo: support multi-band images in JimList...
             if bandname is None:
                 bandname = [
                     't'+str(ifile) for ifile in range(0, len(self._jim_list))]
-            # elif isinstance(bandname,list):
-            #     if len(bandname) != len(self._jim_list):
-            #         raise ValueError('Error: len of bandname should be '
-            #                          'identical to len of JimList')
             kwargs.update({'bandname': bandname})
 
-            avect = self._jim_list._jipjimlist.extractOgr(sample._jipjimvect,
-                                                          kwargs)
-            pjvect = _pj.JimVect()
-            pjvect._set(avect)
-            return pjvect
+            avect = jim._jipjimlist.extractOgr(self._jim_vect._jipjimvect, kwargs)
         else:
-            raise TypeError('Error: extractOgr must operate on vector sample'
-                            'of type JimVect')
-
-
-class _GeometryVect(_pj.modules.JimVectModuleBase):
-    """Define all Geometry methods for JimVects."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self,
-                    caller):
-        self._jim_vect = caller
-
-    # def append(self, jvec):
-    #     """Append JimVect object with another JimVect object.
-
-    #     :param jvec: JimVect object to append
-    #     """
-    #     if isinstance(jvec, _pj.JimVect):
-    #         self._jim_vect._jipjimvect.append(jvec._jipjimvect)
-    #         # return pjvect
-    #         # return _pj.JimVect(
-    #               # self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
-    #     else:
-    #         raise TypeError('Error: can only join with JimVect object')
-
-    def convexHull(self,
-                   **kwargs):
-        """Create the convex hull on a JimVect object.
-
-        Modifies the instance on which the method was called.
-
-        :param kwargs: See table below
-
-        +------------------+--------------------------------------------------+
-        | key              | value                                            |
-        +==================+==================================================+
-        | co               | Creation option for output vector dataset        |
-        +------------------+--------------------------------------------------+
-        """
-        non_existing_path = _pj._get_random_path()
-        non_existing_path = os.path.join('/vsimem',
-                                         os.path.basename(non_existing_path))
-        kwargs.update({'output': non_existing_path})
-        avect = self._jim_vect._jipjimvect.convexHull(kwargs)
-        avect.write()
+            raise TypeError('Error: extract must operate on Jim or JimList')
         self._jim_vect._set(avect)
 
     def intersect(self,
