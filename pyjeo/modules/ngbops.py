@@ -610,9 +610,9 @@ def smoothNoData1d(jim_object,
 
 #     Example:
 
-#     jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+#     jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
 
-#     jimstats=pj.ngbops.stats1d(jim,method=['min','max])
+#     jimstats = pj.ngbops.stats1d(jim, method=['min','max])
 #     """
 
 #     kwargs.update({'method': method})
@@ -637,7 +637,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         Example::
 
-            jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+            jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
             jim.pixops.convert('GDT_Float64')
 
             jim.ngbops.dwt1d()
@@ -967,9 +967,9 @@ class _NgbOps(_pj.modules.JimModuleBase):
             # specify the wavelenghts of the input raster dataset
 
             if len(wavelengths_in) == jim_hyperspectral.nrOfBand():
-                rgb=jim_hyperspectral.ngbops.filter1d(
-                wavelengthIn=wavelenghts_in,
-                srf=['srf_red.txt', 'srf_green.txt', 'srf_blue.txt'])
+                rgb = jim_hyperspectral.ngbops.filter1d(
+                    wavelengthIn=wavelenghts_in,
+                    srf=['srf_red.txt', 'srf_green.txt', 'srf_blue.txt'])
             else:
                 print("Error: number of input wavelengths must be equal to "
                       "number of bands in input raster dataset")
@@ -1570,13 +1570,13 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
     #     Example:
 
-    #     jim=pj.Jim('/path/to/multi-band/image.tif',band2plane=True)
+    #     jim = pj.Jim('/path/to/multi-band/image.tif', band2plane=True)
 
     #     jim.ngbops.stats1d()
     #     """
 
     #     kwargs.update({'method': method})
-    #     kwargs.update({'nodata':nodata})
+    #     kwargs.update({'nodata': nodata})
     #     self._jim_object._set(self._jim_object._jipjim.stats1d(kwargs))
 
 

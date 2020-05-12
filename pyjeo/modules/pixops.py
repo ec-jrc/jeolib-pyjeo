@@ -569,13 +569,13 @@ class _PixOps(_pj.modules.JimModuleBase):
 
         Example:
 
-        Mask all values not within [0,250] and set to 255::
+        Mask all values not within [0, 250] and set to 255::
 
-            jim0[(jim0<0) | (jim0>250)]=255
+            jim0[(jim0<0) | (jim0>250)] = 255
 
             Mask all values not within [0,250] and set to 255 (no data)::
 
-            jim_threshold=jim.setThreshold(min=0,max=250,nodata=255)
+            jim_threshold = jim.setThreshold(min=0, max=250, nodata=255)
         """
         self._jim_object._set(self._jim_object._jipjim.setThreshold(kwargs))
 
