@@ -136,12 +136,15 @@ class BadBasicMethods(unittest.TestCase):
 
         vect = pj.JimVect(wkt=wkt_string)
 
-        a = pj.JimVect(vector, output=pj._get_random_path())
-        wkt_jimvect = pj.JimVect(vect,output=pj._get_random_path(),oformat='GeoJSON')
+        a = pj.JimVect(vector)
+        out_path = pj._get_random_path()
+        wkt_jimvect = pj.JimVect(vect,output=out_path,oformat='GeoJSON')
         wkt_jimvect.io.write()
 
         assert wkt_jimvect.properties.getFeatureCount() == 1, \
             'Error in creating JimVect object based on kwarg wkt=... '
+
+        os.remove(out_path)
 
         # Test wrong JimVects catches
 
@@ -167,6 +170,150 @@ class BadBasicMethods(unittest.TestCase):
 
         try:
             _ = pj.JimVect(ulx=0, uly=1, lrx=1, lry=0, output=out_path)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching non-existing output without defining ' \
+            'a JimVect template'
+
+
+    @staticmethod
+    def test_jimvect_open():
+        """Test creating of JimVect objects."""
+        out_path = pj._get_random_path()
+
+        # Test vector with filepath defined
+
+        vect = pj.JimVect()
+        vect.io.open(vector)
+
+        assert not vect.properties.isEmpty(), \
+            'Error in creating a JimVect object with specified path'
+        assert vect.properties.getLayerCount() == 2, \
+            'Error in creating a JimVect object with specified path'
+
+        # Test vector with filepath and kwargs
+
+        vect = pj.JimVect()
+        vect.io.open(vector, ln='milano')
+
+        assert not vect.properties.isEmpty(), \
+            'Error in creating a JimVect object with specified path and kwargs'
+        assert vect.properties.getLayerCount() == 1, \
+            'Error in creating a JimVect object with specified path and kwargs'
+
+        # Test with parent vector
+
+        vect1 = pj.JimVect()
+        vect1.io.open(vect, output=out_path)
+
+        assert os.path.isfile(out_path), \
+            'Error in creating JimVect object based on another JimVect ' \
+            '(output does not exist)'
+        assert not vect1.properties.isEmpty(), \
+            'Error in creating JimVect object based on another JimVect ' \
+            '(JimVect empty)'
+        assert vect1.properties.getLayerCount() == 1, \
+            'Error in creating JimVect object based on another JimVect ' \
+            '(wrong number of layers)'
+
+        vect1.io.close()
+        os.remove(out_path)
+
+        # Test with JSON
+
+        jsonstring = \
+            '{"polygons": ' \
+                '{"type": "FeatureCollection", ' \
+                '"crs": ' \
+                    '{"type": "name", ' \
+                    '"properties": ' \
+                    '{"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, ' \
+                '"features": ' \
+                    '[{"type": "Feature", ' \
+                    '"properties": {"label": 1}, ' \
+                    '"geometry": ' \
+                        '{"type": "Polygon", ' \
+                        '"coordinates": ' \
+                            '[[[ 16.296883885037882, 48.07125730037879 ], ' \
+                            '[ 16.29418254261364, 47.787616345833342 ], ' \
+                            '[ 16.518393963825762, 47.814629770075761 ], ' \
+                            '[ 16.413041609280306, 48.04424387613637 ], ' \
+                            '[ 16.296883885037882, 48.07125730037879 ]]' \
+            ']}}]}}'
+
+        vect = pj.JimVect()
+        vect.io.open(jsonstring)
+
+        assert not vect.properties.isEmpty(), \
+            'Error in creating JimVect object based on json string' \
+            '(JimVect empty)'
+        assert vect.properties.getLayerCount() == 1, \
+            'Error in creating JimVect object based on json string' \
+            '(wrong number of layers)'
+        assert vect.properties.getFeatureCount() == 1, \
+            'Error in creating JimVect object based on json string' \
+            '(wrong number of features)'
+
+        vect = pj.JimVect()
+        vect.io.open(output=vector)
+
+        assert not vect.properties.isEmpty(), \
+            'Error in creating JimVect object based on kwarg output=... ' \
+            '(JimVect empty)'
+        assert vect.properties.getLayerCount() == 2, \
+            'Error in creating JimVect object based on kwarg output=... ' \
+            '(wrong number of layers)'
+
+        # Test JimVect creation based on WKT
+
+
+        wkt_string = 'POLYGON ((23.314208 37.768469, 24.039306 37.768469, 24.039306 38.214372, 23.314208 38.214372, 23.314208 37.768469))'
+
+        vect = pj.JimVect()
+        vect.io.open(wkt=wkt_string)
+
+        a = pj.JimVect()
+        a.io.open(vector)
+        wkt_jimvect = pj.JimVect()
+        out_path = pj._get_random_path()
+        wkt_jimvect.io.open(vect,output=out_path,oformat='GeoJSON')
+        wkt_jimvect.io.write()
+
+        assert wkt_jimvect.properties.getFeatureCount() == 1, \
+            'Error in creating JimVect object based on kwarg wkt=... '
+
+        os.remove(out_path)
+
+        # Test wrong JimVects catches
+
+        try:
+            _ = pj.JimVect()
+            _.io.open(vect)
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching wrong parameters for JimVect creation ' \
+            '(no output, but initial vector)'
+
+        try:
+            _ = pj.JimVect()
+            _.io.open(vect, ln='milano')
+            raised = False
+        except AttributeError:
+            raised = True
+
+        assert raised, \
+            'Error in catching wrong parameters for JimVect creation ' \
+            '(no output, but initial vector and kwargs)'
+
+        try:
+            _ = pj.JimVect()
+            _.io.open(ulx=0, uly=1, lrx=1, lry=0, output=out_path)
             raised = False
         except AttributeError:
             raised = True

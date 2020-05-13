@@ -1,5 +1,7 @@
 """Module for input-output operations."""
 
+import os as _os
+from osgeo import ogr as _ogr
 import pyjeo as _pj
 import jiplib as _jl
 
@@ -51,7 +53,7 @@ class _IO(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
     def open(self, image=None, **kwargs):
-        """Open Jim object.Jim.
+        """Open Jim object.
 
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
@@ -130,6 +132,60 @@ class _IOVect(_pj.modules.JimVectModuleBase):
             kwargs.update({'output': output})
 
         self._jim_vect._jipjimvect.dumpOgr(kwargs)
+
+    def open(self, vector=None, **kwargs):
+        """Open JimVect object.
+
+        :param vector: path to a vector dataset or another JimVect object
+        """
+
+        keys = kwargs.keys()
+
+        if isinstance(vector, _pj.JimVect):
+            if 'output' not in keys:
+                raise AttributeError(
+                    "Parameter output required for copy constructor")
+        elif not vector:
+            if 'output' in keys and not _os.path.isfile(kwargs['output']):
+                raise AttributeError('Output path does not exist and the '
+                                     'template vector is not specified')
+        if kwargs:
+            if vector:
+                if isinstance(vector, _pj.JimVect):
+                    kwargs.update({'filename': kwargs.pop('output', None)})
+                    kwargs.update({'access':1})
+                    print(kwargs)
+                    self._jim_vect._jipjimvect.open(kwargs)
+                    self._jim_vect._jipjimvect.copy(vector._jipjimvect, kwargs)
+                    self._jim_vect.io.write()
+
+                else:
+                    kwargs.update({'filename': vector})
+                    self._jim_vect._jipjimvect.open(kwargs)
+            elif 'wkt' in kwargs:
+                geom = _ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
+                self._jim_vect._jipjimvect.open(geom.ExportToJson())
+            else:
+                kwargs.update({'filename': kwargs.pop('output', None)})
+                self._jim_vect._jipjimvect.open(kwargs)
+        else:
+            if vector:
+                self._jim_vect._jipjimvect.open(vector, **kwargs)
+            else:
+                self._jim_vect._jipjimvect.open()
+
+        # if isinstance(vector,str):
+        #     kwargs.update({'filename':kwargs.pop('output')})
+        #     self._jim_vect._jipjimvect.open(kwargs)
+
+        # elif isinstance(vector,_pj.JimVect):
+        #     # self._jim_vect._jipjimvect.open(kwargs.pop('output'), kwargs.pop('oformat',None))
+        #     kwargs.update({'filename':kwargs.pop('output')})
+        #     kwargs.update({'access':1})
+        #     print(kwargs)
+        #     self._jim_vect._jipjimvect.open(kwargs)
+        #     self._jim_vect._jipjimvect.copy(vector._jipjimvect, kwargs)
+        #     self._jim_vect.io.write()
 
     def write(self,
               filename: str = None):
