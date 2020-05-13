@@ -207,6 +207,9 @@ class Jim:
         :param band: band index (starting from 0)
         :return: numpy array representation
         """
+        if not self:
+            raise ValueError(
+                'Jim has to have a data to use Jim.np()')
         try:
             self.properties.getDataType()
         except TypeError:
@@ -1425,6 +1428,9 @@ def np(jim_object: Jim) -> _np.ndarray:
     :param jim_object: Jim object with values to which will the pointer point
     :return: a numpy representation of the Jim object
     """
+    if not jim_object:
+        raise ValueError(
+            'Jim has to have a data to use Jim.np()')
     return _jl.np(jim_object._jipjim)
 
 

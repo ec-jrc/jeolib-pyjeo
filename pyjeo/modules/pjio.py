@@ -3,59 +3,6 @@
 import pyjeo as _pj
 import jiplib as _jl
 
-# def createJim(filename=None, **kwargs):
-#     """
-#     :param filename: Path to a raster dataset or another Jim object
-#     :param: see supported keys in table below
-#     :return: a Jim object
-#     """
-
-#     return _pj.Jim(_jl.createJim(filename, **kwargs))
-
-
-# def createJimList(jims_list, **kwargs):
-#     return _pj.JimList(_jl.createJimList(jims_list, **kwargs))
-
-
-# def createVector(filename, **kwargs):
-#     """Create an empty VectorOgr object.
-
-#     Created object is an instance of the basis vector class of the pyJEO
-#     library
-
-#     :param filename: Path to a vector dataset or another VectorOgr object
-#     :param: see supported keys in table below
-#     :return: a VectorOgr object
-#     """
-#     return _pj.JimVect(_jl.createVector(filename, **kwargs))
-
-
-# def GDALRead(fn, band=0, nXOff=0, nYOff=0, nXSize=None, nYSize=None,
-#              nBufXSize=None, nBufYSize=None):
-#     """Read a GDAL compatible image stored in the filename.
-
-#     :param fn: a string for the name of an image file (possibly its path)
-#     :param band: an integer for the band number, 0 for first band
-#     :param nXOff: integer for the pixel offset to the top left corner
-#     :param nYOff: integer for the line offset to the top left corner
-#     :param nXSize: integer for the width of the region
-#     :param nYSize: integer for the height of the region
-#     :param nBufXSize: integer for the number of columns of output image
-#     :param nBufYSize: integer for the number of lines of output image
-#     :return: a Jim object
-#     """
-#     if nXSize is None:
-#         nXSize = nXOff
-#     if nYSize is None:
-#         nYSize = nYOff
-#     if nBufXSize is None:
-#         nBufXSize = nXSize
-#     if nBufYSize is None:
-#         nBufYSize = nYSize
-#     return _pj.Jim(_jl.GDALRead(fn, band, nXOff, nYOff, nXSize, nYSize,
-#                                nBufXSize, nBufYSize))
-
-
 class _IO(_pj.modules.JimModuleBase):
     """Define all IO methods."""
 
@@ -103,9 +50,14 @@ class _IO(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
-    def open(self):
-        """Open Jim object."""
-        self._jim_object._jipjim.open()
+    def open(self, image, **kwargs):
+        """Open Jim object.Jim.
+
+        :param image: path to a raster or another Jim object as a basis for
+            the Jim object
+        """
+        ajim=_pj.Jim(image, **kwargs)
+        self._jim_object._set(ajim._jipjim)
 
     def write(self,
               filename: str,
