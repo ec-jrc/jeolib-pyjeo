@@ -50,7 +50,7 @@ class _IO(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.imageDump(x, y, z, nx, ny)
 
-    def open(self, image, **kwargs):
+    def open(self, image=None, **kwargs):
         """Open Jim object.Jim.
 
         :param image: path to a raster or another Jim object as a basis for
