@@ -1275,13 +1275,17 @@ class _ParentVect(_jl.VectorOgr):
                 wkt_srs = _ogr.osr.SpatialReference()
                 wkt_srs.ImportFromEPSG(4326)
                 # Create the output Driver
-                out_driver = _ogr.GetDriverByName("SQLite")
+                drivername=kwargs.pop('oformat', None)
+                if drivername is None:
+                    out_driver = _ogr.GetDriverByName("SQLite")
+                else:
+                    out_driver = _ogr.GetDriverByName(drivername)
                 # Create the output sqlite file
                 kwargs.update({'filename': kwargs.pop('output', None)})
                 out_dataset = out_driver.CreateDataSource(kwargs['filename'])
                 out_layer = out_dataset.CreateLayer(kwargs['filename'],
                                                     wkt_srs,
-                                                    geom_type=_ogr.wkbPolygon)
+                                                    geom_type=geom.GetGeometryType())
                 # Set the output layer's feature definition
                 feature_defn = out_layer.GetLayerDefn()
                 # Create a new feature
