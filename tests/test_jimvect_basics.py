@@ -131,15 +131,17 @@ class BadBasicMethods(unittest.TestCase):
 
         # Test JimVect creation based on WKT
 
-        a = pj.JimVect(vector, output=pj._get_random_path())
-        wkt = a.properties.getProjection()
 
-        wkt_jimvect = pj.JimVect(wkt=wkt, output=pj._get_random_path())
+        wkt_string = 'POLYGON ((23.314208 37.768469, 24.039306 37.768469, 24.039306 38.214372, 23.314208 38.214372, 23.314208 37.768469))'
+
+        vect = pj.JimVect(wkt=wkt_string)
+
+        a = pj.JimVect(vector, output=pj._get_random_path())
+        wkt_jimvect = pj.JimVect(vect,output=pj._get_random_path(),oformat='GeoJSON')
         wkt_jimvect.io.write()
 
-        assert wkt == wkt_jimvect.properties.getProjection(), \
-            'Error in creating JimVect object based on kwarg wkt=... ' \
-            '(object not equal to the object from which we got the WKT)'
+        assert wkt_jimvect.properties.getFeatureCount() == 1, \
+            'Error in creating JimVect object based on kwarg wkt=... '
 
         # Test wrong JimVects catches
 
