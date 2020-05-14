@@ -119,6 +119,15 @@ class BadGeometry(unittest.TestCase):
             'Inconsistency in geometry.stackPlane(Jim) ' \
             '(method returns different result than function)'
 
+        # Test the stackPlane() with self
+
+        jim1 = pj.Jim(rasterfn)
+        jim2 = pj.Jim(jim1)
+        jim1.geometry.stackPlane(pj.Jim(jim1))
+        jim2.geometry.stackPlane(jim2)
+        assert(jim1.properties.isEqual(jim2)), \
+            'Inconsistency in geometry.stackPlane(self)'
+
         # Test the band2plane() method
         jimband = pj.Jim(rasterfn, band=[0, 1, 2])
         jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
