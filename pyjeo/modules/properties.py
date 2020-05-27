@@ -69,8 +69,8 @@ def isEqual(first_jim,
             jim2_fieldnames = second_jim.properties.getFieldNames()
             if jim1_fieldnames != jim2_fieldnames:
                 return False
-            if not _np.array_equal(first_jim.np(ilayer),
-                                   second_jim.np(ilayer)):
+            if not _np.array_equal(first_jim.np(ln=ilayer),
+                                   second_jim.np(ln=ilayer)):
                 return False
 
         return True
@@ -616,8 +616,8 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
             jim2_fieldnames = other.properties.getFieldNames()
             if jim1_fieldnames != jim2_fieldnames:
                 return False
-            if not _np.array_equal(self._jim_vect.np(ilayer),
-                                   other.np(ilayer)):
+            if not _np.array_equal(self._jim_vect.np(ln=ilayer),
+                                   other.np(ln=ilayer)):
                 return False
 
         return True
