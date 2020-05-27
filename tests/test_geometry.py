@@ -13,7 +13,6 @@ vectorfn = 'tests/data/modis_ndvi_training.sqlite'
 nutsfn = 'tests/data/nuts_italy.sqlite'
 clc = 'tests/data/clc_32632.tif'
 outputfn = pj._get_random_path()
-warpedfn = pj._get_random_path()
 
 
 class BadGeometry(unittest.TestCase):
@@ -358,6 +357,7 @@ class BadGeometry(unittest.TestCase):
         sample.io.close()
         v.io.close()
         os.remove(outputfn)
+        os.remove(newsamplefn)
 
     @staticmethod
     def test_extract_plane():
@@ -512,7 +512,7 @@ class BadGeometry(unittest.TestCase):
         jim0.geometry.crop(ulx=bbox[0],uly=bbox[1],lrx=bbox[2],lry=bbox[3])
 
         classes=[2,12,25,41,50]
-        thresholds=[20,20,20,20]
+        thresholds=[20,20,20,20,20]
 
         v=pj.geometry.extract(reference, jim0, srcnodata=[0],
                                 rule='mean',
@@ -971,8 +971,10 @@ class BadGeometry(unittest.TestCase):
         jim[0, 0] = 1
         jim[0, 1] = 1
 
-        pol1 = pj.geometry.polygonize(jim, pj._get_random_path())
-        pol2 = jim.geometry.polygonize(pj._get_random_path())
+        pol1fn = pj._get_random_path()
+        pol2fn = pj._get_random_path()
+        pol1 = pj.geometry.polygonize(jim, pol1fn)
+        pol2 = jim.geometry.polygonize(pol2fn)
 
         feature_count_func = pol1.properties.getFeatureCount()
         feature_count_meth = pol2.properties.getFeatureCount()
@@ -990,15 +992,18 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.polygonize() ' \
             '(not less features in polygons than cells in raster)'
 
+        os.remove(pol1fn)
+        os.remove(pol2fn)
+
         # Test with the mask parameter
         mask = pj.Jim(jim, copy_data=False)
         mask[0, 0] = 1
         mask[0, 1] = 1
         mask[2, 2] = 1
 
-        pol1_mask = pj.geometry.polygonize(jim, pj._get_random_path(),
+        pol1_mask = pj.geometry.polygonize(jim, pol1fn,
                                            mask=mask)
-        pol2_mask = jim.geometry.polygonize(pj._get_random_path(), mask=mask)
+        pol2_mask = jim.geometry.polygonize(pol2fn, mask=mask)
 
         feature_count_func_mask = pol1_mask.properties.getFeatureCount()
         feature_count_meth_mask = pol2_mask.properties.getFeatureCount()
@@ -1015,6 +1020,9 @@ class BadGeometry(unittest.TestCase):
         assert 2 <= feature_count_func_mask < feature_count_func, \
             'Error in geometry.polygonize() ' \
             '(not less features in polygons when mask argument used)'
+
+        os.remove(pol1fn)
+        os.remove(pol2fn)
 
         # Test wrong calls
         try:
