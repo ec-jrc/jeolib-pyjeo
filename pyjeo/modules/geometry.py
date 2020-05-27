@@ -331,7 +331,7 @@ def extract(jvec,
     :param output: Name of the output vector dataset in which the zonal
         statistics will be saved
     :param kwargs: See table below
-    :return: A VectorOgr with the same geometry as the sample vector
+    :return: A JimVect with the same geometry as the sample vector
         dataset and an extra field for each of the calculated raster value
         (zonal) statistics. The same layer name(s) of the sample will be
         used for the output vector dataset
@@ -347,8 +347,6 @@ def extract(jvec,
     +------------------+--------------------------------------------------+
     | classes          | Only when overlaying Jim thematic raster dataset |
     |                  | dataset.                                         |
-    |                  | Leave empty to extract all valid data pixels from|
-    |                  | thee sample                                      |
     +------------------+--------------------------------------------------+
     | fid              | Create extra field named 'fid' with this field   |
     |                  | identifier (sequence of features)                |
@@ -364,87 +362,9 @@ def extract(jvec,
     | co               | Creation option for output vector dataset        |
     +------------------+--------------------------------------------------+
 
-    .. extract_rules:
-
-    :Supported rules to extract (only when overlaying JimVect vector dataset):
-
-    +------------------+--------------------------------------------------+
-    | rule             | description                                      |
-    +==================+==================================================+
-    | point            | extract a single pixel within the polygon or on  |
-    |                  | each point feature                               |
-    +------------------+--------------------------------------------------+
-    | allpoints        | Extract all pixel values covered by the polygon  |
-    +------------------+--------------------------------------------------+
-    | centroid         | Extract pixel value at the centroid of           |
-    |                  | the polygon                                      |
-    +------------------+--------------------------------------------------+
-    | mean             | Extract average of all pixel values within the   |
-    |                  | polygon                                          |
-    +------------------+--------------------------------------------------+
-    | stdev            | Extract standard deviation of all pixel values   |
-    |                  | within the polygon                               |
-    +------------------+--------------------------------------------------+
-    | median           | Extract median of all pixel values within        |
-    |                  | the polygon                                      |
-    +------------------+--------------------------------------------------+
-    | min              | Extract minimum value of all pixels within       |
-    |                  | the polygon                                      |
-    +------------------+--------------------------------------------------+
-    | max              | Extract maximum value of all pixels within       |
-    |                  | the polygon                                      |
-    +------------------+--------------------------------------------------+
-    | sum              | Extract sum of the values of all pixels within   |
-    |                  | the polygon                                      |
-    +------------------+--------------------------------------------------+
-    | mode             | Extract the mode of classes within the polygon   |
-    |                  | (classes must be set with the option class)      |
-    +------------------+--------------------------------------------------+
-    | proportion       | Extract proportion of class(es) within           |
-    |                  | the polygon                                      |
-    |                  | (classes must be set with the option class)      |
-    +------------------+--------------------------------------------------+
-    | count            | Extract count of class(es) within the polygon    |
-    |                  | (classes must be set with the option class)      |
-    +------------------+--------------------------------------------------+
-    | percentile       | Extract percentile as defined by option perc     |
-    |                  | (e.g, 95th percentile of values covered by       |
-    |                  | polygon)                                         |
-    +------------------+--------------------------------------------------+
-
-
     .. note::
         To ignore some pixels from the extraction process, see list
         of :ref:`mask key values <extract_mask>`
-
-    .. extract_mask:
-
-    :Supported key values to mask pixels that must be ignored in \
-    the extraction process:
-
-    +------------------+--------------------------------------------------+
-    | key              | value                                            |
-    +==================+==================================================+
-    | srcnodata        | List of nodata values not to extract             |
-    +------------------+--------------------------------------------------+
-    | buffer           | Buffer (in geometric units of raster dataset).   |
-    |                  | Use neg. value to exclude pixels within buffer   |
-    +------------------+--------------------------------------------------+
-    | bndnodata        | List of band in input image to check if pixel is |
-    |                  | valid (used for srcnodata)                       |
-    +------------------+--------------------------------------------------+
-    | mask             | Use the the specified file as a validity mask    |
-    +------------------+--------------------------------------------------+
-    | mskband          | Use the the specified band of the mask file      |
-    |                  | defined                                          |
-    +------------------+--------------------------------------------------+
-    | msknodata        | List of mask values not to extract               |
-    +------------------+--------------------------------------------------+
-    | threshold        | Maximum number of features to extract. Use       |
-    |                  | percentage value as string                       |
-    |                  | (e.g., '10%') or integer value for absolute      |
-    |                  | threshold                                        |
-    +------------------+--------------------------------------------------+
 
     Example:
 
@@ -2739,7 +2659,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         :param output: Name of the output vector dataset in which the zonal
             statistics will be saved
         :param kwargs: See table below
-        :return: A VectorOgr with the same geometry as the sample vector
+        :return: A JimVect with the same geometry as the sample vector
             dataset and an extra field for each of the calculated raster value
             (zonal) statistics. The same layer name(s) of the sample will be
             used for the output vector dataset
@@ -2767,9 +2687,9 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         | co               | Creation option for output vector dataset        |
         +------------------+--------------------------------------------------+
 
-        .. extract_rules:
+        .. _extract_rules:
 
-        :Supported rules to extract:
+        :Supported rules to extract <extract_rules>:
 
         +------------------+--------------------------------------------------+
         | rule             | description                                      |
@@ -2820,10 +2740,10 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             To ignore some pixels from the extraction process, see list
             of :ref:`mask key values <extract_mask>`
 
-        .. extract_mask:
+        .. _extract_mask:
 
         :Supported key values to mask pixels that must be ignored in \
-        the extraction process:
+        the extraction process <extract_mask>:
 
         +------------------+--------------------------------------------------+
         | key              | value                                            |
