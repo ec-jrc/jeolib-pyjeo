@@ -2670,6 +2670,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         +==================+==================================================+
         | copy             | Copy these fields from the sample vector dataset |
         |                  | (default is to copy all fields)                  |
+        |                  | set copy to single field if rule is 'allpoints'  |
         +------------------+--------------------------------------------------+
         | label            | Create extra field named 'label' with this value |
         +------------------+--------------------------------------------------+
@@ -2698,6 +2699,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         |                  | each point feature                               |
         +------------------+--------------------------------------------------+
         | allpoints        | Extract all pixel values covered by the polygon  |
+        |                  | (copy field must be set to one field)            |
         +------------------+--------------------------------------------------+
         | centroid         | Extract pixel value at the centroid of           |
         |                  | the polygon                                      |
@@ -2721,14 +2723,14 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         |                  | the polygon                                      |
         +------------------+--------------------------------------------------+
         | mode             | Extract the mode of classes within the polygon   |
-        |                  | (classes must be set with the option class)      |
+        |                  | (classes must be set with the option classes)    |
         +------------------+--------------------------------------------------+
         | proportion       | Extract proportion of class(es) within           |
         |                  | the polygon                                      |
-        |                  | (classes must be set with the option class)      |
+        |                  | (classes must be set with the option classes)    |
         +------------------+--------------------------------------------------+
         | count            | Extract count of class(es) within the polygon    |
-        |                  | (classes must be set with the option class)      |
+        |                  | (classes must be set with the option classes)    |
         +------------------+--------------------------------------------------+
         | percentile       | Extract percentile as defined by option perc     |
         |                  | (e.g, 95th percentile of values covered by       |
@@ -2756,9 +2758,9 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         | bndnodata        | List of band in input image to check if pixel is |
         |                  | valid (used for srcnodata)                       |
         +------------------+--------------------------------------------------+
-        | mask             | Use the the specified file as a validity mask    |
+        | mask             | Use the specified file as a validity mask        |
         +------------------+--------------------------------------------------+
-        | mskband          | Use the the specified band of the mask file      |
+        | mskband          | Use the specified band of the mask file          |
         |                  | defined                                          |
         +------------------+--------------------------------------------------+
         | msknodata        | List of mask values not to extract               |

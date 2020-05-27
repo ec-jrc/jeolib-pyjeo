@@ -454,8 +454,7 @@ class BadGeometry(unittest.TestCase):
         v = pj.geometry.extract(sample, jim0, rule=['allpoints'],
                                 output=outputfn, oformat='SQLite',
                                 co=['OVERWRITE=YES'],
-                                attribute='label',
-                                classes=[1, 2],
+                                copy='label',
                                 bandname=bandname,
                                 planename=planename, fid='fid')
         v.io.write()
@@ -482,7 +481,7 @@ class BadGeometry(unittest.TestCase):
         v = pj.geometry.extract(sample, jim0, rule=['allpoints'],
                                    output=outputfn, oformat='SQLite',
                                    co=['OVERWRITE=YES'],
-                                   attribute='nuts3id',
+                                   copy='nuts3id',
                                    classes=[53,62],
                                    bandname=bandname,
                                    planename=planename,
@@ -2825,10 +2824,10 @@ class BadGeometryVects(unittest.TestCase):
             'Error in opening layers ' \
             '(feature count opening layers)'
 
-        assert jimv1.np(0).all() == mergedv.np(0).all(), \
+        assert jimv1.np(ln=0).all() == mergedv.np(ln=0).all(), \
             'Error in geometry.merge() layer 0' \
 
-        assert jimv1.np(1).all() == mergedv.np(1).all(), \
+        assert jimv1.np(ln=1).all() == mergedv.np(ln=1).all(), \
             'Error in geometry.merge() layer 1' \
 
         nfeatures23 = nfeatures2 + nfeatures3
@@ -2836,8 +2835,8 @@ class BadGeometryVects(unittest.TestCase):
             'Error in geometry.merge() ' \
             '(feature count merge)'
 
-        assert np.append(jimv2.np(0), jimv3.np(0), axis=0).all() == \
-            np.append(jimv1.np(0), jimv1.np(1), axis=0).all(), \
+        assert np.append(jimv2.np(ln=0), jimv3.np(ln=0), axis=0).all() == \
+            np.append(jimv1.np(ln=0), jimv1.np(ln=1), axis=0).all(), \
             'Error in geometry.merge() ' \
             '(append)'
 
