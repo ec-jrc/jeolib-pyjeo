@@ -767,6 +767,7 @@ def join(jvec1,
     kwargs.update({'output': output})
     if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
         avect = jvec1._jipjimvect.join(jvec2._jipjimvect, kwargs)
+        avect.write()
         pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
@@ -2897,6 +2898,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         kwargs.update({'output': non_existing_path})
         if isinstance(jvec2, _pj.JimVect):
             avect = self._jim_vect._jipjimvect.join(jvec2._jipjimvect, kwargs)
+            avect.write()
             self._jim_vect._set(avect)
         else:
             raise TypeError('Error: can only join two JimVect objects')
