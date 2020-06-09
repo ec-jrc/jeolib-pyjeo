@@ -2868,8 +2868,8 @@ class BadGeometryVects(unittest.TestCase):
             print("Error: join OUTER_RIGHT feature count v1, v2, and v3")
 
     @staticmethod
-    def test_merge():
-        """Test the merge methods."""
+    def test_append():
+        """Test the append methods."""
         jimv1 = pj.JimVect(nutsfn)
         nfeatures1 = jimv1.properties.getFeatureCount()
 
@@ -2882,37 +2882,37 @@ class BadGeometryVects(unittest.TestCase):
         non_existing_path = pj._get_random_path()
         non_existing_path = os.path.join('/vsimem',
                                          os.path.basename(non_existing_path))
-        mergedv = pj.geometry.merge(jimv2, jimv3, non_existing_path,
+        appended = pj.geometry.append(jimv2, jimv3, non_existing_path,
                                     co=['OVERWRITE=YES'])
 
         assert nfeatures1 == nfeatures2 + nfeatures3, \
             'Error in opening layers ' \
             '(feature count opening layers)'
 
-        assert jimv1.np(ln=0).all() == mergedv.np(ln=0).all(), \
-            'Error in geometry.merge() layer 0' \
+        assert jimv1.np(ln=0).all() == appended.np(ln=0).all(), \
+            'Error in geometry.append() layer 0' \
 
-        assert jimv1.np(ln=1).all() == mergedv.np(ln=1).all(), \
-            'Error in geometry.merge() layer 1' \
+        assert jimv1.np(ln=1).all() == appended.np(ln=1).all(), \
+            'Error in geometry.append() layer 1' \
 
         nfeatures23 = nfeatures2 + nfeatures3
-        assert mergedv.properties.getFeatureCount() == nfeatures23, \
-            'Error in geometry.merge() ' \
-            '(feature count merge)'
+        assert appended.properties.getFeatureCount() == nfeatures23, \
+            'Error in geometry.append() ' \
+            '(feature count append)'
 
         assert np.append(jimv2.np(ln=0), jimv3.np(ln=0), axis=0).all() == \
             np.append(jimv1.np(ln=0), jimv1.np(ln=1), axis=0).all(), \
-            'Error in geometry.merge() ' \
+            'Error in geometry.append() ' \
             '(append)'
 
-        jimv2.geometry.merge(jimv3)
+        jimv2.geometry.append(jimv3)
 
-        assert mergedv.np().all() == jimv2.np().all(), \
-            'Error in geometry.merge() ' \
+        assert appended.np().all() == jimv2.np().all(), \
+            'Error in geometry.append() ' \
             '(function is not equal to method)'
 
         non_existing_path = pj._get_random_path()
-        mergedv.io.write(non_existing_path)
+        appended.io.write(non_existing_path)
         os.remove(non_existing_path)
 
         # Test wrong calls
@@ -2920,25 +2920,25 @@ class BadGeometryVects(unittest.TestCase):
         jim_raster = pj.Jim(tiles[0])
 
         try:
-            _ = pj.geometry.merge(jimv1, jim_raster,
+            _ = pj.geometry.append(jimv1, jim_raster,
                                   output=pj._get_random_path())
             raised = False
         except TypeError:
             raised = True
 
         assert raised, \
-            'Error in catching a call of geometry.merge(JimVect, Jim) ' \
+            'Error in catching a call of geometry.append(JimVect, Jim) ' \
             'function where one of arguments is not an instance of a JimVect ' \
             'object'
 
         try:
-            jimv1.geometry.merge(jim_raster)
+            jimv1.geometry.append(jim_raster)
             raised = False
         except TypeError:
             raised = True
 
         assert raised, \
-            'Error in catching a call of geometry.merge(JimVect, Jim) ' \
+            'Error in catching a call of geometry.append(JimVect, Jim) ' \
             'method where one of arguments is not an instance of a JimVect ' \
             'object'
 

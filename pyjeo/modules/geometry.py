@@ -801,22 +801,22 @@ def magnify(jim_object,
         return _pj.Jim(jim_object._jipjim.imageMagnify(n))
 
 
-def merge(jvec1,
+def append(jvec1,
           jvec2,
           output: str,
           **kwargs):
-    """Merge JimVect object with another JimVect object.
+    """Append JimVect object with another JimVect object.
 
-    :param jvec1: first JimVect object to merge
-    :param jvec2: second JimVect object to merge
+    :param jvec1: first JimVect object to append
+    :param jvec2: second JimVect object to append
     :param output: output filename of JimVect object that is returned.
         Use /vsimem for in memory vectors
 
-    Example: merge two vectors
+    Example: append two vectors
 
       v1 = pj.JimVect('/path/to/vector1.sqlite')
       v2 = pj.JimVect('/path/to/vector2.sqlite')
-      v3 = pj.geometry.merge(
+      v3 = pj.geometry.append(
           v1, v2, '/tmp/test.sqlite', oformat='SQLite',
           co=['OVERWRITE=YES'])
     """
@@ -827,7 +827,7 @@ def merge(jvec1,
         pjvect._set(avect)
         return pjvect
     else:
-        raise TypeError('Error: can only merge two JimVect objects')
+        raise TypeError('Error: can only append two JimVect objects')
 
 
 def plane2band(jim):
@@ -2903,21 +2903,21 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         else:
             raise TypeError('Error: can only join two JimVect objects')
 
-    def merge(self,
+    def append(self,
               jvec,
               **kwargs):
-        """Merge JimVect object with another JimVect object.
+        """Append JimVect object with another JimVect object.
 
-        :param jvec: JimVect object to merge
+        :param jvec: JimVect object to append
         :param kwargs: See table below
         :return: joined JimVect object
 
         Modifies the instance on which the method was called.
 
-        Example: merge two vectors::
+        Example: append two vectors::
 
           v1 = pj.JimVect('/path/to/vector1.sqlite')
-          mergedv1.geometry.merge(v2, '/path/to/merged.sqlite')
+          appendedv1.geometry.append(v2, '/path/to/appended.sqlite')
         """
         non_existing_path = _pj._get_random_path()
         non_existing_path = os.path.join('/vsimem',
@@ -2927,4 +2927,4 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             avect = self._jim_vect._jipjimvect.merge(jvec._jipjimvect, kwargs)
             self._jim_vect._set(avect)
         else:
-            raise TypeError('Error: can only merge two JimVect objects')
+            raise TypeError('Error: can only append two JimVect objects')
