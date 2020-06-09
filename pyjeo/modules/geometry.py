@@ -7,23 +7,34 @@ import warnings as _warnings
 import pyjeo as _pj
 
 
-# def append(jvec1, jvec2, output, **kwargs):
-#     """Append JimVect object with another JimVect object.
+def append(jvec1,
+           jvec2,
+           output: str,
+           **kwargs):
+    """Append JimVect object with another JimVect object.
 
-#     :param jvec1: first JimVect
-#     :param jvec2: second JimVect to append
-#     :param output: output filename of JimVect object that is returned.
-#         Use /vsimem for in memory vectors
-#     :param oformat: output vector dataset format
-#     """
-#     kwargs.update({'output': output})
-#     if isinstance(jvec2, _pj.JimVect):
-#         avect = _pj.JimVect(jvec1, **kwargs)
-#         avect._jipjimvect.append(jvec2._jipjimvect)
-#         return _pj.JimVect(avect)
-#     else:
-#         raise TypeError('Error: can only join with JimVect object')
+    :param jvec1: first JimVect object to append
+    :param jvec2: second JimVect object to append
+    :param output: output filename of JimVect object that is returned.
+        Use /vsimem for in memory vectors
 
+    Example: append two vectors
+
+      v1 = pj.JimVect('/path/to/vector1.sqlite')
+      v2 = pj.JimVect('/path/to/vector2.sqlite')
+      v3 = pj.geometry.append(
+          v1, v2, '/tmp/test.sqlite', oformat='SQLite',
+          co=['OVERWRITE=YES'])
+    """
+    kwargs.update({'output': output})
+    if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
+        avect = jvec1._jipjimvect.merge(jvec2._jipjimvect, kwargs)
+        avect.write()
+        pjvect = _pj.JimVect()
+        pjvect._set(avect)
+        return pjvect
+    else:
+        raise TypeError('Error: can only append two JimVect objects')
 
 def band2plane(jim):
     """Convert 2-dimensional multi-band object to a 3-dimensional.
@@ -799,35 +810,6 @@ def magnify(jim_object,
         return ret_jim
     else:
         return _pj.Jim(jim_object._jipjim.imageMagnify(n))
-
-
-def append(jvec1,
-          jvec2,
-          output: str,
-          **kwargs):
-    """Append JimVect object with another JimVect object.
-
-    :param jvec1: first JimVect object to append
-    :param jvec2: second JimVect object to append
-    :param output: output filename of JimVect object that is returned.
-        Use /vsimem for in memory vectors
-
-    Example: append two vectors
-
-      v1 = pj.JimVect('/path/to/vector1.sqlite')
-      v2 = pj.JimVect('/path/to/vector2.sqlite')
-      v3 = pj.geometry.append(
-          v1, v2, '/tmp/test.sqlite', oformat='SQLite',
-          co=['OVERWRITE=YES'])
-    """
-    kwargs.update({'output': output})
-    if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
-        avect = jvec1._jipjimvect.merge(jvec2._jipjimvect, kwargs)
-        pjvect = _pj.JimVect()
-        pjvect._set(avect)
-        return pjvect
-    else:
-        raise TypeError('Error: can only append two JimVect objects')
 
 
 def plane2band(jim):
@@ -2612,18 +2594,32 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
                     caller):
         self._jim_vect = caller
 
-    # def append(self, jvec):
-    #     """Append JimVect object with another JimVect object.
+    def append(self,
+              jvec,
+              **kwargs):
+        """Append JimVect object with another JimVect object.
 
-    #     :param jvec: JimVect object to append
-    #     """
-    #     if isinstance(jvec, _pj.JimVect):
-    #         self._jim_vect._jipjimvect.append(jvec._jipjimvect)
-    #         # return pjvect
-    #         # return _pj.JimVect(
-    #               # self._jim_vect._jipjimvect.join(jvec._jipjimvect,kwargs))
-    #     else:
-    #         raise TypeError('Error: can only join with JimVect object')
+        :param jvec: JimVect object to append
+        :param kwargs: See table below
+        :return: joined JimVect object
+
+        Modifies the instance on which the method was called.
+
+        Example: append two vectors::
+
+          v1 = pj.JimVect('/path/to/vector1.sqlite')
+          appendedv1.geometry.append(v2, '/path/to/appended.sqlite')
+        """
+        non_existing_path = _pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',
+                                         os.path.basename(non_existing_path))
+        kwargs.update({'output': non_existing_path})
+        if isinstance(jvec, _pj.JimVect):
+            avect = self._jim_vect._jipjimvect.merge(jvec._jipjimvect, kwargs)
+            avect.write()
+            self._jim_vect._set(avect)
+        else:
+            raise TypeError('Error: can only append two JimVect objects')
 
     def convexHull(self,
                    **kwargs):
@@ -2903,28 +2899,3 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         else:
             raise TypeError('Error: can only join two JimVect objects')
 
-    def append(self,
-              jvec,
-              **kwargs):
-        """Append JimVect object with another JimVect object.
-
-        :param jvec: JimVect object to append
-        :param kwargs: See table below
-        :return: joined JimVect object
-
-        Modifies the instance on which the method was called.
-
-        Example: append two vectors::
-
-          v1 = pj.JimVect('/path/to/vector1.sqlite')
-          appendedv1.geometry.append(v2, '/path/to/appended.sqlite')
-        """
-        non_existing_path = _pj._get_random_path()
-        non_existing_path = os.path.join('/vsimem',
-                                         os.path.basename(non_existing_path))
-        kwargs.update({'output': non_existing_path})
-        if isinstance(jvec, _pj.JimVect):
-            avect = self._jim_vect._jipjimvect.merge(jvec._jipjimvect, kwargs)
-            self._jim_vect._set(avect)
-        else:
-            raise TypeError('Error: can only append two JimVect objects')
