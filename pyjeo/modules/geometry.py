@@ -443,6 +443,7 @@ def extract(jvec,
         avect = jim._jipjim.extractImg(jvec._jipjim, kwargs)
     else:
         raise TypeError('Error: sample to extract must be either JimVect or Jim')
+    avect.write()
     pjvect._set(avect)
     return pjvect
 
@@ -2796,10 +2797,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             classes = kwargs.pop('classes')
             kwargs['class'] = classes
 
-        pjvect = _pj.JimVect()
         if isinstance(jim, _pj.Jim):
             avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect, kwargs)
-            pjvect._set(avect)
         elif isinstance(jim, _pj.JimList):
             bandname = kwargs.pop('bandname', None)
             #todo: support multi-band images in JimList...
@@ -2811,6 +2810,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             avect = jim._jipjimlist.extractOgr(self._jim_vect._jipjimvect, kwargs)
         else:
             raise TypeError('Error: extract must operate on Jim or JimList')
+        avect.write()
         self._jim_vect._set(avect)
 
     def intersect(self,
