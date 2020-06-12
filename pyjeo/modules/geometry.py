@@ -359,9 +359,6 @@ def extract(jvec,
     | classes          | Only when overlaying Jim thematic raster dataset |
     |                  | dataset.                                         |
     +------------------+--------------------------------------------------+
-    | fid              | Create extra field named 'fid' with this field   |
-    |                  | identifier (sequence of features)                |
-    +------------------+--------------------------------------------------+
     | bandname         | List of band names corresponding to list of      |
     |                  | bands to extract                                 |
     +------------------+--------------------------------------------------+
@@ -1175,9 +1172,6 @@ def sample(jim,
     |                  | features (in geometric units of raster dataset)  |
     +------------------+--------------------------------------------------+
     | label            | Create extra field named 'label' with this value |
-    +------------------+--------------------------------------------------+
-    | fid              | Create extra field named 'fid' with this field   |
-    |                  | identifier (sequence of features)                |
     +------------------+--------------------------------------------------+
     | band             | List of bands to extract (0 indexed). Default is |
     |                  | to use extract all bands                         |
@@ -2669,11 +2663,6 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         | copy             | Copy these fields from the sample vector dataset |
         |                  | (default is to copy all fields)                  |
         |                  | set copy to single field if rule is 'allpoints'  |
-        +------------------+--------------------------------------------------+
-        | label            | Create extra field named 'label' with this value |
-        +------------------+--------------------------------------------------+
-        | fid              | Create extra field named 'fid' with this field   |
-        |                  | identifier (sequence of features)                |
         +------------------+--------------------------------------------------+
         | bandname         | List of band names corresponding to list of      |
         |                  | bands to extract                                 |
