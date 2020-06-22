@@ -438,29 +438,6 @@ class BadPixOps(unittest.TestCase):
             '(Results not equal)'
 
 
-class BadPixOpsLists(unittest.TestCase):
-    """Test JimList functions and methods from pixops modules."""
-
-    @staticmethod
-    def test_composite():
-        """Test composite() function."""
-        jim1 = pj.Jim(tiles[0])
-        jim2 = pj.Jim(tiles[1])
-        jim3 = pj.Jim(tiles[0][:-8] + 'nir' + tiles[0][-5] + '.tif')
-        jiml1 = pj.JimList([jim1, jim2])
-        jiml2 = pj.JimList([jim1, jim3])
-
-        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
-        comp1 = pj.pixops.composite(jiml1)
-        comp2 = jiml1.pixops.composite()
-        comp3 = jiml2.pixops.composite()
-        comp4 = jiml1.pixops.composite(otype='Byte')
-
-        assert comp1.properties.isEqual(comp2)
-        assert not comp1.properties.isEqual(comp3)
-        assert not comp2.properties.isEqual(comp4)
-
-
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
