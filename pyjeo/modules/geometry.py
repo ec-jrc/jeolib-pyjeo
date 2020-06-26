@@ -960,7 +960,7 @@ def rasterize(jim_object,
 
 
 def reducePlane(jim,
-                rule: str = 'overwrite',
+                rule='overwrite',
                 ref_band: int = None,
                 nodata: float = None):
     """Reduce planes of Jim object.
@@ -2128,7 +2128,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_rasterizeBuf(jim_vect._jipjimvect, kwargs)
 
     def reducePlane(self,
-                    rule: str = 'overwrite',
+                    rule='overwrite',
                     ref_band: int = None,
                     nodata: float = None):
         """Reduce planes of Jim object.
@@ -2332,7 +2332,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         self._jim_object._set(jimreduced._jipjim)
 
     def _reducePlaneSimple(self,
-                           rule: str):
+                           rule):
         """Reduce planes of Jim object using callback function without nodata.
 
         (for performance reasons)
