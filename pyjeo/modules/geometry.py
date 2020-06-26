@@ -1070,12 +1070,15 @@ def reducePlane(jim,
         else:
             if rule == 'max':
                 def rule(reduced, plane):
+                    """Rule for max."""
                     return reduced < plane
             elif rule == 'min':
                 def rule(reduced, plane):
+                    """Rule for min."""
                     return reduced > plane
             elif rule == 'overwrite':
                 def rule(reduced, plane):
+                    """Rule for overwrite."""
                     return _pj.pixops.setData(plane, 1)
             else:
                 raise AttributeError(
@@ -2255,12 +2258,15 @@ class _Geometry(_pj.modules.JimModuleBase):
             else:
                 if rule == 'max':
                     def rule(reduced, plane):
+                        """Rule for max."""
                         return reduced < plane
                 elif rule == 'min':
                     def rule(reduced, plane):
+                        """Rule for min."""
                         return reduced > plane
                 elif rule == 'overwrite':
                     def rule(reduced, plane):
+                        """Rule for overwrite."""
                         return _pj.pixops.setData(plane, 1)
                 else:
                     raise AttributeError('Error: rule not supported')
@@ -2358,9 +2364,11 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         if rule == 'max':
             def rule(reduced, plane):
+                """Rule for max."""
                 return _pj.pixops.supremum(reduced, plane)
         elif rule == 'min':
             def rule(reduced, plane):
+                """Rule for min."""
                 return _pj.pixops.infimum(reduced, plane)
         jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
         for iplane in range(1, self._jim_object.properties.nrOfPlane()):
