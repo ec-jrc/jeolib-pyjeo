@@ -8,7 +8,7 @@ JRC Ispra.
 ## License
 
 pyJEO is released under an
-[EUPL](https://joinup.ec.europa.eu/collection/eupl) license (see
+[GPLv3](http://www.gnu.org/licenses/gpl-3.0.html) license (see
 [LICENSE.txt](LICENSE.txt))
 
 ## Dependencies
