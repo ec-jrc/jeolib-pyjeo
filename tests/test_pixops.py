@@ -442,6 +442,5 @@ def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
     if not loader:
         loader = unittest.TestLoader()
-    suite_list = [loader.loadTestsFromTestCase(BadPixOps),
-                  loader.loadTestsFromTestCase(BadPixOpsLists)]
+    suite_list = [loader.loadTestsFromTestCase(BadPixOps)]
     return unittest.TestSuite(suite_list)
