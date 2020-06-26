@@ -2487,14 +2487,6 @@ class _Geometry(_pj.modules.JimModuleBase):
 class _GeometryList(_pj.modules.JimListModuleBase):
     """Define all Geometry methods for JimLists."""
 
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self,
-                    caller):
-        self._jim_list = caller
-
     def stackBand(self,
                   jim_other=None,
                   band: int = None):
@@ -2580,14 +2572,6 @@ class _GeometryList(_pj.modules.JimListModuleBase):
 
 class _GeometryVect(_pj.modules.JimVectModuleBase):
     """Define all Geometry methods for JimVects."""
-
-    def __init__(self):
-        """Initialize the module."""
-        pass
-
-    def _set_caller(self,
-                    caller):
-        self._jim_vect = caller
 
     def append(self,
               jvec,
