@@ -315,8 +315,8 @@ class BadPropsVects(unittest.TestCase):
             'Error in function properties.isEqual(): \
             layer milano should be different from lodi'
 
-        jimv1_double = pj.geometry.merge(jimv1, jimv1,
-                                         output=pj._get_random_path())
+        jimv1_double = pj.geometry.append(jimv1, jimv1,
+                                          output=pj._get_random_path())
 
         assert not jimv1_double.properties.isEqual(jimv1), \
             'Error in properties.isEqual() method ' \
