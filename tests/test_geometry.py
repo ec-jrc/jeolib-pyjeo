@@ -188,7 +188,7 @@ class BadGeometry(unittest.TestCase):
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         jim1 = pj.Jim(rasterfn, band=[2, 3])
         jim0.geometry.stackPlane(jim1)
-        jim0_2 = pj.Jim (jim0)
+        jim0_2 = pj.Jim(jim0)
 
         orig_proj = jim0.properties.getProjection()
 
@@ -239,7 +239,8 @@ class BadGeometry(unittest.TestCase):
         """Test the extract method looping over bands using join function."""
         jim0 = pj.Jim(rasterfn)
         sample = pj.JimVect(vectorfn)
-        sampleid = pj.JimVect(sample,output='/vsimem/sampleid',newfield='fid', co=['OVERWRITE=YES'])
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
 
         nband = jim0.properties.nrOfBand()
@@ -261,7 +262,8 @@ class BadGeometry(unittest.TestCase):
                 v2 = pj.geometry.extract(sampleid,
                                          jl0, rule='mean',
                                          output='/vsimem/v2.sqlite',
-                                         oformat='SQLite', co=['OVERWRITE=YES'],
+                                         oformat='SQLite',
+                                         co=['OVERWRITE=YES'],
                                          bandname=bandname)
                 v = pj.geometry.join(v1, v2, output=outputfn, oformat='SQLite',
                                      co=['OVERWRITE=YES'], key=['fid'])
@@ -282,7 +284,8 @@ class BadGeometry(unittest.TestCase):
         """Test the extractOgr method for list with multibands."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
-        sampleid = pj.JimVect(sample,output='/vsimem/sampleid',newfield='fid', co=['OVERWRITE=YES'])
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
         jl0 = pj.JimList([jim0])
 
@@ -316,7 +319,8 @@ class BadGeometry(unittest.TestCase):
         """Test the extractOgr method for jim with multibands."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
-        sampleid = pj.JimVect(sample,output='/vsimem/sampleid',newfield='fid', co=['OVERWRITE=YES'])
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
 
         nband = jim0.properties.nrOfBand()
@@ -361,7 +365,8 @@ class BadGeometry(unittest.TestCase):
         """Test the extractOgr method for multiplanes."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
-        sampleid = pj.JimVect(sample,output='/vsimem/sampleid',newfield='fid', co=['OVERWRITE=YES'])
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
 
         nband = jim0.properties.nrOfBand()
@@ -396,7 +401,8 @@ class BadGeometry(unittest.TestCase):
     def test_extract_band_plane():
         """Test the extract method for multiband multiplanes."""
         sample = pj.JimVect(vectorfn)
-        sampleid = pj.JimVect(sample,output='/vsimem/sampleid',newfield='fid', co=['OVERWRITE=YES'])
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         jim1 = pj.Jim(rasterfn, band=[6, 7])
@@ -437,7 +443,8 @@ class BadGeometry(unittest.TestCase):
     def test_extract_allpoints():
         """Test the extract method for allpoints."""
         sample = pj.JimVect(vectorfn)
-        sampleid = pj.JimVect(sample,output='/vsimem/sampleid1',newfield='fid', co=['OVERWRITE=YES'])
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid1',
+                              newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         jim1 = pj.Jim(rasterfn, band=[6, 7])
@@ -470,7 +477,8 @@ class BadGeometry(unittest.TestCase):
         os.remove(outputfn)
 
         sample = pj.JimVect(nutsfn)
-        sampleid = pj.JimVect(sample,output='/vsimem/sampleid2',newfield='fid', co=['OVERWRITE=YES'])
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid2',
+                              newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
         planename = []
         bandname = []
@@ -482,10 +490,10 @@ class BadGeometry(unittest.TestCase):
                                 output=outputfn, oformat='SQLite',
                                 co=['OVERWRITE=YES'],
                                 copy='nuts3id',
-                                classes=[53,62],
+                                classes=[53, 62],
                                 bandname=bandname,
                                 planename=planename,
-                                threshold=[10,10])
+                                threshold=[10, 10])
 
         field_names = v.properties.getFieldNames()
 
@@ -500,22 +508,22 @@ class BadGeometry(unittest.TestCase):
     @staticmethod
     def test_extract_image():
         """Test the extract method for thematic reference."""
-        jim0 = pj.Jim(rasterfn, band=[0,1,2,3])
+        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3])
         jim0.geometry.warp('epsg:32632')
-        reference=pj.Jim(clc, dx=500, dy=500)
-        bbox=reference.properties.getBBox()
-        jim0.geometry.crop(ulx=bbox[0],uly=bbox[1],lrx=bbox[2],lry=bbox[3])
+        reference = pj.Jim(clc, dx=500, dy=500)
+        bbox = reference.properties.getBBox()
+        jim0.geometry.crop(ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
 
-        classes=[2,12,25,41,50]
-        thresholds=[20,20,20,20,20]
+        classes = [2, 12, 25, 41, 50]
+        thresholds = [20, 20, 20, 20, 20]
 
-        v=pj.geometry.extract(reference, jim0, srcnodata=[0],
-                              rule='mean',
-                              output=outputfn,
-                              classes=classes,
-                              threshold=thresholds,
-                              bandname=['B02','B03','B04','B08'],
-                              co=['OVERWRITE=YES'])
+        v = pj.geometry.extract(reference, jim0, srcnodata=[0],
+                                rule='mean',
+                                output=outputfn,
+                                classes=classes,
+                                threshold=thresholds,
+                                bandname=['B02', 'B03', 'B04', 'B08'],
+                                co=['OVERWRITE=YES'])
 
         assert v.properties.getFeatureCount() == 80, \
             'Error in extract method for thematic reference: feature count'
@@ -2406,8 +2414,8 @@ class BadGeometryLists(unittest.TestCase):
             'first Jim contained)'
         assert (stacked.np(1) == jim2.np(1)).all(), \
             'Error in geometry.stackBand(JimList, band=band) ' \
-            '(band x not corresponding to the specified band of the x-th Jim ' \
-            'contained for x > 1)'
+            '(band x not corresponding to the specified band of the x-th Jim' \
+            ' contained for x > 1)'
 
         # Test stacking bands of two JimLists
         stacked = pj.geometry.stackBand(jiml, jiml)
@@ -2716,7 +2724,8 @@ class BadGeometryVects(unittest.TestCase):
     def test_join():
         """Test the join() function and method."""
         jimv = pj.JimVect(vectorfn)
-        jimvid = pj.JimVect(jimv,output='/vsimem/jimvid',newfield='fid', co=['OVERWRITE=YES'])
+        jimvid = pj.JimVect(jimv, output='/vsimem/jimvid', newfield='fid',
+                            co=['OVERWRITE=YES'])
         jimv.io.close()
         jimr = pj.Jim(rasterfn, band=[0, 1])
 
@@ -2794,68 +2803,68 @@ class BadGeometryVects(unittest.TestCase):
         os.remove(non_existing_path1)
         os.remove(non_existing_path_joined)
 
-        #OUTER_FULL
+        # OUTER_FULL
         v1 = pj.JimVect('tests/data/v1.json')
         v2 = pj.JimVect('tests/data/v2.json')
         v3 = pj.JimVect('tests/data/v3.json')
 
-        v1.geometry.join(v2,key=['fid'],method='OUTER_FULL')
-        assert len(v1.properties.getFieldNames()) == 3 ,\
+        v1.geometry.join(v2, key=['fid'], method='OUTER_FULL')
+        assert len(v1.properties.getFieldNames()) == 3, \
             print("Error: join OUTER_FULL field count v1 v2")
-        assert v1.properties.getFeatureCount() == 5 ,\
+        assert v1.properties.getFeatureCount() == 5, \
             print("Error: join OUTER_FULL feature count v1 v2")
-        v1.geometry.join(v3,key=['fid'],method='OUTER_FULL')
-        assert len(v1.properties.getFieldNames()) == 4 ,\
+        v1.geometry.join(v3, key=['fid'], method='OUTER_FULL')
+        assert len(v1.properties.getFieldNames()) == 4, \
             print("Error: join OUTER_FULL field count v1, v2, and v3")
-        assert v1.properties.getFeatureCount() == 6 ,\
+        assert v1.properties.getFeatureCount() == 6, \
             print("Error: join OUTER_FULL feature count v1, v2, and v3")
 
-        #INNER
+        # INNER
         v1 = pj.JimVect('tests/data/v1.json')
         v2 = pj.JimVect('tests/data/v2.json')
         v3 = pj.JimVect('tests/data/v3.json')
 
-        v1.geometry.join(v2,key=['fid'],method='INNER')
-        assert len(v1.properties.getFieldNames()) == 3 ,\
+        v1.geometry.join(v2, key=['fid'], method='INNER')
+        assert len(v1.properties.getFieldNames()) == 3, \
             print("Error: join OUTER_FULL field count v1 v2")
-        assert v1.properties.getFeatureCount() == 3 ,\
+        assert v1.properties.getFeatureCount() == 3, \
             print("Error: join INNER feature count v1 v2")
-        v1.geometry.join(v3,key=['fid'],method='INNER')
-        assert len(v1.properties.getFieldNames()) == 4 ,\
+        v1.geometry.join(v3, key=['fid'], method='INNER')
+        assert len(v1.properties.getFieldNames()) == 4, \
             print("Error: join OUTER_FULL field count v1, v2, and v3")
-        assert v1.properties.getFeatureCount() == 3 ,\
+        assert v1.properties.getFeatureCount() == 3, \
             print("Error: join INNER feature count v1, v2, and v3")
 
-        #OUTER_LEFT
+        # OUTER_LEFT
         v1 = pj.JimVect('tests/data/v1.json')
         v2 = pj.JimVect('tests/data/v2.json')
         v3 = pj.JimVect('tests/data/v3.json')
 
-        v1.geometry.join(v2,key=['fid'],method='OUTER_LEFT')
-        assert len(v1.properties.getFieldNames()) == 3 ,\
+        v1.geometry.join(v2, key=['fid'], method='OUTER_LEFT')
+        assert len(v1.properties.getFieldNames()) == 3, \
             print("Error: join OUTER_FULL field count v1 v2")
-        assert v1.properties.getFeatureCount() == 4 ,\
+        assert v1.properties.getFeatureCount() == 4, \
             print("Error: join OUTER_LEFT feature count v1 v2")
-        v1.geometry.join(v3,key=['fid'],method='OUTER_LEFT')
-        assert len(v1.properties.getFieldNames()) == 4 ,\
+        v1.geometry.join(v3, key=['fid'], method='OUTER_LEFT')
+        assert len(v1.properties.getFieldNames()) == 4, \
             print("Error: join OUTER_FULL field count v1, v2, and v3")
-        assert v1.properties.getFeatureCount() == 4 ,\
+        assert v1.properties.getFeatureCount() == 4, \
             print("Error: join OUTER_LEFT feature count v1, v2, and v3")
 
-        #OUTER_RIGHT
+        # OUTER_RIGHT
         v1 = pj.JimVect('tests/data/v1.json')
         v2 = pj.JimVect('tests/data/v2.json')
         v3 = pj.JimVect('tests/data/v3.json')
 
-        v1.geometry.join(v2,key=['fid'],method='OUTER_RIGHT')
-        assert len(v1.properties.getFieldNames()) == 3 ,\
+        v1.geometry.join(v2, key=['fid'], method='OUTER_RIGHT')
+        assert len(v1.properties.getFieldNames()) == 3, \
             print("Error: join OUTER_FULL field count v1 v2")
-        assert v1.properties.getFeatureCount() == 4 ,\
+        assert v1.properties.getFeatureCount() == 4, \
             print("Error: join OUTER_RIGHT feature count v1 v2")
-        v1.geometry.join(v3,key=['fid'],method='OUTER_RIGHT')
-        assert len(v1.properties.getFieldNames()) == 4 ,\
+        v1.geometry.join(v3, key=['fid'], method='OUTER_RIGHT')
+        assert len(v1.properties.getFieldNames()) == 4, \
             print("Error: join OUTER_FULL field count v1, v2, and v3")
-        assert v1.properties.getFeatureCount() == 4 ,\
+        assert v1.properties.getFeatureCount() == 4, \
             print("Error: join OUTER_RIGHT feature count v1, v2, and v3")
 
     @staticmethod
@@ -2874,7 +2883,7 @@ class BadGeometryVects(unittest.TestCase):
         non_existing_path = os.path.join('/vsimem',
                                          os.path.basename(non_existing_path))
         appended = pj.geometry.append(jimv2, jimv3, non_existing_path,
-                                    co=['OVERWRITE=YES'])
+                                      co=['OVERWRITE=YES'])
 
         assert nfeatures1 == nfeatures2 + nfeatures3, \
             'Error in opening layers ' \
@@ -2912,15 +2921,15 @@ class BadGeometryVects(unittest.TestCase):
 
         try:
             _ = pj.geometry.append(jimv1, jim_raster,
-                                  output=pj._get_random_path())
+                                   output=pj._get_random_path())
             raised = False
         except TypeError:
             raised = True
 
         assert raised, \
             'Error in catching a call of geometry.append(JimVect, Jim) ' \
-            'function where one of arguments is not an instance of a JimVect ' \
-            'object'
+            'function where one of arguments is not an instance of a JimVect' \
+            ' object'
 
         try:
             jimv1.geometry.append(jim_raster)
@@ -2941,7 +2950,7 @@ class BadGeometryVects(unittest.TestCase):
     def test_sample():
         """Test the sample function."""
 
-        jim0 = pj.Jim(rasterfn, band=[0,1,2,3])
+        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3])
         v = pj.geometry.sample(jim0, random=100, buffer=100, rule=['mean'],
                                output='mem01', oformat='Memory')
         assert v.np().shape == (100, jim0.properties.nrOfBand())

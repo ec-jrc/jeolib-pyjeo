@@ -36,6 +36,7 @@ def append(jvec1,
     else:
         raise TypeError('Error: can only append two JimVect objects')
 
+
 def band2plane(jim):
     """Convert 2-dimensional multi-band object to a 3-dimensional.
 
@@ -395,26 +396,29 @@ def extract(jvec,
     Only sample classes 2 (urban), 12 (agriculture), 25 (forest),
     41 (water) and an aggregated (rest) class 50::
 
-        reference=pj.Jim('/path/to/landcovermap.tif')
+        reference = pj.Jim('/path/to/landcovermap.tif')
 
-        classes=[2,12,25,41,50]
-        thresholds=['20%','25%','25%','10%','5%']
+        classes = [2, 12, 25, 41, 50]
+        thresholds = ['20%', '25%', '25%', '10%', '5%']
 
-        jim=pj.Jim('/path/to/s2_multiband.tif')
+        jim = pj.Jim('/path/to/s2_multiband.tif')
 
-        outputfn='/path/to/output.sqlite'
-        sample=pj.geometry.extract(jim, reference, srcnodata=[0],
-                                    output=outputfn,
-                                    classes=classes,
-                                    threshold=thresholds,
-                                    bandname=['B02','B03','B04','B08'])
+        outputfn = '/path/to/output.sqlite'
+        sample = pj.geometry.extract(jim,
+                                     reference,
+                                     srcnodata=[0],
+                                     output=outputfn,
+                                     classes=classes,
+                                     threshold=thresholds,
+                                     bandname=['B02', 'B03', 'B04', 'B08'])
     """
     kwargs.update({'output': output})
     if 'threshold' in kwargs:
         if kwargs['threshold'] is not None:
-            if not isinstance(kwargs['threshold'],list):
-                kwargs['threshold']=[kwargs['threshold']]
-            kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+            if not isinstance(kwargs['threshold'], list):
+                kwargs['threshold'] = [kwargs['threshold']]
+            kwargs['threshold'] = [float(t.strip('%')) if isinstance(
+                t, str) else -t for t in kwargs['threshold']]
 
     if 'classes' in kwargs:
         classes = kwargs.pop('classes')
@@ -433,13 +437,14 @@ def extract(jvec,
                     't'+str(ifile) for ifile in range(0, len(jim._jim_list))]
             kwargs.update({'bandname': bandname})
 
-            avect = jim._jipjimlist.extractOgr(jvec._jipjimvect, kwargs)
+            avect = jim._jipjimlist.extractOgr(jvec._jipjimvect,
+                                               kwargs)
         else:
             raise TypeError('Error: extract must operate on Jim or JimList')
     elif isinstance(jvec, _pj.Jim):
         avect = jim._jipjim.extractImg(jvec._jipjim, kwargs)
     else:
-        raise TypeError('Error: sample to extract must be either JimVect or Jim')
+        raise TypeError('sample to extract must be either JimVect or Jim')
     avect.write()
     pjvect._set(avect)
     return pjvect
@@ -1227,6 +1232,7 @@ def sample(jim,
     pjvect = _pj.JimVect()
     pjvect._set(jim._jipjim.extractSample(kwargs))
     return pjvect
+
 
 def stackBand(jim_object,
               jim_other=None,
@@ -2574,8 +2580,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
     """Define all Geometry methods for JimVects."""
 
     def append(self,
-              jvec,
-              **kwargs):
+               jvec,
+               **kwargs):
         """Append JimVect object with another JimVect object.
 
         :param jvec: JimVect object to append
@@ -2629,7 +2635,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
                 **kwargs):
         """Extract pixel values from raster image based on a vector dataset.
 
-        :param jim: Jim object (list) on which vector is overlaid to extract from
+        :param jim: Jim object (list) on which vector is overlaid to extract
+            from
         :param rule: Rule how to calculate zonal statistics per feature
             (see list of :ref:`supported rules <extract_rules>`)
         :param output: Name of the output vector dataset in which the zonal
@@ -2762,9 +2769,10 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         kwargs.update({'rule': rule})
         if 'threshold' in kwargs:
             if kwargs['threshold'] is not None:
-                if not isinstance(kwargs['threshold'],list):
-                    kwargs['threshold']=[kwargs['threshold']]
-                kwargs['threshold']=[float(t.strip('%')) if isinstance(t,str) else -t for t in kwargs['threshold']]
+                if not isinstance(kwargs['threshold'], list):
+                    kwargs['threshold'] = [kwargs['threshold']]
+                kwargs['threshold'] = [float(t.strip('%')) if isinstance(
+                    t, str) else -t for t in kwargs['threshold']]
 
         if 'classes' in kwargs:
             classes = kwargs.pop('classes')
@@ -2780,9 +2788,10 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
                     't'+str(ifile) for ifile in range(0, len(jim._jim_list))]
             kwargs.update({'bandname': bandname})
 
-            avect = jim._jipjimlist.extractOgr(self._jim_vect._jipjimvect, kwargs)
+            avect = jim._jipjimlist.extractOgr(self._jim_vect._jipjimvect,
+                                               kwargs)
         else:
-            raise TypeError('Error: extract must operate on Jim or JimList')
+            raise TypeError('extract must operate on Jim or JimList')
         avect.write()
         self._jim_vect._set(avect)
 
@@ -2871,4 +2880,3 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             self._jim_vect._set(avect)
         else:
             raise TypeError('Error: can only join two JimVect objects')
-

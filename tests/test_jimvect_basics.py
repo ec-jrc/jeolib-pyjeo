@@ -84,10 +84,9 @@ class BadBasicMethods(unittest.TestCase):
             'Error in creating JimVect object based on another JimVect ' \
             '(wrong number of layers)'
 
-
         # Copy constructor with new field
 
-        #add field with unique key
+        # add field with unique key
         vect = pj.JimVect(v1)
         vect = pj.JimVect(vect, output=out_path, newfield='fid')
         assert 'fid' in vect.properties.getFieldNames(), \
@@ -102,25 +101,25 @@ class BadBasicMethods(unittest.TestCase):
         vect.io.close()
         os.remove(out_path)
 
-        #add field with fixed numeric label of default integer type
+        # add field with fixed numeric label of default integer type
         vect = pj.JimVect(v1)
         vect = pj.JimVect(vect, output=out_path, newfield='label', newvalue=10)
         assert 'label' in vect.properties.getFieldNames(), \
             'Error in creating JimVect object based on another JimVect' \
             'with new field (label not found)'
 
-        assert np.amax(vect.np(field=['label'])) == 10 ,\
+        assert np.amax(vect.np(field=['label'])) == 10, \
             'Error in creating JimVect object based on another JimVect' \
             'with new field (value=10)'
 
         vect.io.close()
         os.remove(out_path)
 
-        #add field with fixed numeric label of Real type
+        # add field with fixed numeric label of Real type
         vect = pj.JimVect(v1)
-        vect = pj.JimVect(vect, output=out_path, newfield='label', \
+        vect = pj.JimVect(vect, output=out_path, newfield='label',
                           newtype='Real', newvalue=9.9, verbose=2)
-        assert np.amax(vect.np(field=['label'])) == 9.9 ,\
+        assert np.amax(vect.np(field=['label'])) == 9.9, \
             'Error in creating JimVect object based on another JimVect' \
             'with new field (value=9.9)'
 
@@ -129,17 +128,17 @@ class BadBasicMethods(unittest.TestCase):
 
         # Copy constructor with new field with two layers
 
-        #add field with unique key
+        # add field with unique key
         vect = pj.JimVect(vector)
         vect = pj.JimVect(vect, output=out_path, newfield='fid')
 
         assert 'fid' in vect.properties.getFieldNames(), \
             'Error in creating JimVect object based on another JimVect' \
             'with new fid (fid not found)'
-        theMax=0
-        for layer in range(0,vect.properties.getLayerCount()):
-            theMax+=np.amax(vect.np(field=['fid'])) + 1
-        assert theMax == vect.properties.getFeatureCount(), \
+        max_value = 0
+        for layer in range(0, vect.properties.getLayerCount()):
+            max_value += np.amax(vect.np(field=['fid'])) + 1
+        assert max_value == vect.properties.getFeatureCount(), \
             'Error in creating JimVect object based on another JimVect' \
             'with new fid (value)'
 
@@ -191,14 +190,15 @@ class BadBasicMethods(unittest.TestCase):
 
         # Test JimVect creation based on WKT
 
-
-        wkt_string = 'POLYGON ((23.314208 37.768469, 24.039306 37.768469, 24.039306 38.214372, 23.314208 38.214372, 23.314208 37.768469))'
+        wkt_string = 'POLYGON ((23.314208 37.768469, 24.039306 37.768469, ' \
+                     '24.039306 38.214372, 23.314208 38.214372, ' \
+                     '23.314208 37.768469))'
 
         vect = pj.JimVect(wkt=wkt_string)
 
         a = pj.JimVect(vector)
         out_path = pj._get_random_path()
-        wkt_jimvect = pj.JimVect(vect,output=out_path,oformat='GeoJSON')
+        wkt_jimvect = pj.JimVect(vect, output=out_path, oformat='GeoJSON')
 
         assert wkt_jimvect.properties.getFeatureCount() == 1, \
             'Error in creating JimVect object based on kwarg wkt=... '

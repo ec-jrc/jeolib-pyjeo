@@ -328,7 +328,7 @@ class Jim:
             mask = item > 0
             return Jim(self * mask)
         else:
-            npresult = _np.array(self.np()[item], copy=True)
+            npresult = _np.array(self.np()[item])
             # npresult=_np.array(self.np()[item])
             if len(npresult.shape) == 3:
                 nplane = npresult.shape[0]
@@ -1230,7 +1230,7 @@ class JimList(list):
     def _set(self, modified_list, from_list: bool = False):
         """Apply changes done in modified_list to the parent JimList instance.
 
-        :param modified_object: modified JimList instance
+        :param modified_list: modified JimList instance
         :param from_list: set True if changing function originates in list()
         """
         if not from_list:
