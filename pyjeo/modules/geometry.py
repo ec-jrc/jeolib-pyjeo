@@ -1155,8 +1155,9 @@ def sample(jim,
            **kwargs):
     """Extract a random or grid sample from a raster dataset.
 
-    :jim: Jim object to sample (multi-band supported, but multi-plane not yet)
-    :output: Name of the output vector dataset in which the zonal
+    :param jim: Jim object to sample (multi-band supported, but multi-plane not
+        yet)
+    :param output: Name of the output vector dataset in which the zonal
         statistics will be saved
     :param output: path to the output
     :param kwargs: See table below
