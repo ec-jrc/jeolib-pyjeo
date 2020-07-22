@@ -1,15 +1,15 @@
-# pyJEO
+# pyjeo
 
 ## Description
 
-pyJEO is a library for image processing for geospatial data implemented in
+pyjeo is a library for image processing for geospatial data implemented in
 JRC Ispra.
 
 ## License
 
-pyJEO is released under an
+pyjeo is released under an
 [GPLv3](http://www.gnu.org/licenses/gpl-3.0.html) license (see
-[LICENSE.txt](LICENSE.txt))
+[COPYING](COPYING))
 
 ## Dependencies
 
