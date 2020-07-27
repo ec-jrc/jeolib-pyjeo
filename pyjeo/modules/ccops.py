@@ -1610,8 +1610,8 @@ class _CCOpsList(_pj.modules.JimListModuleBase):
         :param local_range: integer value indicating maximum absolute local
             difference between 2 adjacent pixels
         :param global_range: integer value indicating maximum global difference
-            (difference between the maximum and minimum values of each resulting
-            connected component)
+            (difference between the maximum and minimum values of each
+            resulting connected component)
         :param ngb: Jim object for neighbourhood, e.g., create with
             pj.Jim(graph=4)
         :return: labeled Jim object
