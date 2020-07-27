@@ -215,7 +215,6 @@ class BadBasicMethods(unittest.TestCase):
 
         vect = pj.JimVect(wkt=wkt_string)
 
-        a = pj.JimVect(vector)
         out_path = pj._get_random_path()
         wkt_jimvect = pj.JimVect(vect, output=out_path, oformat='GeoJSON')
 
