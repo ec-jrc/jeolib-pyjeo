@@ -1624,10 +1624,14 @@ class _Geometry(_pj.modules.JimModuleBase):
                     ulx = 0
                 if uly is None:
                     uly = 0
+                if ulz is None:
+                    ulz = 0
                 if lrx is None:
                     lrx = self._jim_object.properties.nrOfCol()
                 if lry is None:
                     lry = self._jim_object.properties.nrOfRow()
+                if lrz is None:
+                    lrz = self._jim_object.properties.nrOfPlane()
                 if dx is None:
                     dx = 1
                 if dy is None:
