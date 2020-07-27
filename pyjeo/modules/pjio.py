@@ -21,10 +21,8 @@ You should have received a copy of the GNU General Public License
 along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os as _os
-from osgeo import ogr as _ogr
 import pyjeo as _pj
-import jiplib as _jl
+
 
 class _IO(_pj.modules.JimModuleBase):
     """Define all IO methods."""

@@ -25,8 +25,6 @@ import pyjeo as pj
 import unittest
 
 import os
-import random
-import string
 import numpy as np
 
 

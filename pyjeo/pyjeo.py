@@ -27,7 +27,6 @@ import gc as _gc
 import warnings as _warnings
 import os as _os
 from osgeo import ogr as _ogr
-import json as _json
 
 import jiplib as _jl
 
