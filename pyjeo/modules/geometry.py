@@ -2464,6 +2464,8 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         if not isinstance(jim_other, list):
             args_list = [jim_other, *args]
+        else:
+            args_list = jim_other
 
         if args:
             args_list.extend(args)
