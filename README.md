@@ -25,7 +25,8 @@ From the directory of the repository, run:
 sudo python setup.py install
 ```
 
-To install without sudo right, you can install with the --user
+To install the package without `sudo` right, you can install it with the
+`--user` flag.
 
 ```
 python setup.py install --user
