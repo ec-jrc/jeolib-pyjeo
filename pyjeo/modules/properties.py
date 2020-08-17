@@ -66,12 +66,12 @@ def isEqual(first_jim,
     elif isinstance(first_jim, _pj.JimVect):
         if first_jim.properties.isEmpty():
             raise ValueError('first_jim is empty')
+        if second_jim.properties.isEmpty():
+            return False
 
         if not isinstance(second_jim, _pj.JimVect):
             return False
 
-        if second_jim.properties.isEmpty():
-            raise ValueError('second_jim is empty')
         if first_jim.properties.getLayerCount() != \
                 second_jim.properties.getLayerCount():
             return False
@@ -616,9 +616,9 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
 
         if not isinstance(other, _pj.JimVect):
             return False
-
         if other.properties.isEmpty():
-            raise ValueError('other is empty')
+            return False
+
         if self._jim_vect.properties.getLayerCount() != \
                 other.properties.getLayerCount():
             return False
