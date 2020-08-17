@@ -35,7 +35,7 @@ from .modules import pjio as io, properties, pixops, ngbops, geometry, \
 from .__init__ import _check_graph
 
 
-# del _jl.Jim.__del__
+del _jl.Jim.__del__
 
 
 class _ParentJim(_jl.Jim):
