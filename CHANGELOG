@@ -3,6 +3,8 @@
 ## 0.5.0 -> 0.6.0
 
 * pixops.isEqual() -> properties.isEqual()
+* when the second object in properties.isEqual(jim1, jim2) is empty, return
+  False if the first one not, instead of raising a ValueError
 * geometry.extractSample() geometry.sample()
 * geometry.aggregateVector(), geometry.extractImg() and
   geometry.extractVector() merged into geometry.extract()
