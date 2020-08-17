@@ -441,9 +441,9 @@ class Jim:
             # TODO: next lines should work, but problem with GML files when SRS
             #       is not defined as in S2 cloud masks
 
-            # template=Jim(self)
-            # template.geometry.rasterize(item,1.0)
-            # self[template>0]=value
+            # template = Jim(self)
+            # template.geometry.rasterize(item, 1.0)
+            # self[template > 0] = value
 
             if type(value) in (float, int) or isinstance(value, Jim):
                 template_jim = Jim(self, copy_data=False)
