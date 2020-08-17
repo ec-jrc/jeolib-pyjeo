@@ -2821,7 +2821,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             #todo: support multi-band images in JimList...
             if bandname is None:
                 bandname = [
-                    't'+str(ifile) for ifile in range(0, len(jim._jim_list))]
+                    't'+str(ifile) for ifile in range(0, len(jim._jipjimlist))]
             kwargs.update({'bandname': bandname})
 
             avect = jim._jipjimlist.extractOgr(self._jim_vect._jipjimvect,
