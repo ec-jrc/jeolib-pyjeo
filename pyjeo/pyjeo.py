@@ -334,8 +334,9 @@ class Jim:
         """
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError('Using a JimVect as an index not implemented '
-                                 'for 3d Jim objects')
+                raise ValueError(
+                    'Using a JimVect as an index not implemented for Jim '
+                    'objects with more than one plane')
             nodata = self.properties.getNoDataVals()
             if nodata:
                 nodata = nodata[0]
@@ -435,8 +436,9 @@ class Jim:
         """
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError('Error: __setitem__ with JimVect not '
-                                 'implemented for 3d Jim objects')
+                raise ValueError('__setitem__ with JimVect not '
+                                 'implemented for Jim objects with more than '
+                                 'one plane')
             # TODO: decide on default behaviour of ALL_TOUCHED=TRUE
             # TODO: next lines should work, but problem with GML files when SRS
             #       is not defined as in S2 cloud masks
