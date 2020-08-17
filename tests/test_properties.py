@@ -346,9 +346,23 @@ class BadPropsVects(unittest.TestCase):
             'Error in properties.isEqual() function ' \
             '(JimVects with different number of features considered equal)'
 
-        # Test wrong calls
+        # Test with the argument Jim empty
 
         jimv_empty = pj.JimVect()
+
+        equal = jimv1.properties.isEqual(jimv_empty)
+
+        assert equal is False, \
+            'Error in properties.isEqual(JimVect) method ' \
+            '(did not return False when the argument JimVect was emmpty)'
+
+        equal = pj.properties.isEqual(jimv1, jimv_empty)
+
+        assert equal is False, \
+            'Error in properties.isEqual(JimVet, JimVect) function ' \
+            '(did not return False when the argument JimVect was emmpty)'
+
+        # Test wrong calls
 
         try:
             _ = jimv_empty.properties.isEqual(jimv1)
@@ -369,26 +383,6 @@ class BadPropsVects(unittest.TestCase):
         assert raised, \
             'Error in properties.isEqual() function ' \
             '(ValueError not raised when called on an empty JimVect)'
-
-        try:
-            _ = jimv1.properties.isEqual(jimv_empty)
-            raised = False
-        except ValueError:
-            raised = True
-
-        assert raised, \
-            'Error in properties.isEqual() method (ValueError not ' \
-            'raised when called with an empty JimVect as parameter)'
-
-        try:
-            _ = pj.properties.isEqual(jimv1, jimv_empty)
-            raised = False
-        except ValueError:
-            raised = True
-
-        assert raised, \
-            'Error in properties.isEqual() function (ValueError not ' \
-            'raised when called with an empty JimVect as parameter)'
 
     def test_geospatial_infos(self):
         """Test JimVect methods connected to geospatial informations."""
