@@ -181,7 +181,7 @@ def dissim(jim_map,
     :return: Jim object representing the dissimilarity matrix
     """
     return _pj.Jim(jim_map._jipjim.dissimilarityMatrix(jim_mask._jipjim,
-                                                      nc, type))
+                                                       nc, type))
 
 
 def dissimToAlphaCCs(dissimh,
