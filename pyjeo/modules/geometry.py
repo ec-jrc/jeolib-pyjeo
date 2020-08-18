@@ -41,13 +41,12 @@ def append(jvec1,
     :param output: output filename of JimVect object that is returned.
         Use /vsimem for in memory vectors
 
-    Example: append two vectors
+    Example: append two vectors::
 
       v1 = pj.JimVect('/path/to/vector1.sqlite')
       v2 = pj.JimVect('/path/to/vector2.sqlite')
-      v3 = pj.geometry.append(
-          v1, v2, '/tmp/test.sqlite', oformat='SQLite',
-          co=['OVERWRITE=YES'])
+      v3 = pj.geometry.append(v1, v2, '/tmp/test.sqlite', oformat='SQLite',
+                              co=['OVERWRITE=YES'])
     """
     kwargs.update({'output': output})
     if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
@@ -2641,7 +2640,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         Example: append two vectors::
 
           v1 = pj.JimVect('/path/to/vector1.sqlite')
-          appendedv1.geometry.append(v2, '/path/to/appended.sqlite')
+          v2 = pj.JimVect('/path/to/vector2.sqlite')
+          v1.geometry.append(v2, '/path/to/appended.sqlite')
         """
         non_existing_path = _pj._get_random_path()
         non_existing_path = os.path.join('/vsimem',
