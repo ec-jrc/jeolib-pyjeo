@@ -55,7 +55,8 @@ def append(jvec1,
         pjvect._set(avect)
         return pjvect
     else:
-        raise TypeError('Error: can only append two JimVect objects')
+        raise _pj.exceptions.JimVectIllegalArgumentError(
+            'Can only append two JimVect objects')
 
 
 def band2plane(jim):
@@ -461,11 +462,13 @@ def extract(jvec,
             avect = jim._jipjimlist.extractOgr(jvec._jipjimvect,
                                                kwargs)
         else:
-            raise TypeError('Error: extract must operate on Jim or JimList')
+            raise _pj.exceptions.JimVectIllegalArgumentError(
+                'extract() must operate on Jim or JimList')
     elif isinstance(jvec, _pj.Jim):
         avect = jim._jipjim.extractImg(jvec._jipjim, kwargs)
     else:
-        raise TypeError('sample to extract must be either JimVect or Jim')
+        raise _pj.exceptions.JimVectIllegalArgumentError(
+            'sample to extract must be either JimVect or Jim')
     avect.write()
     pjvect._set(avect)
     return pjvect
@@ -738,7 +741,8 @@ def intersect(jvec,
         pjvect._set(avect)
         return pjvect
     else:
-        raise TypeError('Error: can only intersect with Jim object')
+        raise _pj.exceptions.JimVectIllegalArgumentError(
+            'Can only intersect with Jim object')
 
 
 def join(jvec1,
@@ -807,7 +811,8 @@ def join(jvec1,
         pjvect._set(avect)
         return pjvect
     else:
-        raise TypeError('Error: can only join two JimVect objects')
+        raise _pj.exceptions.JimVectIllegalArgumentError(
+            'Can only join two JimVect objects')
 
 
 def magnify(jim_object,
@@ -885,8 +890,8 @@ def plotLine(jim_object,
     :return: a Jim object
     """
     if jim_object.properties.nrOfPlane() > 1:
-        raise TypeError(
-            'Error: plotLine does not support multi-plane Jim objects')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'geometry.plotLine() does not support multi-plane Jim objects')
     return _pj.Jim(jim_object._jipjim.plotLine(x1, y1, x2, y2, val))
 
 
@@ -927,14 +932,16 @@ def polygonize(jim_object,
                 avect = jim_object._jipjim.polygonize(kwargs,
                                                       mask._jipjim)
             else:
-                raise TypeError('Error: mask should be of Jim type')
+                raise _pj.exceptions.JimIllegalArgumentError(
+                    'Error: mask should be of Jim type')
         else:
             avect = jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
         pjvect._set(avect)
         return pjvect
     else:
-        raise TypeError('Error: can only polygonize Jim object')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'Can only polygonize Jim object')
 
 
 def rasterize(jim_object,
@@ -960,9 +967,11 @@ def rasterize(jim_object,
        the (numeric) fieldname in the pixel value'
     """
     if not isinstance(jim_object, _pj.Jim):
-        raise TypeError('Error: template must be a Jim object')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'Template must be a Jim object')
     if not isinstance(jim_vect, _pj.JimVect):
-        raise TypeError('Error: can only rasterize a JimVect')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'Can only rasterize a JimVect')
 
     kwargs = {}
     if burn_value is not None:
@@ -1102,8 +1111,8 @@ def reducePlane(jim,
                     """Rule for overwrite."""
                     return _pj.pixops.setData(plane, 1)
             else:
-                raise AttributeError(
-                    'Error: rule not supported')
+                raise _pj.exceptions.JimIllegalArgumentError(
+                    'rule not supported')
 
             if ref_band is not None:
                 maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
@@ -1112,8 +1121,8 @@ def reducePlane(jim,
                 jimplane = _pj.geometry.cropPlane(jim, iplane)
 
                 if nodata is not None and ref_band is None:
-                    raise AttributeError(
-                        'Error: use ref_band option for nodata')
+                    raise _pj.exceptions.JimIllegalArgumentError(
+                        'use ref_band option for nodata')
 
                 if ref_band is not None:
                     maskplane = _pj.geometry.cropBand(jimplane, ref_band)
@@ -1134,8 +1143,8 @@ def reducePlane(jim,
     else:
         if nodata is not None or ref_band is not None:
             # TODO: Allow nodata and ref_band parameters (see #48)
-            raise AttributeError('Error: nodata and ref_band are not '
-                                 'supported for callback rules')
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'nodata and ref_band are not supported for callback rules')
         jimreduced = _pj.geometry.cropPlane(jim, 0)
         for iplane in range(1, nr_of_planes):
             jimplane = _pj.geometry.cropPlane(jim, iplane)
@@ -1294,7 +1303,7 @@ def stackBand(jim_object,
     def _check_number_of_bands(queried_band: int, nr_of_band: int):
         """Raise an error if the user wants to use a band out of bounds."""
         if queried_band is not None and queried_band > nr_of_band:
-            raise AttributeError('Band out of bounds')
+            raise _pj.exceptions.JimBandsError('Band out of bounds')
 
     if isinstance(jim_object, _pj.JimList):
         if band:
@@ -1335,8 +1344,8 @@ def stackBand(jim_object,
                 ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                     jim._jipjim))
     else:
-        raise TypeError('Error: expected a Jim or JimList object as '
-                        'the first argument')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'Expected a Jim or JimList object as the first argument')
 
     return ret_jim
 
@@ -1387,8 +1396,8 @@ def stackPlane(jim_object,
         for jim in args_list:
             ret_jim._jipjim.d_stackPlane(jim._jipjim)
     else:
-        raise TypeError('Error: expected a Jim or JimList object as '
-                        'the first argument')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'Expected a Jim or JimList object as the first argument')
 
     return ret_jim
 
@@ -2048,8 +2057,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param val: value to be used for line pixels
         """
         if self._jim_object.properties.nrOfPlane() > 1:
-            raise TypeError(
-                'Error: plotLine does not support multi-plane Jim objects')
+            raise _pj.exceptions.JimInnerParametersError(
+                'geometry.plotLine() does not support multi-plane Jim objects')
         self._jim_object._jipjim.d_plotLine(x1, y1, x2, y2, val)
 
     def polygonize(self,
@@ -2099,7 +2108,8 @@ class _Geometry(_pj.modules.JimModuleBase):
                 avect = self._jim_object._jipjim.polygonize(kwargs,
                                                             mask._jipjim)
             else:
-                raise TypeError('Error: mask should be of Jim type')
+                raise _pj.exceptions.JimIllegalArgumentError(
+                    'mask should be of Jim type')
         else:
             avect = self._jim_object._jipjim.polygonize(kwargs)
         pjvect = _pj.JimVect()
@@ -2140,7 +2150,8 @@ class _Geometry(_pj.modules.JimModuleBase):
           mask.geometry.rasterize(sample, eo=['ATTRIBUTE=label'])
         """
         if not isinstance(jim_vect, _pj.JimVect):
-            raise TypeError('Error: can only rasterize a JimVect')
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'Can only rasterize a JimVect')
 
         kwargs = {}
         if burn_value is not None:
@@ -2295,7 +2306,8 @@ class _Geometry(_pj.modules.JimModuleBase):
                         """Rule for overwrite."""
                         return _pj.pixops.setData(plane, 1)
                 else:
-                    raise AttributeError('Error: rule not supported')
+                    raise _pj.exceptions.JimIllegalArgumentError(
+                        'rule not supported')
 
                 if ref_band is not None:
                     maskreduced = _pj.geometry.cropBand(jimreduced, ref_band)
@@ -2304,8 +2316,8 @@ class _Geometry(_pj.modules.JimModuleBase):
                     jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
 
                     if nodata is not None and ref_band is None:
-                        raise AttributeError(
-                            'Error: use ref_band option for nodata')
+                        raise _pj.exceptions.JimIllegalArgumentError(
+                            'use ref_band option for nodata')
 
                     if ref_band is not None:
                         maskplane = _pj.geometry.cropBand(jimplane, ref_band)
@@ -2327,8 +2339,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         else:
             if nodata is not None or ref_band is not None:
                 # TODO: Allow nodata and ref_band parameters (see #48)
-                raise AttributeError('Error: nodata and ref_band are not '
-                                     'supported for callback rules')
+                raise _pj.exceptions.JimIllegalArgumentError(
+                    'nodata and ref_band are not supported for callback rules')
             jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
             for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
@@ -2429,7 +2441,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             jim0.geometry.stackBand(jim1, band=[0, 1, 2])
         """
         if band is not None and band > self._jim_object.properties.nrOfBand():
-            raise AttributeError('Band out of bounds')
+            raise _pj.exceptions.JimBandsError('Band out of bounds')
 
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
@@ -2557,7 +2569,7 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         if band:
             nr_of_band = self._jim_list[0].properties.nrOfBand()
             if band is not None and band > nr_of_band:
-                raise AttributeError('Band out of bounds')
+                raise _pj.exceptions.JimBandsError('Band out of bounds')
 
             ret_jim = _pj.Jim(
                 self._jim_list._jipjimlist.stackBand({'band': band}))
@@ -2640,7 +2652,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             avect.write()
             self._jim_vect._set(avect)
         else:
-            raise TypeError('Error: can only append two JimVect objects')
+            raise _pj.exceptions.JimVectIllegalArgumentError(
+                'Can only append two JimVect objects')
 
     def convexHull(self,
                    **kwargs):
@@ -2827,7 +2840,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             avect = jim._jipjimlist.extractOgr(self._jim_vect._jipjimvect,
                                                kwargs)
         else:
-            raise TypeError('extract must operate on Jim or JimList')
+            raise _pj.exceptions.JimVectIllegalArgumentError(
+                'extract must operate on Jim or JimList')
         avect.write()
         self._jim_vect._set(avect)
 
@@ -2861,7 +2875,8 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             avect.write()
             self._jim_vect._set(avect)
         else:
-            raise TypeError('Error: can only intersect with Jim object')
+            raise _pj.exceptions.JimVectIllegalArgumentError(
+                'Can only intersect with Jim object')
 
     def join(self,
              jvec2,
@@ -2915,4 +2930,5 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             avect.write()
             self._jim_vect._set(avect)
         else:
-            raise TypeError('Error: can only join two JimVect objects')
+            raise _pj.exceptions.JimVectIllegalArgumentError(
+                'Can only join two JimVect objects')

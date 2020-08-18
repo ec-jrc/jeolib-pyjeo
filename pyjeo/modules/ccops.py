@@ -373,8 +373,8 @@ def labelConstrainedCCs(jim,
         return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultiband(
             ngb._jipjim, 1, 1, 0, global_range, local_range))
     else:
-        raise AttributeError(
-            "Error: input must be Jim or JimList object")
+        raise _pj.exceptions.JimIllegalArgumentError(
+            "input must be Jim or JimList object")
 
 
 def labelConstrainedCCsAttr(jim,
@@ -452,8 +452,8 @@ def labelConstrainedCCsDissim(jim,
         return _pj.Jim(jim._jipjimlist.labelConstrainedCCsMultibandDissim(
             diss[0]._jipjim, diss[1]._jipjim, global_range, local_range))
     else:
-        raise AttributeError(
-            "Error: input must be Jim or JimList object")
+        raise _pj.exceptions.JimIllegalArgumentError(
+            "input must be Jim or JimList object")
 
 
 def labelConstrainedCCsMi(jim,
@@ -659,8 +659,8 @@ def labelStronglyCCs(jim,
         return _pj.Jim(jim._jipjimlist.labelStronglyCCsMultiband(
             ngb._jipjim, 1, 1, 0, global_range, local_range))
     else:
-        raise AttributeError(
-            "Error: input must be Jim or JimList object")
+        raise _pj.exceptions.JimIllegalArgumentError(
+            "Input must be Jim or JimList object")
 
 
 def morphoFillHoles(jim_object,
@@ -887,8 +887,8 @@ def segmentImageMultiband(jimlist,
             graph, local_range, region_size, contrast, version,
             filename_prefix))
     else:
-        raise AttributeError(
-            "Error: input must be Jim or JimList object")
+        raise _pj.exceptions.JimIllegalArgumentError(
+            "Input must be Jim or JimList object")
 
 
 def vertexConnectedness(jim_object,

@@ -65,7 +65,7 @@ def isEqual(first_jim,
             return True
     elif isinstance(first_jim, _pj.JimVect):
         if first_jim.properties.isEmpty():
-            raise ValueError('first_jim is empty')
+            raise _pj.exceptions.JimVectEmptyError('first_jim is empty')
         if second_jim.properties.isEmpty():
             return False
 
@@ -214,7 +214,8 @@ class _Properties(_pj.modules.JimModuleBase):
         elif otype == 16:
             return 'JDT_Word'
         else:
-            raise TypeError("Unknown data format".format(otype))
+            raise _pj.exceptions.JimInnerParametersError(
+                "Unknown data format".format(otype))
 
     def getDeltaX(self):
         """Get the pixel cell spacing in x.
@@ -400,8 +401,9 @@ class _Properties(_pj.modules.JimModuleBase):
         elif type(value) in (float, int):
             self._jim_object._jipjim.setNoDataValue(value)
         else:
-            raise TypeError('Error: setNoDataVals not implemented for value '
-                            'type {}'.format(type(value)))
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'setNoDataVals not implemented for value type {}'.format(
+                    type(value)))
 
     def setProjection(self,
                       *args):
@@ -612,7 +614,8 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         :return: True if the values are equal, zero otherwise
         """
         if self._jim_vect.properties.isEmpty():
-            raise ValueError('JimVect on which the method was called is empty')
+            raise _pj.exceptions.JimVectEmptyError(
+                'JimVect on which the method was called is empty')
 
         if not isinstance(other, _pj.JimVect):
             return False

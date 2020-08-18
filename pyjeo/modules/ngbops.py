@@ -275,7 +275,8 @@ def firfilter1d(jim_object,
         filtered = pj.ngbops.firfilter1d(jim, taps=np.array([1, 2, 1]), norm=True, pad='symmetric')
     """
     if len(taps.shape) != 1:
-        raise ValueError('Error: taps should be 1D array')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'taps should be 1D array')
 
     taps = _np.array(taps).tolist()
     kwargs.update({'taps': taps})
@@ -305,7 +306,8 @@ def firfilter2d(jim_object,
         filtered = pj.ngbops.firfilter2d(jim, taps=np.array([[1, 2, 1]]), norm=True, pad='symmetric')
     """
     if len(taps.shape) != 2:
-        raise ValueError('Error: taps should be 2D array')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'taps should be 2D array')
 
     taps = _np.array(taps)
     kwargs.update({'taps': taps.flatten().tolist()})
@@ -395,8 +397,9 @@ def getDissim(jimo,
             h_dissim.pixops.supremum(h_dissim_crt)
             v_dissim.pixops.supremum(v_dissim_crt)
     else:
-        raise ValueError('dissim_type {} not supported. Supported only values '
-                         '0 and 1'.format(dissim_type))
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'dissim_type {} not supported. Supported only '
+            'values 0 and 1'.format(dissim_type))
 
     return [h_dissim, v_dissim]
 
@@ -1238,7 +1241,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.firfilter1d(jim, taps=np.array([1, 2, 1]), pad='symmetric')
         """
         if len(taps.shape) != 1:
-            raise ValueError('Error: taps should be 1D array')
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'taps should be 1D array')
 
         taps = _np.array(taps).tolist()
         kwargs.update({'taps': taps})
@@ -1265,7 +1269,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
             jim.ngbops.firfilter2d(taps=np.array([[1, 2, 1]]), norm=True, pad='symmetric')
         """
         if len(taps.shape) != 2:
-            raise ValueError('Error: taps should be 2D array')
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'taps should be 2D array')
 
         taps = _np.array(taps)
         kwargs.update({'taps': taps.flatten().tolist()})
@@ -1357,8 +1362,9 @@ class _NgbOps(_pj.modules.JimModuleBase):
                 h_dissim.pixops.supremum(h_dissim_crt)
                 v_dissim.pixops.supremum(v_dissim_crt)
         else:
-            raise ValueError('dissim_type {} not supported. Supported only '
-                             'values 0 and 1'.format(dissim_type))
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'dissim_type {} not supported. Supported only '
+                'values 0 and 1'.format(dissim_type))
 
         return [h_dissim, v_dissim]
 

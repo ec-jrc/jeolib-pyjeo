@@ -84,7 +84,8 @@ def sml(jim_object,
         return _pj.Jim(jim_object._jipjim.classifySML(
             reflist, kwargs))
     else:
-        raise ValueError('No training found through model or reflist')
+        raise _pj.exceptions.JimIllegalArgumentError(
+            'At least one of arguments model or reflist must be used')
 
 
 class _Classify(_pj.modules.JimModuleBase):
@@ -165,7 +166,8 @@ class _Classify(_pj.modules.JimModuleBase):
             self._jim_object._set(self._jim_object._jipjim.classifySML(
                 reflist._jipjimlist, kwargs))
         else:
-            raise ValueError('No training found through model or reflist')
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'At least one of arguments model or reflist must be used')
 
     def trainSML(self,
                  reference,
@@ -221,7 +223,8 @@ class _Classify(_pj.modules.JimModuleBase):
             kwargs.update({'model': output})
             self._jim_object._jipjim.trainSML(reference._jipjimlist, kwargs)
         else:
-            raise ValueError('Error: output for model not set')
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'output for model not set')
 
 
 class _ClassifyList(_pj.modules.JimListModuleBase):

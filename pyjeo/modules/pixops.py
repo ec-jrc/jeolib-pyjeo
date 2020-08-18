@@ -71,7 +71,8 @@ def convert(jim_object,
     elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
         otype = 'JDT_UInt64'
     else:
-        raise TypeError("Output type {} not supported".format(otype))
+        raise _pj.exceptions.JimIllegalArgumentError(
+            "Output type {} not supported".format(otype))
     # TODO: Support CTypes
 
     return _pj.Jim(jim_object._jipjim.convertDataType(otype))
@@ -401,7 +402,8 @@ class _PixOps(_pj.modules.JimModuleBase):
         elif otype in ['uint64', 'UInt64', 'JDT_UInt64']:
             otype = 'JDT_UInt64'
         else:
-            raise TypeError("Output type {} not supported".format(otype))
+            raise _pj.exceptions.JimIllegalArgumentError(
+                "Output type {} not supported".format(otype))
         # TODO: Support CTypes
 
         self._jim_object._set(

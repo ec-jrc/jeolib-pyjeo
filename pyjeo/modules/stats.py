@@ -153,7 +153,9 @@ class _Stats(_pj.modules.JimModuleBase):
         """
         if self._jim_object.properties.getDataType() not in ['UInt32',
                                                              'Int32']:
-            raise TypeError('Object must be of type UInt32 or Int32')
+            raise _pj.exceptions.JimInnerParametersError(
+                'Object the method is called on must be of type UInt32 or '
+                'Int32')
         return _pj.Jim(self._jim_object._jipjim.histo1dCumulative())
 
     def getStats(self,

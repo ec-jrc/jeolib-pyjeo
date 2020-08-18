@@ -70,7 +70,7 @@ class BadBasicMethodLists(unittest.TestCase):
         try:
             jiml = pj.JimList(None)
             raised = False
-        except ValueError:
+        except pj.exceptions.JimListIllegalArgumentError:
             raised = True
 
         assert raised, \

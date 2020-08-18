@@ -158,7 +158,7 @@ class BadProps(unittest.TestCase):
         try:
             self.jim.properties.setNoDataVals('string')
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in type checks in properties.setNoDataVals()'
@@ -367,7 +367,7 @@ class BadPropsVects(unittest.TestCase):
         try:
             _ = jimv_empty.properties.isEqual(jimv1)
             raised = False
-        except ValueError:
+        except pj.exceptions.JimVectEmptyError:
             raised = True
 
         assert raised, \
@@ -377,7 +377,7 @@ class BadPropsVects(unittest.TestCase):
         try:
             _ = pj.properties.isEqual(jimv_empty, jimv1)
             raised = False
-        except ValueError:
+        except pj.exceptions.JimVectEmptyError:
             raised = True
 
         assert raised, \

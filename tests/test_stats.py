@@ -126,7 +126,7 @@ class BadStats(unittest.TestCase):
         try:
             _ = jim1.stats.getHistoCumulative()
             raised = False
-        except TypeError:
+        except pj.exceptions.JimInnerParametersError:
             raised = True
         assert raised, 'Error in catching wrong data type in ' \
                        'stats.getHistoCumulative()'

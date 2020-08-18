@@ -162,7 +162,7 @@ class BadGeometry(unittest.TestCase):
             _ = pj.geometry.stackBand(jim0, jim1,
                                       band=jim0.properties.nrOfBand() + 1)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimBandsError:
             raised = True
 
         assert raised, \
@@ -173,7 +173,7 @@ class BadGeometry(unittest.TestCase):
         try:
             jim0.geometry.stackBand(jim1, band=jim0.properties.nrOfBand() + 1)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimBandsError:
             raised = True
 
         assert raised, \
@@ -185,7 +185,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.stackBand(1, jim1)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -196,7 +196,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.stackPlane(1, jim1)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -964,7 +964,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.plotLine(jim, 0, 0, 9, 9, 100)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -975,7 +975,7 @@ class BadGeometry(unittest.TestCase):
         try:
             jim.geometry.plotLine(0, 0, 9, 9, 100)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimInnerParametersError:
             raised = True
 
         assert raised, \
@@ -1051,7 +1051,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.polygonize(1, pj._get_random_path())
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -1062,7 +1062,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.polygonize(jim, pj._get_random_path(), mask=5)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -1073,7 +1073,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = jim.geometry.polygonize(pj._get_random_path(), mask='spam')
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -1124,7 +1124,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.rasterize('spam', sample)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -1135,7 +1135,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.rasterize(jim0, 'spam')
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -1146,7 +1146,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = jim0.geometry.rasterize('spam')
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -2315,7 +2315,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.reducePlane(jim, 'non-supported function')
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in raising an error when performing ' \
@@ -2324,7 +2324,7 @@ class BadGeometry(unittest.TestCase):
         try:
             jim.geometry.reducePlane('non-supported function')
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in raising an error when performing ' \
@@ -2334,7 +2334,7 @@ class BadGeometry(unittest.TestCase):
         try:
             _ = pj.geometry.reducePlane(jim, rule='max', nodata=nodata)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in raising an error when performing ' \
@@ -2344,7 +2344,7 @@ class BadGeometry(unittest.TestCase):
         try:
             jim.geometry.reducePlane(rule='max', nodata=nodata)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in raising an error when performing ' \
@@ -2358,7 +2358,7 @@ class BadGeometry(unittest.TestCase):
                 rule=lambda stacked, plane: stacked * plane,
                 nodata=nodata)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in raising an error when performing ' \
@@ -2369,7 +2369,7 @@ class BadGeometry(unittest.TestCase):
             jim.geometry.reducePlane(
                 rule=lambda stacked, plane: stacked * plane, nodata=nodata)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in raising an error when performing ' \
@@ -2635,7 +2635,7 @@ class BadGeometryLists(unittest.TestCase):
             _ = pj.geometry.stackBand(jiml, jim1,
                                       band=jim1.properties.nrOfBand() + 1)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimBandsError:
             raised = True
 
         assert raised, \
@@ -2646,7 +2646,7 @@ class BadGeometryLists(unittest.TestCase):
         try:
             jiml.geometry.stackBand(jim1, band=jim1.properties.nrOfBand() + 1)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimBandsError:
             raised = True
 
         assert raised, \
@@ -2690,7 +2690,7 @@ class BadGeometryVects(unittest.TestCase):
         try:
             _ = pj.geometry.intersect(jimv, jimv, pj._get_random_path())
             raised = False
-        except TypeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -2700,7 +2700,7 @@ class BadGeometryVects(unittest.TestCase):
         try:
             _ = jimv.geometry.intersect(jimv)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -2802,7 +2802,7 @@ class BadGeometryVects(unittest.TestCase):
         try:
             _ = pj.geometry.join(jimv, jimr, output=non_existing_path_joined)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -2813,7 +2813,7 @@ class BadGeometryVects(unittest.TestCase):
         try:
             _ = jimv.geometry.join(jimr, output=non_existing_path_joined)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -2944,7 +2944,7 @@ class BadGeometryVects(unittest.TestCase):
             _ = pj.geometry.append(jimv1, jim_raster,
                                    output=pj._get_random_path())
             raised = False
-        except TypeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -2955,7 +2955,7 @@ class BadGeometryVects(unittest.TestCase):
         try:
             jimv1.geometry.append(jim_raster)
             raised = False
-        except TypeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \

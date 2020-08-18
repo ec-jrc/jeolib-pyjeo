@@ -90,7 +90,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = pj.Jim(nrow=5, ncol=5, otype='Float32', uniform=[0, 0, 0])
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -125,7 +125,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = pj.Jim(seed=5)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -171,7 +171,7 @@ class BadBasicMethods(unittest.TestCase):
             jim_empty = pj.Jim()
             _ = jim_empty.np()
             raised = False
-        except ValueError:
+        except pj.exceptions.JimEmptyError:
             raised = True
 
         assert raised, \
@@ -198,7 +198,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = ajim.np(ajim.properties.nrOfBand())
             raised = False
-        except ValueError:
+        except pj.exceptions.JimBandsError:
             raised = True
 
         assert raised, 'Error in catching a call of Jim.np(band) with ' \
@@ -342,7 +342,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = jim1[vect]
             raised = False
-        except ValueError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
         assert raised, 'Error in catching a JimVect used as an index ' \
                        'for a multiplanar Jim (get item)'
@@ -350,7 +350,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             jim1[vect] = 5
             raised = False
-        except ValueError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
         assert raised, 'Error in catching a JimVect used as an index ' \
                        'for a multiplanar Jim (set item)'
@@ -415,7 +415,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             rand_jim['a'] = 5
             raised = False
-        except ValueError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in catching wrong indices like Jim["string"]'
@@ -725,7 +725,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = test << 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -734,7 +734,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = test >> 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -743,7 +743,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 test <<= 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -752,7 +752,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 test >>= 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -783,7 +783,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = ones | 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -792,7 +792,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 ones |= 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -801,7 +801,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = 'a' | ones
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -831,7 +831,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = ones ^ 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -840,7 +840,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 ones ^= 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -849,7 +849,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = 'a' ^ ones
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -880,7 +880,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = ones & 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -889,7 +889,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 ones &= 'a'
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -898,7 +898,7 @@ class BadBasicMethods(unittest.TestCase):
             try:
                 _ = 'a' & ones
                 raised = False
-            except TypeError:
+            except pj.exceptions.JimIllegalArgumentError:
                 raised = True
 
             assert raised, \
@@ -1143,7 +1143,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             jim_threebands == jim_twobands
             raised = False
-        except IndexError:
+        except pj.exceptions.JimBandsError:
             raised = True
 
         assert raised, 'Error in raising an error when left Jim has ' \
@@ -1180,7 +1180,7 @@ class BadBasicMethods(unittest.TestCase):
             _ = pj.ccops.labelConstrainedCCsVariance(jim1, 0, 0, 0, 0, 0, 0,
                                                      pj.Jim(graph=0))
             raised = False
-        except ValueError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, 'Error in raising an error when an invalid value ' \

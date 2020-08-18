@@ -299,7 +299,7 @@ class BadPixOps(unittest.TestCase):
         try:
             jim.pixops.convert('string')
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -374,7 +374,7 @@ class BadPixOps(unittest.TestCase):
         try:
             pj.pixops.convert(a, 'string')
             raised = False
-        except TypeError:
+        except pj.exceptions.JimIllegalArgumentError:
             raised = True
 
         assert raised, \

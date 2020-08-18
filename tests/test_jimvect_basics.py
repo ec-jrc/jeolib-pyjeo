@@ -228,7 +228,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = pj.JimVect(vect)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -238,7 +238,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = pj.JimVect(vect, ln='milano')
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \
@@ -248,7 +248,7 @@ class BadBasicMethods(unittest.TestCase):
         try:
             _ = pj.JimVect(ulx=0, uly=1, lrx=1, lry=0, output=out_path)
             raised = False
-        except AttributeError:
+        except pj.exceptions.JimVectIllegalArgumentError:
             raised = True
 
         assert raised, \

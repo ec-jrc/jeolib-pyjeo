@@ -32,6 +32,7 @@ import jiplib as _jl
 
 from .modules import pjio as io, properties, pixops, ngbops, geometry, \
     ccops, classify, demops, stats, all
+from . import exceptions
 from .__init__ import _check_graph
 
 
@@ -228,15 +229,15 @@ class Jim:
         :return: numpy array representation
         """
         if not self:
-            raise ValueError(
+            raise exceptions.JimEmptyError(
                 'Jim has to have a data to use Jim.np()')
         try:
             self.properties.getDataType()
         except TypeError:
-            raise ValueError(
+            raise exceptions.JimInnerParametersError(
                 'Jim has to have a data type and dimensions to use Jim.np()')
         if band >= self.properties.nrOfBand():
-            raise ValueError('Band out of bounds')
+            raise exceptions.JimBandsError('Band out of bounds')
         elif band < 0:
             band = self.properties.nrOfBand() + band
         return _jl.np(self._jipjim, band)
@@ -255,10 +256,10 @@ class Jim:
                 if ('seed' in keys or 'uniform' in keys or 'stdev' in keys) \
                         and ('ncol' not in keys or 'nrow' not in keys or
                              'otype' not in keys):
-                    raise AttributeError('You cannot use any of parameters '
-                                         '[seed, uniform, stdev] without '
-                                         'specifying the geometry and otype '
-                                         'of Jim.')
+                    raise exceptions.JimIllegalArgumentError(
+                        'You cannot use any of parameters '
+                        '[seed, uniform, stdev] without specifying '
+                        'the geometry and otype of Jim.')
         elif type(image) is str:
             non_standard_path = image[:4] == '/vsi' or ':' in image
 
@@ -274,9 +275,9 @@ class Jim:
             checked
         """
         if self.properties.nrOfBand() > another_jim.properties.nrOfBand() > 1:
-            raise IndexError('Jims used in conditions must have either the '
-                             'same number of bands or one of them must have '
-                             'number of bands == 1')
+            raise exceptions.JimBandsError(
+                'Jims used in conditions must have either the same number of '
+                'bands or one of them must have number of bands == 1')
         elif 1 < self.properties.nrOfBand() < \
                 another_jim.properties.nrOfBand():
             _warnings.warn('Left Jim has less bands than the right one and '
@@ -299,7 +300,7 @@ class Jim:
         if uniform:
             if isinstance(uniform, list):
                 if len(uniform) != 2:
-                    raise AttributeError(
+                    raise exceptions.JimIllegalArgumentError(
                         'The list parsed as the uniform argument must be '
                         'in the form [min, max + 1]')
                 for band in range(0, self.properties.nrOfBand()):
@@ -334,7 +335,7 @@ class Jim:
         """
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError(
+                raise exceptions.JimIllegalArgumentError(
                     'Using a JimVect as an index not implemented for Jim '
                     'objects with more than one plane')
             nodata = self.properties.getNoDataVals()
@@ -368,7 +369,7 @@ class Jim:
                 nrow = 1
                 ncol = 1
             else:
-                raise ValueError(
+                raise exceptions.JimIllegalArgumentError(
                     'Len of shape {} of the np object not supported. Supported'
                     ' lengths are [0, 1, 2, 3]'.format(len(npresult.shape)))
 
@@ -436,9 +437,9 @@ class Jim:
         """
         if isinstance(item, JimVect):
             if self.properties.nrOfPlane() > 1:
-                raise ValueError('__setitem__ with JimVect not '
-                                 'implemented for Jim objects with more than '
-                                 'one plane')
+                raise exceptions.JimIllegalArgumentError(
+                    '__setitem__ with JimVect not implemented for Jim objects '
+                    'with more than one plane')
             # TODO: decide on default behaviour of ALL_TOUCHED=TRUE
             # TODO: next lines should work, but problem with GML files when SRS
             #       is not defined as in S2 cloud masks
@@ -465,9 +466,10 @@ class Jim:
             else:
                 self.np()[item] = value
         else:
-            raise ValueError('Error: __setitem__ only implemented for Vector, '
-                             'Jim or tuples (dims of __getitem__ must '
-                             'correspond with those of the tuple)')
+            raise exceptions.JimIllegalArgumentError(
+                '__setitem__ only implemented for JimVector, Jim or tuples '
+                '(dims of __getitem__ must correspond with those of the tuple)'
+            )
 
     def __nonzero__(self):
         """Check if Jim contains data.
@@ -822,7 +824,8 @@ class Jim:
         """Pixel wise operation /."""
         result = Jim(self)
         if 'int' in str(self.np().dtype):
-            raise TypeError('You cannot divide a Jim object of int type')
+            raise exceptions.JimIllegalArgumentError('You cannot divide a Jim '
+                                                     'object of int type')
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -903,8 +906,9 @@ class Jim:
                 jim.np(iband)[:] <<= right
             return jim
         else:
-            raise TypeError('unsupported operand type for << : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for << : {}'.format(
+                    type(right)))
 
     def __ilshift__(self, right):
         """Pixel wise operation <<=."""
@@ -912,8 +916,9 @@ class Jim:
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] <<= right
         else:
-            raise TypeError('unsupported operand type for <<= : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for <<= : {}'.format(
+                    type(right)))
         return self
 
     def __rshift__(self, right):
@@ -924,8 +929,9 @@ class Jim:
                 jim.np(iband)[:] >>= right
             return jim
         else:
-            raise TypeError('unsupported operand type for >> : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for >> : {}'.format(
+                    type(right)))
 
     def __irshift__(self, right):
         """Pixel wise operation >>=."""
@@ -933,8 +939,9 @@ class Jim:
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] >>= right
         else:
-            raise TypeError('unsupported operand type for >>= : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for >>= : {}'.format(
+                    type(right)))
         return self
 
     def __or__(self, right):
@@ -955,8 +962,9 @@ class Jim:
                 jim.np(iband)[:] |= right
             return jim
         else:
-            raise TypeError('unsupported operand type for | : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for | : {}'.format(
+                    type(right)))
 
     def __ior__(self, right):
         """Pixel wise operation |=."""
@@ -972,8 +980,9 @@ class Jim:
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] |= right
         else:
-            raise TypeError('unsupported operand type for |= : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for |= : {}'.format(
+                    type(right)))
         return self
 
     def __ror__(self, left):
@@ -984,8 +993,9 @@ class Jim:
                 jim.np(iband)[:] |= left
             return jim
         else:
-            raise TypeError('unsupported operand type for | : {}'.format(
-                type(left)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for | : {}'.format(
+                    type(left)))
 
     def __xor__(self, right):
         """Pixel wise operation ^."""
@@ -1005,8 +1015,9 @@ class Jim:
                 jim.np(iband)[:] ^= right
             return jim
         else:
-            raise TypeError('unsupported operand type for ^ : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for ^ : {}'.format(
+                    type(right)))
 
     def __ixor__(self, right):
         """Pixel wise operation ^=."""
@@ -1022,8 +1033,9 @@ class Jim:
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] ^= right
         else:
-            raise TypeError('unsupported operand type for ^= : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for ^= : {}'.format(
+                    type(right)))
         return self
 
     def __rxor__(self, left):
@@ -1034,8 +1046,9 @@ class Jim:
                 jim.np(iband)[:] ^= left
             return jim
         else:
-            raise TypeError('unsupported operand type for ^ : {}'.format(
-                type(left)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for ^ : {}'.format(
+                    type(left)))
 
     def __and__(self, right):
         """Pixel wise operation &."""
@@ -1055,8 +1068,9 @@ class Jim:
                 jim.np(iband)[:] &= right
             return jim
         else:
-            raise TypeError('unsupported operand type for & : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for & : {}'.format(
+                    type(right)))
 
     def __iand__(self, right):
         """Pixel wise operation &=."""
@@ -1072,8 +1086,9 @@ class Jim:
             for iband in range(0, self.properties.nrOfBand()):
                 self.np(iband)[:] &= right
         else:
-            raise TypeError('unsupported operand type for &= : {}'.format(
-                type(right)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for &= : {}'.format(
+                    type(right)))
         return self
 
     def __rand__(self, left):
@@ -1084,8 +1099,9 @@ class Jim:
                 jim.np(iband)[:] &= left
             return jim
         else:
-            raise TypeError('unsupported operand type for & : {}'.format(
-                type(left)))
+            raise exceptions.JimIllegalArgumentError(
+                'unsupported operand type for & : {}'.format(
+                    type(left)))
 
 
 class _ParentList(_jl.JimList):
@@ -1114,8 +1130,9 @@ class JimList(list):
         if isinstance(images_list, Jim):
             images_list = [images_list]
         elif not isinstance(images_list, list):
-            raise ValueError('Argument images_list must be either list, '
-                             'JimList or a Jim object.')
+            raise exceptions.JimListIllegalArgumentError(
+                'Argument images_list must be either list, JimList or a Jim '
+                'object.')
 
         super(JimList, self).__init__(images_list)
         self._jipjimlist = _ParentList(images_list, *args)
@@ -1319,12 +1336,13 @@ class _ParentVect(_jl.VectorOgr):
 
         if isinstance(vector, JimVect):
             if 'output' not in keys:
-                raise AttributeError(
+                raise exceptions.JimVectIllegalArgumentError(
                     "Parameter output required for copy constructor")
         elif not vector:
             if 'output' in keys and not _os.path.isfile(kwargs['output']):
-                raise AttributeError('Output path does not exist and the '
-                                     'template vector is not specified')
+                raise exceptions.JimVectIllegalArgumentError(
+                    'Output path does not exist and the template vector is '
+                    'not specified')
 
 
 class JimVect:
@@ -1454,7 +1472,7 @@ def np(jim_object: Jim) -> _np.ndarray:
     :return: a numpy representation of the Jim object
     """
     if not jim_object:
-        raise ValueError(
+        raise exceptions.JimEmptyError(
             'Jim has to have a data to use Jim.np()')
     return _jl.np(jim_object._jipjim)
 
