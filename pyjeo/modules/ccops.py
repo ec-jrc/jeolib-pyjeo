@@ -133,7 +133,7 @@ def convertHsiToRgb(jim):
     jims = _pj.geometry.cropBand(jim, 1)
     jimi = _pj.geometry.cropBand(jim, 2)
 
-    return pj.Jim(jimh._jipjim.convertRgbToHsx(jims, jimi))
+    return _pj.Jim(jimh._jipjim.convertRgbToHsx(jims, jimi))
 
 
 def convertHlsToRgb(jim):
@@ -152,7 +152,7 @@ def convertHlsToRgb(jim):
     jiml = _pj.geometry.cropBand(jim, 1)
     jims = _pj.geometry.cropBand(jim, 2)
 
-    return pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
+    return _pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
 
 
 def dbscan(jim_dissim,
@@ -180,7 +180,7 @@ def dissim(jim_map,
     :param type: integer
     :return: Jim object representing the dissimilarity matrix
     """
-    return pj.Jim(jim_map._jipjim.dissimilarityMatrix(jim_mask._jipjim,
+    return _pj.Jim(jim_map._jipjim.dissimilarityMatrix(jim_mask._jipjim,
                                                       nc, type))
 
 
