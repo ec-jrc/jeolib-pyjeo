@@ -1,8 +1,10 @@
 """
 Basic file containing Jim* objects and functions for numpy conversions.
+
 Author(s): Pieter.Kempeneers@ec.europa.eu,
            Ondrej Pesek,
            Pierre.Soille@ec.europa.eu
+
 Copyright (C) 2018-2020 European Union (Joint Research Centre)
 
 This file is part of pyjeo.
