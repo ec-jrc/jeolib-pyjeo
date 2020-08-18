@@ -1098,6 +1098,10 @@ def reducePlane(jim,
                     jimreduced.pixops.convert(otype=d_type)
                     jim.pixops.convert(otype=d_type)
         else:
+            if nodata is not None and ref_band is None:
+                raise _pj.exceptions.JimIllegalArgumentError(
+                    'use ref_band option for nodata')
+
             if rule == 'max':
                 def rule(reduced, plane):
                     """Rule for max."""
@@ -1119,10 +1123,6 @@ def reducePlane(jim,
 
             for iplane in range(1, nr_of_planes):
                 jimplane = _pj.geometry.cropPlane(jim, iplane)
-
-                if nodata is not None and ref_band is None:
-                    raise _pj.exceptions.JimIllegalArgumentError(
-                        'use ref_band option for nodata')
 
                 if ref_band is not None:
                     maskplane = _pj.geometry.cropBand(jimplane, ref_band)
@@ -2293,6 +2293,10 @@ class _Geometry(_pj.modules.JimModuleBase):
                         jimreduced.pixops.convert(otype=d_type)
                         self._jim_object.pixops.convert(otype=d_type)
             else:
+                if nodata is not None and ref_band is None:
+                    raise _pj.exceptions.JimIllegalArgumentError(
+                        'use ref_band option for nodata')
+
                 if rule == 'max':
                     def rule(reduced, plane):
                         """Rule for max."""
@@ -2314,10 +2318,6 @@ class _Geometry(_pj.modules.JimModuleBase):
 
                 for iplane in range(1, nr_of_planes):
                     jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
-
-                    if nodata is not None and ref_band is None:
-                        raise _pj.exceptions.JimIllegalArgumentError(
-                            'use ref_band option for nodata')
 
                     if ref_band is not None:
                         maskplane = _pj.geometry.cropBand(jimplane, ref_band)
