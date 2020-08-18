@@ -1,5 +1,5 @@
 """
-Basic file containing Jim* objects and functions for numpy conversions.
+Custom exceptions to be used within pyjeo.
 Author(s): Pieter.Kempeneers@ec.europa.eu,
            Ondrej Pesek,
            Pierre.Soille@ec.europa.eu
