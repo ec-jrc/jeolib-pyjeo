@@ -1037,7 +1037,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         Modifies the instance on which the method was called.
         """
         assert jim.properties.nrOfBand() == 3, \
-            'Error: input jim must be multi-band image with three bands ' \
+            'Input jim must be multi-band image with three bands ' \
             '(h, s, i)'
         jimh = _pj.geometry.cropBand(self._jim_object, 0)
         jims = _pj.geometry.cropBand(self._jim_object, 1)
@@ -1054,7 +1054,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         Modifies the instance on which the method was called.
         """
         assert jim.properties.nrOfBand() == 3, \
-            'Error: input jim must be multi-band image with three bands ' \
+            'Input jim must be multi-band image with three bands ' \
             '(h, s, i)'
         jimh = _pj.geometry.cropBand(jim, 0)
         jiml = _pj.geometry.cropBand(jim, 1)
