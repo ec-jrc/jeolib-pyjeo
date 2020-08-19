@@ -66,7 +66,7 @@ class BadBasicMethodLists(unittest.TestCase):
 
         # Test wrong creation of a JimList (integer used as an argument)
         try:
-            jiml = pj.JimList(None)
+            jiml = pj.JimList(1)
             raised = False
         except pj.exceptions.JimListIllegalArgumentError:
             raised = True
