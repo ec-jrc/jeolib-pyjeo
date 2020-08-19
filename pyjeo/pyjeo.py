@@ -196,6 +196,7 @@ class Jim:
     def getMethods(queried_module: str = None):
         """Print an overview of available methods in format module.method."""
         def tree_structure(module, queried_module: str):
+            """Change structure of the output to a tree one."""
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -1186,6 +1187,7 @@ class JimList(list):
     def getMethods(queried_module: str = None):
         """Print an overview of available methods in format module.method."""
         def tree_structure(module, queried_module: str):
+            """Change structure of the output to a tree one."""
             if queried_module and queried_module not in str(module):
                 return ''
 
@@ -1401,6 +1403,7 @@ class JimVect:
     def getMethods(queried_module: str = None):
         """Print an overview of available methods in format module.method."""
         def tree_structure(module, queried_module: str):
+            """Change structure of the output to a tree one."""
             if queried_module and queried_module not in str(module):
                 return ''
 
