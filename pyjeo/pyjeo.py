@@ -1121,12 +1121,15 @@ class _ParentList(_jl.JimList):
 class JimList(list):
     """Definition of JimList object."""
 
-    def __init__(self, images_list=[], *args):
+    def __init__(self, images_list=None, *args):
         """Initialize the Jim object and modules for methods.
 
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
+        if images_list is None:
+            images_list = []
+
         if isinstance(images_list, Jim):
             images_list = [images_list]
         elif not isinstance(images_list, list):
