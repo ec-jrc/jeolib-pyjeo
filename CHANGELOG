@@ -13,3 +13,4 @@
 * added support of Jim.geometry.stackPlane() with only one Jim parameter
 * added support of JimList.geometry.stackPlane(JimList)
 * custom exceptions used instead of the Python default ones where it made sanse
+* JimList.index(jim, start, end) instead of JimList.index(jim)

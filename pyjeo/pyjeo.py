@@ -1238,9 +1238,12 @@ class JimList(list):
         super(JimList, self).extend(jim_list)
         self._set(self, from_list=True)
 
-    def index(self, jim: Jim):
+    def index(self, jim: Jim, start: int = 0, end: int = None):
         """Return smallest index of element in the JimList."""
-        for i in range(len(self)):
+        if end is None:
+            end = len(self)
+
+        for i in range(start, end):
             if self[i].properties.isEqual(jim):
                 return i
 
