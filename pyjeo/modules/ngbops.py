@@ -270,7 +270,8 @@ def firfilter1d(jim_object,
 
         jim = pj.Jim('/path/to/image.tif')
 
-        filtered = pj.ngbops.firfilter1d(jim, taps=np.array([1, 2, 1]), norm=True, pad='symmetric')
+        filtered = pj.ngbops.firfilter1d(jim, taps=np.array([1, 2, 1]),
+                                         norm=True, pad='symmetric')
     """
     if len(taps.shape) != 1:
         raise _pj.exceptions.JimIllegalArgumentError(
@@ -301,7 +302,8 @@ def firfilter2d(jim_object,
 
         jim = pj.Jim('/path/to/image.tif')
 
-        filtered = pj.ngbops.firfilter2d(jim, taps=np.array([[1, 2, 1]]), norm=True, pad='symmetric')
+        filtered = pj.ngbops.firfilter2d(jim, taps=np.array([[1, 2, 1]]),
+                                         norm=True, pad='symmetric')
     """
     if len(taps.shape) != 2:
         raise _pj.exceptions.JimIllegalArgumentError(
@@ -538,7 +540,8 @@ def morphoGradientByDilationDiamond(jim_object):
 
     Uses the elementary diamond shaped SE.
     """
-    return _pj.Jim(jim_object._jipjim.morphoDilateNgb4(1, 1)) - jim_object
+    dilated = jim_object._jipjim.morphoDilateNgb4(1, 1)
+    return _pj.Jim(dilated) - jim_object
 
 
 def morphoGradientByErosionDiamond(jim_object):
@@ -1264,7 +1267,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
             jim = pj.Jim('/path/to/image.tif')
 
-            jim.ngbops.firfilter2d(taps=np.array([[1, 2, 1]]), norm=True, pad='symmetric')
+            jim.ngbops.firfilter2d(taps=np.array([[1, 2, 1]]),
+                                   norm=True, pad='symmetric')
         """
         if len(taps.shape) != 2:
             raise _pj.exceptions.JimIllegalArgumentError(
@@ -1293,8 +1297,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
         :param jimo: a list of grey level Jim objects with the same
             definition domain. The dissimilarities are calculated for each
             image separately and composed using the point-wise maximum rule.
-        :param dissim_type: integer value indicating the type of dissimilarity \
-                                measure.
+        :param dissim_type: integer value indicating the type
+                                of dissimilarity measure.
                             0 (default) for absolute difference.
                             1 for dissimilarity measure countering \
                               the chaining effect as described in \
@@ -1505,8 +1509,8 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
         Modifies the instance on which the method was called.
         """
-        gradient = _pj.Jim(self._jim_object._jipjim.morphoDilateNgb4(1, 1)) - \
-                   self._jim_object
+        dilated = self._jim_object._jipjim.morphoDilateNgb4(1, 1)
+        gradient = _pj.Jim(dilated) - self._jim_object
         self._jim_object._set(gradient._jipjim)
 
     def morphoGradientByErosionDiamond(self):
