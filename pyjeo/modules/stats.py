@@ -245,7 +245,7 @@ class _Stats(_pj.modules.JimModuleBase):
                           0.0]}
 
         """
-        if not isinstance(function, list):
+        if isinstance(function, str):
             function = function.split(',')
 
         statDict = dict()
@@ -398,7 +398,7 @@ class _StatsList(_pj.modules.JimListModuleBase):
         """
         keys = list(kwargs.keys())
 
-        if not isinstance(function, list):
+        if isinstance(function, str):
             function = function.split(',')
 
         if len(function) > 0:
