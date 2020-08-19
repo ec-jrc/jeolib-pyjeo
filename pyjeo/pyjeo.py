@@ -1254,7 +1254,8 @@ class JimList(list):
         super(JimList, self).insert(index, jim)
         self._set(self, from_list=True)
 
-    def pop(self, index: int):
+    def pop(self,
+            index: int = -1):
         """Remove and return element at given index."""
         popped = super(JimList, self).pop(index)
         self._set(self, from_list=True)
