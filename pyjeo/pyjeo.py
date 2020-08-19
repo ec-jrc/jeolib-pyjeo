@@ -1306,8 +1306,14 @@ class _ParentVect(_jl.VectorOgr):
 
         :param vector: path to a vector or another JimVect object as a basis
             for the JimVect object
-        :param output: path to an output vector in case another JimVect object
-            was provided (copy constructor)
+        :param kwargs: See table below
+
+        +------------------+--------------------------------------------------+
+        | key              | value                                            |
+        +==================+==================================================+
+        | output           | Path to an output vector in case another         |
+        |                  | JimVect object was provided (copy constructor)   |
+        +------------------+--------------------------------------------------+
         """
         self._checkInitParamsSense(vector, kwargs)
 
