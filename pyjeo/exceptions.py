@@ -23,49 +23,59 @@
 
 class JimError(Exception):
     """Base class for Jim exceptions."""
+
     pass
 
 
 class JimEmptyError(JimError):
     """Exception class for when Jim is empty and should not be."""
+
     pass
 
 
 class JimInnerParametersError(JimError):
     """Exception class for when Jim has undefined parameters and should not."""
+
     pass
 
 
 class JimBandsError(JimError):
     """Exception class for when Jim band out of bands."""
+
     pass
 
 
 class JimIllegalArgumentError(JimError):
     """Exception class for when used arguments do not make sense."""
+
     pass
 
 
 class JimListError(Exception):
     """Base class for JimList exceptions."""
+
     pass
 
 
 class JimListIllegalArgumentError(JimListError):
     """Exception class for when used arguments do not make sense."""
+
     pass
 
 
 class JimVectError(Exception):
     """Base class for JimVect exceptions."""
+
     pass
 
 
 class JimVectEmptyError(JimVectError):
     """Exception class for when JimVect is empty and should not be."""
+
     pass
 
 
 class JimVectIllegalArgumentError(JimVectError):
     """Exception class for when used arguments do not make sense."""
+
     pass

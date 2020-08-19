@@ -2968,7 +2968,6 @@ class BadGeometryVects(unittest.TestCase):
     @staticmethod
     def test_sample():
         """Test the sample function."""
-
         jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3])
         v = pj.geometry.sample(jim0, random=100, buffer=100, rule=['mean'],
                                output='mem01', oformat='Memory')

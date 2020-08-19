@@ -1263,6 +1263,7 @@ class _CCOps(_pj.modules.JimModuleBase):
                               oz: float,
                               rl: int):
         """Label image, in development.
+
         Modifies the instance on which the method was called.
 
         :param ngb: a Jim object for neighbourhood
@@ -1285,6 +1286,7 @@ class _CCOps(_pj.modules.JimModuleBase):
                               rg: int,
                               rl: int):
         """Label image, in development.
+
         Modifies the instance on which the method was called.
 
         :param jim_mi: a Jim object
@@ -1417,8 +1419,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelsSet(ival_jim, indic)
 
     def labelsSetArea(self):
-        """Set labels to regions based on Tessel surface.
-        """
+        """Set labels to regions based on Tessel surface."""
         self._jim_object._jipjim.d_labelsSetArea()
 
     def labelsSetGraph(self,

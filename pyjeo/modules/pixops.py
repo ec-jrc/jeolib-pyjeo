@@ -285,7 +285,7 @@ def simpleThreshold(jim_object,
 
 def stretch(jim_object,
             **kwargs):
-    """Stretch pixel values
+    """Stretch pixel values.
 
     :param jim_object: Jim object to be used for the stretch
     :param kwargs: See table below
@@ -325,7 +325,6 @@ def stretch(jim_object,
         jim_stretched = pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,
                                           dst_max=255, cc_min=2, cc_max=98)
     """
-
     return _pj.Jim(jim_object._jipjim.stretch(kwargs))
 
 
@@ -639,7 +638,7 @@ class _PixOps(_pj.modules.JimModuleBase):
 
     def stretch(self,
                 **kwargs):
-        """Stretch pixel values
+        """Stretch pixel values.
 
         Modifies the instance on which the method was called.
 
@@ -680,7 +679,6 @@ class _PixOps(_pj.modules.JimModuleBase):
             jim_stretched = pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,
                                               dst_max=255, cc_min=2, cc_max=98)
         """
-
         self._jim_object._set(self._jim_object._jipjim.stretch(kwargs))
 
     def supremum(self,

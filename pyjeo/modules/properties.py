@@ -508,8 +508,7 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
         self._jim_list._jipjimlist.pushNoDataValue(value)
 
     def selectGeo(self, *args):
-        """Select geographical properties (ulx, uly, ...).
-        """
+        """Select geographical properties (ulx, uly, ...)."""
         self._jim_list._jipjimlist.selectGeo(*args)
         self._jim_list._set(self._jim_list)
 
