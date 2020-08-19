@@ -659,7 +659,7 @@ def labelStronglyCCs(jim,
                 ngb._jipjim, 1, 1, 0, local_range))
     elif isinstance(jim, _pj.JimList):
         return _pj.Jim(jim._jipjimlist.labelStronglyCCsMultiband(
-            ngb._jipjim, 1, 1, 0, global_range, local_range))
+            ngb._jipjim, 1, 1, 0, local_range))
     else:
         raise _pj.exceptions.JimIllegalArgumentError(
             "Input must be Jim or JimList object")
