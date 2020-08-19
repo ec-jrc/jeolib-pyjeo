@@ -1,4 +1,4 @@
-# Module containing all functions and methods from the others.
+"""Module containing all functions and methods from the others."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu

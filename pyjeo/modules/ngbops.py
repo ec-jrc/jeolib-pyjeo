@@ -1,4 +1,4 @@
-# Module for neighbourhood operations.
+"""Module for neighbourhood operations."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu

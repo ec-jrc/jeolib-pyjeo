@@ -1,4 +1,4 @@
-# Module for operations connected to digital elevation models.
+"""Module for operations connected to digital elevation models."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu

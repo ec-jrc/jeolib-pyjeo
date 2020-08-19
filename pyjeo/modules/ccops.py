@@ -1,4 +1,4 @@
-# Module for connected-component operations.
+"""Module for connected-component operations."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu

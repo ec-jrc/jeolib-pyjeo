@@ -1,4 +1,4 @@
-# Module for input-output operations.
+"""Module for input-output operations."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu

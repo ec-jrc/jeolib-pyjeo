@@ -1,4 +1,4 @@
-# Module for operations connected to classification.
+"""Module for operations connected to classification."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu

@@ -1,4 +1,4 @@
-# Module for operations working with the geometry of the Jim objects.
+"""Module for operations working with the geometry of the Jim objects."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu

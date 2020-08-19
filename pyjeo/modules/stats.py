@@ -1,4 +1,4 @@
-# Module for statistical functions and interpolations.
+"""Module for statistical functions and interpolations."""
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu
