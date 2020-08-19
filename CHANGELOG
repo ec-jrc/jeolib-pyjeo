@@ -14,3 +14,4 @@
 * added support of JimList.geometry.stackPlane(JimList)
 * custom exceptions used instead of the Python default ones where it made sense
 * JimList.index(jim, start, end) instead of JimList.index(jim)
+* add to JimList.pop(index) default value -> JimList.pop(index=-1)
