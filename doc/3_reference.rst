@@ -57,7 +57,7 @@ Create Jim object from file
    ..
 
    .. note::
-      for resample values, please check `gdal site <http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a>`_.
+      for resample values, please check `gdal site <https://gdal.org/doxygen/gdal_8h.html#a640ada511cbddeefac67c548e009d5ac>`_.
 
    Example:
 

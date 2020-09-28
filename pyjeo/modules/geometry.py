@@ -1408,20 +1408,21 @@ def warp(jim_object,
     :param kwargs: See table below
     :return: Cropped subimage as Jim instance
 
-    +----------+---------------------------------------------------------------------------------------------+
-    | key      | value                                                                                       |
-    +==========+=============================================================================================+
-    | s_srs    | Source spatial reference system (default is to read                                         |
-    |          | from input)                                                                                 |
-    +----------+---------------------------------------------------------------------------------------------+
-    | resample | Resample algorithm used for reading pixel data in                                           |
-    |          | case of interpolation                                                                       |
-    |          | (default: GRIORA_NearestNeighbour). Check                                                   |
-    |          | https://gdal.org/api/raster_c_api.html?highlight=griora_nearestn#_CPPv418GDALRIOResampleAlg |
-    |          | for available options.                                                                      |
-    +----------+---------------------------------------------------------------------------------------------+
-    | nodata   | Nodata value to put in image if out of bounds                                               |
-    +----------+---------------------------------------------------------------------------------------------+
+
+    +----------+---------------------------------------------------------------------------------------------------+
+    | key      | value                                                                                             |
+    +==========+===================================================================================================+
+    | s_srs    | Source spatial reference system (default is to read                                               |
+    |          | from input)                                                                                       |
+    +----------+---------------------------------------------------------------------------------------------------+
+    | resample | Resample algorithm used for reading pixel data in                                                 |
+    |          | case of interpolation                                                                             |
+    |          | (default: near).                                                                                  |
+    |          | Check `GDAL link <https://gdal.org/doxygen/gdalwarper_8h.html#a4775b029869df1f9270ad554c063384>`_ |
+    |          | for available options.                                                                            |
+    +----------+---------------------------------------------------------------------------------------------------+
+    | nodata   | Nodata value to put in image if out of bounds                                                     |
+    +----------+---------------------------------------------------------------------------------------------------+
 
     Example:
 
@@ -2488,20 +2489,20 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param t_srs: Target spatial reference system
         :param kwargs: See table below
 
-        +----------+-------------------------------------------------------------------+
-        | key      | value                                                             |
-        +==========+===================================================================+
-        | s_srs    | Source spatial reference system                                   |
-        |          | (default is to read from input)                                   |
-        +----------+-------------------------------------------------------------------+
-        | resample | Resample algorithm used for reading pixel data in                 |
-        |          | case of interpolation                                             |
-        |          | (default: GRIORA_NearestNeighbour). Check                         |
-        |          | http://www.gdal.org/gdal_8h.html#a640ada511cbddeefac67c548e009d5a |
-        |          | or available options.                                             |
-        +----------+-------------------------------------------------------------------+
-        | nodata   | Nodata value to put in image if out of bounds                     |
-        +----------+-------------------------------------------------------------------+
+        +----------+---------------------------------------------------------------------------------------------------+
+        | key      | value                                                                                             |
+        +==========+===================================================================================================+
+        | s_srs    | Source spatial reference system (default is to read                                               |
+        |          | from input)                                                                                       |
+        +----------+---------------------------------------------------------------------------------------------------+
+        | resample | Resample algorithm used for reading pixel data in                                                 |
+        |          | case of interpolation                                                                             |
+        |          | (default: near).                                                                                  |
+        |          | Check `GDAL link <https://gdal.org/doxygen/gdalwarper_8h.html#a4775b029869df1f9270ad554c063384>`_ |
+        |          | for available options.                                                                            |
+        +----------+---------------------------------------------------------------------------------------------------+
+        | nodata   | Nodata value to put in image if out of bounds                                                     |
+        +----------+---------------------------------------------------------------------------------------------------+
 
         Example:
 
