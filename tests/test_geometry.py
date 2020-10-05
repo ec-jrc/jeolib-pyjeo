@@ -1080,11 +1080,32 @@ class BadGeometry(unittest.TestCase):
 
     @staticmethod
     def test_rasterize():
-        """Test the rasterize() function and method."""
+        """Test the rasterize() function and method for bytes."""
         jim0 = pj.Jim(rasterfn, band=0)
         sample = pj.JimVect(vectorfn)
         mask = pj.Jim(jim0, copy_data=False)
         mask.pixops.convert('GDT_Byte')
+        mask.geometry.rasterize(sample, eo=['ATTRIBUTE=label'])
+
+        rasterized = pj.geometry.rasterize(jim0, sample,
+                                           eo=['ATTRIBUTE=label'])
+
+        assert rasterized.properties.isEqual(mask), \
+            'Error in geometry.rasterize() ' \
+            '(function is not equal to method)'
+
+        minmax = mask.stats.getStats(function=['min', 'max'])
+
+        assert minmax['min'] == 0,\
+            'Error in geometry.rasterize() min != 0'
+        assert minmax['max'] == 2,\
+            'Error in geometry.rasterize() max != 2'
+
+        # Test the rasterize() function and method for double.
+        jim0 = pj.Jim(rasterfn, band=0)
+        jim0.pixops.convert('GDT_Float64')
+        sample = pj.JimVect(vectorfn)
+        mask = pj.Jim(jim0, copy_data=False)
         mask.geometry.rasterize(sample, eo=['ATTRIBUTE=label'])
 
         rasterized = pj.geometry.rasterize(jim0, sample,

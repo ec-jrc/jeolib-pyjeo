@@ -51,6 +51,12 @@ class JimIllegalArgumentError(JimError):
     pass
 
 
+class JimTypeError(JimError):
+    """Exception class for when data type does not exist or is not supported."""
+
+    pass
+
+
 class JimListError(Exception):
     """Base class for JimList exceptions."""
 

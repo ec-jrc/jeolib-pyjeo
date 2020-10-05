@@ -970,6 +970,11 @@ def rasterize(jim_object,
         raise _pj.exceptions.JimIllegalArgumentError(
             'Can only rasterize a JimVect')
 
+    d_type = jim_object.properties.getDataType()
+    if d_type not in ('Byte',
+                      'Float64'):
+        raise _pj.exceptions.JimTypeError(
+                    'Only GDT_Byte or GDT_Float64 are supported')
     kwargs = {}
     if burn_value is not None:
         kwargs.update({'burn': float(burn_value)})
@@ -2149,6 +2154,12 @@ class _Geometry(_pj.modules.JimModuleBase):
         if not isinstance(jim_vect, _pj.JimVect):
             raise _pj.exceptions.JimIllegalArgumentError(
                 'Can only rasterize a JimVect')
+        d_type = self._jim_object.properties.getDataType()
+        print(d_type)
+        if d_type not in ('Byte',
+                          'Float64'):
+            raise _pj.exceptions.JimTypeError(
+                        'Only GDT_Byte or GDT_Float64 are supported')
 
         kwargs = {}
         if burn_value is not None:
