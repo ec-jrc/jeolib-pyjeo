@@ -99,7 +99,6 @@ class _ParentJim(_jl.Jim):
                         kwargs.update({'lry': lry})
                     else:
                         kwargs.update({'filename': image})
-                    print(kwargs)
                     super(_ParentJim, self).__init__(kwargs)
             elif 'graph' in kwargs:
                 graph = kwargs.pop('graph')

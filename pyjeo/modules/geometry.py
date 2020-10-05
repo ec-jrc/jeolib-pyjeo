@@ -2155,7 +2155,6 @@ class _Geometry(_pj.modules.JimModuleBase):
             raise _pj.exceptions.JimIllegalArgumentError(
                 'Can only rasterize a JimVect')
         d_type = self._jim_object.properties.getDataType()
-        print(d_type)
         if d_type not in ('Byte',
                           'Float64'):
             raise _pj.exceptions.JimTypeError(
