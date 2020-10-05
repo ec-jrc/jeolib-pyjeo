@@ -25,6 +25,7 @@ import numpy as _np
 import gc as _gc
 import warnings as _warnings
 import os as _os
+import math
 from osgeo import ogr as _ogr
 
 import jiplib as _jl
@@ -59,7 +60,46 @@ class _ParentJim(_jl.Jim):
                             'kwargs ignored.', SyntaxWarning)
                         super(_ParentJim, self).__init__(image._jipjim)
                 else:
-                    kwargs.update({'filename': image})
+                    if 'tileindex' in kwargs.keys() and 'tiletotal' in kwargs.keys():
+                        tileindex = kwargs.pop('tileindex')
+                        tiletotal = kwargs.pop('tiletotal')
+                        try:
+                            overlap = kwargs.pop('overlap')
+                        except KeyError:
+                            overlap = 5
+                        kwargs.update({'filename': image})
+                        ajim = Jim(image, noread=True)
+                        # super(_ParentJim, self).__init__({'filename':image, 'noread':True})
+                        bbox = ajim.properties.getBBox()
+                        assert 4 ** int(round(math.log(tiletotal, 4))) == tiletotal, \
+                            'Error: tiletotal must be power of 4'
+                        assert tileindex < tiletotal, \
+                            'Error: tileindex must be < ' + str(tiletotal)
+                        assert len(bbox) == 4, \
+                            'Error: bbox must be list of format ulx, uly, lrx, lry'
+                        ncol = math.sqrt(tiletotal)
+                        nrow = ncol
+                        icol = tileindex % nrow
+                        irow = tileindex // nrow
+                        dx = (bbox[2] - bbox[0]) / ncol
+                        dy = (bbox[1] - bbox[3]) / nrow
+                        # overlap = dx*0.025
+                        overlap = dx*overlap/200.0
+                        ulx = bbox[0] + icol * dx - overlap
+                        ulx = max(ulx, bbox[0])
+                        uly = bbox[1] - irow * dy + overlap
+                        uly = min(uly, bbox[1])
+                        lrx = ulx + dx + overlap
+                        lrx = min(lrx, bbox[2])
+                        lry = uly - dy - overlap
+                        lry = max(lry, bbox[3])
+                        kwargs.update({'ulx': ulx})
+                        kwargs.update({'uly': uly})
+                        kwargs.update({'lrx': lrx})
+                        kwargs.update({'lry': lry})
+                    else:
+                        kwargs.update({'filename': image})
+                    print(kwargs)
                     super(_ParentJim, self).__init__(kwargs)
             elif 'graph' in kwargs:
                 graph = kwargs.pop('graph')
