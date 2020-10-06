@@ -25,7 +25,6 @@ import warnings as _warnings
 
 import pyjeo as _pj
 
-
 def append(jvec1,
            jvec2,
            output: str,
@@ -1450,13 +1449,16 @@ def warp(jim_object,
     """
     kwargs.update({'t_srs': t_srs})
 
-    jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.warp(kwargs))
-    for iplane in range(1, jim_object.properties.nrOfPlane()):
-        jimplane = _pj.Jim(_pj.geometry.cropPlane(jim_object,
-                                                  iplane)._jipjim.warp(kwargs))
-        jim.geometry.stackPlane(jimplane)
-    return jim
-    # return _pj.Jim(jim_object._jipjim.warp(kwargs))
+    if isinstance(jim_object, _pj.Jim):
+        jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.warp(kwargs))
+        for iplane in range(1, jim_object.properties.nrOfPlane()):
+            jimplane = _pj.Jim(_pj.geometry.cropPlane(jim_object,
+                                                    iplane)._jipjim.warp(kwargs))
+            jim.geometry.stackPlane(jimplane)
+        return jim
+    elif isinstance(jim_object, _pj.JimVect):
+        raise _pj.exceptions.JimVectNotSupportedError(
+            "warp not supported yet for JimVect")
 
 
 class _Geometry(_pj.modules.JimModuleBase):
