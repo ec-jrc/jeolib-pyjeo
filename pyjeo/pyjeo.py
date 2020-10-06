@@ -71,8 +71,12 @@ class _ParentJim(_jl.Jim):
                         ajim = Jim(image, noread=True)
                         # super(_ParentJim, self).__init__({'filename':image, 'noread':True})
                         bbox = ajim.properties.getBBox()
-                        assert 4 ** int(round(math.log(tiletotal, 4))) == tiletotal, \
-                            'Error: tiletotal must be power of 4'
+                        ncol = int(round(math.sqrt(tiletotal)))
+                        nrow = ncol
+                        assert ncol * nrow == tiletotal, \
+                            'Error: tiletotal must be squared integer'
+                        # assert 4 ** int(round(math.log(tiletotal, 4))) == tiletotal, \
+                        #     'Error: tiletotal must be power of 4'
                         assert tileindex < tiletotal, \
                             'Error: tileindex must be < ' + str(tiletotal)
                         assert len(bbox) == 4, \
