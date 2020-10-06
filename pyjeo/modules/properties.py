@@ -20,6 +20,7 @@
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as _np
+import osgeo
 import pyjeo as _pj
 
 # def imageInfo(jim_object):
@@ -158,13 +159,55 @@ class _Properties(_pj.modules.JimModuleBase):
         """
         return self._jim_object._jipjim.covers(*args)
 
-    def getBBox(self):
+    def getBBox(self, t_srs = None):
         """Get the bounding box (georeferenced) coordinates of this dataset.
 
+        :t_srs: A target reference system (e.g., 'epsg:3035, 3035, or WKT)
         :return: A list with upper left x, upper left y, lower right x, and
             lower right y
         """
-        return self._jim_object._jipjim.getBoundingBox()
+        bbox = self._jim_object._jipjim.getBoundingBox()
+        if t_srs is not None:
+            # create coordinate transformation
+            inSpatialRef = osgeo.osr.SpatialReference()
+            outSpatialRef = osgeo.osr.SpatialReference()
+
+            inSpatialRef.ImportFromWkt(self._jim_object.properties.getProjection())
+            if int(osgeo.__version__[0]) >= 3:
+                #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
+                outSpatialRef.SetAxisMappingStrategy(
+                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+                outSpatialRef.SetAxisMappingStrategy(
+                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            if isinstance(t_srs, int):
+                outSpatialRef.ImportFromEPSG(t_srs)
+            elif isinstance(t_srs, str):
+                if 'EPSG:' in t_srs:
+                    t_srs=int(t_srs.split("EPSG:",1)[1])
+                    outSpatialRef.ImportFromEPSG(t_srs)
+                elif 'epsg:' in t_srs:
+                    t_srs=int(t_srs.split("epsg:",1)[1])
+                    outSpatialRef.ImportFromEPSG(t_srs)
+                else:
+                    outSpatialRef.ImportFromWkt(t_srs)
+            else:
+                raise JimIllegalArgumentError("Error: coordinate reference "
+                                              "system must be integer "
+                                              "representing epsg code or string")
+            coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
+                                                                outSpatialRef)
+            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            point.AddPoint(bbox[0], bbox[1])
+            point.Transform(coordTransform)
+            ulx = point.GetX()
+            uly = point.GetY()
+            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            point.AddPoint(bbox[2], bbox[3])
+            point.Transform(coordTransform)
+            lrx = point.GetX()
+            lry = point.GetY()
+            bbox = [ulx, uly, lrx, lry]
+        return bbox
 
     def getCenterPos(self):
         """
@@ -458,13 +501,55 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
         """
         return self._jim_list._jipjimlist.covers(*args)
 
-    def getBBox(self):
+    def getBBox(self, t_srs = None):
         """Get the bounding box (georeferenced) coordinates of this dataset.
 
+        :t_srs: A target reference system (e.g., 'epsg:3035, 3035, or WKT)
         :return: A list with upper left x, upper left y, lower right x, and
             lower right y
         """
-        return self._jim_list._jipjimlist.getBoundingBox()
+        bbox = self._jim_list._jipjimlist.getBoundingBox()
+        if t_srs is not None:
+            # create coordinate transformation
+            inSpatialRef = osgeo.osr.SpatialReference()
+            outSpatialRef = osgeo.osr.SpatialReference()
+
+            inSpatialRef.ImportFromWkt(self._jim_list.properties.getProjection())
+            if int(osgeo.__version__[0]) >= 3:
+                #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
+                outSpatialRef.SetAxisMappingStrategy(
+                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+                outSpatialRef.SetAxisMappingStrategy(
+                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            if isinstance(t_srs, int):
+                outSpatialRef.ImportFromEPSG(t_srs)
+            elif isinstance(t_srs, str):
+                if 'EPSG:' in t_srs:
+                    t_srs=int(t_srs.split("EPSG:",1)[1])
+                    outSpatialRef.ImportFromEPSG(t_srs)
+                elif 'epsg:' in t_srs:
+                    t_srs=int(t_srs.split("epsg:",1)[1])
+                    outSpatialRef.ImportFromEPSG(t_srs)
+                else:
+                    outSpatialRef.ImportFromWkt(t_srs)
+            else:
+                raise JimIllegalArgumentError("Error: coordinate reference "
+                                              "system must be integer "
+                                              "representing epsg code or string")
+            coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
+                                                                outSpatialRef)
+            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            point.AddPoint(bbox[0], bbox[1])
+            point.Transform(coordTransform)
+            ulx = point.GetX()
+            uly = point.GetY()
+            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            point.AddPoint(bbox[2], bbox[3])
+            point.Transform(coordTransform)
+            lrx = point.GetX()
+            lry = point.GetY()
+            bbox = [ulx, uly, lrx, lry]
+        return bbox
 
     def getLrx(self):
         """Get the lower left corner x coordinate of this dataset.
@@ -516,13 +601,54 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
 class _PropertiesVect(_pj.modules.JimVectModuleBase):
     """Define all properties methods for JimVects."""
 
-    def getBBox(self):
+    def getBBox(self, t_srs = None):
         """Get the bounding box (georeferenced) coordinates of this dataset.
 
         :return: A list with upper left x, upper left y, lower right x, and
             lower right y
         """
-        return self._jim_vect._jipjimvect.getBoundingBox()
+        bbox = self._jim_vect._jipjimvect.getBoundingBox()
+        if t_srs is not None:
+            # create coordinate transformation
+            inSpatialRef = osgeo.osr.SpatialReference()
+            outSpatialRef = osgeo.osr.SpatialReference()
+
+            inSpatialRef.ImportFromWkt(self._jim_vect.properties.getProjection())
+            if int(osgeo.__version__[0]) >= 3:
+                #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
+                outSpatialRef.SetAxisMappingStrategy(
+                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+                outSpatialRef.SetAxisMappingStrategy(
+                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            if isinstance(t_srs, int):
+                outSpatialRef.ImportFromEPSG(t_srs)
+            elif isinstance(t_srs, str):
+                if 'EPSG:' in t_srs:
+                    t_srs=int(t_srs.split("EPSG:",1)[1])
+                    outSpatialRef.ImportFromEPSG(t_srs)
+                elif 'epsg:' in t_srs:
+                    t_srs=int(t_srs.split("epsg:",1)[1])
+                    outSpatialRef.ImportFromEPSG(t_srs)
+                else:
+                    outSpatialRef.ImportFromWkt(t_srs)
+            else:
+                raise JimIllegalArgumentError("Error: coordinate reference "
+                                              "system must be integer "
+                                              "representing epsg code or string")
+            coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
+                                                                outSpatialRef)
+            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            point.AddPoint(bbox[0], bbox[1])
+            point.Transform(coordTransform)
+            ulx = point.GetX()
+            uly = point.GetY()
+            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            point.AddPoint(bbox[2], bbox[3])
+            point.Transform(coordTransform)
+            lrx = point.GetX()
+            lry = point.GetY()
+            bbox = [ulx, uly, lrx, lry]
+        return bbox
 
     def getFeatureCount(self,
                         layer: int = None):
