@@ -27,6 +27,12 @@ class JimError(Exception):
     pass
 
 
+class JimNotSupportedError(JimError):
+    """Exception class for when function does not support Jim type."""
+
+    pass
+
+
 class JimEmptyError(JimError):
     """Exception class for when Jim is empty and should not be."""
 
@@ -71,6 +77,12 @@ class JimListIllegalArgumentError(JimListError):
 
 class JimVectError(Exception):
     """Base class for JimVect exceptions."""
+
+    pass
+
+
+class JimVectNotSupportedError(JimVectError):
+    """Exception class for when function does not support JimVect type."""
 
     pass
 
