@@ -67,9 +67,7 @@ class _ParentJim(_jl.Jim):
                             overlap = kwargs.pop('overlap')
                         except KeyError:
                             overlap = 5
-                        kwargs.update({'filename': image})
                         ajim = Jim(image, noread=True)
-                        # super(_ParentJim, self).__init__({'filename':image, 'noread':True})
                         bbox = ajim.properties.getBBox()
                         ncol = int(round(math.sqrt(tiletotal)))
                         nrow = ncol
@@ -101,8 +99,14 @@ class _ParentJim(_jl.Jim):
                         kwargs.update({'uly': uly})
                         kwargs.update({'lrx': lrx})
                         kwargs.update({'lry': lry})
-                    else:
-                        kwargs.update({'filename': image})
+                    elif 'bbox' in kwargs:
+                        bbox = kwargs.pop('bbox')
+                        kwargs.update({'ulx':bbox[0]})
+                        kwargs.update({'ulx': bbox[0]})
+                        kwargs.update({'uly': bbox[1]})
+                        kwargs.update({'lrx': bbox[2]})
+                        kwargs.update({'lry': bbox[3]})
+                    kwargs.update({'filename': image})
                     super(_ParentJim, self).__init__(kwargs)
             elif 'graph' in kwargs:
                 graph = kwargs.pop('graph')
@@ -1368,6 +1372,14 @@ class _ParentVect(_jl.VectorOgr):
                                                       kwargs)
                 else:
                     kwargs.update({'filename': vector})
+                    if 'bbox' in kwargs:
+                        print("opening with bbox")
+                        bbox = kwargs.pop('bbox')
+                        kwargs.update('ulx',bbox[0])
+                        kwargs.update('ulx', bbox[0])
+                        kwargs.update('uly', bbox[1])
+                        kwargs.update('lrx', bbox[2])
+                        kwargs.update('lry', bbox[3])
                     super(_ParentVect, self).__init__(kwargs)
             elif 'wkt' in kwargs:
                 geom = _ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
