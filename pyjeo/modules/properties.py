@@ -175,7 +175,7 @@ class _Properties(_pj.modules.JimModuleBase):
             inSpatialRef.ImportFromWkt(self._jim_object.properties.getProjection())
             if int(osgeo.__version__[0]) >= 3:
                 #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
-                outSpatialRef.SetAxisMappingStrategy(
+                inSpatialRef.SetAxisMappingStrategy(
                     osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
                 outSpatialRef.SetAxisMappingStrategy(
                     osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
@@ -517,7 +517,7 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
             inSpatialRef.ImportFromWkt(self._jim_list.properties.getProjection())
             if int(osgeo.__version__[0]) >= 3:
                 #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
-                outSpatialRef.SetAxisMappingStrategy(
+                inSpatialRef.SetAxisMappingStrategy(
                     osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
                 outSpatialRef.SetAxisMappingStrategy(
                     osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
@@ -616,7 +616,7 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
             inSpatialRef.ImportFromWkt(self._jim_vect.properties.getProjection())
             if int(osgeo.__version__[0]) >= 3:
                 #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
-                outSpatialRef.SetAxisMappingStrategy(
+                inSpatialRef.SetAxisMappingStrategy(
                     osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
                 outSpatialRef.SetAxisMappingStrategy(
                     osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
