@@ -143,17 +143,17 @@ class BadBasicMethods(unittest.TestCase):
             'Error in catching a call of Jim creation with non-existing path'
 
         clc = pj.Jim(clcfn)
-        bbbox_clc = clc.properties.getBBox(t_srs='epsg:3035')
-        jim = pj.Jim(rasterfn, bbox = bbbox_clc)
+        bbox_clc = clc.properties.getBBox(t_srs='epsg:3035')
+        jim = pj.Jim(testFile, bbox = bbox_clc)
         bbox_jim = jim.properties.getBBox()
 
-        assert abs(bbox_vect[0] - bbox_jim[0]) < jim.properties.getDeltaX(), \
+        assert abs(bbox_clc[0] - bbox_jim[0]) < jim.properties.getDeltaX(), \
             'Error: open Jim with bbox using t_srs [0]'
-        assert abs(bbox_vect[1] - bbox_jim[1]) < jim.properties.getDeltaX(), \
+        assert abs(bbox_clc[1] - bbox_jim[1]) < jim.properties.getDeltaX(), \
             'Error: open Jim with bbox using t_srs [1]'
-        assert abs(bbox_vect[2] - bbox_jim[2]) < jim.properties.getDeltaX(), \
+        assert abs(bbox_clc[2] - bbox_jim[2]) < jim.properties.getDeltaX(), \
             'Error: open Jim with bbox using t_srs [2]'
-        assert abs(bbox_vect[3] - bbox_jim[3]) < jim.properties.getDeltaX(), \
+        assert abs(bbox_clc[3] - bbox_jim[3]) < jim.properties.getDeltaX(), \
             'Error: open Jim with bbox using t_srs [3]'
 
     @staticmethod

@@ -514,7 +514,7 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
             inSpatialRef = osgeo.osr.SpatialReference()
             outSpatialRef = osgeo.osr.SpatialReference()
 
-            inSpatialRef.ImportFromWkt(self._jim_list.properties.getProjection())
+            inSpatialRef.ImportFromWkt(self._jim_list[0].properties.getProjection())
             if int(osgeo.__version__[0]) >= 3:
                 #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
                 inSpatialRef.SetAxisMappingStrategy(

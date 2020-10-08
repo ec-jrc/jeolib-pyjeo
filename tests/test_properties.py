@@ -178,19 +178,19 @@ class BadProps(unittest.TestCase):
 
         """Test Jim properties.getBBox() method at target projection."""
         assert bbox == self.jim.properties.getBBox(
-            t_srs=self.jiml.properties.getProjection()), \
+            t_srs=self.jim.properties.getProjection()), \
             'Error in properties getBBox() with projection '
 
         """Test Jim properties.getBBox() method at target projection."""
         bbox = self.jim.properties.getBBox(t_srs = 4326)
-        assert bbox[0] > 8.0 and bbox[0] < 8.1, \
-            'Error in properties.getBBox() with projection [0]'
-        assert bbox[1] > 47.1 and bbox[1] < 47.2, \
-            'Error in properties.getBBox() with projection [1]'
-        assert bbox[2] > 11.3 and bbox[2] < 11.4, \
-            'Error in properties.getBBox() with projection [2]'
-        assert bbox[3] > 44.8 and bbox[3] < 44.9, \
-            'Error in properties.getBBox() with projection [3]'
+        assert bbox[0] > 7.70 and bbox[0] < 7.71, \
+            "Error in properties.getBBox() with projection [0]: {}".format(bbox[0])
+        assert bbox[1] > 46.04 and bbox[1] < 46.05, \
+            "Error in properties.getBBox() with projection [1]: {}".format(bbox[1])
+        assert bbox[2] > 7.77 and bbox[2] < 7.78, \
+            "Error in properties.getBBox() with projection [2]: {}".format(bbox[2])
+        assert bbox[3] > 46.00 and bbox[3] < 46.01, \
+            "Error in properties.getBBox() with projection [3]: {}".format(bbox[3])
 
     def test_refpix(self):
         """Test getRefPix() method."""
@@ -267,12 +267,19 @@ class BadPropsLists(unittest.TestCase):
 
     jim1 = pj.Jim(testFile, band=[0, 1])
     jim2 = pj.Jim(tiles[1])
+    jim3 = pj.Jim(tiles[0])
 
     jiml = pj.JimList([jim1, jim2])
     ulx = jiml.properties.getUlx()
     uly = jiml.properties.getUly()
     lrx = jiml.properties.getLrx()
     lry = jiml.properties.getLry()
+
+    jiml2 = pj.JimList([jim2, jim3])
+    ulx2 = jiml2.properties.getUlx()
+    uly2 = jiml2.properties.getUly()
+    lrx2 = jiml2.properties.getLrx()
+    lry2 = jiml2.properties.getLry()
 
     def test_no_data_vals(self):
         """Test JimList methods connected to no data values."""
@@ -304,25 +311,25 @@ class BadPropsLists(unittest.TestCase):
 
     def test_bbox(self):
         """Test JimList properties.getBBox() method."""
-        bbox = self.jiml.properties.getBBox()
-        assert bbox == [self.ulx, self.uly, self.lrx, self.lry], \
+        bbox = self.jiml2.properties.getBBox()
+        assert bbox == [self.ulx2, self.uly2, self.lrx2, self.lry2], \
             'Error in properties.getBBox()'
 
         """Test JimList properties.getBBox() method at target projection."""
-        assert bbox == self.jiml.properties.getBBox(
-            t_srs=self.jiml.properties.getProjection()), \
+        assert bbox == self.jiml2.properties.getBBox(
+            t_srs=self.jiml2[0].properties.getProjection()),\
             'Error in properties getBBox() with projection '
 
         """Test JimList properties.getBBox() method at target projection."""
-        bbox = self.jiml.properties.getBBox(t_srs = 4326)
-        assert bbox[0] > 8.0 and bbox[0] < 8.1, \
-            'Error in properties.getBBox() with projection [0]'
-        assert bbox[1] > 47.1 and bbox[1] < 47.2, \
-            'Error in properties.getBBox() with projection [1]'
-        assert bbox[2] > 11.3 and bbox[2] < 11.4, \
-            'Error in properties.getBBox() with projection [2]'
-        assert bbox[3] > 44.8 and bbox[3] < 44.9, \
-            'Error in properties.getBBox() with projection [3]'
+        bbox = self.jiml2.properties.getBBox(t_srs = 4326)
+        assert bbox[0] > 7.70 and bbox[0] < 7.71, \
+            "Error in properties.getBBox() with projection [0]: {}".format(bbox[0])
+        assert bbox[1] > 46.04 and bbox[1] < 46.05, \
+            "Error in properties.getBBox() with projection [1]: {}".format(bbox[1])
+        assert bbox[2] > 7.77 and bbox[2] < 7.78, \
+            "Error in properties.getBBox() with projection [2]: {}".format(bbox[2])
+        assert bbox[3] > 46.00 and bbox[3] < 46.01, \
+            "Error in properties.getBBox() with projection [3]: {}".format(bbox[3])
 
     def test_selectGeo(self):
         """Test JimList properties.selectGeo() function and method."""
@@ -428,25 +435,30 @@ class BadPropsVects(unittest.TestCase):
             'Error in properties.getBBox() or properties.getLry() for JimVects'
 
         """Test JimVect properties.getBBox() method at target projection."""
-        assert bbox == self.jiml.properties.getBBox(
+        assert bbox == self.jimv.properties.getBBox(
             t_srs=self.jimv.properties.getProjection()), \
             'Error in properties getBBox() with projection '
 
         """Test JimVect properties.getBBox() method at target projection."""
         bbox = self.jimv.properties.getBBox(t_srs = 4326)
-        assert bbox[0] > 8.1 and bbox[0] < 8.2, \
-            'Error in properties.getBBox() with projection [0]'
-        assert bbox[1] > 46.9 and bbox[1] < 47.0, \
-            'Error in properties.getBBox() with projection [1]'
-        assert bbox[2] > 10.6 and bbox[2] < 10.7, \
-            'Error in properties.getBBox() with projection [2]'
-        assert bbox[3] > 44.9 and bbox[3] < 45.0, \
-            'Error in properties.getBBox() with projection [3]'
+        assert bbox[0] > 8.70 and bbox[0] < 8.71, \
+            "Error in properties.getBBox() with projection [0]: {}".format(bbox[0])
+        assert bbox[1] > 45.73 and bbox[1] < 45.74, \
+            "Error in properties.getBBox() with projection [1]: {}".format(bbox[1])
+        assert bbox[2] > 9.89 and bbox[2] < 9.90, \
+            "Error in properties.getBBox() with projection [2]: {}".format(bbox[2])
+        assert bbox[3] > 45.05 and bbox[3] < 45.06, \
+            "Error in properties.getBBox() with projection [3]: {}".format(bbox[3])
 
+        # assert bbox[0] > 7.70 and bbox[0] < 7.71, \
+        # assert bbox[1] > 46.04 and bbox[1] < 46.05, \
+        # assert bbox[2] > 7.77 and bbox[2] < 7.78, \
+        # assert bbox[3] > 46.00 and bbox[3] < 46.01, \
         projection = self.jimv.properties.getProjection()
 
-        assert projection.split('GEOGCS["')[1][:6] == 'ETRS89', \
-            'Error in properties.getProjection() for JimVects (wrong GEOGCS)'
+        assert (projection.split('GEOGCS["')[1][:6] == 'ETRS89' or
+                projection.split('GEOGCS["')[1][:13] == 'GCS_ETRS_1989'), \
+                'Error in properties.getProjection() for JimVects (wrong GEOGCS)'
 
     def test_feature_layer_counts(self):
         """Test JimVect methods getLayerCount() and getFeatureType()."""
