@@ -860,60 +860,6 @@ class BadGeometry(unittest.TestCase):
     #     inserted = pj.geometry.imageInsert(jim, ngb, 1, 1, 0)
     #     jim.geometry.imageInsert(ngb, 1, 1, 0)
 
-    # def test_magnify():
-    #     """Test the magnify() function and method."""
-    #     nrow = ncol = 10
-    #     nband = nplane = 2
-    #     jim = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,
-    #                  otype='Byte', uniform=[0, 255], seed=0)
-    #
-    #     # Test multi-band image
-    #     magnified = pj.geometry.magnify(jim, 2)
-    #     jim.geometry.magnify(2)
-    #
-    #     assert jim.properties.isEqual(magnified), \
-    #         'Inconsistency in geometry.magnify() ' \
-    #         '(method returns different result than function)'
-    #     assert jim.properties.nrOfCol() == ncol * 2, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of cols not raised or not raised to the right number)'
-    #     assert jim.properties.nrOfRow() == nrow * 2, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of rows not raised or not raised to the right number)'
-    #     assert jim.properties.nrOfPlane() == nplane, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of planes changed)'
-    #     assert jim.properties.nrOfBand() == nband, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of bands changed)'
-    #     assert jim.np()[0, 0] == jim.np()[1, 1], \
-    #         'Error in geometry.magnify() ' \
-    #         '(values not magnified correctly)'
-    #
-    #     # Test one-band image
-    #     jim.geometry.cropBand(0)
-    #     magnified = pj.geometry.magnify(jim, 3)
-    #     jim.geometry.magnify(3)
-    #
-    #     assert jim.properties.isEqual(magnified), \
-    #         'Inconsistency in geometry.magnify() ' \
-    #         '(method returns different result than function)'
-    #     assert jim.properties.nrOfCol() == ncol * 2 * 3, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of cols not raised or not raised to the right number)'
-    #     assert jim.properties.nrOfRow() == nrow * 2 * 3, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of rows not raised or not raised to the right number)'
-    #     assert jim.properties.nrOfPlane() == nplane, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of planes not raised or not raised to the right number)'
-    #     assert jim.properties.nrOfBand() == 1, \
-    #         'Error in geometry.magnify() ' \
-    #         '(number of bands changed)'
-    #     assert jim.np()[0, 0] == jim.np()[2, 2], \
-    #         'Error in geometry.magnify() ' \
-    #         '(values not magnified correctly)'
-
     @staticmethod
     def test_plotLine():
         """Test the plotLine() function and method."""
@@ -2395,6 +2341,65 @@ class BadGeometry(unittest.TestCase):
                        'reducePlane method with a callback rule and nodata' \
                        ' defined'
 
+    @staticmethod
+    def test_repeat():
+        """Test the repeat() function and method."""
+
+        magnify = 2
+        jim = pj.Jim(rasterfn)
+        bbox = jim.properties.getBBox()
+        ncol = jim.properties.nrOfCol()
+        nrow = jim.properties.nrOfRow()
+        nplane = jim.properties.nrOfPlane()
+        jim.geometry.repeat(magnify,axis=0)
+        assert jim.properties.nrOfPlane() == nplane, \
+            'Error: number of planes should be identical after repeat 2 row'
+        assert jim.properties.nrOfRow() == nrow * magnify, \
+            'Error: number of rows should be doubled after repeat 2 row'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error: number of cols should be identical after repeat 2 row'
+        assert jim.properties.getBBox() == bbox, \
+            'Error: bounding box should be identical after repeat 2 row'
+
+        jim.geometry.repeat(magnify,axis=1)
+        assert jim.properties.nrOfRow() == nrow * magnify, \
+            'Error: number of rows should be doubled after repeat 2 row'
+        assert jim.properties.nrOfCol() == ncol * magnify, \
+            'Error: number of cols should be doubled after repeat 2 col'
+        assert jim.properties.getBBox() == bbox, \
+            'Error: bounding box should be identical after repeat 2 col'
+
+        jim = pj.Jim(rasterfn, band2plane=True)
+        nplane = jim.properties.nrOfPlane()
+        jim.geometry.repeat(magnify,axis=0)
+        assert jim.properties.nrOfPlane() == nplane * magnify, \
+            'Error: number of planes should be doubled after repeat 2 plane'
+        assert jim.properties.nrOfRow() == nrow, \
+            'Error: number of rows should be identical after repeat 2 plane'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error: number of cols should be identical after repeat 2 plane'
+        assert jim.properties.getBBox() == bbox, \
+            'Error: bounding box should be identical after repeat 2 plane'
+
+        jim.geometry.repeat(magnify,axis=1)
+        assert jim.properties.nrOfPlane() == nplane * magnify, \
+            'Error: number of planes should be doubled after repeat 2 plane'
+        assert jim.properties.nrOfRow() == nrow * magnify, \
+            'Error: number of rows should be doubled after repeat 2 row'
+        assert jim.properties.nrOfCol() == ncol, \
+            'Error: number of cols should be identical after repeat 2 row'
+        assert jim.properties.getBBox() == bbox, \
+            'Error: bounding box should be identical after repeat 2 row'
+
+        jim.geometry.repeat(magnify,axis=2)
+        assert jim.properties.nrOfPlane() == nplane * magnify, \
+            'Error: number of planes should be doubled after repeat 2 plane'
+        assert jim.properties.nrOfRow() == nrow * magnify, \
+            'Error: number of rows should be doubled after repeat 2 row'
+        assert jim.properties.nrOfCol() == ncol * magnify, \
+            'Error: number of cols should be doubled after repeat 2 col'
+        assert jim.properties.getBBox() == bbox, \
+            'Error: bounding box should be identical after repeat 2 col'
 
 class BadGeometryLists(unittest.TestCase):
     """Test functions and methods from geometry module."""

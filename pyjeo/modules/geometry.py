@@ -811,30 +811,31 @@ def join(jvec1,
             'Can only join two JimVect objects')
 
 
-def magnify(jim_object,
-            n: int):
-    """Magnify the image.
+#replaced by repeat
+# def magnify(jim_object,
+#             n: int):
+#     """Magnify the image.
 
-    :param jim_object: a Jim object
-    :param n: a positive integer for magnifying size by pixel replication
-    :return: a Jim object containing the magnified image
-    """
-    if jim_object.properties.nrOfBand() > 1:
-        ret_jim = None
-        for band in range(0, jim_object.properties.nrOfBand()):
-            if ret_jim:
-                jimband = _pj.geometry.cropBand(jim_object,
-                                                band=band)
-                jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
+#     :param jim_object: a Jim object
+#     :param n: a positive integer for magnifying size by pixel replication
+#     :return: a Jim object containing the magnified image
+#     """
+#     if jim_object.properties.nrOfBand() > 1:
+#         ret_jim = None
+#         for band in range(0, jim_object.properties.nrOfBand()):
+#             if ret_jim:
+#                 jimband = _pj.geometry.cropBand(jim_object,
+#                                                 band=band)
+#                 jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
 
-                ret_jim.geometry.stackBand(jimband)
-            else:
-                ret_jim = _pj.Jim(_pj.geometry.cropBand(
-                    jim_object, band=band)._jipjim.imageMagnify(n))
+#                 ret_jim.geometry.stackBand(jimband)
+#             else:
+#                 ret_jim = _pj.Jim(_pj.geometry.cropBand(
+#                     jim_object, band=band)._jipjim.imageMagnify(n))
 
-        return ret_jim
-    else:
-        return _pj.Jim(jim_object._jipjim.imageMagnify(n))
+#         return ret_jim
+#     else:
+#         return _pj.Jim(jim_object._jipjim.imageMagnify(n))
 
 
 def plane2band(jim):
@@ -1178,6 +1179,53 @@ def reducePlane(jim,
         #             jimreduced[nodata_mask] = nodata
 
     return jimreduced
+
+
+def repeat(jim_object,
+           n: int,
+           axis: int):
+    """repeat as in Numpy
+
+    :param jim_object: a Jim object
+    :param n: a positive integer for repeating pixels
+    :param axis: starting from 0 (plane for 3D image, or row for 2D image)
+    :return: a Jim object containing the magnified image
+    """
+    gt = jim_object.properties.getGeoTransform()
+    nrow = jim_object.properties.nrOfRow()
+    ncol = jim_object.properties.nrOfCol()
+    nplane = jim_object.properties.nrOfPlane()
+    nband = jim_object.properties.nrOfBand()
+    if nplane > 1:
+        if axis == 0:
+            nplane *= n
+        elif axis == 1:
+            nrow *= n
+            gt[5] /= n
+        elif axis == 2:
+            ncol *= n
+            gt[1] /= n
+        else:
+            raise JimIllegalArgumentError('axis must be [0:2]')
+    else:
+        if axis == 0:
+            nrow *= n
+            gt[5] /= n
+        elif axis == 1:
+            ncol *= n
+            gt[1] /= n
+        else:
+            raise JimIllegalArgumentError('axis must be [0:1]')
+
+    ret_jim = _pj.Jim(ncol=ncol,
+                        nrow=nrow,
+                        nplane=nplane,
+                        nband=nband)
+    ret_jim.properties.setProjection(jim_object.properties.getProjection())
+    ret_jim.properties.setGeoTransform(gt)
+    for band in range(0, jim_object.properties.nrOfBand()):
+        ret_jim.np(band)[:] = jim_object.np(band).repeat(n, axis = axis)
+    return ret_jim
 
 
 def sample(jim,
@@ -1989,29 +2037,30 @@ class _Geometry(_pj.modules.JimModuleBase):
                                                           im2._jipjim,
                                                           x, y, z, val, band)
 
-    def magnify(self,
-                n: int):
-        """Magnify the image.
+    #replaced by repeat
+    # def magnify(self,
+    #             n: int):
+    #     """Magnify the image.
 
-        Modifies the instance on which the method was called.
+    #     Modifies the instance on which the method was called.
 
-        :param n: a positive integer for magnifying size by pixel replication
-        """
-        if self._jim_object.properties.nrOfBand() > 1:
-            ret_jim = None
-            for band in range(0, self._jim_object.properties.nrOfBand()):
-                if ret_jim:
-                    jimband = _pj.geometry.cropBand(self._jim_object,
-                                                    band=band)
-                    jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
+    #     :param n: a positive integer for magnifying size by pixel replication
+    #     """
+    #     if self._jim_object.properties.nrOfBand() > 1:
+    #         ret_jim = None
+    #         for band in range(0, self._jim_object.properties.nrOfBand()):
+    #             if ret_jim:
+    #                 jimband = _pj.geometry.cropBand(self._jim_object,
+    #                                                 band=band)
+    #                 jimband = _pj.Jim(jimband._jipjim.imageMagnify(n))
 
-                    ret_jim.geometry.stackBand(jimband)
-                else:
-                    ret_jim = _pj.Jim(_pj.geometry.cropBand(
-                        self._jim_object, band=band)._jipjim.imageMagnify(n))
-            self._jim_object._set(ret_jim._jipjim)
-        else:
-            self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
+    #                 ret_jim.geometry.stackBand(jimband)
+    #             else:
+    #                 ret_jim = _pj.Jim(_pj.geometry.cropBand(
+    #                     self._jim_object, band=band)._jipjim.imageMagnify(n))
+    #         self._jim_object._set(ret_jim._jipjim)
+    #     else:
+    #         self._jim_object._set(self._jim_object._jipjim.imageMagnify(n))
 
     def plane2band(self):
         """Convert 3-dimensional 1-band Jim to a 2-dimensional multi-band one.
@@ -2421,6 +2470,54 @@ class _Geometry(_pj.modules.JimModuleBase):
             jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
             jimreduced = rule(jimreduced, jimplane)
         self._jim_object._set(jimreduced._jipjim)
+
+    def repeat(self,
+               n: int,
+               axis: int):
+
+        """repeat as in Numpy
+
+        Modifies the instance on which the method was called.
+
+        :param n: a positive integer for repeating pixels
+        :param axis: starting from 0 (plane for 3D image, or row for 2D image)
+        """
+        gt = self._jim_object.properties.getGeoTransform()
+        nrow = self._jim_object.properties.nrOfRow()
+        ncol = self._jim_object.properties.nrOfCol()
+        nplane = self._jim_object.properties.nrOfPlane()
+        nband = self._jim_object.properties.nrOfBand()
+        if nplane > 1:
+            if axis == 0:
+                nplane *= n
+            elif axis == 1:
+                nrow *= n
+                gt[5] /= n
+            elif axis == 2:
+                ncol *= n
+                gt[1] /= n
+            else:
+                raise JimIllegalArgumentError('axis must be [0:2]')
+        else:
+            if axis == 0:
+                nrow *= n
+                gt[5] /= n
+            elif axis == 1:
+                ncol *= n
+                gt[1] /= n
+            else:
+                raise JimIllegalArgumentError('axis must be [0:1]')
+
+        ret_jim = _pj.Jim(ncol=ncol,
+                          nrow=nrow,
+                          nplane=nplane,
+                          nband=nband)
+        ret_jim.properties.setProjection(self._jim_object.properties.getProjection())
+        ret_jim.properties.setGeoTransform(gt)
+        for band in range(0, self._jim_object.properties.nrOfBand()):
+            ret_jim.np(band)[:] = self._jim_object.np(band).repeat(n, axis = axis)
+        self._jim_object._set(ret_jim._jipjim)
+
 
     def stackBand(self,
                   jim_other,
