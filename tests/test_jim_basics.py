@@ -162,13 +162,12 @@ class BadBasicMethods(unittest.TestCase):
         jim = pj.Jim(tiles[0])
 
         jim_np = pj.jim2np(jim)
-        jim_np2 = pj.np(jim)
 
-        assert (jim_np == jim_np2).all(), 'Error in jim2np() or np()'
+        assert (jim_np == jim.np()).all(), 'np function not equal to method '
 
         new_jim = pj.np2jim(jim_np)
 
-        assert jim.properties.isEqual(new_jim), 'Error in jim2np() or np2jim()'
+        assert jim.properties.isEqual(new_jim), 'Error in np() or np2jim()'
 
         anp = np.arange(2 * 100 * 256).reshape((2, 100, 256)).astype(
             np.float64)

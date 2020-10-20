@@ -134,6 +134,12 @@ class _ParentJim(_jl.Jim):
             else:
                 super(_ParentJim, self).__init__({'filename': image})
         else:
+            if 'bbox' in kwargs:
+                bbox = kwargs.pop('bbox')
+                kwargs.update({'ulx':ulx})
+                kwargs.update({'uly':uly})
+                kwargs.update({'lrx':lrx})
+                kwargs.update({'lry':lry})
             super(_ParentJim, self).__init__(image)
 
 
@@ -287,7 +293,7 @@ class Jim:
             raise exceptions.JimBandsError('Band out of bounds')
         elif band < 0:
             band = self.properties.nrOfBand() + band
-        return _jl.np(self._jipjim, band)
+        return _jl.jim2np(self._jipjim, band, False)
 
     @staticmethod
     def _checkInitParamsSense(image, kwargs):
@@ -1373,7 +1379,6 @@ class _ParentVect(_jl.VectorOgr):
                 else:
                     kwargs.update({'filename': vector})
                     if 'bbox' in kwargs:
-                        print("opening with bbox")
                         bbox = kwargs.pop('bbox')
                         kwargs.update({'ulx':bbox[0]})
                         kwargs.update({'uly':bbox[1]})
@@ -1507,12 +1512,34 @@ class JimVect:
 
         :param field: list of fields to consider
         :param ln: Layer to return
-        :return: 2D numpy array representation of fields of all features
+        :return: 2D numpy array representation of numerical fields of all features
         """
         if field is None:
             field = []
         if self.properties.getFeatureCount():
-            return _jl.np(self._jipjimvect, field, ln)
+            return _jl.jimvect2np(self._jipjimvect, field, ln)
+        else:
+            return None
+
+    def dict(self, field: list = None, ln: int = 0):
+        """Return dictionary from JimVect object.
+
+        :param field: list of fields to consider
+        :param ln: Layer to return
+        :return: dictionary object representation of fields of all features
+
+        Example: create a dictionary object and turn into pandas object
+
+            import pandas pd
+            v = pj.Jim('/path/to/vector.sqlite')
+
+            pob = pd.DataFrame(v.dict())
+        """
+
+        if field is None:
+            field = []
+        if self.properties.getFeatureCount():
+            return _jl.dict(self._jipjimvect, field, ln)
         else:
             return None
 
@@ -1528,21 +1555,44 @@ def jim2np(jim_object: Jim,
         only, without copying actual pixel dat
     :return: a numpy representation of the Jim object
     """
-    return _jl.jim2np(jim_object._jipjim, band, copy_data)
+
+    if isinstance(jim_object, Jim):
+        if not jim_object:
+            raise exceptions.JimEmptyError(
+                'Jim has to have a data to use Jim.np()')
+        return _jl.jim2np(jim_object._jipjim, band, copy_data)
+    elif isinstance(jim_object, JimVect):
+        raise exceptions.JimVectNotSupportedError(
+            'input must be of Jim type, use jimvect2np for JimVect')
+    else:
+        raise exceptions.JimError(
+            'input must be of Jim type')
 
 
-def np(jim_object: Jim) -> _np.ndarray:
-    """Return a pointer to numpy representation of values in a Jim object.
+def jimvect2np(jim_object: JimVect,
+               field: list = None,
+               ln: int = 0) -> _np.ndarray:
+    """Return a numpy representation of a JimVect object.
 
-    The created pointer does not consume new memory.
-
-    :param jim_object: Jim object with values to which will the pointer point
-    :return: a numpy representation of the Jim object
+    :param jim_object: JimVect object to be converted
+        :param field: list of fields to consider
+        :param ln: Layer to return
+    :return: a numpy representation of the JimVect object
     """
-    if not jim_object:
-        raise exceptions.JimEmptyError(
-            'Jim has to have a data to use Jim.np()')
-    return _jl.np(jim_object._jipjim)
+
+    if isinstance(jim_object, JimVect):
+        if field is None:
+            field = []
+        if jim_object.properties.getFeatureCount():
+            return _jl.jimvect2np(jim_object._jipjimvect, field, ln)
+        else:
+            return None
+    elif isinstance(jim_object, Jim):
+        raise exceptions.JimNotSupportedError(
+            'input must be of JimVect type, use jim2np for Jim')
+    else:
+        raise exceptions.JimVectError(
+            'input must be of JimVect type')
 
 
 def np2jim(np_object: _np.ndarray) -> Jim:

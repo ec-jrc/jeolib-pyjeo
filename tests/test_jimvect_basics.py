@@ -40,6 +40,8 @@ class BadBasicMethods(unittest.TestCase):
         anp0 = vect.np(ln=0)  # layer 0
         anp1 = vect.np(ln=1)  # layer 1
 
+        assert (anp0 == pj.jimvect2np(vect,ln=0)).all(), 'np function not equal to method '
+
         assert isinstance(anp0, np.ndarray), \
             'Error in numpy conversion layer 0: not an instance of ndarray'
         assert isinstance(anp1, np.ndarray), \
@@ -54,6 +56,19 @@ class BadBasicMethods(unittest.TestCase):
         assert np.append(anp0, anp1, axis=0).shape[1] == 12, \
             'Error in geometry.merge() ' \
             '(append second dimension)'
+
+    @staticmethod
+    def test_dict_conversions():
+        """Test JimVect.np() method."""
+        vect = pj.JimVect(vector)
+        dict = vect.dict()
+
+        assert 'nuts3id' in dict.keys(), \
+            'Error in dict method, no nuts3id in keys'
+        assert len(dict.keys()) == len(dict.values()), \
+            'Error in dict method, length of keys != length of values'
+        assert 'IT' in dict['n0cd'], \
+            'Error in dict method, IT not in values of n0cd'
 
     @staticmethod
     def test_jimvect_creations():
