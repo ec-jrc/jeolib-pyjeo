@@ -4,13 +4,13 @@
 Introduction
 ============
 
-Organization of pyJEO
+Organization of pyjeo
 ---------------------
 
 Modules
 ^^^^^^^
 
-The pyJEO package is grouped in modules. A module combines a number of operations that belong together. The models defined pyJEO are:
+The pyjeo package is grouped in modules. A module combines a number of operations that belong together. The models defined pyjeo are:
 
  * properties: get properties of a class object
  * io: input/output operations
@@ -25,7 +25,7 @@ The pyJEO package is grouped in modules. A module combines a number of operation
 Functions and methods
 ^^^^^^^^^^^^^^^^^^^^^
 
-Operations on pyJEO objects are distinguished in functions and methods. Methods directly operate on objects, i.e., instances of a class. A method implicitly has access to the object attributes on which it was called. For instance, methodX that operates on myobject that belongs to moduleA and takes a single argument (arg1) is typically called like this::
+Operations on pyjeo objects are distinguished in functions and methods. Methods directly operate on objects, i.e., instances of a class. A method implicitly has access to the object attributes on which it was called. For instance, methodX that operates on myobject that belongs to moduleA and takes a single argument (arg1) is typically called like this::
 
   myobject.moduleA.methodX(arg1)
      
@@ -44,13 +44,13 @@ the object is altered and no object is returned. Methods that are non-destructiv
    myattributeZ = myobject.properties.getAttributeZ()
 
 
-Design of pyJEO
+Design of pyjeo
 ---------------
 
 Design in C++
 ^^^^^^^^^^^^^
 
-The pyJEO package largely depends of the JIPlib library, which is implemented in C++ and contains three main classes: Jim, JimList and VectorOgr (see :numref:`Fig:jiplib_classes`). Each of these classes is represented by a Python proxy class in pyJEO: Jim, JimList and JimVec. In addition to the methods from the C++ class JimList, the Python class JimList inherits all methods from a Python list (e.g., :code:`len`, :code:`append`, :code:`extend`, :code:`insert`, :code:`remove`, :code:`count`)
+The pyjeo package largely depends of the JIPlib library, which is implemented in C++ and contains three main classes: Jim, JimList and VectorOgr (see :numref:`Fig:jiplib_classes`). Each of these classes is represented by a Python proxy class in pyjeo: Jim, JimList and JimVec. In addition to the methods from the C++ class JimList, the Python class JimList inherits all methods from a Python list (e.g., :code:`len`, :code:`append`, :code:`extend`, :code:`insert`, :code:`remove`, :code:`count`)
 
 
 .. _Fig:jiplib_classes:

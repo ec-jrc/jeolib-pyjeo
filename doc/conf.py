@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# pyJEO documentation build configuration file, created by
+# pyjeo documentation build configuration file, created by
 # sphinx-quickstart on Tue Sep 25 13:50:27 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -56,8 +56,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pyJEO'
-copyright = u'European Commission, 2018'
+project = u'pyjeo'
+copyright = u'European Commission, 2020'
 author = u'Pieter Kempeneers, Ondrej Pesek, Pierre Soille'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -132,7 +132,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'pyJEOdoc'
+htmlhelp_basename = 'pyjeodoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -171,7 +171,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'pyJEO.tex', u'pyJEO Documentation',
+    (master_doc, 'pyjeo.tex', u'pyjeo Documentation',
      u'Pieter Kempeneers, Ondrej Pesek, Pierre Soille', 'manual'),
 ]
 
@@ -181,7 +181,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pyjeo', u'pyJEO Documentation',
+    (master_doc, 'pyjeo', u'pyjeo Documentation',
      [author], 1)
 ]
 
@@ -192,8 +192,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'pyJEO', u'pyJEO Documentation',
-     author, 'pyJEO', 'One line description of project.',
+    (master_doc, 'pyjeo', u'pyjeo Documentation',
+     author, 'pyjeo', 'One line description of project.',
      'Miscellaneous'),
 ]
 

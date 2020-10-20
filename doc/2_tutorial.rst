@@ -17,7 +17,7 @@ This documentation is written using the `sphinx <http://www.sphinx-doc.org>`_ to
 Online documentation
 ====================
 
-The primary source of documentation is available online via this `website <https://cidportal.jrc.ec.europa.eu/services/processing/pyjeohelp>`_.
+The primary source of documentation is available online via this `website <https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp>`_.
 The documentation is divided in three main parts:
 
 * :ref:`Introduction`: Introduction explaining the organization of the pyjeo package, its modules, design, installation and usage.

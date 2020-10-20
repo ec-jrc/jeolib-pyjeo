@@ -324,9 +324,7 @@ def firfilter2d(jim_object,
 
 def getDissim(jimo,
               dissim_type: int = 0):
-    """Compute the dissimilarities.
-
-    Compute the dissimilarities between horizontal and vertical pairs of
+    """ Compute the dissimilarities between horizontal and vertical pairs of
     adjacent pixels.
 
     :param jimo: a list of grey level Jim objects with the same
@@ -340,6 +338,7 @@ def getDissim(jimo,
                           :cite:`soille2011ismm`
     :return: a list of 2 Jim objects holding the horizontal and vertical
         dissimilarities respectively
+
     """
     dir_hori = 0
     dir_vert = 1
@@ -1303,6 +1302,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
                             1 for dissimilarity measure countering \
                               the chaining effect as described in \
                               :cite:`soille2011ismm`.
+
         """
         dir_hori = 0
         dir_vert = 1
