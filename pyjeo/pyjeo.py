@@ -73,8 +73,6 @@ class _ParentJim(_jl.Jim):
                         nrow = ncol
                         assert ncol * nrow == tiletotal, \
                             'Error: tiletotal must be squared integer'
-                        # assert 4 ** int(round(math.log(tiletotal, 4))) == tiletotal, \
-                        #     'Error: tiletotal must be power of 4'
                         assert tileindex < tiletotal, \
                             'Error: tileindex must be < ' + str(tiletotal)
                         assert len(bbox) == 4, \
