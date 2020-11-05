@@ -284,7 +284,7 @@ JimVect
 Create a JimVect data object
 =============================
 
-To create a new JimVect vector data object, use the constructor :py:meth:`JimVect`. A JimVect object is typically created by opening an existing vector dataset from file or as the result from a function or method, e.g., the method :py:meth:`~geometry._Geometry.extractOgr` in module :py:mod:`geometry` on a Jim object.
+To create a new JimVect vector data object, use the constructor :py:meth:`JimVect`. A JimVect object is typically created by opening an existing vector dataset from file or as the result from a function or method, e.g., the method :py:meth:`~geometry._Geometry.extract` in module :py:mod:`geometry` on a Jim object.
 
 .. method:: JimVect(filename, **kwargs)
 
@@ -758,13 +758,13 @@ Create a 3D Jim object that loads the raster data containing all features (read 
 
 Extract features from the Jim object::
 
-  featurevect = jim.geometry.extractOgr(reference, rule=['allpoints'],
-                                        output='/vsimem/features.sqlite',
-                                        oformat='SQLite',
-                                        co=['OVERWRITE=YES'],
-                                        classes=[1, 2, 3, 4],
-                                        copy='label',
-                                        fid='fid')
+  featurevect = jim.geometry.extract(reference, rule=['allpoints'],
+                                     output='/vsimem/features.sqlite',
+                                     oformat='SQLite',
+                                     co=['OVERWRITE=YES'],
+                                     classes=[1, 2, 3, 4],
+                                     copy='label',
+                                     fid='fid')
 
 Use the Numpy representation of the vector feature data to create arrays for the features (x) and label data (y)::
 
