@@ -60,7 +60,6 @@ class BadIOVects(unittest.TestCase):
 
         output = os.path.join(
             '/tmp', ''.join(random.sample(string.ascii_letters, 5)))
-        jimv.io.write(output)
 
         assert os.path.isfile(output), \
             'Error in io.write(filename) (file does not exist after writing)'
