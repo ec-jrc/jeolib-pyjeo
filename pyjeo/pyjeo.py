@@ -1522,7 +1522,7 @@ class JimVect:
     def dict(self, field: list = None, ln: int = 0):
         """Return dictionary from JimVect object.
 
-        :param field: list of fields to consider
+        :param field: list of fields to return
         :param ln: Layer to return
         :return: dictionary object representation of fields of all features
 

@@ -325,10 +325,11 @@ Convert JimVect object to numpy array
 =====================================
 
 
-.. method:: JimVect.np(self, ln: int = 0)
+.. method:: JimVect.np(self, field: list = None, ln: int = 0)
 
    Return numpy array from JimVect object.
 
+   :param field: list of fields to return
    :param ln: Layer to return
    :return: 2D numpy array representation of all fields of all features
 
@@ -336,6 +337,41 @@ Example::
 
   v = pj.JimVect('/path/to/features.sqlite')
   v.np()
+
+Convert JimVect object to dictionary
+====================================
+
+
+.. method:: JimVect.dict(self, field: list = None, ln: int = 0)
+
+   Return numpy array from JimVect object.
+
+   :param field: list of fields to return
+   :param ln: Layer to return
+   :return: 2D numpy array representation of all fields of all features
+
+Example 1 (create Python dictionary)::
+
+  import pandas pd
+  v = pj.Jim('/path/to/vector.sqlite')
+  dictobject = v.dict()
+
+Example 2 (create Pandas object)::
+
+  import pandas pd
+  v = pj.Jim('/path/to/vector.sqlite')
+  pob = pd.DataFrame(v.dict())
+
+Example 3 (create GeoPandas object)::
+
+  import geopandas as gpd
+  v = pj.JimVect('vector.shp)
+  #convert to GeoJSON in memory
+  vjson = pj.JimVect(v,output='/vsimem/pj.json', oformat = 'GeoJSON')
+  vjson.io.close()
+  #create geopandas dataframe from GeoJSON file in memory
+  gdf = gpd.read_file('/vsimem/pj.json')
+
 
 *********
 Operators
