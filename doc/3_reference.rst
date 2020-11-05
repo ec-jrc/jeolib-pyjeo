@@ -168,13 +168,6 @@ Create a new copy of a Jim raster data object
 Create a new Jim raster data object from a Numpy array
 ========================================================
 
-.. method:: Jim.np(self, band: int = 0)
-
-   Return numpy array from Jim object.
-
-   :param band: band index (starting from 0)
-   :return: numpy array representation
-
    Create a new Jim object by copying data from a Numpy array object (mynp)::
 
         jim = pj.np2jim(mynp)
@@ -190,8 +183,92 @@ Create a new Jim raster data object from a Numpy array
 
         jim.properties.copyGeoReference(geojim)
 
+.. _jim_conversions:
+
 Convert Jim object to numpy array
 =================================
+
+.. method:: Jim.np(self, band: int = 0)
+
+   Return numpy array from Jim object.
+
+   :param band: band index (starting from 0)
+   :return: numpy array representation
+
+Create a 2D numpy array from a single band GeoTIFF image::
+
+  v = pj.Jim('/path/to/singleband.tif')
+  v.np()
+
+Create a 2D numpy array from a selected band of multiband GeoTIFF image::
+
+  v = pj.Jim('/path/to/multiband.tif')
+  #select first band as numpy array
+  v.np(0)
+  #select last band as numpy array
+  v.np(-1)
+
+Create a 3D numpy array from a multiband GeoTIFF image::
+
+  v = pj.Jim('/path/to/multiband.tif',band2plane=True)
+  v.np()
+
+
+Convert Jim object to xarray
+============================
+
+Create an xarray from a Jim data cube::
+
+   import numpy as np
+   import xarray as xr
+
+   #jim is a multiband datacube (with multiple planes)
+   planes = range(jim.properties.nrOfPlane())
+   bands = range(jim.properties.nrOfBand())
+   bbox = jim.properties.getBBox()
+
+   # xarray coordinates are pixel centered
+   x = np.arange(bbox[0]+jim.properties.getDeltaX()/2,
+                 bbox[2]+jim.properties.getDeltaX()/2,
+                 jim.properties.getDeltaX())
+   y = np.arange(bbox[1]-jim.properties.getDeltaY()/2,
+                 bbox[3]-jim.properties.getDeltaY()/2,
+                 -jim.properties.getDeltaY())
+
+
+   # Build a xarray Dataset reference (without memory copy)
+   # Do not alter shape or destroy x_dataset!
+   x_dataset = xr.Dataset({str(b):xr.DataArray(jim.np(b),
+                                               dims=['time', 'y', 'x'],
+                                               coords={'time': ['t'+str(plane)
+                                               for plane in planes],
+                                               'x': x, 'y': y},
+                                               attrs={'_FillValue': 0})
+                           for b in bands})
+
+   # Build new copy of xarray Dataset (with memory copy):
+   new_dataset = xr.Dataset({str(b):xr.DataArray(pj.jim2np(jim.b),
+                                                 dims=['time', 'y', 'x'],
+                                                 coords={'time': ['t'+str(plane)
+                                                 for plane in planes],
+                                                 'x': x, 'y': y},
+                                                 attrs={'_FillValue': 0})
+                           for b in bands})
+
+Write Jim object to NetCDF file (via xarray)
+=============================================
+
+See example above to create xarray::
+
+   import netCDF4 as nc
+   # Write to NetCDF file
+   nc_file = '/tmp/test1.nc'
+   x_dataset.to_netcdf(nc_file)
+   # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
+   with nc.Dataset(nc_file, 'a') as dataset:
+       [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
+       crs = dataset.createVariable('spatial_ref', 'i4')
+       crs.spatial_ref = jim1.properties.getProjection()
 
 .. _indexing:
 
@@ -350,19 +427,24 @@ Convert JimVect object to dictionary
    :param ln: Layer to return
    :return: 2D numpy array representation of all fields of all features
 
-Example 1 (create Python dictionary)::
+Example::
 
-  import pandas pd
   v = pj.Jim('/path/to/vector.sqlite')
   dictobject = v.dict()
 
-Example 2 (create Pandas object)::
+Convert JimVect object to pandas object
+=======================================
+
+Example::
 
   import pandas pd
   v = pj.Jim('/path/to/vector.sqlite')
   pob = pd.DataFrame(v.dict())
 
-Example 3 (create GeoPandas object)::
+Convert JimVect object to geopandas object
+==========================================
+
+Example::
 
   import geopandas as gpd
   v = pj.JimVect('vector.shp)
