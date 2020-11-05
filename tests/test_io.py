@@ -60,9 +60,11 @@ class BadIOVects(unittest.TestCase):
 
         output = os.path.join(
             '/tmp', ''.join(random.sample(string.ascii_letters, 5)))
+        jimv.io.write(output)
 
         assert os.path.isfile(output), \
             'Error in io.write(filename) (file does not exist after writing)'
+        os.remove(output)
 
         output2 = os.path.join(
             '/tmp', ''.join(random.sample(string.ascii_letters, 5)))
@@ -74,6 +76,7 @@ class BadIOVects(unittest.TestCase):
 
         jimv_3 = pj.JimVect(output2)
         jimv_3.io.close()
+        os.remove(output2)
 
         assert jimv_3.properties.getFeatureCount() == 1, \
             'Error in io.write() (changes not written to the original file)'
