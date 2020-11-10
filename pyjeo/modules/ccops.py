@@ -97,7 +97,7 @@ def convertRgbToHsx(jim,
     of an input RGB colour image. The hue component is identical for all 3
     models. The luminance is equal to max(R,G,B) for HSV, (max-min)/2 for HSL
     and (R+G+B)/3 for HSI. See specific formulae for the saturation at
-    http://en.wikipedia.org/wiki/HSL_and_HSV.
+    `<http://en.wikipedia.org/wiki/HSL_and_HSV>`__`.
 
     :param jim: multi-band Jim with three bands
         representing red, green and blue channels
@@ -230,7 +230,7 @@ def distance2dEuclideanConstrained(marker,
     """Compute the Euclidean geodesic distance from the marker set.
 
     Defined by the image marker and within the geodesic mask defined by
-    the image mask. The algorithm is described in (Soille, 1991).
+    the image mask. The algorithm is described in (:cite:`soille91`).
 
     Modifies the instance on which the method was called.
 
@@ -246,15 +246,16 @@ def distance2dEuclideanSquared(jim,
                                band: int = 0):
     """Compute the squared Euclidean distance transform of im.
 
-    Jim must be a 2-D binary image. Original algorithm proposed by Saito
-    and Toriwaki (1994) and then optimised independently by (Hirata,
-    1996) and (Meijster et al., 2000). Based on the
+    Jim must be a 2-D binary image. Original algorithm proposed by
+    :cite:`saito-toriwaki94` and then optimised independently by :cite:`hirata96`
+    and :cite:`meijster-roerdink-hesselink2000`. Based on the
     Euclidean distance transform. Note that a temporary buffer of type
     UINT16 is used for sums along/lines and columns so that uncontrolled
     results will occur if an object shows more than 16 2 /2 foreground
     pixels along a given line or column.
 
-    :param jim: a Jim object
+    Modifies the instance on which the method was called.
+
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
@@ -1008,7 +1009,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         channels of an input RGB colour image. The hue component is identical
         for all 3 models. The luminance is equal to max(R,G,B) for HSV,
         (max-min)/2 for HSL and (R+G+B)/3 for HSI. See specific formulae for
-        the saturation at http://en.wikipedia.org/wiki/HSL_and_HSV.
+        the saturation at `<http://en.wikipedia.org/wiki/HSL_and_HSV>`__.
 
         Modifies the instance on which the method was called.
 
@@ -1122,7 +1123,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         """Compute the Euclidean geodesic distance from the marker set.
 
         Defined by the image marker and within the geodesic mask defined by
-        the image mask. The algorithm is described in (Soille, 1991).
+        the image mask. The algorithm is described in (:cite:`soille91`).
 
         Modifies the instance on which the method was called.
 
@@ -1137,13 +1138,13 @@ class _CCOps(_pj.modules.JimModuleBase):
                                    band: int = 0):
         """Compute the squared Euclidean distance transform.
 
-        im must be a 2-D binary image. Original algorithm proposed by Saito
-        and Toriwaki (1994) and then optimised independently by (Hirata,
-        1996) and (Meijster et al., 2000). Based on the
-        Euclidean distance transform. Note that a temporary buffer of type
-        UINT16 is used for sums along/lines and columns so that uncontrolled
-        results will occur if an object shows more than 16 2 /2 foreground
-        pixels along a given line or column.
+        im must be a 2-D binary image. Original algorithm proposed by
+        :cite:`saito-toriwaki94` and then optimised independently by
+        :cite:`hirata96` and :cite:`meijster-roerdink-hesselink2000`.
+        Based on the Euclidean distance transform. Note that a temporary buffer
+        of type UINT16 is used for sums along/lines and columns so that
+        uncontrolled results will occur if an object shows more than 16 2 /2
+        foreground pixels along a given line or column.
 
         Modifies the instance on which the method was called.
 

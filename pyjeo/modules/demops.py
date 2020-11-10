@@ -537,7 +537,7 @@ class _DEMOps(_pj.modules.JimModuleBase):
     def flowDirectionFlat(self,
                           dem_jim,
                           graph: int):
-        """See publication (Soille, 2002).
+        """See publication (:cite:`soille2002dgci`).
 
         Flat regions (i.e., no flow direction) must be of type USHORT (with
         flat regions set to 65533) or INT32 (with flat regions set to INT32
@@ -597,7 +597,8 @@ class _DEMOps(_pj.modules.JimModuleBase):
                         grey_jim,
                         graph: int,
                         maxfl: int):
-        """Use for carving, algorithm description in Soille et al. 2003.
+        """Use for carving, algorithm description in
+        :cite:`soille-vogt-colombo2003wrr`
 
         The Jim object on which this method is called should contain labelled
         relevant minima.
