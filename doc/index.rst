@@ -25,7 +25,7 @@
 
    .. rubric:: Bibliographic references
 
-.. bibliography:: all.bib
+.. bibliography:: references.bib
 
 
 .. * :ref:`alpabetical-indexes`
