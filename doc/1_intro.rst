@@ -78,14 +78,32 @@ From the directory of the repository, run::
 
   sudo python setup.py install
 
+Testing
+-------
+
 To test the installation, run::
 
   python -W ignore -m unittest -v tests
 
-To build the documentation, go to directory doc and run make::
+To test a specific module (e.g.,classify), run::
+
+  python -W ignore -m unittest -v tests/test_classify.py
+
+Documentation
+-------------
+
+Dependencies:
+
+- python3-sphinx
+- python3-sphinxcontrib.bibtex
+- latexmk (for pdf output)
+- sphinx_rtd_theme (via pip install)
+
+To build the documentation::
 
   cd doc
   make html
+  make latexpdf
 
 Usage
 -----
@@ -97,19 +115,14 @@ In your local environment, import the pyjeo module::
   import pyjeo as pj
 
 Usage in the JEOdesk
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 The pyjeo module is can be imported as::
 
   import pyjeo as pj
 
-An environment variable has been automatically set for all users::
+An environment variable must be set (replace version of pyjeo with latest version)::
 
-  PYTHONPATH=/eos/jeodpp/shared/prod/lib/python/jeodesk-16
-
-In case you should change this environment variable (e.g., /foo/bar), please make sure to append it as follows::
-
-
-  PYTHONPATH=${PYTHONPATH}:/foo/bar
+  PYTHONPATH=/eos/jeodpp/shared/prod/lib/python/jeodesk-16:/eos/jeodpp/shared/prod/lib/python/jeodesk-16/pyjeo-0.6.0-py3.5.egg
 
 Usage in the execute function in the interactive processing JEOlab
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -117,12 +130,6 @@ The pyjeo module is automatically imported as pj
 
 Usage on the cluster
 ^^^^^^^^^^^^^^^^^^^^
-In your condor submit file, use this docker file::
+In your condor submit file, use this docker file (replace 0.5.26 with latest version)::
   
-  docker_image    =  jeoreg.cidsn.jrc.it:5000/jeodpp-proc/jeodpp_jupyter_inter_py2_deb9
-
-
-In your execution script launched by the condor submit file, define the following environment variables::
-
-   export PYTHONPATH="${PYTHONPATH}:/eos/jeodpp/shared/dev/lib/python:/eos/jeodpp/shared/dev/lib/python/jeodpp:/eos/jeodpp/shared/dev/lib/python/pyjeo"
-   export LD_LIBRARY_PATH=/eos/jeodpp/shared/dev/lib/cpp/jeodpp
+  Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb10_pyjeo:0.5.26
