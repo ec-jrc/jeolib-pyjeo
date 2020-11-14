@@ -615,6 +615,16 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.cropPlane() ' \
             '(returned planes were changed)'
 
+        #Test crop()
+        raster_crop = pj.geometry.crop(raster, bbox = raster_bbox_cropped)
+        assert raster_crop.properties.getBBox() == raster_bbox_cropped, \
+            'Error in geometry.crop() ' \
+            'raster_crop.properties.getBox() != raster_bbox_cropeed'
+        raster_stacked2.properties.getBBox()  == raster_crop.properties.getBBox(), \
+            'Error in geometry.crop() ' \
+            'function crop != method crop'
+
+
     @staticmethod
     def test_coords_transformations():
         """Test geo2image() and image2geo() functions and methods."""

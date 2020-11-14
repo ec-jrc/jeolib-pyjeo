@@ -119,6 +119,7 @@ def convexHull(jim_vect,
 
 
 def crop(jim_object,
+         bbox: list = None,
          ulx: float = None,
          uly: float = None,
          ulz: float = None,
@@ -133,6 +134,7 @@ def crop(jim_object,
     Subset raster dataset according in spatial (subset region) domain
 
     :param jim_object: a Jim object
+    :param bbox: bounding box (instead of ulx, uly, lrx, lry)
     :param ulx: Upper left x value of bounding box to crop
     :param uly: Upper left y value of bounding box to crop
     :param ulz: Upper left z value of bounding box to crop
@@ -146,6 +148,11 @@ def crop(jim_object,
 
     see :py:meth:`~_Geometry.crop` for an example how to use this function
     """
+    if bbox is not None:
+        ulx = bbox[0]
+        uly = bbox[1]
+        lrx = bbox[2]
+        lry = bbox[3]
     if ulz is not None or lrz is not None:
         assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
                                  'and special cropping parameters'
@@ -1544,6 +1551,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_band2plane()
 
     def crop(self,
+             bbox: list = None,
              ulx: float = None,
              uly: float = None,
              ulz: float = None,
@@ -1558,6 +1566,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         Subset raster dataset according in spatial (subset region) domain
 
+        :param bbox: bounding box (instead of ulx, uly, lrx, lry)
         :param ulx: Upper left x value of bounding box to crop
         :param uly: Upper left y value of bounding box to crop
         :param ulz: Upper left z value of bounding box to crop
@@ -1598,6 +1607,11 @@ class _Geometry(_pj.modules.JimModuleBase):
                               lry=jim.properties.nrOfRow()+1, nogeo=True)
 
         """
+        if bbox is not None:
+            ulx = bbox[0]
+            uly = bbox[1]
+            lrx = bbox[2]
+            lry = bbox[3]
         if ulz is not None or lrz is not None:
             assert len(kwargs) == 0, \
                 'It is not supported to use both z coords and special ' \
