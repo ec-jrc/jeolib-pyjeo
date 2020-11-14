@@ -83,7 +83,7 @@ Create Jim object from file
    Create Jim image object by opening an existing file, reading 10 columns and row, starting from the sixth (index=5) row and column::
 
         ifn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-        jim = pj.Jim(ifn, ulx=5, uly=5, lrx=14, lry=14)
+        jim = pj.Jim(ifn, ulx=5, uly=5, lrx=14, lry=14, nogeo=True)
         # do stuff with jim ...
 
 .. _create_Jim_new:
@@ -295,6 +295,44 @@ get Jim items
       Get first 10 columns in first 10 rows::
 
         jim0[0:10, 0:10]
+
+      The same result can be obtained when reading from file by constraining the bounding box in pixel (`nogeo=True`) coordinates::
+
+        pj.Jim('/filepath.tif',ulx = 0, uly = 0, lrx = 9, lry = 9, nogeo = True)
+
+      With this method, the memory footprint is smaller, because only the required bounding box is read into memory. This is shown with in the following snippet, using the memory_profiler::
+
+        from memory_profiler import profile
+        import pyjeo as pj
+
+        fn = 'filepath.tif'
+
+        @profile
+        def f1():
+            return pj.Jim(fn)[4:15,5:16]
+
+        @profile
+        def f2():
+            return pj.Jim(fn, ulx = 4, uly = 5, lrx = 14, lry = 15, nogeo = True)
+
+        assert f1() == f2()
+
+      Result of the profiler::
+
+        Line #    Mem usage    Increment  Occurences   Line Contents
+        ============================================================
+            6     87.8 MiB     87.8 MiB           1   @profile
+            7                                         def f1():
+            8     96.9 MiB      9.2 MiB           1       return pj.Jim(fn)[4:15,5:16]
+
+
+        Filename: tests/b.py
+
+        Line #    Mem usage    Increment  Occurences   Line Contents
+        ============================================================
+            10     96.9 MiB     96.9 MiB           1   @profile
+            11                                         def f2():
+            12     97.4 MiB      0.5 MiB           1       return pj.Jim(fn,ulx = 4, uly = 5, lrx = 14, lry = 15, nogeo = True)
 
       Get a binary mask of all values not within [0,250] (notice the parentheses to take care of the precedence of the operators!) ::
 

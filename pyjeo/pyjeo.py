@@ -401,83 +401,83 @@ class Jim:
             mask = item > 0
             return Jim(self * mask)
         else:
-            npresult = _np.array(self.np()[item])
-            # npresult=_np.array(self.np()[item])
-            if len(npresult.shape) == 3:
-                nplane = npresult.shape[0]
-                nrow = npresult.shape[1]
-                ncol = npresult.shape[2]
-            elif len(npresult.shape) == 2:
-                nplane = 1
-                nrow = npresult.shape[0]
-                ncol = npresult.shape[1]
-            elif len(npresult.shape) == 1:
-                nplane = 1
-                nrow = 1
-                ncol = npresult.shape[0]
-            elif len(npresult.shape) == 0:
-                nplane = 1
-                nrow = 1
-                ncol = 1
-            else:
-                raise exceptions.JimIllegalArgumentError(
-                    'Len of shape {} of the np object not supported. Supported'
-                    ' lengths are [0, 1, 2, 3]'.format(len(npresult.shape)))
+            nband = self.properties.nrOfBand()
+            for band in range(nband):
+                npresult = _np.array(self.np(band)[item])
+                if len(npresult.shape) == 3:
+                    nplane = npresult.shape[0]
+                    nrow = npresult.shape[1]
+                    ncol = npresult.shape[2]
+                elif len(npresult.shape) == 2:
+                    nplane = 1
+                    nrow = npresult.shape[0]
+                    ncol = npresult.shape[1]
+                elif len(npresult.shape) == 1:
+                    nplane = 1
+                    nrow = 1
+                    ncol = npresult.shape[0]
+                elif len(npresult.shape) == 0:
+                    nplane = 1
+                    nrow = 1
+                    ncol = 1
+                else:
+                    raise exceptions.JimIllegalArgumentError(
+                        'Len of shape {} of the np object not supported. Supported'
+                        ' lengths are [0, 1, 2, 3]'.format(len(npresult.shape)))
 
-            # [gs]item only supports single band image (use plane instead)
-            nband = 1
-            if self.properties.nrOfPlane() > 1:
-                dim = 3
-            else:
-                dim = 2
-            dx = self.properties.getDeltaX()
-            dy = self.properties.getDeltaY()
+                if self.properties.nrOfPlane() > 1:
+                    dim = 3
+                else:
+                    dim = 2
+                dx = self.properties.getDeltaX()
+                dy = self.properties.getDeltaY()
 
-            cropuli = 0
-            # croplri=self.properties.nrOfCol()
-            cropulj = 0
-            # croplrj=self.properties.nrOfRow()
-            if isinstance(item, tuple):
-                # cols
-                if len(item) > dim-1:
-                    if isinstance(item[dim-1], slice):
-                        if item[dim-1].start:
-                            cropuli = item[dim-1].start
-                        if item[dim-1].step:
-                            dx *= item[dim-1].step
-                        # croplri=item[dim-1].stop
-                    else:
-                        cropuli = item[dim-1]
-                        # croplri=item[dim-1]+1
-                # rows
-                if len(item) > dim-2:
-                    if isinstance(item[dim-2], slice):
-                        if item[dim-2].start:
-                            cropulj = item[dim-2].start
-                        if item[dim-2].step:
-                            dy *= item[dim-2].step
-                        # croplrj=item[dim-2].stop
-                    else:
-                        cropulj = item[dim-2]
-                        # croplrj=item[dim-2]+1
+                cropuli = 0
+                # croplri=self.properties.nrOfCol()
+                cropulj = 0
+                # croplrj=self.properties.nrOfRow()
+                if isinstance(item, tuple):
+                    # cols
+                    if len(item) > dim-1:
+                        if isinstance(item[dim-1], slice):
+                            if item[dim-1].start:
+                                cropuli = item[dim-1].start
+                            if item[dim-1].step:
+                                dx *= item[dim-1].step
+                            # croplri=item[dim-1].stop
+                        else:
+                            cropuli = item[dim-1]
+                            # croplri=item[dim-1]+1
+                    # rows
+                    if len(item) > dim-2:
+                        if isinstance(item[dim-2], slice):
+                            if item[dim-2].start:
+                                cropulj = item[dim-2].start
+                            if item[dim-2].step:
+                                dy *= item[dim-2].step
+                            # croplrj=item[dim-2].stop
+                        else:
+                            cropulj = item[dim-2]
+                            # croplrj=item[dim-2]+1
 
-            ul = self.geometry.image2geo(cropuli, cropulj)
-            result = Jim(ncol=ncol, nrow=nrow, nband=nband, nplane=nplane,
-                         otype=self.properties.getDataType())
-            result.properties.setProjection(self.properties.getProjection())
-            gt = self.properties.getGeoTransform()
+                ul = self.geometry.image2geo(cropuli, cropulj)
+                if band == 0:
+                    result = Jim(ncol=ncol, nrow=nrow, nband=nband, nplane=nplane,
+                                otype=self.properties.getDataType())
+                    result.properties.setProjection(self.properties.getProjection())
+                    gt = self.properties.getGeoTransform()
 
-            cropulx = ul[0]-self.properties.getDeltaX()/2
-            cropuly = ul[1]+self.properties.getDeltaY()/2
+                    cropulx = ul[0]-self.properties.getDeltaX()/2
+                    cropuly = ul[1]+self.properties.getDeltaY()/2
 
-            gt[0] = cropulx
-            gt[1] = dx
-            gt[2] = 0
-            gt[3] = cropuly
-            gt[4] = 0
-            gt[5] = -dy
-            result.properties.setGeoTransform(gt)
-            result.np()[:] = npresult
+                    gt[0] = cropulx
+                    gt[1] = dx
+                    gt[2] = 0
+                    gt[3] = cropuly
+                    gt[4] = 0
+                    gt[5] = -dy
+                    result.properties.setGeoTransform(gt)
+                result.np(band)[:] = npresult
             return result
 
     def __setitem__(self, item, value):
@@ -512,10 +512,14 @@ class Jim:
                 else:
                     self._jipjim.d_setMask(item._jipjim, value)
         elif isinstance(item, tuple):
-            if isinstance(value, Jim):
-                self.np()[item] = value.np()
-            else:
-                self.np()[item] = value
+            for band in range(self.properties.nrOfBand()):
+                if isinstance(value, Jim):
+                    self.np(band)[item] = value.np(band)
+                else:
+                    print(item)
+                    print(self.np())
+                    print("value: {}".format(value))
+                    self.np(band)[item] = value
         else:
             raise exceptions.JimIllegalArgumentError(
                 '__setitem__ only implemented for JimVector, Jim or tuples '
