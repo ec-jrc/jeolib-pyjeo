@@ -101,7 +101,19 @@ class _IO(_pj.modules.JimModuleBase):
            jim.io.write('/tmp/test.tif', 'co': ['COMPRESS=LZW', 'TILED=YES']})
         """
         kwargs.update({'filename': filename})
-        self._jim_object._jipjim.write(kwargs)
+        oformat = kwargs.get('oformat')
+        if oformat is not None:
+            if 'nc' in oformat:
+                import netCDF4 as nc
+                # Write to NetCDF file
+                self._jim_object.xr().to_netcdf(filename)
+                # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
+                with nc.Dataset(filename, 'a') as dataset:
+                    [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in range(self._jim_object.properties.nrOfBand())]
+                    crs = dataset.createVariable('spatial_ref', 'i4')
+                    crs.spatial_ref = self._jim_object.properties.getProjection()
+        else:
+            self._jim_object._jipjim.write(kwargs)
 
 
 class _IOList(_pj.modules.JimListModuleBase):

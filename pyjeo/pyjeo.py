@@ -35,8 +35,8 @@ from .modules import pjio as io, properties, pixops, ngbops, geometry, \
 from . import exceptions
 from .__init__ import _check_graph
 
-
-del _jl.Jim.__del__
+if '__del__ ' in dir(_jl.Jim):
+    del _jl.Jim.__del__
 
 
 class _ParentJim(_jl.Jim):
@@ -292,6 +292,45 @@ class Jim:
         elif band < 0:
             band = self.properties.nrOfBand() + band
         return _jl.jim2np(self._jipjim, band, False)
+
+    def xr(self):
+        """Return xarray from Jim object.
+
+        :return: xarray representation
+        """
+        import xarray as _xr
+
+        #jim is a multiband datacube (with multiple planes)
+        planes = range(self.properties.nrOfPlane())
+        bands = range(self.properties.nrOfBand())
+        bbox = self.properties.getBBox()
+
+        # xarray coordinates are pixel centered
+        x = _np.arange(bbox[0]+self.properties.getDeltaX()/2,
+                        bbox[2]+self.properties.getDeltaX()/2,
+                        self.properties.getDeltaX())
+        y = _np.arange(bbox[1]-self.properties.getDeltaY()/2,
+                        bbox[3]-self.properties.getDeltaY()/2,
+                        -self.properties.getDeltaY())
+
+
+        # Build a xarray Dataset reference (without memory copy)
+        # Do not alter shape or destroy x_dataset!
+        if self.properties.nrOfPlane() > 1:
+            x_dataset = _xr.Dataset({str(b):_xr.DataArray(self.np(b),
+                                                        dims=['time', 'y', 'x'],
+                                                        coords={'time': list(planes),
+                                                        'x': x, 'y': y},
+                                                        attrs={'_FillValue': 0})
+                                    for b in bands})
+        else:
+            x_dataset = _xr.Dataset({str(b):_xr.DataArray(self.np(b),
+                                                        dims=['y', 'x'],
+                                                        coords={'x': x, 'y': y},
+                                                        attrs={'_FillValue': 0})
+                                    for b in bands})
+        return x_dataset
+
 
     @staticmethod
     def _checkInitParamsSense(image, kwargs):
@@ -1569,6 +1608,43 @@ def jim2np(jim_object: Jim,
     else:
         raise exceptions.JimError(
             'input must be of Jim type')
+
+
+def jim2xr(jim_object: Jim,
+           copy_data: bool = True):
+    """Return xarray from Jim object.
+
+    :return: xarray representation
+    """
+    import xarray as _xr
+
+    #jim_object is a multiband datacube (with multiple planes)
+    planes = range(jim_object.properties.nrOfPlane())
+    bands = range(jim_object.properties.nrOfBand())
+    bbox = jim_object.properties.getBBox()
+
+    # xarray coordinates are pixel centered
+    x = _np.arange(bbox[0]+jim_object.properties.getDeltaX()/2,
+                    bbox[2]+jim_object.properties.getDeltaX()/2,
+                    jim_object.properties.getDeltaX())
+    y = _np.arange(bbox[1]-jim_object.properties.getDeltaY()/2,
+                    bbox[3]-jim_object.properties.getDeltaY()/2,
+                    -jim_object.properties.getDeltaY())
+    # Build new copy of xarray Dataset (with memory copy):
+    if jim_object.properties.nrOfPlane() > 1:
+        new_dataset = xr.Dataset({str(b):xr.DataArray(_pj.jim2np(jim_object,b),
+                                                        dims=['time', 'y', 'x'],
+                                                        coords={'time': ['t'+str(plane)
+                                                        for plane in planes],
+                                                        'x': x, 'y': y},
+                                                        attrs={'_FillValue': 0})
+                                for b in bands})
+    else:
+        x_dataset = _xr.Dataset({str(b):_xr.DataArray(_pj.jim2np(jim_object,b),
+                                                    dims=['y', 'x'],
+                                                    coords={'x': x, 'y': y},
+                                                    attrs={'_FillValue': 0})
+                                for b in bands})
 
 
 def jimvect2np(jim_object: JimVect,
