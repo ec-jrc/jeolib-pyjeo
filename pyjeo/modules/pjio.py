@@ -103,7 +103,7 @@ class _IO(_pj.modules.JimModuleBase):
         kwargs.update({'filename': filename})
         oformat = kwargs.get('oformat')
         if oformat is not None:
-            if 'nc' in oformat:
+            if 'netCDF' in oformat:
                 import netCDF4 as nc
                 # Write to NetCDF file
                 self._jim_object.xr().to_netcdf(filename)
