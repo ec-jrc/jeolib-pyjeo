@@ -1680,3 +1680,39 @@ def np2jim(np_object: _np.ndarray) -> Jim:
     :return: a Jim representation of a numpy array
     """
     return Jim(_jl.np2jim(np_object))
+
+
+def xr2jim(xr_object) -> Jim:
+    """Return a Jim representation from an xarray.
+
+    Returns a 3D Jim object with planes and bands
+    xarray must be a cube with identical x and y coordinates for each dataset
+
+
+    :param xr_object: an xarray
+    :return: a Jim representation from  an xarray
+    """
+    import xarray as _xr
+
+    jim = None
+    projection = None
+    for b in xr_object:
+        if xr_object[b].attrs.get('spatial_ref') is not None:
+            projection = xr_object[b].attrs.get('spatial_ref')
+        elif jim is None:
+            jim = np2jim(xr_object[b].values)
+            gt = []
+            dx = xr_object[b].coords['x'].values[1]-xr_object[b].coords['x'].values[0]
+            dy = xr_object[b].coords['y'].values[0]-xr_object[b].coords['y'].values[1]
+            ulx = xr_object[b].coords['x'].values[0]-dx/2.0
+            uly = xr_object[b].coords['y'].values[0]+dy/2.0
+            gt.append(ulx)
+            gt.append(dx)
+            gt.append(0)
+            gt.append(uly)
+            gt.append(0)
+            gt.append(-dy)
+            jim.properties.setGeoTransform(gt)
+        else:
+            jim.geometry.stackBand(np2jim(xr_object[b].values))
+    return jim
