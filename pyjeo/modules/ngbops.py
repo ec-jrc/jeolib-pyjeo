@@ -1265,14 +1265,15 @@ class _NgbOps(_pj.modules.JimModuleBase):
 
             jim = pj.Jim('/path/to/image.tif')
 
-            jim.ngbops.firfilter2d(taps=np.array([[1, 2, 1]]),
+            jim.ngbops.firfilter2d(taps=np.array([[1, 1, 1],[1, 2, 1],[1, 1, 1]]),
                                    norm=True, pad='symmetric')
         """
         if len(taps.shape) != 2:
             raise _pj.exceptions.JimIllegalArgumentError(
                 'taps should be 2D array')
 
-        taps = _np.array(taps)
+        if not isinstance(taps,np.ndarray):
+            taps = _np.array(taps)
         kwargs.update({'taps': taps.flatten().tolist()})
         kwargs.update({'dimx': taps.shape[1]})
         kwargs.update({'dimy': taps.shape[0]})
