@@ -13,13 +13,13 @@ pyjeo is released under an
 
 ## Dependencies
 
-* mialib
-* jiplib
-* numpy
+* [mialib](https://github.com/ec-jrc/jeolib-miallib)
+* [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
 
 ## Install
 
-From the directory of the repository, run:
+Once the dependencies mialib and jiplib are installed, enter the 
+directory of the repository, and run:
 
 ```
 sudo python setup.py install
