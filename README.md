@@ -46,9 +46,13 @@ To run tests only for one module:
 python -W ignore -m unittest -v tests/test_classify.py
 ```
 
-## Build documentation
+## Documentation
 
-Dependencies for the documentation build:
+An online documentation is available [here](https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp/)
+
+To build the latest documentation from source:
+
+- Install these dependencies:
 
 * python3-sphinx
 * sphinx-rtd-theme
@@ -60,6 +64,17 @@ Go to directory `doc` and run `make html`.
 cd doc
 make html
 ```
+
+The documentation is generated in html format in `_build/html` and can be read with your browser (open `index.html`).
+
+A documentation in pdf can be obtained via:
+
+```
+cd doc
+make latex
+```
+
+The documentation is generated in pdf format in `_build/latex`.
 
 ## Versions
 

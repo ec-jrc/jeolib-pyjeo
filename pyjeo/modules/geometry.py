@@ -2752,7 +2752,6 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         """Append JimVect object with another JimVect object.
 
         :param jvec: JimVect object to append
-        :param kwargs: See table below
         :return: joined JimVect object
 
         Modifies the instance on which the method was called.
