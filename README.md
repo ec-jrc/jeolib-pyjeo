@@ -13,12 +13,12 @@ pyjeo is released under an
 
 ## Dependencies
 
-* [mialib](https://github.com/ec-jrc/jeolib-miallib)
+* [miallib](https://github.com/ec-jrc/jeolib-miallib)
 * [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
 
 ## Install
 
-Once the dependencies mialib and jiplib are installed, enter the 
+Once the dependencies miallib and jiplib are installed, enter the 
 directory of the repository, and run:
 
 ```
