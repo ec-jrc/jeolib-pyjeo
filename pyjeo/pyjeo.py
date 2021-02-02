@@ -276,6 +276,9 @@ class Jim:
     def np(self, band: int = 0):
         """Return numpy array from Jim object.
 
+        The (contiguous) data array is organized
+        as [planes][rows][columns] for the respective bands
+
         :param band: band index (starting from 0)
         :return: numpy array representation
         """
@@ -295,6 +298,9 @@ class Jim:
 
     def xr(self):
         """Return xarray from Jim object.
+
+        The (contiguous) data array is organized
+        as [planes][rows][columns] for the respective bands
 
         :return: xarray representation
         """
@@ -1551,6 +1557,9 @@ class JimVect:
     def np(self, field: list = None, ln: int = 0):
         """Return numpy array from JimVect object.
 
+        The (contiguous) data array is organized
+        as [planes][rows][columns] for the respective bands
+
         :param field: list of fields to consider
         :param ln: Layer to return
         :return: 2D numpy array representation of numerical fields of all features
@@ -1614,6 +1623,9 @@ def jim2xr(jim_object: Jim,
            copy_data: bool = True):
     """Return xarray from Jim object.
 
+    The (contiguous) data array is organized
+    as [planes][rows][columns] for the respective bands
+
     :return: xarray representation
     """
     import xarray as _xr
@@ -1676,6 +1688,9 @@ def jimvect2np(jim_object: JimVect,
 def np2jim(np_object: _np.ndarray) -> Jim:
     """Return a Jim representation of a numpy array.
 
+    The (contiguous) data array must be organized
+    as [planes][rows][columns] for the respective bands
+
     :param np_object: a numpy array
     :return: a Jim representation of a numpy array
     """
@@ -1685,9 +1700,13 @@ def np2jim(np_object: _np.ndarray) -> Jim:
 def xr2jim(xr_object) -> Jim:
     """Return a Jim representation from an xarray.
 
+    The (contiguous) data array must be organized
+    as [planes][rows][columns] for the respective bands
+
     Returns a 3D Jim object with planes and bands
     xarray must be a cube with identical x and y coordinates for each dataset
-
+    Notice the (contiguous) data array is organized as [planes][rows][columns]
+    for the respective bands
 
     :param xr_object: an xarray
     :return: a Jim representation from  an xarray
