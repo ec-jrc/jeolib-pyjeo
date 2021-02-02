@@ -26,6 +26,7 @@ import gc as _gc
 import warnings as _warnings
 import os as _os
 import math
+from pathlib import Path
 from osgeo import ogr as _ogr
 
 import jiplib as _jl
@@ -104,7 +105,10 @@ class _ParentJim(_jl.Jim):
                         kwargs.update({'uly':bbox[1]})
                         kwargs.update({'lrx':bbox[2]})
                         kwargs.update({'lry':bbox[3]})
-                    kwargs.update({'filename': image})
+                    if isinstance(image, Path):
+                        kwargs.update({'filename': str(image)})
+                    else:
+                        kwargs.update({'filename': image})
                     super(_ParentJim, self).__init__(kwargs)
             elif 'graph' in kwargs:
                 graph = kwargs.pop('graph')
@@ -129,6 +133,8 @@ class _ParentJim(_jl.Jim):
                 super(_ParentJim, self).__init__(image._jipjim)
             elif isinstance(image, _jl.Jim):
                 super(_ParentJim, self).__init__(image)
+            elif isinstance(image, Path):
+                super(_ParentJim, self).__init__({'filename': str(image)})
             else:
                 super(_ParentJim, self).__init__({'filename': image})
         else:
@@ -1424,7 +1430,10 @@ class _ParentVect(_jl.VectorOgr):
                     super(_ParentVect, self).__init__(vector._jipjimvect,
                                                       kwargs)
                 else:
-                    kwargs.update({'filename': vector})
+                    if isinstance(vector, Path):
+                        kwargs.update({'filename': str(vector)})
+                    else:
+                        kwargs.update({'filename': vector})
                     if 'bbox' in kwargs:
                         bbox = kwargs.pop('bbox')
                         kwargs.update({'ulx':bbox[0]})
@@ -1436,11 +1445,18 @@ class _ParentVect(_jl.VectorOgr):
                 geom = _ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
                 super(_ParentVect, self).__init__(geom.ExportToJson())
             else:
-                kwargs.update({'filename': kwargs.pop('output', None)})
+                filename = kwargs.pop('output', None)
+                if isinstance(filename, Path):
+                    kwargs.update({'filename': str(filename)})
+                else:
+                    kwargs.update({'filename': filename})
                 super(_ParentVect, self).__init__(kwargs)
         else:
             if vector:
-                super(_ParentVect, self).__init__(vector)
+                if isinstance(vector, Path):
+                    super(_ParentVect, self).__init__(str(vector))
+                else:
+                    super(_ParentVect, self).__init__(vector)
             else:
                 super(_ParentVect, self).__init__()
 
@@ -1476,7 +1492,10 @@ class JimVect:
         :param vector: Path to a vector dataset
         :return: a JimVect object
         """
-        self._jipjimvect = _ParentVect(vector, kwargs)
+        if isinstance(vector, Path):
+            self._jipjimvect = _ParentVect(str(vector), kwargs)
+        else:
+            self._jipjimvect = _ParentVect(vector, kwargs)
 
         self._all = all._AllVect()
         self._ccops = ccops._CCOpsVect()

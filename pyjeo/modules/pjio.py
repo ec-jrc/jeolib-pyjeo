@@ -100,15 +100,15 @@ class _IO(_pj.modules.JimModuleBase):
            jim = pj.Jim({'filename': ifn})
            jim.io.write('/tmp/test.tif', 'co': ['COMPRESS=LZW', 'TILED=YES']})
         """
-        kwargs.update({'filename': filename})
+        kwargs.update({'filename': str(filename)})
         oformat = kwargs.get('oformat')
         if oformat is not None:
             if 'netCDF' in oformat:
                 import netCDF4 as nc
                 # Write to NetCDF file
-                self._jim_object.xr().to_netcdf(filename)
+                self._jim_object.xr().to_netcdf(str(filename))
                 # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
-                with nc.Dataset(filename, 'a') as dataset:
+                with nc.Dataset(str(filename), 'a') as dataset:
                     [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in range(self._jim_object.properties.nrOfBand())]
                     crs = dataset.createVariable('spatial_ref', 'i4')
                     crs.spatial_ref = self._jim_object.properties.getProjection()
@@ -163,6 +163,6 @@ class _IOVect(_pj.modules.JimVectModuleBase):
         :param filename: path to a raster dataset or another Jim object
         """
         if filename:
-            self._jim_vect._jipjimvect.write(filename)
+            self._jim_vect._jipjimvect.write(str(filename))
         else:
             self._jim_vect._jipjimvect.write()

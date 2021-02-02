@@ -74,7 +74,7 @@ def sml(jim_object,
     see :py:meth:`~_Classify.sml` for an example how to use this function
     """
     if model is not None:
-        kwargs.update({'method': 'sml', 'model': model})
+        kwargs.update({'method': 'sml', 'model': str(model)})
         return _pj.Jim(jim_object._jipjim.classify(kwargs))
     elif reflist is not None:
         if classes is not None:
@@ -156,7 +156,7 @@ class _Classify(_pj.modules.JimModuleBase):
         class numbers.
         """
         if model is not None:
-            kwargs.update({'method': 'sml', 'model': model})
+            kwargs.update({'method': 'sml', 'model': str(model)})
             self._jim_object._set(self._jim_object._jipjim.classify(kwargs))
         elif reflist is not None:
             if classes is not None:
@@ -218,7 +218,7 @@ class _Classify(_pj.modules.JimModuleBase):
         if 'classes' in kwargs:
             kwargs.update({'class': kwargs.pop('classes')})
         if output:
-            kwargs.update({'model': output})
+            kwargs.update({'model': str(output)})
             self._jim_object._jipjim.trainSML(reference._jipjimlist, kwargs)
         else:
             raise _pj.exceptions.JimIllegalArgumentError(
