@@ -1272,7 +1272,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
             raise _pj.exceptions.JimIllegalArgumentError(
                 'taps should be 2D array')
 
-        if not isinstance(taps,np.ndarray):
+        if not isinstance(taps,_np.ndarray):
             taps = _np.array(taps)
         kwargs.update({'taps': taps.flatten().tolist()})
         kwargs.update({'dimx': taps.shape[1]})
