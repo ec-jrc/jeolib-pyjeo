@@ -287,7 +287,20 @@ class Jim:
 
         :param band: band index (starting from 0)
         :return: numpy array representation
+
+        Some Numpy algorithms expect a 3D image that is organized as
+        [rows][columns][planes] instead of [planes][rows][columns].
+        Also to plot an RGB image using matplotlib, the axes of the Numpy array
+        must be rolled::
+
+            import matplotlib.pyplot as plt
+
+            jim = pj.Jim('/path/to/rgb.tif')
+            fig = plt.figure()
+            ax1 = fig.add_subplot(111)
+            ax1.imshow(np.rollaxis(jim.np(),0,3))
         """
+
         if not self:
             raise exceptions.JimEmptyError(
                 'Jim has to have a data to use Jim.np()')

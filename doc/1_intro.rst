@@ -22,6 +22,8 @@ The pyjeo package is grouped in modules. A module combines a number of operation
  * demops: operations on digital elevation models
 
 
+.. _functions_methods:
+
 Functions and methods
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -43,6 +45,16 @@ the object is altered and no object is returned. Methods that are non-destructiv
 
    myattributeZ = myobject.properties.getAttributeZ()
 
+
+Modifying objects in-place can minimize the memory footprint, but the original object is lost. According to the principle of command-query-separation :cite:`meyer1988`, functions that change state should not return values and functions that return values should not change state. Following this principle, pyjeo functions that modify the object in-place return **None**. To avoid confusion with functions that return a new object, they have been implemented as methods that are bound to a class. For instance to subset the first band of a *Jim* instance in-place, use::
+
+  jim.geometry.cropBand(0)
+
+After the call, the object *jim* will be a single-band raster dataset. No new object is returned and the original object is lost. A corresponding function is implemented that is not bound to a class::
+
+  jim0=pyjeo.geometry.cropBand(jim,0)
+
+returns the new single-band object *jim0*. In this case, all objects are passed explicitly as arguments and are not modified. 
 
 Design of pyjeo
 ---------------

@@ -24,7 +24,7 @@ The documentation is divided in three main parts:
 
 * :ref:`Tutorial`: A tutorial to guide you through the first steps of using pyjeo, introducing the main data structures :py:class:`Jim`, :py:class:`JimList`, and :py:class:`JimVect`.
 
-* :ref:`Reference`: A manual describing all functions and methods available in pyjeo
+* :ref:`Reference_manual`: A manual describing all functions and methods available in pyjeo
 
 
 ====================
@@ -49,6 +49,62 @@ To get help on a class method, e.g., :py:meth:`~geometry._Geometry.warp`::
 
   jim = pj.Jim()
   help(jim.geometry.warp)
+
+.. _Tutorial_jim:
+
+=======================
+Tutorial on Jim objects
+=======================
+
+Jim is the main class to represent raster data objects. You can create a new Jim either :ref:`from file <create_Jim_from_file>`
+  or :ref:`create new <create_Jim_new>` Jim by specifying all the attributes (e.g., data type, columns, rows, etc.).
+
+When creating an geospatial image from file (e.g., in GeoTIFF format), the attributes for the geotransform and projection is set automatically and stored in the Jim object. These attributes can be retrieved with the methods in the :py:mod:`properties` module::
+
+
+  import pyjeo as pj
+
+  jim = pj.Jim('/path/to/raster.tif'))
+  jim.properties.getBBox()
+  
+  [399960.0, 5100000.0, 405080.0, 5094880.0]
+
+
+Where the list returned represents the upper left x, upper left y, lower right x, and lower right y coordinates respectively. 
+
+.. _data_model:
+
+Data model
+==========
+
+It is important to understand the data model that is used for a Jim object. For a more detailed description, please refer to :cite:`kempeneers2019`.
+
+The data model used a multi-band three dimensional (3D) model. Each band represents a 3D contiguous array in memory, where data are organized as *[plane][row][column]* (see also :py:meth:`Jim.np`). Two dimensions refer to the spatial domain (x and y) and pyjeo refers to the third dimension as *plane* (see :numref:`cube`). This plane is typically used for either the temporal or spectral dimension, but can also be used to address volumetic data.  The data cube has a single georeference.
+
+.. _cube:
+
+.. figure:: figures/cube.png
+   :width: 100 %
+
+   Data model used for Jim objects.
+
+When reading a multi-band raster dataset into a Jim raster data object, the user can choose if the bands are to be considered as planes, resulting in a single band 3D object, or as bands (resulting in a multi-band 2D raster object). Planes and bands can be stacked :py:meth:`~geometry._Geometry.stackPlane`, :py:meth:`~geometry._Geometry.stackBand` and subset (:py:meth:`~geometry._Geometry.cropPlane`, :py:meth:`~geometry._Geometry.cropBand`) as shown in :numref:`cube`. Dimensions must correspond across all bands within the same *Jim* object. To collect objects with different dimensions, a *JimList* can be used (which inherits from a plain Python list). Multi-dimensional data with dimensions above three are not supported in pyjeo.
+
+Functions on the individual bands can easily be processed in parallel as different data pointers are used for each band. Warping multi-band images take advantage of the single georeference object they have in common (only a single function call to *GDALReprojectImage* (`gdalwarper.h <https://gdal.org/doxygen/gdalwarper_8h.html>`_ is needed).
+
+The simple data model with contiguous arrays allows to combine pyjeo with other software such as GDAL, GSL, and Python packages that are compatible with Numpy arrays (e.g., `xarray <http://xarray.pydata.org>`_ , `SciPy <https://www.scipy.org/>`_). A direct bridge to Numpy arrays and xarray (if installed) is included in pyjeo, without the generation of an extra copy in memory.
+
+In particular, when dealing with geospatial data that have a large memory footprint, careful memory handling is important. To this end, users can choose if pyjeo functions modify objects in-place or return a new object (see also :ref:`functions_methods`).  
+
+Jim conversions and bridge to third party packages
+==================================================
+
+Jim objects can be easily converted to Numpy array and xarray objects either with or without duplicating the memory (see also :ref:`jim_conversions`). A Numpy array object derived from a Jim object without a memory copy references to the same data in memory as the original Jim object. This reduces the memory footprint, but can lead to memory errors. The Jim object should remain the owner of the data and the referenced Numpy array object should not be altered in shape nor destroyed.
+
+However, if handled with care, this can be a powerful technique.
+As shown in :ref:`ndimage`, third party libraries operating on Numpy arrays can directly written into Jim objects. For instance, to Gaussian filter a Jim object using `SciPy <https://www.scipy.org/>`_, simply use::
+
+  jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)[:]
 
 .. _Tutorial_classification:
 
@@ -215,7 +271,7 @@ The input image is multi-band image based on the NDVI values based on MODIS acqu
   jim = pj.Jim(testFile, band2plane=True,
                ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
 
-Show the first three months of the NDVI image image. The dimension of the 3D image is organized as [plane][row][column]. We need to roll the first axis due to obtain a [row][col][colour] image::
+Show the first three months of the NDVI image image. The dimension of the 3D image is organized as [plane][row][column]. We need to roll the first axis due to obtain a [row][col][colour] image (see also :py:meth:`Jim.np`) ::
 
   import matplotlib.pyplot as plt
   fig = plt.figure()

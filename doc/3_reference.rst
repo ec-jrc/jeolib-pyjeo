@@ -1,4 +1,4 @@
-.. _Reference:
+.. _Reference_manual:
 
 ################
 Reference Manual
@@ -28,8 +28,8 @@ Jim
 
 .. _create_Jim_from_file:
 
-Create Jim object from file
-===========================
+Jim constructor: create Jim object from file
+============================================
 
    Supported keys as arguments:
 
@@ -88,8 +88,8 @@ Create Jim object from file
 
 .. _create_Jim_new:
 
-Create a new Jim image object by defining image attributes (not read from file)
-===============================================================================
+Jim constructor: create a new Jim image object by defining image attributes (not read from file)
+================================================================================================
 
 Supported keys as arguments:
 
@@ -153,8 +153,8 @@ To generate random values with a uniform distribution with values between 100 an
         im = pj.Jim(otype='float32', ncol=256, nrow=256, uniform=[100, 200])
 
 
-Create a new copy of a Jim raster data object
-===============================================
+Copy constructor: create a new copy of a Jim raster data object
+===============================================================
 
    Create a new Jim object from an existing Jim object, copying all data ::
 
@@ -185,8 +185,11 @@ Create a new Jim raster data object from a Numpy array
 
 .. _jim_conversions:
 
+Jim conversions
+===============
+
 Convert Jim object to numpy array
-=================================
+---------------------------------
 
 .. method:: Jim.np(self, band: int = 0)
 
@@ -803,6 +806,8 @@ Pixel operation methods on JimList
 ***********************
 Neighborhood operations
 ***********************
+
+.. _ndimage:
 
 ===========================================
 Neighborhood operation from scipy (ndimage)
