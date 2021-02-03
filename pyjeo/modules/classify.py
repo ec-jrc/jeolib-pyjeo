@@ -120,6 +120,13 @@ class _Classify(_pj.modules.JimModuleBase):
             **kwargs):
         """Perform supervised classification of a Jim object using SML.
 
+        Symbolic machine learning (SML) is a classification method that is
+        based on symbolic learning techniques. It is designed to work in
+        complex and information-abundant environments, where relationships
+        among different data layers are assessed in model-free and
+        computationally-effective modalities
+        (`reference <https://doi.org/10.3390/rs8050399>`_)
+
         For training, one or more reference raster datasets with categorical
         values is expected as a JimList. The reference raster dataset is
         typically at a lower spatial resolution than the input raster dataset

@@ -194,7 +194,8 @@ Classify the image using the Numpy representation of the Jim object::
 -------------------------
 Symbolic machine learning
 -------------------------
-Symbolic machine learning (SML) is a classification method that is based on symbolic learning techniques. It is designed to work in complex and information-abundant environments, where relationships among different data layers are assessed in model-free and computationally-effective modalities (`reference <https://doi.org/10.3390/rs8050399>`_)
+
+For the reference for this method please refer to :py:meth:`~classify._Classify.sml` in the :py:mod:`classify` module.
 
 Import Numpy, Path and pyjeo::
 
@@ -202,17 +203,33 @@ Import Numpy, Path and pyjeo::
   from pathlib import Path
   import pyjeo as pj
 
-Locate the reference data (Corine Land Cover) and the input data::
+Locate the the input and reference data (Corine Land Cover)::
 
   datadir = Path.home() / 'pyjeo/tests/data'
   clc = datadir / 'clc_32632.tif'
   testFile = datadir / 'modis_ndvi_2010.tif'
 
-Create a subset from the Corine Land Cover classes::
+The input image is multi-band image based on the NDVI values based on MODIS acquisitions in the year 2010. Each band corresponds to a monthly composite (12 bands in total). We open a spatial subset of the input image, making sure the reference image entirely covers the input image. The bands are loaded in a 3D image as planes::
+
+  bbox = [4246000, 2547000, 4349500, 2441000]
+  jim = pj.Jim(testFile, band2plane=True,
+               ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
+
+Show the first three months of the NDVI image image. The dimension of the 3D image is organized as [plane][row][column]. We need to roll the first axis due to obtain a [row][col][colour] image::
+
+  import matplotlib.pyplot as plt
+  fig = plt.figure()
+  ax1 = fig.add_subplot(111)
+  ax1.imshow(np.rollaxis(jim[0:3,:,:].np(),0,3))
+
+.. image:: figures/modis_ndvi_2010.png
+   :width: 100 %
+
+Create the reference dataset that contains only the target classes (2, 12, 25, 41, 50)::
 
   class_dict = {'urban': 2, 'agriculture': 12, 'forest': 25,
                 'water': 41, 'rest': 50}
-Create the reference dataset that contains only the target classes (2, 12, 25, 41, 50)::
+
 
   class_from = range(0, 50)
   class_to = [50] * 50
@@ -228,26 +245,23 @@ Create the reference dataset that contains only the target classes (2, 12, 25, 4
       else:
           class_to[i] = class_dict['rest']
 
-Create coarse spatial resolution reference dataset::
+The spatial resolution of the input image is 500 m. The SML algorithm typically expects a reference dataset with a coarser spatial resolution, for example 1000 m::
 
   jim_ref = pj.Jim(clc, dx=1000, dy=1000)
   jim_ref.classify.reclass(classes=list(class_from), reclasses=class_to)
-
-Open a spatial subset of the input image. Make sure the reference image entirely covers the input image::
-
-  bbox = [4246000, 2547000, 4349500, 2441000]
-  jim = pj.Jim(testFile, band2plane=True,
-               ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
 
 The reference image should be in the same projection as the input image::
 
   jim_ref.geometry.warp(jim.properties.getProjection())
 
-Create a JimList from the reference (there can be multiple reference images)::
+.. image:: figures/reference_coarse.png
+   :width: 100 %
+
+The SML algorithm supports multiple reference images in a JimList object. Here, only a single reference is provided (list of a single image)::
 
   reflist = pj.JimList([jim_ref])
 
-Create the model by traning the SML::
+Train the SML model and save it::
 
   model = datadir / 'model_sml.dat'
   jim.classify.trainSML(reflist, output=model,
@@ -261,7 +275,7 @@ The result is a multi-band Jim object where the number of bands equals the numbe
 
   sml.geometry.band2plane()
 
-Use Numpy to select the maximum probability class. The output will refer to classes [0-4] (overwrite the first plane)::
+Use Numpy to select the maximum probability class. Put the result in the first plane (overwriting the probability plane of the first class)::
 
   sml.np(0)[:] = np.argmax(sml.np(), axis=0)
 
@@ -273,19 +287,10 @@ Value 0 is a valid class (do not consider 0 as nodata)::
 
   sml.properties.clearNoData()
 
-Map the classes to the original class values::
+Map the classes [0-4] to the original class values::
   
   sml.classify.reclass(classes=[0, 1, 2, 3, 4],
                        reclasses=[2, 12, 25, 41, 50])
 
 .. image:: figures/sml.png
    :width: 100 %
-
-Plot the classification result::
-
-  import matplotlib.pyplot as plt
-
-  fig = plt.figure()
-  ax1 = fig.add_subplot(111)
-  ax1.imshow(sml.np())
-  plt.show()
