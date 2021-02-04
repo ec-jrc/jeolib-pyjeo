@@ -127,6 +127,13 @@ class _ParentJim(_jl.Jim):
 
                 super(_ParentJim, self).__init__(ngb._jipjim)
             else:
+                if 'bbox' in kwargs:
+                    bbox = kwargs.pop('bbox')
+                    kwargs.update({'ulx':bbox[0]})
+                    kwargs.update({'ulx':bbox[0]})
+                    kwargs.update({'uly':bbox[1]})
+                    kwargs.update({'lrx':bbox[2]})
+                    kwargs.update({'lry':bbox[3]})
                 super(_ParentJim, self).__init__(kwargs)
         elif image:
             if isinstance(image, Jim):
@@ -1588,9 +1595,6 @@ class JimVect:
 
     def np(self, field: list = None, ln: int = 0):
         """Return numpy array from JimVect object.
-
-        The (contiguous) data array is organized
-        as [planes][rows][columns] for the respective bands
 
         :param field: list of fields to consider
         :param ln: Layer to return
