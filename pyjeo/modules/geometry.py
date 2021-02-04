@@ -777,24 +777,24 @@ def join(jvec1,
     +------------------+--------------------------------------------------+
 
     .. |inner| image:: figures/join_inner.png
-         :width: 20 %
+         :scale: 50 %
     .. |outer_left| image:: figures/join_outer_left.png
-         :width: 20 %
+         :scale: 50 %
     .. |outer_right| image:: figures/join_outer_right.png
-         :width: 20 %
+         :scale: 50 %
     .. |outer_full| image:: figures/join_outer_full.png
-         :width: 20 %
+         :scale: 50 %
 
     The join methods currently supported are:
 
-        :INNER |inner|: join two JimVect objects, keeping only those \
-                        features for which identical keys in both objects \
-                        are found
-        :OUTER_LEFT |outer_left|: join two JimVect objects, keeping \
+        :INNER       |inner|:       join two JimVect objects, keeping only those \
+    features for which identical keys in both objects \
+    are found
+        :OUTER_LEFT  |outer_left|:  join two JimVect objects, keeping \
                                   all features from first object
         :OUTER_RIGHT |outer_right|: join two JimVect objects, keeping all \
                                     features from second object
-        :OUTER_FULL |outer_full|: join two JimVect objects, keeping \
+        :OUTER_FULL  |outer_full|:  join two JimVect objects, keeping \
                                   all features from both objects
 
     Example: join two vectors, based on the key 'id', which is a common
@@ -2208,13 +2208,50 @@ class _Geometry(_pj.modules.JimModuleBase):
           the (numeric) fieldname in the pixel value'
 
         Example: rasterize vector using the label attribute by creating first
-        a mask from an existing raster::
+        a mask from an existing raster that will be used as a template for the
+        rasterize process::
 
           jim0 = pj.Jim(rasterfn, band=0)
           sample = pj.JimVect(vectorfn)
           mask = pj.Jim(jim0, copy_data=False)
           mask.pixops.convert('GDT_Byte')
           mask.geometry.rasterize(sample, eo=['ATTRIBUTE=label'])
+
+        If no raster template exists, a new Jim object can be created, using
+        the geometry of the JimVect. For instance, to rasterize the GeoJSON::
+
+          jsonstring =
+            '{"polygons": '
+            '{"type": "FeatureCollection", '
+                '"crs": '
+                    '{"type": "name", '
+                    '"properties": '
+                    '{"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, '
+                '"features": '
+                    '[{"type": "Feature", '
+                    '"properties": {"label": 1}, '
+                    '"geometry": '
+                        '{"type": "Polygon", '
+                        '"coordinates": '
+                            '[[[ 16.296883885037882, 48.07125730037879 ], '
+                            '[ 16.29418254261364, 47.787616345833342 ], '
+                            '[ 16.518393963825762, 47.814629770075761 ], '
+                            '[ 16.413041609280306, 48.04424387613637 ], '
+                            '[ 16.296883885037882, 48.07125730037879 ]]'
+            ']}}]}}'
+
+          v = pj.JimVect(jsonstring)
+          jim = pj.Jim(bbox = v.properties.getBBox(), a_srs='epsg:4326',
+                       otype='GDT_Byte', dx=0.001, dy=0.001)
+          jim.geometry.rasterize(v)
+
+        .. note:: The spatial resolution in x and y must set in decimal degrees
+                  when the projection is set to lat/lon (epsg:4326)
+
+        .. image:: figures/rasterize.png
+           :width: 45 %
+        .. image:: figures/rasterize_detail.png
+           :width: 45 %
         """
         if not isinstance(jim_vect, _pj.JimVect):
             raise _pj.exceptions.JimIllegalArgumentError(

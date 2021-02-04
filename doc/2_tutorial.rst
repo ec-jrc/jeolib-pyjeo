@@ -17,7 +17,8 @@ This documentation is written using the `sphinx <http://www.sphinx-doc.org>`_ to
 Online documentation
 ====================
 
-The primary source of documentation is available online via this `website <https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp>`_.
+This documentation is available in the source code under the doc directory (details on how to compile can be found in the README.md file). There is online version in html format available on this `website <https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp>`_.
+
 The documentation is divided in three main parts:
 
 * :ref:`Introduction`: Introduction explaining the organization of the pyjeo package, its modules, design, installation and usage.
@@ -52,25 +53,17 @@ To get help on a class method, e.g., :py:meth:`~geometry._Geometry.warp`::
 
 .. _Tutorial_jim:
 
-=======================
-Tutorial on Jim objects
-=======================
+=====================================
+Tutorial on Jim objects (raster data)
+=====================================
 
-Jim is the main class to represent raster data objects. You can create a new Jim either :ref:`from file <create_Jim_from_file>`
-  or :ref:`create new <create_Jim_new>` Jim by specifying all the attributes (e.g., data type, columns, rows, etc.).
+Jim is the main class to represent raster data objects. You can create a new Jim in different ways:
 
-When creating an geospatial image from file (e.g., in GeoTIFF format), the attributes for the geotransform and projection is set automatically and stored in the Jim object. These attributes can be retrieved with the methods in the :py:mod:`properties` module::
-
-
-  import pyjeo as pj
-
-  jim = pj.Jim('/path/to/raster.tif'))
-  jim.properties.getBBox()
-  
-  [399960.0, 5100000.0, 405080.0, 5094880.0]
-
-
-Where the list returned represents the upper left x, upper left y, lower right x, and lower right y coordinates respectively. 
+- opening :ref:`from file <create_Jim_from_file>` in some format supported by GDAL;
+- :ref:`create new <create_Jim_new>` Jim objects by specifying all the attributes (e.g., data type, columns, rows, etc.);
+- using the :ref:`copy constructor <Jim_copy_constructor>`;
+- from a :ref:`Numpy array object <Jim_numpy_constructor>`;
+- as the result of one of the :ref:`functions <functions_methods>`.
 
 .. _data_model:
 
@@ -88,23 +81,232 @@ The data model used a multi-band three dimensional (3D) model. Each band represe
 
    Data model used for Jim objects.
 
-When reading a multi-band raster dataset into a Jim raster data object, the user can choose if the bands are to be considered as planes, resulting in a single band 3D object, or as bands (resulting in a multi-band 2D raster object). Planes and bands can be stacked :py:meth:`~geometry._Geometry.stackPlane`, :py:meth:`~geometry._Geometry.stackBand` and subset (:py:meth:`~geometry._Geometry.cropPlane`, :py:meth:`~geometry._Geometry.cropBand`) as shown in :numref:`cube`. Dimensions must correspond across all bands within the same *Jim* object. To collect objects with different dimensions, a *JimList* can be used (which inherits from a plain Python list). Multi-dimensional data with dimensions above three are not supported in pyjeo.
+When creating an geospatial image from file (e.g., in GeoTIFF format), the attributes for the geotransform and projection is set automatically and stored in the Jim object. These attributes can be retrieved with the methods in the :py:mod:`properties` module::
 
-Functions on the individual bands can easily be processed in parallel as different data pointers are used for each band. Warping multi-band images take advantage of the single georeference object they have in common (only a single function call to *GDALReprojectImage* (`gdalwarper.h <https://gdal.org/doxygen/gdalwarper_8h.html>`_ is needed).
+
+  import pyjeo as pj
+
+  jim = pj.Jim('/path/to/raster.tif'))
+  jim.properties.getBBox()
+  
+  [399960.0, 5100000.0, 405080.0, 5094880.0]
+
+
+where the list returned represents the upper left x, upper left y, lower right x, and lower right y coordinates respectively. 
+
+As a default, a multi-band raster dataset is read as a single plane multi-band Jim object. To consider the input bands as planes and create  a (single-band) 3D multi-plane Jim object, an extra argument *band2plane* can be set (see :ref:`Jim constructor <create_Jim_from_file>`).   Planes and bands can be stacked :py:meth:`~geometry._Geometry.stackPlane`, :py:meth:`~geometry._Geometry.stackBand` and subset (:py:meth:`~geometry._Geometry.cropPlane`, :py:meth:`~geometry._Geometry.cropBand`) as shown in :numref:`cube`. Dimensions must correspond across all bands within the same *Jim* object. To collect objects with different dimensions, a *JimList* can be used (which inherits from a plain Python list). Multi-dimensional data with dimensions above three are not supported in pyjeo. Bands can be converted to planes and vice versa at the cost of a (temporary) memory copy (see :py:meth:`~geometry._Geometry.band2plane` and :py:meth:`~geometry._Geometry.plane2band`). 
+
+An advantage of this data model with both planes and bands is that the user can control how data is stored in memory. Multi-plane images are ideal for 3D operations and allow to bridge pyjeo to third party libraries such as Numpy, scipy, and xarray that expect 3D Numpy arrays (see :ref:`bridge_jim_third_party`). Multi-band Jim objects, on the other hand, have their bands stored in separate memory pointers and can easily be processed in parallel with multi-threading using the Open MPI bindings. In addition, warping multi-band images take advantage of the single georeference object they have in common. This requires only a single function call to *GDALReprojectImage* (`gdalwarper.h <https://gdal.org/doxygen/gdalwarper_8h.html>`_).
 
 The simple data model with contiguous arrays allows to combine pyjeo with other software such as GDAL, GSL, and Python packages that are compatible with Numpy arrays (e.g., `xarray <http://xarray.pydata.org>`_ , `SciPy <https://www.scipy.org/>`_). A direct bridge to Numpy arrays and xarray (if installed) is included in pyjeo, without the generation of an extra copy in memory.
 
 In particular, when dealing with geospatial data that have a large memory footprint, careful memory handling is important. To this end, users can choose if pyjeo functions modify objects in-place or return a new object (see also :ref:`functions_methods`).  
 
-Jim conversions and bridge to third party packages
-==================================================
+.. _bridge_jim_third_party:
 
-Jim objects can be easily converted to Numpy array and xarray objects either with or without duplicating the memory (see also :ref:`jim_conversions`). A Numpy array object derived from a Jim object without a memory copy references to the same data in memory as the original Jim object. This reduces the memory footprint, but can lead to memory errors. The Jim object should remain the owner of the data and the referenced Numpy array object should not be altered in shape nor destroyed.
+Bridging Jim to third party packages
+====================================
+
+Jim objects can be easily converted to `Numpy <https://numpy.org>`_ arrays and `xarray <http://xarray.pydata.org>`_ objects either with or without duplicating the memory (see also :ref:`Jim_conversions`). A Numpy array object derived from a Jim object without a memory copy references to the same data in memory as the original Jim object. This reduces the memory footprint, but can lead to memory errors. The Jim object should remain the owner of the data and the referenced Numpy array object should not be altered in shape nor destroyed.
 
 However, if handled with care, this can be a powerful technique.
 As shown in :ref:`ndimage`, third party libraries operating on Numpy arrays can directly written into Jim objects. For instance, to Gaussian filter a Jim object using `SciPy <https://www.scipy.org/>`_, simply use::
 
   jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)[:]
+
+.. _image_tiling:
+
+Image tiling
+============
+
+Depending on the size of the image, images do sometimes not fit into the available memory. For many (e.g., pixel wise) operations, images can be tiled first. Each tile can then processed individually, which reduces the memory footprint. Tiling also allows for embarrassingly parallel processing, where little or no effort is needed to separate the problem into a number of parallel tasks. This is particularly useful in a cluster computing environment, but also for multi-core computers with sufficient memory (all tiles must be able to be read in memory). Jim objects support a tiling approach when reading from file with with the specific keys *tileindex*, *tiletotal*, and *overlap* (see also :ref:`create_Jim_from_file`).
+
+As an example, we read only a portion of the image from file, dividing in *tiletotal* tiles (tiletotal must be a squared integer, e.g., 2^2 = 4, 3^2 = 9, ..., 32^2 = 1024,...). The parameter *tileindex* indicates the tile to be read (from 0 to *tiletotal*-1). As a default an *overlap* of 5% is used. An overlap > 0 is of particular interest when tiles must be re-projected or in case of a neighborhood operation::
+
+  ifn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+  tiletotal = 16
+  for tileindex in range(0,16):
+    jim = pj.Jim(ifn, tileindex = 0, tiletotal = tiletotal, overlap = 5)
+    # do stuff with jim ...
+    #write tiled result
+    jim.io.write('result_'+str(tileindex)+'.tif')
+
+To merge all tiled results as single virtual file, the Python bindings of GDAL can be used::
+
+  from osgeo import gdal
+
+  vrtfn = 'result.vrt'
+  vrtfile = gdal.BuildVRT(str(vrtfn),['result_'+str(tileindex)+'.tif' for
+                                      tileindex in range(0, tiletotal],
+                          options=gdal.BuildVRTOptions(srcNodata=0))
+  vrtfile = None
+
+.. _Tutorial_jim_write:
+
+===========================
+Writing Jim objects to file
+===========================
+
+Jim objects can be written to file in different file formats (see also :py:meth:`~pjio._IO.write`). Currently, only those formats for which a GDAL driver exists that implements a `Create method <https://gdal.org/tutorials/raster_api_tut.html#using-create>`_ are supported. This excludes many sequential write once formats (such as JPEG and PNG). An overview of the drivers that support *Create* is given on the `GDAL <https://gdal.org/drivers/raster/index.html>`_ website. The default format used is `GTiff <https://gdal.org/drivers/raster/gtiff.html>`_.
+
+Depending on the file format, a number of creation options (with the key argument *co* and a list of string values) can be set. For example the GTiff format supports compression and tiling. To write a tiled GTiff file with LZW compression::
+
+  jim.io.write('/tmp/test.tif', 'co': ['COMPRESS=LZW', 'TILED=YES']})
+
+
+.. _Tutorial_netcdf_write:
+
+Few file formats support writing a multi-band 3D raster data. One of those is `NetCDF <https://gdal.org/drivers/raster/netcdf.html#raster-netcdf>`_. Suppose we have created a 3D Jim object, we can write it to a NetCDF file using the xarray conversion (see :ref:`Jim_conversions`)::
+
+  import netCDF4 as nc
+  # Write to NetCDF file
+  nc_file = '/tmp/test1.nc'
+  jim.xr().to_netcdf(nc_file)
+  # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
+  with nc.Dataset(nc_file, 'a') as dataset:
+      [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
+      crs = dataset.createVariable('spatial_ref', 'i4')
+      crs.spatial_ref = jim1.properties.getProjection()
+
+.. _Tutorial_jimvect:
+
+=========================================
+Tutorial on JimVect objects (vector data)
+=========================================
+
+JimVect is the main class to represent vector data objects. You can create a new JimVect:
+
+- via the :py:meth:`JimVect` constructor passing a file path that represents a vector in some GDAL supported format;
+- via the :py:meth:`JimVect` constructor passing a vector in well known text (WKT) or JSON format;
+- via the :ref:`copy constructor <JimVect_copy_constructor>`
+- as the result of one of the :ref:`functions <functions_methods>`.
+
+Examples for creating a JimVect object from file are given in the reference (see :py:meth:`JimVect`). Here, we show how to create a JimVect by passing a vector in JSON and WKT format::
+
+  jsonstring = \
+      '{"polygons": ' \
+          '{"type": "FeatureCollection", ' \
+          '"crs": ' \
+              '{"type": "name", ' \
+              '"properties": ' \
+              '{"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, ' \
+          '"features": ' \
+              '[{"type": "Feature", ' \
+              '"properties": {"label": 1}, ' \
+              '"geometry": ' \
+                  '{"type": "Polygon", ' \
+                  '"coordinates": ' \
+                      '[[[ 16.296883885037882, 48.07125730037879 ], ' \
+                      '[ 16.29418254261364, 47.787616345833342 ], ' \
+                      '[ 16.518393963825762, 47.814629770075761 ], ' \
+                      '[ 16.413041609280306, 48.04424387613637 ], ' \
+                      '[ 16.296883885037882, 48.07125730037879 ]]' \
+      ']}}]}}'
+
+  jsonvect = pj.JimVect(jsonstring)
+
+Open a vector by passing a vector in WKT format::
+
+  wkt_string = 'POLYGON ((23.314208 37.768469, 24.039306 37.768469, ' \
+                '24.039306 38.214372, 23.314208 38.214372, ' \
+                '23.314208 37.768469))'
+
+  vect = pj.JimVect(wkt=wkt_string)
+
+When copying a JimVect object using the :ref:`copy constructor <JimVect_copy_constructor>` a new JimVect object is created for which an output filename must be defined. The default output format is `SQLite <https://gdal.org/drivers/vector/sqlite.html>`_::
+
+  v_copy = pj.JimVect(v_original, output = '/tmp/test.sqlite')
+
+   .. note::
+      Specifying a filename with the prefix */vsimem/* creates a JimVect in memory
+
+Creating a copy of a JimVect in memory::
+
+  v_copy = pj.JimVect(v_original, output = '/vsimem/v_copy.sqlite')
+
+Alternatively, a JimVect can be created in memory using the `Memory <https://gdal.org/drivers/vector/memory.html>`_ driver::
+
+  v_copy = pj.JimVect(v_original, output = 'v_copy', oformat = 'Memory')
+
+
+.. _bridge_jimvect_third_party:
+
+Bridging JimVect to third party packages
+========================================
+
+JimVect objects can be easily exported to a Python dictionary (:py:meth:`JimVect.dict`) and `Numpy <https://numpy.org>`_ array (:py:meth:`JimVect.np`). A dictionary and Numpy array will only contain the fields of a JimVect (no geometry information). A dictionary can take alphanumeric values. When creating a Numpy array from a JimVect, all fields will be converted to numerical values.
+
+Create a JimVect object from a cloud vector in GML format and print the field names::
+
+  fn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/QI_DATA/MSK_CLOUDS_B00.gml'
+  v = pj.JimVect(fn)
+  print(v.properties.getFieldNames())
+
+  ['gml_id', 'maskType']
+
+Export the vector to a dictionary and print the first values of the keys 'gml-id' and 'maskType'::
+
+  print(v.dict()['gml_id'][0])
+  print(v.dict()['maskType'][0])
+
+  OPAQUE.0
+  OPAQUE
+
+The obtained dictionary or Numpy array are always copies (not a reference to the data in memory). Therefore, unlike the case of a Jim object, the feature values of a JimVect cannot be overwritten.
+
+A bridge to third party packages using `pandas <https://pandas.pydata.org/pandas-docs/stable/index.html>`_, and `geopandas <https://geopandas.org/>`_ is supported. However, the JimVect must first be written to file (which can be in memory using the prefix */vsimem/*). Only geopandas object retain the geometry of the JimVect object::
+
+  import geopandas as gpd
+  v = pj.JimVect('vector.shp)
+  #convert to GeoJSON in memory
+  vjson = pj.JimVect(v,output='/vsimem/pj.json', oformat = 'GeoJSON')
+  vjson.io.close()
+  #create geopandas dataframe from GeoJSON file in memory
+  gdf = gpd.read_file('/vsimem/pj.json')
+
+.. _Tutorial_compositing:
+
+=======================
+Tutorial on compositing
+=======================
+
+Compositing is the process of resolving overlapping pixels when images are combined. The method :py:func:`geometry.reducePlane` in the :py:mod:`geometry` module deals with the compositing of multi-plane images. The overlapping images are therefore be in the same geometry (same projection, number of columns, rows, and bands). A multi-plane Jim object can be obtained from individual images with the method :py:func:`geometry.stackPlane`::
+
+  jim0 = pj.Jim('/path/to/raster0.tif')
+  jim.geometry.stackPlane(pj.Jim('/path/to/raster1.tif'))
+
+The maximum composite image can then obtained as follows. By setting the parameter *nodata* to 0, pixel values equal to 0 are not considered for the calculation of the maximum value::
+
+  jim.geometry.reducePlane('median', nodata = 0)
+
+In the case of a multi-band Jim object, the composite result will also be a multi-band image. The maximum value is calculated for each band individually. Pixel values of the resulting composite in the respective bands are not guaranteed to be selected from the same input plane. If this is required, the parameter *ref_band* can be used. This will be the reference band for which the rule will be calculated. A typical example is the maximum normalized difference vegetation index (NDVI) composite. Suppose a multi-plane and multi-band Jim object contains four bands in total, from which the last band represents the NDVI value. Setting ref_band to 3 (corresponding to the NDVI band) and the rule equal to 'max' will calculate the maximum NDVI composite. All band values of a pixel in the resulting composite will be selected from the plane for which the NDVI was maximum. 
+
+Other pre-defined compositing rules then 'median' are: 'mean', 'min', and 'max'. However, via a call-back function, you can create your own composite rule. Call-back functions cannot be combined with the parameters *ref_band* and *nodata*. As an example, we show how to create a mximum NDVI value composite, where the NDVI is calculated within the call-back function. The input image (jim) is a multi-plane image with two bands corresponding to the red and near infrared spectral bands respectively. In case the data type is already float or double, the lines to convert the data type to 'GDT_Float32' can be omitted::
+
+  def getMaxNDVI(reduced, plane):
+      redReduced = pj.geometry.cropBand(reduced, 0)
+      redReduced.pixops.convert(otype = 'GDT_Float32')
+      ndviReduced = pj.geometry.cropBand(reduced, 1)
+      ndviReduced.pixops.convert(otype = 'GDT_Float32')
+      ndviReduced = (ndviReduced-redReduced)/(ndviReduced+redReduced)
+      redPlane = pj.geometry.cropBand(plane, 0)
+      redPlane.pixops.convert(otype = 'GDT_Float32')
+      ndviPlane = pj.geometry.cropBand(plane, 1)
+      ndviPlane.pixops.convert(otype = 'GDT_Float32')
+      ndviPlane = (ndviPlane-redPlane)/(ndviPlane+redPlane)
+      result = pj.Jim(reduced)
+      result[ndviPlane > ndviReduced] = plane
+      return result
+
+  jim.geometry.reducePlane(getMaxNDVI)
+
+More complex call-back functions can be created, for instance to include cloud masking.
+
+.. _Tutorial_extract:
+
+=====================================================
+Tutorial on extract: calculating regional statistics 
+=====================================================
 
 .. _Tutorial_classification:
 
@@ -114,9 +316,8 @@ Tutorial on classification
 
 .. _random_forest_classifier:
 
----------------------------------
 Random Forest ensemble classifier
----------------------------------
+=================================
 
 Import relevant modules::
 
@@ -127,7 +328,7 @@ Import relevant modules::
 
 We will use a vector file that contains reference data (in a numerical field 'label')
 
-.. image:: figures/labels.png
+.. figure:: figures/labels.png
    :width: 100 %
 
 Load the vector file in a JimVect object::
@@ -206,14 +407,13 @@ Show the classified map with matplotlib::
   plt.show()
 
 
-.. image:: figures/rf_class.png
+.. figure:: figures/rf_class.png
    :width: 100 %
 
 .. _svm_classifier:
 
----------------------------------
 Support Vector Machine classifier
----------------------------------
+=================================
 
 Import relevant modules::
 
@@ -247,9 +447,8 @@ Classify the image using the Numpy representation of the Jim object::
 
 .. _Symbolic machine learning:
 
--------------------------
 Symbolic machine learning
--------------------------
+=========================
 
 For the reference for this method please refer to :py:meth:`~classify._Classify.sml` in the :py:mod:`classify` module.
 
@@ -278,7 +477,7 @@ Show the first three months of the NDVI image image. The dimension of the 3D ima
   ax1 = fig.add_subplot(111)
   ax1.imshow(np.rollaxis(jim[0:3,:,:].np(),0,3))
 
-.. image:: figures/modis_ndvi_2010.png
+.. figure:: figures/modis_ndvi_2010.png
    :width: 100 %
 
 Create the reference dataset that contains only the target classes (2, 12, 25, 41, 50)::
@@ -310,7 +509,7 @@ The reference image should be in the same projection as the input image::
 
   jim_ref.geometry.warp(jim.properties.getProjection())
 
-.. image:: figures/reference_coarse.png
+.. figure:: figures/reference_coarse.png
    :width: 100 %
 
 The SML algorithm supports multiple reference images in a JimList object. Here, only a single reference is provided (list of a single image)::
@@ -348,5 +547,5 @@ Map the classes [0-4] to the original class values::
   sml.classify.reclass(classes=[0, 1, 2, 3, 4],
                        reclasses=[2, 12, 25, 41, 50])
 
-.. image:: figures/sml.png
+.. figure:: figures/sml.png
    :width: 100 %

@@ -33,20 +33,21 @@ Jim constructor: create Jim object from file
 
    Supported keys as arguments:
 
-    ======== ===================================================
-    band     Bands to open, index starts from 0
-    ulx      Upper left x value bounding box
-    uly      Upper left y value bounding box
-    lrx      Lower right x value bounding box
-    lry      Lower right y value bounding box
-    dx       Resolution in x
-    dy       Resolution in y
-    resample Resample algorithm used for reading pixel data
-    extent   filename of a vector dataset from which to get boundary constraint
-    nodata   Nodata value to put in image
-    nogeo    Use image coordinates (index starts from 0,0 for upper left pixel)
-    noread   Set this flag to True to not read data when opening
-    ======== ===================================================
+    ========== ===================================================
+    band       Bands to open, index starts from 0
+    ulx        Upper left x value bounding box
+    uly        Upper left y value bounding box
+    lrx        Lower right x value bounding box
+    lry        Lower right y value bounding box
+    dx         Resolution in x
+    dy         Resolution in y
+    resample   Resample algorithm used for reading pixel data
+    extent     filename of a vector dataset from which to get boundary constraint
+    nodata     Nodata value to put in image
+    nogeo      Use image coordinates (index starts from 0,0 for upper left pixel)
+    band2plane Read multi-band raster data as multi-plane Jim object
+    noread     Set this flag to True to not read data when opening
+    ========== ===================================================
 
    .. note::
         You can specify a different spatial reference system to define the
@@ -58,6 +59,17 @@ Jim constructor: create Jim object from file
 
    .. note::
       for resample values, please check `gdal site <https://gdal.org/doxygen/gdal_8h.html#a640ada511cbddeefac67c548e009d5ac>`_.
+
+   .. note::
+      To reduce the memory footprint, Jim objects support a tiling mechanism (see also the tutorial on :ref:`image_tiling`). The following extra keys can be used to read a single tile
+
+   Specific keys for tiling:
+
+    =========  ==============================================================================
+    tileindex  Read only a portion (1 / tiletotal) of the image
+    tiletotal  Amount of tiles in which the image must be divided (must be a squared integer)
+    overlap    Overlap used for tiling (expressed in percentage), default is 5 %
+    =========  ==============================================================================
 
    Example:
 
@@ -153,6 +165,8 @@ To generate random values with a uniform distribution with values between 100 an
         im = pj.Jim(otype='float32', ncol=256, nrow=256, uniform=[100, 200])
 
 
+.. _Jim_copy_constructor:
+
 Copy constructor: create a new copy of a Jim raster data object
 ===============================================================
 
@@ -164,6 +178,8 @@ Copy constructor: create a new copy of a Jim raster data object
    The new jim object will be initialized with all data set to 0::
 
         jim_copy = pj.Jim(jim, copy_data=False)
+
+.. _Jim_numpy_constructor:
 
 Create a new Jim raster data object from a Numpy array
 ========================================================
@@ -183,7 +199,7 @@ Create a new Jim raster data object from a Numpy array
 
         jim.properties.copyGeoReference(geojim)
 
-.. _jim_conversions:
+.. _Jim_conversions:
 
 Jim conversions
 ===============
@@ -193,85 +209,69 @@ Convert Jim object to numpy array
 
 .. method:: Jim.np(self, band: int = 0)
 
-   Return numpy array from Jim object.
+   Return a reference numpy array from Jim object.
 
    :param band: band index (starting from 0)
    :return: numpy array representation
 
-Create a 2D numpy array from a single band GeoTIFF image::
+Create a reference 2D numpy array from a single band GeoTIFF image (no memory copy)::
 
-  v = pj.Jim('/path/to/singleband.tif')
-  v.np()
+  jim = pj.Jim('/path/to/singleband.tif')
+  jim.np()
 
-Create a 2D numpy array from a selected band of multiband GeoTIFF image::
+Create a reference 2D numpy array from a selected band of multiband GeoTIFF image (no memory copy)::
 
-  v = pj.Jim('/path/to/multiband.tif')
+  jim = pj.Jim('/path/to/multiband.tif')
   #select first band as numpy array
-  v.np(0)
+  jim.np(0)
   #select last band as numpy array
-  v.np(-1)
+  jim.np(-1)
 
-Create a 3D numpy array from a multiband GeoTIFF image::
+Create a reference 3D numpy array from a multiband GeoTIFF image (no memory copy)::
 
-  v = pj.Jim('/path/to/multiband.tif',band2plane=True)
-  v.np()
+  jim = pj.Jim('/path/to/multiband.tif',band2plane=True)
+  jim.np()
+
+.. function:: jim2np(jim: Jim, band: int = 0)
+
+   Return a new numpy array from Jim object.
+
+   :param band: band index (starting from 0)
+   :return: numpy array object
+
+Create a new 3D numpy array from a multiband GeoTIFF image (with memory copy)::
+
+  jim = pj.Jim('/path/to/multiband.tif',band2plane=True)
+  array = pj.jim2np()
 
 
 Convert Jim object to xarray
-============================
+----------------------------
 
-Create an xarray from a Jim data cube::
+.. method:: Jim.xr(self)
 
-   import numpy as np
-   import xarray as xr
+   Return a reference xarray from Jim object.
 
-   #jim is a multiband datacube (with multiple planes)
-   planes = range(jim.properties.nrOfPlane())
-   bands = range(jim.properties.nrOfBand())
-   bbox = jim.properties.getBBox()
+   :return: xarray representation
 
-   # xarray coordinates are pixel centered
-   x = np.arange(bbox[0]+jim.properties.getDeltaX()/2,
-                 bbox[2]+jim.properties.getDeltaX()/2,
-                 jim.properties.getDeltaX())
-   y = np.arange(bbox[1]-jim.properties.getDeltaY()/2,
-                 bbox[3]-jim.properties.getDeltaY()/2,
-                 -jim.properties.getDeltaY())
+Create an xarray from a Jim data cube using the Jim member function (without memory copy)::
 
+  jim = pj.Jim('/path/to/multiband.tif',band2plane=True)
+  jim.xr()
 
-   # Build a xarray Dataset reference (without memory copy)
-   # Do not alter shape or destroy x_dataset!
-   x_dataset = xr.Dataset({str(b):xr.DataArray(jim.np(b),
-                                               dims=['time', 'y', 'x'],
-                                               coords={'time': ['t'+str(plane)
-                                               for plane in planes],
-                                               'x': x, 'y': y},
-                                               attrs={'_FillValue': 0})
-                           for b in bands})
+Multi-band 3D Jim objects can also be converted to xarray objects.
 
-   # Build new copy of xarray Dataset (with memory copy):
-   new_dataset = xr.Dataset({str(b):xr.DataArray(pj.jim2np(jim.b),
-                                                 dims=['time', 'y', 'x'],
-                                                 coords={'time': ['t'+str(plane)
-                                                 for plane in planes],
-                                                 'x': x, 'y': y},
-                                                 attrs={'_FillValue': 0})
-                           for b in bands})
+.. function:: jim2xr(jim: Jim)
 
-Write Jim object to NetCDF file (via xarray)
-=============================================
+   Return a new xarray object from Jim object.
 
-See example above to create xarray::
+   :return: xarray representation
 
-   import netCDF4 as nc
-   # Write to NetCDF file
-   nc_file = '/tmp/test1.nc'
-   x_dataset.to_netcdf(nc_file)
-   # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
-   with nc.Dataset(nc_file, 'a') as dataset:
-       [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
-       crs = dataset.createVariable('spatial_ref', 'i4')
-       crs.spatial_ref = jim1.properties.getProjection()
+Create a new xarray object from a Jim data cube using the pyjeo function (with memory copy)::
+
+  pj.jim2xr(jim))
+
+To write a Jim object to NetCDF file using xarray conversion, please refer to the :ref:`tutorial <tutorial_jim_write>`. 
 
 .. _indexing:
 
@@ -353,6 +353,12 @@ get Jim items
         v = pj.JimVect(cfn)
         jimcloud = jim[v]
 
+.. figure:: figures/get_item.png
+   :width: 50 %
+   :align: center
+
+   Result of a Jim get item, where only pixels within the cloud mask have been retained (values are represented by a single band pseudo-color)
+
 Set Jim items
 -------------
 
@@ -395,9 +401,17 @@ Set Jim items
           v = pj.JimVect(cfn)
           jim[v] = 255
 
+.. figure:: figures/set_item.png
+   :width: 50 %
+   :align: center
+
+   Result of a Jim set item: all pixels within the vector cloud mask have been set to a value 255 (represented in green)
+
 =======
 JimVect
 =======
+
+.. _JimVect_constructor:
 
 Create a JimVect data object
 =============================
@@ -438,23 +452,20 @@ Open a vector and use an attribute filter (the field intern_id must be between 1
 
   v = pj.JimVect('/path/to/vector.sqlite', attributeFilter='(intern_id > 10000) AND (intern_id < 10500)')
 
+.. _JimVect_copy_constructor:
 
-Convert JimVect object to numpy array
-=====================================
+Copy constructor: create a new copy of a JimVect vector data object
+===================================================================
 
+   Create a new JimVect object from an existing JimVect object, copying all data ::
 
-.. method:: JimVect.np(self, field: list = None, ln: int = 0)
+        jim_copy = pj.Jim(jim)
 
-   Return numpy array from JimVect object.
+   Create a new Jim object, using an existing Jim object as a template, without copying data.
+   The new jim object will be initialized with all data set to 0::
 
-   :param field: list of fields to return
-   :param ln: Layer to return
-   :return: 2D numpy array representation of all fields of all features
+        jim_copy = pj.Jim(jim, copy_data=False)
 
-Example::
-
-  v = pj.JimVect('/path/to/features.sqlite')
-  v.np()
 
 Convert JimVect object to dictionary
 ====================================
@@ -472,6 +483,23 @@ Example::
 
   v = pj.Jim('/path/to/vector.sqlite')
   dictobject = v.dict()
+
+Convert JimVect object to numpy array
+=====================================
+
+
+.. method:: JimVect.np(self, field: list = None, ln: int = 0)
+
+   Return numpy array from JimVect object.
+
+   :param field: list of fields to return
+   :param ln: Layer to return
+   :return: 2D numpy array representation of all fields of all features
+
+Example::
+
+  v = pj.JimVect('/path/to/features.sqlite')
+  v.np()
 
 Convert JimVect object to pandas object
 =======================================
