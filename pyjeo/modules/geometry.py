@@ -451,16 +451,22 @@ def extract(jvec,
 
     pjvect = _pj.JimVect()
     if isinstance(jvec, _pj.JimVect):
+        bandname = kwargs.pop('bandname', None)
         kwargs.update({'rule': rule})
         if isinstance(jim, _pj.Jim):
+            if bandname is None:
+                bandname = [
+                    'b' + str(band)
+                    for band in range(0, jim.properties.nrOfBand())]
+                kwargs.update({'bandname': bandname})
             avect = jim._jipjim.extractOgr(jvec._jipjimvect, kwargs)
         elif isinstance(jim, _pj.JimList):
-            bandname = kwargs.pop('bandname', None)
             #todo: support multi-band images in JimList...
             if bandname is None:
                 bandname = [
                     't'+str(ifile) for ifile in range(0, len(jim._jipjimlist))]
             kwargs.update({'bandname': bandname})
+            print(bandname)
 
             avect = jim._jipjimlist.extractOgr(jvec._jipjimvect,
                                                kwargs)
@@ -2983,10 +2989,15 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             classes = kwargs.pop('classes')
             kwargs['class'] = classes
 
+        bandname = kwargs.pop('bandname', None)
         if isinstance(jim, _pj.Jim):
+            if bandname is None:
+                bandname = [
+                    'b' + str(band)
+                    for band in range(0, jim.properties.nrOfBand())]
+                kwargs.update({'bandname': bandname})
             avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect, kwargs)
         elif isinstance(jim, _pj.JimList):
-            bandname = kwargs.pop('bandname', None)
             #todo: support multi-band images in JimList...
             if bandname is None:
                 bandname = [

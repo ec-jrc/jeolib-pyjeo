@@ -1616,7 +1616,7 @@ class JimVect:
 
         Example: create a dictionary object and turn into pandas object
 
-            import pandas pd
+            import pandas as pd
             v = pj.Jim('/path/to/vector.sqlite')
 
             pob = pd.DataFrame(v.dict())

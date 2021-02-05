@@ -53,9 +53,9 @@ To get help on a class method, e.g., :py:meth:`~geometry._Geometry.warp`::
 
 .. _Tutorial_jim:
 
-=====================================
+*************************************
 Tutorial on Jim objects (raster data)
-=====================================
+*************************************
 
 Jim is the main class to represent raster data objects. You can create a new Jim in different ways:
 
@@ -67,6 +67,7 @@ Jim is the main class to represent raster data objects. You can create a new Jim
 
 .. _data_model:
 
+==========
 Data model
 ==========
 
@@ -104,6 +105,7 @@ In particular, when dealing with geospatial data that have a large memory footpr
 
 .. _bridge_jim_third_party:
 
+====================================
 Bridging Jim to third party packages
 ====================================
 
@@ -116,6 +118,7 @@ As shown in :ref:`ndimage`, third party libraries operating on Numpy arrays can 
 
 .. _image_tiling:
 
+============
 Image tiling
 ============
 
@@ -170,9 +173,9 @@ Few file formats support writing a multi-band 3D raster data. One of those is `N
 
 .. _Tutorial_jimvect:
 
-=========================================
+*****************************************
 Tutorial on JimVect objects (vector data)
-=========================================
+*****************************************
 
 JimVect is the main class to represent vector data objects. You can create a new JimVect:
 
@@ -231,6 +234,7 @@ Alternatively, a JimVect can be created in memory using the `Memory <https://gda
 
 .. _bridge_jimvect_third_party:
 
+========================================
 Bridging JimVect to third party packages
 ========================================
 
@@ -264,15 +268,18 @@ A bridge to third party packages using `pandas <https://pandas.pydata.org/pandas
   #create geopandas dataframe from GeoJSON file in memory
   gdf = gpd.read_file('/vsimem/pj.json')
 
+.. note:
+   The JimVect vjson must be closed before opening the vector geopandas in order to flush the file stream
+
 .. _Tutorial_compositing:
 
-=======================
+***********************
 Tutorial on compositing
-=======================
+***********************
 
-Compositing is the process of resolving overlapping pixels when images are combined. The method :py:func:`geometry.reducePlane` in the :py:mod:`geometry` module deals with the compositing of multi-plane images. The overlapping images are therefore be in the same geometry (same projection, number of columns, rows, and bands). A multi-plane Jim object can be obtained from individual images with the method :py:func:`geometry.stackPlane`::
+Compositing is the process of resolving overlapping pixels when images are combined. The method :py:meth:`~geometry._Geometry.reducePlane` in the :py:mod:`geometry` module deals with the compositing of multi-plane images. The overlapping images are therefore be in the same geometry (same projection, number of columns, rows, and bands). A multi-plane Jim object can be obtained from individual images with the method :py:meth:`~geometry._Geometry.stackPlane`::
 
-  jim0 = pj.Jim('/path/to/raster0.tif')
+  jim = pj.Jim('/path/to/raster0.tif')
   jim.geometry.stackPlane(pj.Jim('/path/to/raster1.tif'))
 
 The maximum composite image can then obtained as follows. By setting the parameter *nodata* to 0, pixel values equal to 0 are not considered for the calculation of the maximum value::
@@ -304,18 +311,296 @@ More complex call-back functions can be created, for instance to include cloud m
 
 .. _Tutorial_extract:
 
-=====================================================
+*****************************************************
 Tutorial on extract: calculating regional statistics 
-=====================================================
+*****************************************************
+
+The method :py:meth:`~geometry._GeometryVect.extract` in module :py:mod:`geometry` deals with regional statistics. A typical example is to calculate the mean value of all pixels in a Jim object that are covered by a polygon in a JimVect object. The result is a new JimVect object, where the statistics are stored in the field data of the features. The number of fields depend on the number of statistical measures (e.g., mean, standard deviation) and the number of bands and planes in the Jim object.
+
+=============================================================
+Regional statistics of a single band, single plane Jim object
+=============================================================
+
+example::
+
+  import pandas as pd
+  import pyjeo as pj
+
+  datadir = Path.home() / 'pyjeo/tests/data'
+  vectorfn = datadir / 'modis_ndvi_training.sqlite'
+  sample = pj.JimVect(vectorfn)
+
+  jim = pj.Jim(datadir / 'modis_ndvi_2010.tif', band = 0)
+  v = pj.geometry.extract(sample, jim, rule='mean',
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     b0
+  0  0.000000
+  1  0.000000
+  2  0.000000
+  3  0.000000
+  4  0.000000
+  5  43.142857
+  6  37.181818
+  7  0.022727
+  8  4.375000
+  9  54.500000
+  10 12.637255
+
+   .. note::
+      The field name corresponding to the bands can be set with the list parameter *bandname*.
+
+In case a list of extract rules is provided for the regional statistics, the field names of the features will be prefixed with the rule::
+
+  v = pj.geometry.extract(sample, jim, rule=['mean', 'stdev'],
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     meanb0     stdevb0
+  0	 0.000000	  0.000000
+  1	 0.000000	  0.000000
+  2	 0.000000	  0.000000
+  3	 0.000000	  0.000000
+  4	 0.000000	  0.000000
+  5	 43.142857  3.324898
+  6	 37.181818  4.283260
+  7	 0.022727	  0.150756
+  8	 4.375000   4.967831
+  9	 54.500000  4.086563
+  10 12.637255  7.460509
+
+=============================================================
+Regional statistics of a multi-band, single plane Jim object
+=============================================================
+
+For a multi-band Jim object::
+
+  jim = pj.Jim(datadir / 'modis_ndvi_2010.tif', band = [0, 1])
+  v = pj.geometry.extract(sample, jim, rule='mean',
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     b0         b1
+  0	 0.000000	  0.014925
+  1	 0.000000	  0.000000
+  2	 0.000000	  2.555556
+  3	 0.000000	  0.000000
+  4	 0.000000	  0.000000
+  5	 43.142857  38.642857
+  6	 37.181818  36.090909
+  7	 0.022727	  0.000000
+  8	 4.375000   7.625000
+  9	 54.500000  37.833333
+  10 12.637255  20.774510
+
+The fields will contain the mean value for each feature for the respective bands (b0 and b1). For a list of extract rules, the rules are prefixed to the field names for each of the bands::
+
+  jim = pj.Jim(datadir / 'modis_ndvi_2010.tif', band = [0, 1])
+  v = pj.geometry.extract(sample, jim, rule=['mean', 'stdev'],
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     meanb0     meanb1   stdevb0   stdevb1
+  0  0.000000   0.014925  0.000000  0.122169
+  1  0.000000   0.000000  0.000000  0.000000
+  2  0.000000   2.555556  0.000000  2.743680
+  3  0.000000   0.000000  0.000000  0.000000
+  4  0.000000   0.000000  0.000000  0.000000
+  5  43.142857  38.642857 3.324898  2.762584
+  6  37.181818  36.090909 4.283260  5.639226
+  7  0.022727   0.000000  0.150756  0.000000
+  8  4.375000   7.625000  4.967831  5.940374
+  9  54.500000  37.833333 4.086563  1.722401
+  10 12.637255  20.774510 7.460509  4.734342
+
+
+===========================================================
+Regional statistics of a multi-band, multi-plane Jim object
+===========================================================
+
+In the case of 3D Jim objects with multiple planes, the field names will be prefixed with 't' (for temporal dimension). For a 3D Jim with two bands and two planes, the output will be::
+
+  v = pj.geometry.extract(sample, jim, rule=['mean', 'stdev'],
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     t0b0       t0b1       t1b0       t1b1
+  0  0.000000   0.014925   0.000000   0.000000
+  1  0.000000   0.000000   0.125000   0.000000
+  2  0.000000   2.555556   0.000000   0.000000
+  3  0.000000   0.000000   0.000000   1.000000
+  4  0.000000   0.000000   0.000000   0.000000
+  5  43.142857  38.642857  46.000000  54.857143
+  6  37.181818  36.090909  41.272727  52.590909
+  7  0.022727   0.000000   0.000000   0.000000
+  8  4.375000   7.625000   44.875000  52.833333
+  9  54.500000  37.833333  44.166667  63.000000
+  10 12.637255  20.774510  21.323529  17.215686
+
+   .. note::
+      The field name corresponding to the planes can be set with the list parameter *planename*.
+
+===========================
+Dealing with no data values
+===========================
+
+Regional statistics can be biased due to outliers in the dataset. In optical remote sensing imagary, this can be due to cloudy pixels. Typically, these pixels are masked and obtain a "no data" value (e.g., value 0). To ignore these pixels from the calculation, set the parameter *srcnodata* to this value::
+
+  v = pj.geometry.extract(sample, jim, rule='mean', srcnodata = 0,
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+  print(pd.DataFrame(v.dict()))
+
+     t0b0       t0b1       t1b0       t1b1
+  0  43.142857  38.642857  46.000000  54.857143
+  1  37.181818  36.090909  41.272727  52.590909
+  2  1.000000   0.000000   0.000000   0.000000
+  3  6.562500   7.956522   44.875000  52.833333
+  4  54.500000  37.833333  44.166667  63.000000
+  5  16.112500  20.774510  21.323529  17.386139
+
+The first 5 features will be ignored, as they have a 0 value for all pixels in the first band. The default is to ignore only those pixels with no data in the first band. To ignore all pixels that have value 0 in any of the bands, set parameter *bndnodata* to a list of the respective bands::
+
+  v = pj.geometry.extract(sample, jim, rule=['mean', 'stdev'],
+                          srcnodata = 0, bndnodata = [0, 1],
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     meant0b0   meant0b1   meant1b0   meant1b1  stdevt0b0  stdevt0b1  stdevt1b0  stdevt1b1
+  0  43.142857  38.642857  46.000000  54.857143   3.324898   2.762584   2.572039   5.613954
+  1  37.181818  36.090909  41.272727  52.590909   4.283260   5.639226   3.942223   4.895665
+  2  6.562500   7.956522   44.875000  52.833333   4.967831   5.940374   5.359368   4.061127
+  3  54.500000  37.833333  44.166667  63.000000   4.086563   1.722401   5.269409   2.280351
+  4  16.112500  20.774510  21.323529  17.386139   7.460509   4.734342   4.720215   8.685515
+
+=========
+Buffering
+=========
+
+To exclude pixels near the borders of a polygon, the parameter *buffer* can be used. To reduce (enlarge) the polygons, use a negative (positive) buffer. The buffer is expressed in the units of the geometry of the Jim object (typically in meter).
+
+To calculate the regional mean and standard deviation for the 3D Jim object with two bands, not taking into account those pixels within 1000 m of the polygon border::
+
+  v = pj.geometry.extract(sample, jim, rule=['mean', 'stdev'],
+                          srcnodata = 0, bndnodata = [0, 1],
+                          buffer = -500,
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     meant0b0   meant0b1   meant1b0   meant1b1  stdevt0b0  stdevt0b1  stdevt1b0  stdevt1b1
+  0  41.666667  38.000000  46.666667  55.333333   3.055050   4.358899   1.527525   4.725816
+  1  36.500000  35.500000  42.500000  54.333333   5.890671   6.595453   2.810694   4.501851
+  2  6.333333   8.444444   42.000000  50.222222   4.352522   6.502136   5.361903   2.635231
+  3  16.222222  20.283582  20.955224  15.818182   7.293238   4.987275   2.687980   5.964921
+
+Likewise, applying a positive buffer of 500 m to include pixels near the border::
+
+  v = pj.geometry.extract(sample, jim, rule=['mean', 'stdev'],
+                          srcnodata = 0, bndnodata = [0, 1],
+                          buffer = -500,
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict()))
+
+     meant0b0   meant0b1   meant1b0   meant1b1  stdevt0b0  stdevt0b1  stdevt1b0  stdevt1b1
+  0  18.000000  13.000000  10.000000  17.000000   3.927922   2.836833   4.140968   3.709704
+  1  41.000000  36.200000  43.400000  52.933333   5.741561   4.566746   4.414709   5.650348
+  2  38.239130  35.586957  41.521739  52.043478   4.105199   5.572058   4.177927   5.098830
+  3  533333     7.951220   47.136364  54.159091   5.191471   6.097343   5.572319   4.579749
+  4  47.789474  38.526316  45.368421  63.157895   8.960276   4.857622   5.908661   4.003653
+  5  16.121739  20.737931  21.137931  17.812500   7.366578   4.448815   4.537836   8.618067
+
+==============================================
+Extract all individual pixels within a polygon
+==============================================
+
+To extract all individual pixels within a polygon, set the *rule* parameter to 'allpoints'::
+
+  v = pj.geometry.extract(sample, jim, rule='allpoints',
+                          output='/vsimem/pj.json', oformat='GeoJSON')
+
+  print(pd.DataFrame(v.dict())
+  
+      t0b0  t0b1  t1b0  t1b1
+  0     1.0   0.0   0.0   0.0
+  1    41.0  41.0  42.0  45.0
+  2    46.0  35.0  43.0  49.0
+  3    42.0  37.0  42.0  48.0
+  4    39.0  33.0  45.0  50.0
+  5    42.0  37.0  47.0  58.0
+  ..    ...   ...   ...   ...
+  134   3.0   5.0  35.0  50.0
+  135   4.0   8.0  41.0  54.0
+  136   3.0   5.0  39.0  51.0
+  137   4.0  10.0  46.0  56.0
+  138  10.0  13.0  46.0  64.0
+
+  [139 rows x 4 columns]
+
+   .. note::
+      Selecting all pixels can result in a very large dataset when there are many large polygons...
+
+=============================================
+Extract pixels based on a thematic raster map 
+=============================================
+
+The :py:func:`geometry.extract` function can also be used to randomly select a stratified sample from a Jim object. The stratification is based on a (sub)set of classes in a thematic map that is provided as a parameter (of type Jim object). The geometry of the thematic map and tin input Jim object must be identical (same projection, number of rows, and number of columns).
+
+As an example, a stratified sample will be selected for the [2, 12, 25, 41, 50] using the Corine land cover map in some area. A threshold must be set to define the sample size for each stratum (class). The sample size can be set either as an absolute number (e.g., 100), or as a percentage (e.g., '20%') of the available pixels in the thematic map for that class. In addition to the field names corresponding to the band and planes, a field 'label' is added that represents the class in the thematic map::
+
+  jim = pj.Jim('/path/to/input.tif')
+  reference = pj.Jim('/path/to/reference.tif', dx=500, dy=500)
+  bbox = reference.properties.getBBox()
+  jim.geometry.warp('epsg:32632', dx = 500, dy = 500, ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
+
+  classes = [2, 12, 25, 41]
+  thresholds = ['20%', '20%', '20%', '20%'] #for relative sample size
+  thresholds = [2, 2, 2, 2] #for absolute sample size (2 random pixels for each class)
+
+  v = pj.geometry.extract(reference, jim, srcnodata=[0],
+                          output='/vsimem/sample.json', oformat='GeoJSON',
+                          classes=classes,
+                          threshold=thresholds,
+                          planename = ['time0', 'time2'],
+                          bandname=['band1', 'band2'])
+
+  print(pd.DataFrame(v.dict()))
+
+    label  time0band1  time0band2  time2band1  time2band2
+  0      2        35.0        34.0        36.0        42.0
+  1      2        33.0        30.0        35.0        39.0
+  2     12        60.0        55.0        55.0        65.0
+  3     12        39.0        47.0        49.0        40.0
+  4     25        55.0        42.0        49.0        48.0
+  5     25        19.0        16.0        25.0        45.0
+  6     41        28.0        28.0        34.0        32.0
+  7     41         4.0         7.0        34.0        37.0
+
+======================================
+Multi-threading on multi-core machines
+======================================
+
+The extract method is implemented with open multi-processing (`openMP <https://www.openmp.org/>`_) in C++ using multi-threading. The polygons are extracted in parallel on different cores. Especially when a large number of small polygons must be extracted, an important gain in performance can be obtained in a multi-core environment. 
+
+..
+   todo: here comes figure with speed-up on multi-core machine...
 
 .. _Tutorial_classification:
 
-==========================
+**************************
 Tutorial on classification
-==========================
+**************************
 
 .. _random_forest_classifier:
 
+=================================
 Random Forest ensemble classifier
 =================================
 
@@ -412,6 +697,7 @@ Show the classified map with matplotlib::
 
 .. _svm_classifier:
 
+=================================
 Support Vector Machine classifier
 =================================
 
@@ -447,6 +733,7 @@ Classify the image using the Numpy representation of the Jim object::
 
 .. _Symbolic machine learning:
 
+=========================
 Symbolic machine learning
 =========================
 
