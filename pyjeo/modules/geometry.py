@@ -458,7 +458,7 @@ def extract(jvec,
                 bandname = [
                     'b' + str(band)
                     for band in range(0, jim.properties.nrOfBand())]
-                kwargs.update({'bandname': bandname})
+            kwargs.update({'bandname': bandname})
             avect = jim._jipjim.extractOgr(jvec._jipjimvect, kwargs)
         elif isinstance(jim, _pj.JimList):
             #todo: support multi-band images in JimList...
@@ -2995,7 +2995,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
                 bandname = [
                     'b' + str(band)
                     for band in range(0, jim.properties.nrOfBand())]
-                kwargs.update({'bandname': bandname})
+            kwargs.update({'bandname': bandname})
             avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect, kwargs)
         elif isinstance(jim, _pj.JimList):
             #todo: support multi-band images in JimList...
