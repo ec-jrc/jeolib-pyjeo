@@ -1680,7 +1680,7 @@ def jim2xr(jim_object: Jim,
                     -jim_object.properties.getDeltaY())
     # Build new copy of xarray Dataset (with memory copy):
     if jim_object.properties.nrOfPlane() > 1:
-        new_dataset = xr.Dataset({str(b):xr.DataArray(_pj.jim2np(jim_object,b),
+        new_dataset = _xr.Dataset({str(b):xr.DataArray(_pj.jim2np(jim_object,b),
                                                         dims=['time', 'y', 'x'],
                                                         coords={'time': ['t'+str(plane)
                                                         for plane in planes],
