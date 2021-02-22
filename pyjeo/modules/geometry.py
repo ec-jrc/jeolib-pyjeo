@@ -118,6 +118,35 @@ def convexHull(jim_vect,
     return pjvect
 
 
+def covers(jim_object,
+           bbox: list = None,
+           ulx: float = None,
+           uly: float = None,
+           lrx: float = None,
+           lry: float = None):
+    """Check if Jim object covers bounding box
+
+    :param jim_object: a Jim object
+    :param bbox: bounding box (instead of ulx, uly, lrx, lry)
+    :param ulx: Upper left x value of bounding box to crop
+    :param uly: Upper left y value of bounding box to crop
+    :param lrx: Lower right x value of bounding box to crop
+    :param lry: Lower right y value of bounding box to crop
+    :return: True if Jim object covers bounding box, else False
+
+    see :py:meth:`~_Geometry.covers` for an example how to use this function
+    """
+
+    if bbox is not None:
+        ulx = bbox[0]
+        uly = bbox[1]
+        lrx = bbox[2]
+        lry = bbox[3]
+        return jim_object._jipjim.covers(ulx, uly, lrx, lry)
+    else:
+        return jim_object._jipjim.covers(ulx, uly, lrx, lry)
+
+
 def crop(jim_object,
          bbox: list = None,
          ulx: float = None,
@@ -145,6 +174,7 @@ def crop(jim_object,
     :param dy: spatial resolution in y to crop (stride if nogeo is True)
     :param nogeo: use image coordinates if True, default is spatial reference
         system coordinates
+    :return: Cropped subimage as Jim instance
 
     see :py:meth:`~_Geometry.crop` for an example how to use this function
     """
@@ -1555,6 +1585,45 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         """
         self._jim_object._jipjim.d_band2plane()
+
+    def covers(self,
+               bbox: list = None,
+               ulx: float = None,
+               uly: float = None,
+               lrx: float = None,
+               lry: float = None):
+        """Check if Jim object covers bounding box
+
+        :param jim_object: a Jim object
+        :param bbox: bounding box (instead of ulx, uly, lrx, lry)
+        :param ulx: Upper left x value of bounding box to crop
+        :param uly: Upper left y value of bounding box to crop
+        :param lrx: Lower right x value of bounding box to crop
+        :param lry: Lower right y value of bounding box to crop
+        :return: True if Jim object covers bounding box, else False
+
+        Example: check if Jim (for instance in lat lon coordinates)
+        covers a bounding box::
+
+           jim = pj.Jim('/path/to/image.tif')
+           ulx = 2
+           uly = 58
+           lrx = 4
+           lry = 56
+           if jim.geometry.covers(bbox = [ulx, uly, lrx, lry]):
+               print("jim covers your bounding box")
+           else:
+               print("jim does not cover your bounding box")
+        """
+
+        if bbox is not None:
+            ulx = bbox[0]
+            uly = bbox[1]
+            lrx = bbox[2]
+            lry = bbox[3]
+            return self._jim_object._jipjim.covers(ulx, uly, lrx, lry)
+        else:
+            return self._jim_object._jipjim.covers(ulx, uly, lrx, lry)
 
     def crop(self,
              bbox: list = None,

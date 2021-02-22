@@ -38,6 +38,35 @@ class BadGeometry(unittest.TestCase):
     """Test functions and methods from geometry module."""
 
     @staticmethod
+    def test_covers():
+        """Test the band2plane method."""
+        jim= pj.Jim(rasterfn, band=0)
+        bbox = jim.properties.getBBox()
+        ulx = bbox [0]
+        uly = bbox [1]
+        lrx = bbox [2]
+        lry = bbox [3]
+        bbox = [ulx, uly, lrx, lry]
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                   lrx = lrx, lry = lry) ==
+               jim.geometry.covers(bbox = bbox)), \
+               'Error in method geometry.covers() bbox'
+        assert(pj.geometry.covers(jim, ulx = ulx, uly = uly,
+                                  lrx = lrx, lry = lry) ==
+               pj.geometry.covers(jim, bbox = bbox)), \
+               'Error in function geometry.covers() bbox'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                   lrx = lrx, lry = lry) ==
+               pj.geometry.covers(jim, bbox = bbox)), \
+               'Error in function geometry.covers() function not equal to method'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                   lrx = lrx, lry = lry) == True), \
+               'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = 2*ulx, uly = uly,
+                                   lrx = 2*lrx, lry = lry) == False), \
+               'Error in method geometry.covers() must be False'
+
+    @staticmethod
     def test_band2plane():
         """Test the band2plane method."""
         jim3d = pj.Jim(rasterfn, band=[0, 1], band2plane=True)
