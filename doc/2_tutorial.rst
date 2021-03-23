@@ -116,13 +116,41 @@ As shown in :ref:`ndimage`, third party libraries operating on Numpy arrays can 
 
   jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)[:]
 
+.. _Tutorial_jim_read:
+
+=============================
+Reading Jim objects from file
+=============================
+
+In pyjeo, images are read from file into memory. Depending on the file size and the memory resources available, this is not always possible.
+However, for many (e.g., pixel wise) operations, images can be tiled first. Each tile can then processed individually, which reduces the memory footprint. Tiling also allows for embarrassingly parallel processing, where little or no effort is needed to separate the problem into a number of parallel tasks. This is particularly useful in a cluster computing environment, but also for multi-core computers with sufficient memory (all tiles must be able to be read in memory). Two methods are shown here how to read only a spatial subset of an image.
+
+.. _reading_roi:
+
+==================
+Region of interest
+==================
+
+In the following example, a large geographical extent is covered by a virtual raster file (VRT) that represents many GeoTIFF files in different directories. We want to read only a small spatial subset of the raster. The spatial subset is defined by a polygon in a different projection (epsg:4326) than the raster VRT::
+
+  worldvrt = Path('/path/to/world.vrt')
+  wkt_string = 'POLYGON ((23.314208 37.768469, 24.039306 37.768469, ' \
+                '24.039306 38.214372, 23.314208 38.214372, ' \
+                '23.314208 37.768469))'
+
+  vect = pj.JimVect(wkt=wkt_string)
+  jim = pj.Jim(worldvrt, bbox = vect.properties.getBBox(), t_srs = vect.properties.getProjection())
+
+   .. note::
+      Although the bounding box (`bbox`) is defined in a different target spatial reference (`t_srs`), the Jim object is not re-projected (see also :ref:`create_Jim_from_file`).
+
 .. _image_tiling:
 
 ============
 Image tiling
 ============
 
-Depending on the size of the image, images do sometimes not fit into the available memory. For many (e.g., pixel wise) operations, images can be tiled first. Each tile can then processed individually, which reduces the memory footprint. Tiling also allows for embarrassingly parallel processing, where little or no effort is needed to separate the problem into a number of parallel tasks. This is particularly useful in a cluster computing environment, but also for multi-core computers with sufficient memory (all tiles must be able to be read in memory). Jim objects support a tiling approach when reading from file with with the specific keys *tileindex*, *tiletotal*, and *overlap* (see also :ref:`create_Jim_from_file`).
+Jim objects support a tiling approach when reading from file with with the specific keys *tileindex*, *tiletotal*, and *overlap* (see also :ref:`create_Jim_from_file`).
 
 As an example, we read only a portion of the image from file, dividing in *tiletotal* tiles (tiletotal must be a squared integer, e.g., 2^2 = 4, 3^2 = 9, ..., 32^2 = 1024,...). The parameter *tileindex* indicates the tile to be read (from 0 to *tiletotal*-1). As a default an *overlap* of 5% is used. An overlap > 0 is of particular interest when tiles must be re-projected or in case of a neighborhood operation::
 
@@ -288,7 +316,7 @@ The maximum composite image can then obtained as follows. By setting the paramet
 
 In the case of a multi-band Jim object, the composite result will also be a multi-band image. The maximum value is calculated for each band individually. Pixel values of the resulting composite in the respective bands are not guaranteed to be selected from the same input plane. If this is required, the parameter *ref_band* can be used. This will be the reference band for which the rule will be calculated. A typical example is the maximum normalized difference vegetation index (NDVI) composite. Suppose a multi-plane and multi-band Jim object contains four bands in total, from which the last band represents the NDVI value. Setting ref_band to 3 (corresponding to the NDVI band) and the rule equal to 'max' will calculate the maximum NDVI composite. All band values of a pixel in the resulting composite will be selected from the plane for which the NDVI was maximum. 
 
-Other pre-defined compositing rules then 'median' are: 'mean', 'min', and 'max'. However, via a call-back function, you can create your own composite rule. Call-back functions cannot be combined with the parameters *ref_band* and *nodata*. As an example, we show how to create a mximum NDVI value composite, where the NDVI is calculated within the call-back function. The input image (jim) is a multi-plane image with two bands corresponding to the red and near infrared spectral bands respectively. In case the data type is already float or double, the lines to convert the data type to 'GDT_Float32' can be omitted::
+Other pre-defined compositing rules then 'median' are: 'mean', 'min', and 'max'. However, via a call-back function, you can create your own composite rule. Call-back functions cannot be combined with the parameters *ref_band* and *nodata*. As an example, we show how to create a mximum NDVI value composite, where the NDVI is calculated within the call-back function. The input image (jim) is a multi-band and multi-plane (temporal) image. The bands corresponding to the red and near infrared spectral bands respectively. In case the data type is already float or double, the lines to convert the data type to 'GDT_Float32' can be omitted::
 
   def getMaxNDVI(reduced, plane):
       redReduced = pj.geometry.cropBand(reduced, 0)
@@ -306,6 +334,9 @@ Other pre-defined compositing rules then 'median' are: 'mean', 'min', and 'max'.
       return result
 
   jim.geometry.reducePlane(getMaxNDVI)
+
+   .. note::
+      The order of the arguments in the call-back function do matter. The call-back function is executed iteratively. The first argument correspond to the current composite image, whereas the second argument correspond to the image to validated for that iteration.
 
 More complex call-back functions can be created, for instance to include cloud masking.
 
@@ -591,6 +622,61 @@ The extract method is implemented with open multi-processing (`openMP <https://w
 
 ..
    todo: here comes figure with speed-up on multi-core machine...
+
+.. _Tutorial_filtering:
+
+***************************
+Tutorial on image filtering
+***************************
+
+Image filtering is an image processing operation where the output image is calculated as a weighted sum of the neighborhood of the corresponding pixels of the input image. The filter can be applied in the spatial domain (2D) or in the plane (e.g., temporal) domain (1D), depending in which dimension the neighborhood is considered. Typical examples of filtering include smoothing, sharpening, and edge enhancement. In this context, we will restrict to discrete finite impulse response (FIR) filter. The weights to calculate the weighted sum are referred to as the filter *taps* and define the type of filter.  (e.g., low pass vs. high pass filters).
+
+Filtering functions in pyjeo can be found in the :py:mod:`ngbops` module. In addition, the neighborhood operations from `scipy.ndimage https://docs.scipy.org/doc/scipy/reference/tutorial/ndimage.html>`_  can be applied to a :py:class:`Jim` object by using its numpy representation (:py:meth:`Jim.np`)
+
+============================================
+One dimensional filters from scipy (ndimage)
+============================================
+
+Perform a Gaussian filter in 1D using a standard deviation (sigma) of 2::
+
+  from scipy import ndimage
+  jim = pj.Jim('/path/to/multi-band-image.tif', band2plane = True)
+  jim.np()[:] = ndimage.gaussian_filter1d(jim.np(), 2, axis = 0)
+
+   .. note::
+      Planes of a 3D Jim image are located in the first dimension (axis = 0)
+
+=========================================
+Spatial (2D) filters from scipy (ndimage)
+=========================================
+
+Perform a Median filter in the spatial domain using a standard deviation (sigma) of 2::
+
+  from scipy import ndimage
+  jim = pj.Jim('/path/to/image.tif')
+  jim.np()[:] = ndimage.median_filter(jim.np(), size = 2)
+
+===================================================
+Three dimensional (3D) filters from scipy (ndimage)
+===================================================
+
+Perform a Gaussian filter in three dimensionsusing a standard deviation (sigma) of 2::
+
+  from scipy import ndimage
+  jim = pj.Jim('/path/to/multi-band-image.tif', band2plane = True)
+  jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)
+
+Different values for sigma can be given for each dimension::
+
+  from scipy import ndimage
+  jim = pj.Jim('/path/to/multi-band-image.tif', band2plane = True)
+  jim.np()[:] = ndimage.gaussian_filter(jim.np(), (1, 2, 2))
+
+.. _random_forest_classifier:
+
+=================================
+Random Forest ensemble classifier
+=================================
 
 .. _Tutorial_classification:
 

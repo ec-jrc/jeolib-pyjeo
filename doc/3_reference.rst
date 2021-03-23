@@ -459,12 +459,7 @@ Copy constructor: create a new copy of a JimVect vector data object
 
    Create a new JimVect object from an existing JimVect object, copying all data ::
 
-        jim_copy = pj.Jim(jim)
-
-   Create a new Jim object, using an existing Jim object as a template, without copying data.
-   The new jim object will be initialized with all data set to 0::
-
-        jim_copy = pj.Jim(jim, copy_data=False)
+        v_copy = pj.Jim(v, output = 'newcopy.sqlite')
 
 
 Convert JimVect object to dictionary
@@ -843,10 +838,10 @@ Neighborhood operation from scipy (ndimage)
 
 The neighborhood operations from scipy ndimage can be applied to a :py:class:`Jim` object by using its numpy representation (:py:meth:`Jim.np`)
 
-Perform a Gaussian filter using a standard deviation (sigma) of 2::
+Perform a Gaussian filter on a single band Jim object using a standard deviation (sigma) of 2::
 
   jim = pj.Jim('/path/to/image.tif')
-  jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)[:]
+  jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)
 
 
 =======================================
