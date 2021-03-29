@@ -943,7 +943,7 @@ Digital elevation
 Digital elevation functions from RichDEM
 ========================================
 
-Digital elevation functions from third party packages that implement a data model that is compatible to Numpy arrays can easily be integrated with pyjeo. For instance, the High-Performance Terrain Analysis package `RichDem <https://richdem.readthedocs.io/en/latest/index.html>`_ has a data model similar to pyjeo, that can use Numpy arrays without a memory copy.
+Digital elevation functions from third party packages that implement a data model that is compatible to Numpy arrays can easily be integrated with pyjeo. For instance, the High-Performance Terrain Analysis package `RichDem <https://richdem.readthedocs.io/en/latest/index.html>`_ has a data model similar to pyjeo, that can use Numpy arrays without a memory copy :cite:`RichDEM`.
 
 For example, to calculate the slope in degrees, based on :cite:`horn1981hill` the functions from the `terrain attributes <https://richdem.readthedocs.io/en/latest/terrain_attributes.html>`_ can be used. A nice feature is that a no data value (-9999) can be discarded during the calculation::
 
