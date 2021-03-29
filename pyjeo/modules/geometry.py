@@ -1495,11 +1495,27 @@ def stackPlane(jim_object,
 
 def warp(jim_object,
          t_srs,
+         bbox: list = None,
+         ulx: float = None,
+         uly: float = None,
+         ulz: float = None,
+         lrx: float = None,
+         lry: float = None,
+         lrz: float = None,
+         dx: float = None,
+         dy: float = None,
          **kwargs):
     """Warp a raster dataset to a target spatial reference system.
 
     :param jim_object: a Jim object
     :param t_srs: Target spatial reference system
+    :param bbox: bounding box (instead of ulx, uly, lrx, lry)
+    :param ulx: Upper left x value of bounding box to crop
+    :param uly: Upper left y value of bounding box to crop
+    :param lrx: Lower right x value of bounding box to crop
+    :param lry: Lower right y value of bounding box to crop
+    :param dx: spatial resolution in x to crop (stride if nogeo is True)
+    :param dy: spatial resolution in y to crop (stride if nogeo is True)
     :param kwargs: See table below
     :return: Cropped subimage as Jim instance
 
@@ -1539,6 +1555,19 @@ def warp(jim_object,
 
     """
     kwargs.update({'t_srs': t_srs})
+
+    if bbox is not None:
+        ulx = bbox[0]
+        uly = bbox[1]
+        lrx = bbox[2]
+        lry = bbox[3]
+
+    kwargs.update({'ulx': ulx})
+    kwargs.update({'uly': uly})
+    kwargs.update({'lrx': lrx})
+    kwargs.update({'lry': lry})
+    kwargs.update({'dx': dx})
+    kwargs.update({'dy': dy})
 
     if isinstance(jim_object, _pj.Jim):
         jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.warp(kwargs))
@@ -2718,10 +2747,26 @@ class _Geometry(_pj.modules.JimModuleBase):
 
     def warp(self,
              t_srs,
+             bbox: list = None,
+             ulx: float = None,
+             uly: float = None,
+             ulz: float = None,
+             lrx: float = None,
+             lry: float = None,
+             lrz: float = None,
+             dx: float = None,
+             dy: float = None,
              **kwargs):
         """Warp a raster dataset to a target spatial reference system.
 
         :param t_srs: Target spatial reference system
+        :param bbox: bounding box (instead of ulx, uly, lrx, lry)
+        :param ulx: Upper left x value of bounding box to crop
+        :param uly: Upper left y value of bounding box to crop
+        :param lrx: Lower right x value of bounding box to crop
+        :param lry: Lower right y value of bounding box to crop
+        :param dx: spatial resolution in x to crop (stride if nogeo is True)
+        :param dy: spatial resolution in y to crop (stride if nogeo is True)
         :param kwargs: See table below
 
         +----------+---------------------------------------------------------------------------------------------------+
@@ -2735,6 +2780,8 @@ class _Geometry(_pj.modules.JimModuleBase):
         |          | (default: near).                                                                                  |
         |          | Check `GDAL link <https://gdal.org/doxygen/gdalwarper_8h.html#a4775b029869df1f9270ad554c063384>`_ |
         |          | for available options.                                                                            |
+        +----------+---------------------------------------------------------------------------------------------------+
+        | nodata   | Nodata value to put in image if out of bounds                                                     |
         +----------+---------------------------------------------------------------------------------------------------+
         | nodata   | Nodata value to put in image if out of bounds                                                     |
         +----------+---------------------------------------------------------------------------------------------------+
@@ -2759,6 +2806,20 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         """
         kwargs.update({'t_srs': t_srs})
+
+        if bbox is not None:
+            ulx = bbox[0]
+            uly = bbox[1]
+            lrx = bbox[2]
+            lry = bbox[3]
+
+        kwargs.update({'ulx': ulx})
+        kwargs.update({'uly': uly})
+        kwargs.update({'lrx': lrx})
+        kwargs.update({'lry': lry})
+        kwargs.update({'dx': dx})
+        kwargs.update({'dy': dy})
+
         jim = _pj.Jim(_pj.geometry.cropPlane(
             self._jim_object, 0)._jipjim.warp(kwargs))
         for iplane in range(1, self._jim_object.properties.nrOfPlane()):

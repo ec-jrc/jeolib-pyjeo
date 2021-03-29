@@ -840,9 +840,11 @@ The neighborhood operations from scipy ndimage can be applied to a :py:class:`Ji
 
 Perform a Gaussian filter on a single band Jim object using a standard deviation (sigma) of 2::
 
+  from scipy import ndimage
   jim = pj.Jim('/path/to/image.tif')
   jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)
 
+More examples are provided in the :ref:`Tutorial_filtering`.
 
 =======================================
 Native neighborhood operation functions
@@ -930,20 +932,40 @@ Classification methods on Jim
 .. autoclass:: _Classify
    :members:
 
+
 *****************
 Digital elevation
 *****************
 
-===========================
-Digital elevation functions
-===========================
+.. _dem_richdem:
+
+========================================
+Digital elevation functions from RichDEM
+========================================
+
+Digital elevation functions from third party packages that implement a data model that is compatible to Numpy arrays can easily be integrated with pyjeo. For instance, the High-Performance Terrain Analysis package `RichDem <https://richdem.readthedocs.io/en/latest/index.html>`_ has a data model similar to pyjeo, that can use Numpy arrays without a memory copy.
+
+For example, to calculate the slope in degrees, based on :cite:`horn1981hill` the functions from the `terrain attributes <https://richdem.readthedocs.io/en/latest/terrain_attributes.html>`_ can be used. A nice feature is that a no data value (-9999) can be discarded during the calculation::
+
+
+  import richdem as rd
+
+  jimdem = pj.Jim('/path/to/dem.tif')
+  jimdem[jimdem <= 0] = -9999
+  dem_richdem  = rd.rdarray(jimdem.np(), no_data=-9999)
+  slope = rd.TerrainAttribute(dem_richdem, attrib='slope_degrees')
+  jimdem.np()[:] = slope
+  jimdem.properties.setNoDataVals(-9999)
+
+
+=======================================
+Native digital elevation methods on Jim
+=======================================
+
 
 .. automodule:: demops
    :members:
 
-================================
-Digital elevation methods on Jim
-================================
 
 .. autoclass:: _DEMOps
    :members:

@@ -112,8 +112,9 @@ Bridging Jim to third party packages
 Jim objects can be easily converted to `Numpy <https://numpy.org>`_ arrays and `xarray <http://xarray.pydata.org>`_ objects either with or without duplicating the memory (see also :ref:`Jim_conversions`). A Numpy array object derived from a Jim object without a memory copy references to the same data in memory as the original Jim object. This reduces the memory footprint, but can lead to memory errors. The Jim object should remain the owner of the data and the referenced Numpy array object should not be altered in shape nor destroyed.
 
 However, if handled with care, this can be a powerful technique.
-As shown in :ref:`ndimage`, third party libraries operating on Numpy arrays can directly written into Jim objects. For instance, to Gaussian filter a Jim object using `SciPy <https://www.scipy.org/>`_, simply use::
+As shown in :ref:`ndimage` and :ref:`dem_richdem`, third party libraries operating on Numpy arrays can directly written into Jim objects. For instance, to Gaussian filter a Jim object using `SciPy <https://www.scipy.org/>`_, simply use::
 
+  from scipy import ndimage
   jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)[:]
 
 .. _Tutorial_jim_read:
@@ -631,7 +632,7 @@ Tutorial on image filtering
 
 Image filtering is an image processing operation where the output image is calculated as a weighted sum of the neighborhood of the corresponding pixels of the input image. The filter can be applied in the spatial domain (2D) or in the plane (e.g., temporal) domain (1D), depending in which dimension the neighborhood is considered. Typical examples of filtering include smoothing, sharpening, and edge enhancement. In this context, we will restrict to discrete finite impulse response (FIR) filter. The weights to calculate the weighted sum are referred to as the filter *taps* and define the type of filter.  (e.g., low pass vs. high pass filters).
 
-Filtering functions in pyjeo can be found in the :py:mod:`ngbops` module. In addition, the neighborhood operations from `scipy.ndimage https://docs.scipy.org/doc/scipy/reference/tutorial/ndimage.html>`_  can be applied to a :py:class:`Jim` object by using its numpy representation (:py:meth:`Jim.np`)
+Filtering functions in pyjeo can be found in the :py:mod:`ngbops` module. In addition, the neighborhood operations from `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/tutorial/ndimage.html>`_  can be applied to a :py:class:`Jim` object by using its numpy representation (:py:meth:`Jim.np`)
 
 ============================================
 One dimensional filters from scipy (ndimage)
@@ -671,12 +672,6 @@ Different values for sigma can be given for each dimension::
   from scipy import ndimage
   jim = pj.Jim('/path/to/multi-band-image.tif', band2plane = True)
   jim.np()[:] = ndimage.gaussian_filter(jim.np(), (1, 2, 2))
-
-.. _random_forest_classifier:
-
-=================================
-Random Forest ensemble classifier
-=================================
 
 .. _Tutorial_classification:
 
