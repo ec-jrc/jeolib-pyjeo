@@ -65,7 +65,7 @@ author = u'Pieter Kempeneers, Ondrej Pesek, Pierre Soille'
 # built documents.
 #
 # The short X.Y version.
-version = u'0'
+version = u'1.0'
 # The full version, including alpha/beta/rc tags.
 release = u'1.0.3'
 
