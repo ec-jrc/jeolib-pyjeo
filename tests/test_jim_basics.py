@@ -96,6 +96,150 @@ class BadBasicMethods(unittest.TestCase):
             'Error in catching a call of Jim creation with wrong value ' \
             'parsed as the uniform argument (three values parsed)'
 
+        # Test creation with tileindex and tiletotal
+        tiletotal = 1
+        jim = pj.Jim(tiles[0], noread = True)
+        bbox = jim.properties.getBBox()
+        jimi = pj.Jim(tiles[0], tileindex = 0, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() == bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() == bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() == bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() == bbox[3], \
+            'Error in tileindex with tiletotal 1'
+
+        tiletotal = 4
+        jim = pj.Jim(tiles[0], noread = True)
+        bbox = jim.properties.getBBox()
+        jimi = pj.Jim(tiles[0], tileindex = 0, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() == bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() == bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() < bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() > bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], tileindex = 1, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() > bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() == bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() == bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() > bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], tileindex = 2, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() == bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() < bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() < bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() == bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], tileindex = 3, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() > bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() < bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() == bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() == bbox[3], \
+            'Error in tileindex with tiletotal 1'
+
+        # Test creation with tileindex and ulx, uly, lrx, lry
+        tiletotal = 4
+        jim = pj.Jim(tiles[0], noread = True)
+        bbox = jim.properties.getBBox()
+        ulx = bbox[0]
+        uly = bbox[1]
+        lrx = bbox[2]
+        lry = bbox[3]
+        jimi = pj.Jim(tiles[0], ulx = ulx, uly = uly, lrx = lrx, lry = lry,
+                      tileindex = 0, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() == bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() == bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() < bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() > bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], ulx = ulx, uly = uly, lrx = lrx, lry = lry,
+                      tileindex = 1, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() > bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() == bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() == bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() > bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], ulx = ulx, uly = uly, lrx = lrx, lry = lry,
+                      tileindex = 2, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() == bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() < bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() < bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() == bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], ulx = ulx, uly = uly, lrx = lrx, lry = lry,
+                      tileindex = 3, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() > bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() < bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() == bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() == bbox[3], \
+            'Error in tileindex with tiletotal 1'
+
+        # Test creation with tileindex and bbox
+        tiletotal = 4
+        jim = pj.Jim(tiles[0], noread = True)
+        bbox = jim.properties.getBBox()
+        jimi = pj.Jim(tiles[0], bbox = bbox, tileindex = 0, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() == bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() == bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() < bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() > bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], bbox = bbox, tileindex = 1, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() > bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() == bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() == bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() > bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], bbox = bbox, tileindex = 2, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() == bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() < bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() < bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() == bbox[3], \
+            'Error in tileindex with tiletotal 1'
+        jimi = pj.Jim(tiles[0], bbox = bbox, tileindex = 3, tiletotal = tiletotal, overlap = 0)
+        assert jimi.properties.getUlx() > bbox[0], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getUly() < bbox[1], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLrx() == bbox[2], \
+            'Error in tileindex with tiletotal 1'
+        assert jimi.properties.getLry() == bbox[3], \
+            'Error in tileindex with tiletotal 1'
+
         # Test creation with mean and stdev
 
         jim9 = pj.Jim(nrow=50, ncol=50, otype='Float32', mean=500, stdev=50,
@@ -132,7 +276,6 @@ class BadBasicMethods(unittest.TestCase):
 
         non_existing_path = pj._get_random_path()
 
-        # TODO: Commented until issue #34 will be solved
         try:
             _ = pj.Jim(non_existing_path)
             raised = False

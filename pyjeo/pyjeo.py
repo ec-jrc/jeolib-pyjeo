@@ -68,32 +68,61 @@ class _ParentJim(_jl.Jim):
                             overlap = kwargs.pop('overlap')
                         except KeyError:
                             overlap = 5
-                        ajim = Jim(image, noread=True)
-                        bbox = ajim.properties.getBBox()
-                        ncol = int(round(math.sqrt(tiletotal)))
-                        nrow = ncol
-                        assert ncol * nrow == tiletotal, \
-                            'Error: tiletotal must be squared integer'
-                        assert tileindex < tiletotal, \
-                            'Error: tileindex must be < ' + str(tiletotal)
-                        assert len(bbox) == 4, \
-                            'Error: bbox must be list of format ulx, uly, lrx, lry'
-                        ncol = math.sqrt(tiletotal)
-                        nrow = ncol
-                        icol = tileindex % nrow
-                        irow = tileindex // nrow
-                        dx = (bbox[2] - bbox[0]) / ncol
-                        dy = (bbox[1] - bbox[3]) / nrow
-                        # overlap = dx*0.025
-                        overlap = dx*overlap/200.0
-                        ulx = bbox[0] + icol * dx - overlap
-                        ulx = max(ulx, bbox[0])
-                        uly = bbox[1] - irow * dy + overlap
-                        uly = min(uly, bbox[1])
-                        lrx = ulx + dx + overlap
-                        lrx = min(lrx, bbox[2])
-                        lry = uly - dy - overlap
-                        lry = max(lry, bbox[3])
+
+                        bbox = None
+                        if 'bbox' in kwargs:
+                            bbox = kwargs.pop('bbox')
+                        elif ('ulx' in kwargs and 'uly' in kwargs and
+                              'lrx' in kwargs and 'lry' in kwargs):
+                            bbox = [kwargs.pop('ulx'), kwargs.pop('uly'),
+                                    kwargs.pop('lrx'), kwargs.pop('lry')]
+                        if bbox is not None:
+                            ncol = int(round(math.sqrt(tiletotal)))
+                            nrow = ncol
+                            assert ncol * nrow == tiletotal, \
+                                'Error: tiletotal must be squared integer'
+                            assert tileindex < tiletotal, \
+                                'Error: tileindex must be < ' + str(tiletotal)
+                            assert len(bbox) == 4, \
+                                'Error: bbox must be list of format ulx, uly, lrx, lry'
+                            ncol = math.sqrt(tiletotal)
+                            nrow = ncol
+                            icol = tileindex % nrow
+                            irow = tileindex // nrow
+                            dx = (bbox[2] - bbox[0]) / ncol
+                            dy = (bbox[1] - bbox[3]) / nrow
+                            overlap = dx*overlap/200.0
+                            ulx = bbox[0] + icol * dx - overlap
+                            uly = bbox[1] - irow * dy + overlap
+                            lrx = ulx + dx + overlap
+                            lry = uly - dy - overlap
+                        else:
+                            ajim = Jim(image, noread=True)
+                            bbox = ajim.properties.getBBox()
+                            ncol = int(round(math.sqrt(tiletotal)))
+                            nrow = ncol
+                            assert ncol * nrow == tiletotal, \
+                                'Error: tiletotal must be squared integer'
+                            assert tileindex < tiletotal, \
+                                'Error: tileindex must be < ' + str(tiletotal)
+                            assert len(bbox) == 4, \
+                                'Error: bbox must be list of format ulx, uly, lrx, lry'
+                            ncol = math.sqrt(tiletotal)
+                            nrow = ncol
+                            icol = tileindex % nrow
+                            irow = tileindex // nrow
+                            dx = (bbox[2] - bbox[0]) / ncol
+                            dy = (bbox[1] - bbox[3]) / nrow
+                            # overlap = dx*0.025
+                            overlap = dx*overlap/200.0
+                            ulx = bbox[0] + icol * dx - overlap
+                            ulx = max(ulx, bbox[0])
+                            uly = bbox[1] - irow * dy + overlap
+                            uly = min(uly, bbox[1])
+                            lrx = ulx + dx + overlap
+                            lrx = min(lrx, bbox[2])
+                            lry = uly - dy - overlap
+                            lry = max(lry, bbox[3])
                         kwargs.update({'ulx':ulx})
                         kwargs.update({'uly':uly})
                         kwargs.update({'lrx':lrx})
