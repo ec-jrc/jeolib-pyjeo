@@ -917,3 +917,144 @@ Map the classes [0-4] to the original class values::
 
 .. figure:: figures/sml.png
    :width: 100 %
+
+.. _Tutorial_jeobatch:
+
+***************************************************
+Tutorial on pyjeo in a batch processing environment
+***************************************************
+
+After having tested a program succesfully for a limited spatial subset, it can be upscaled to process larger regions in a high throughput environment. The job scheduler based on `HTCondor <https://research.cs.wisc.edu/htcondor/description.html>`_ will be used as an example here.
+Suppose a program has been created to calculate the slope of a digital elevation model (DEM). The DEM is available as a virtual dataset (VRT) that refers to multiple images in different directories. All images have been defined in the same spatial reference system (epsg:4326). As an output, the slope index is calculated in degrees and stored as an image in GeoTIFF format and in a metric spatial reference system.
+
+The python program to calculate the slope is written using a command line interface based on the `argparse <https://docs.python.org/3/library/argparse.html#module-argparse>`_ module.
+
+The program defines arguments for the input (DEM) and output (slope or other DEM derived attribute)::
+
+  parser.add_argument("-input","--input",help="input path for dem",
+                      dest="input",required=True,type=str)
+  parser.add_argument("-output","--output",help="output path for slope",
+                      dest="output",required=True,type=str)
+  parser.add_argument("-output_dem","--output_dem",help="output path for dem",
+                      dest="output_dem",required=False,type=str, default = None)
+
+The DEM attribute to be calculated is defined via the `attribute <https://richdem.readthedocs.io/en/latest/terrain_attributes.html>`_ argument::
+
+  parser.add_argument("-attribute","--attribute",
+                      help="attribute to calculate [slope_riserun, \
+                      slope_percentage, slope_degrees, slope_radians, \
+                      aspect, curvature, planform_curvature, \
+                      profile_curvature]",
+                      dest="attribute", required=False,type=str,
+                      default='slope_degrees')
+
+In addition, there are arguments for the geographical boundary and the target reference system::
+
+  parser.add_argument("-t_srs","--t_srs",
+                      help="target spatial reference system (e.g, epsg:32652)",
+                      dest="t_srs",required=False,type=str, default = None)
+  parser.add_argument("-ulx","--ulx",help="upper left X coordinate in dec deg",
+                      dest="ulx",required=False,type=float, default = None)
+  parser.add_argument("-uly","--uly",help="upper left Y coordinate in dec deg",
+                      dest="uly",required=False,type=float, default = None)
+  parser.add_argument("-lrx","--lrx",help="lower right X coordinate in dec deg",
+                      dest="lrx",required=False,type=float, default = None)
+  parser.add_argument("-lry","--lry",help="lower right Y coordinate in dec deg",
+                      dest="lry",required=False,type=float, default = None)
+
+Specific for parallel processing are the extra parameters to tile the input image::
+
+  parser.add_argument("-tileindex","--tileindex",help="tileindex to split input",
+                      dest="tileindex",required=False,type=int,default=0)
+  parser.add_argument("-tiletotal","--tiletotal",help="total to split input",
+                      dest="tiletotal",required=False,type=int,default=1)
+  parser.add_argument("-overlap","--overlap",help="overlap to split input",
+                      dest="overlap",required=False,type=float,default=0)
+
+The tiles will be distributed in parallel to the different processing nodes. The overlap, expressed as a percentage of the tile size, ensures no gaps exist between adjacent tiles due to the warping process.
+
+A new Jim object is created by reading input DEM from file. If a bounding box is provided, only the requested region will be processed. Moreover, that region will be tiled before reading it in memory. Although the VRT refers to multiple files in disk, the Jim object can be created by calling a single constructor, passing the filename of the VRT as an argument::
+
+  if (args.ulx is not None and
+      args.uly is not None and
+      args.lrx is not None and
+      args.lry is not None):
+      bbox = [args.ulx, args.uly, args.lrx, args.lry]
+      jimdem = pj.Jim(Path(demfn), bbox = bbox, tileindex = args.tileindex,
+                      tiletotal = args.tiletotal, overlap = args.overlap)
+  else:
+      jimdem = pj.Jim(Path(demfn), tileindex = args.tileindex,
+                      tiletotal = args.tiletotal, overlap = args.overlap)
+
+The tiles will be processed as individual jobs of a single cluster, managed by the job scheduler.
+
+The first task is to re-project the input DEM to the target spatial reference system (:py:meth:`~geometry._Geometry.warp`). To calculate the derived attributes correctly, it is important to select a metric (non-geographic) coordinate system. Here, the nearest neighbor resampling algorithm is selected as a default, but different `algorithms <https://gdal.org/doxygen/gdalwarper_8h.html#a4775b029869df1f9270ad554c0633843>`_ are available::
+
+  if args.t_srs is not None:
+      jimdem.geometry.warp(args.t_srs)
+
+Then the data type of the warped DEM is converted to floating point, to support the subsequent algebraic operations::
+
+  jimdem.pixops.convert('GDT_Float32')
+
+The DEM attribute will be calculated with the third party package `richdem <https://richdem.readthedocs.io>`_. The data model used is very similar to the one in pyjeo: a data attribute that is compatible with a numpy array along with metadata that defines the geotransform and projection information. These metadata must be copied, but for the data only a view is used (no memory copy). The algorithm expects a no data value (-9999). Here, all zero and negative values in the DEM will not be considered in the calculation of the DEM attribute::
+
+  jimdem[jimdem <= 0] = -9999
+  dem_richdem  = rd.rdarray(jimdem.np(), no_data=-9999)
+  dem_richdem.geotransform = jimdem.properties.getGeoTransform()
+  dem_richdem.projection = jimdem.properties.getProjection()
+
+The actual calculation of the DEM attribute consists of a single line of code::
+
+  slope = rd.TerrainAttribute(dem_richdem, attrib=args.attribute)
+
+The result is compatible to a Numpy array and can be directly overwritten to the data of the original Jim object. This can be done because all the attributes of the Jim object remain the same, i.e., data type, number of rows, columns (bands and planes), geotransform, and the projection::
+
+  jimdem.np()[:] = slope
+
+Finally, after writing the no data value into the metadata of the Jim object, it is written to file in a compressed and tiled GeoTIFF format::
+
+  jimdem.properties.setNoDataVals(-9999)
+  jimdem.io.write(args.output, co = ['COMPRESS=LZW', 'TILED=YES'])
+
+.. only:: builder_html
+
+The entire python file is available for download :download:`here <code/dem.py>`.
+
+The following HTCondor script can be used to submit all jobs for the respective tiles to calculate the DEM attribute for the entire region of interest::
+
+  Universe = docker
+  Executable = /usr/bin/python3
+  Arguments = dem.py -input /eos/jeodpp/data/base/Elevation/GLOBAL/AW3D30/VER2-1/Data/VRT/aw3d30_dsm_10deg_relpath.vrt -output_dem /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal)_dem.tif -output /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal).tif -tileindex $(Step) -tiletotal $(tiletotal) -ulx 124.265624628 -uly 42.9853868678 -lrx 130.780007359 -lry 37.669070543 -t_srs epsg:32652
+  transfer_input_files = dem.py
+  should_transfer_files   = YES
+  when_to_transfer_output = ON_EXIT
+  Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb10_pyjeo:0.5.31
+  request_cpus = 1
+  batch_name = dem_training
+  Priority = 1001
+  request_memory = 12GB
+  Requirements = EOSisRunning
+  Output = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).out
+  Error = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).err
+  Log = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).log
+  queue $(tiletotal)
+
+:download:`download <code/htc_job_submit_dem.sh>`
+
+The number of jobs equals the number of tiles in which the input is tiled. A submit variable `tiletotal` is used for this purpose that must be defined on the `condor_submit` command line. For instance, to submit four jobs that each process a different tile (four in total)::
+  
+  condor_submit tiletotal=4 htc_job_submit_dem.sh
+
+An output image is created for each tile. To obtain a single mosaic, create VRT with a `srcnodata` that corresponds to the no data value used for the calculation of the DEM attribute (-9999)::
+
+  gdalbuildvrt -srcnodata -9999 /eos/jeodpp/data/projects/BDA/training/slope_dem.vrt /eos/jeodpp/data/projects/BDA/training/slope_dem_*_4.tif
+
+Large mosaics can be visualized smoothly by building overviews, at scales 2-16::
+
+  gdaladdo -ro /eos/jeodpp/data/projects/BDA/training/slope_dem.vrt 2 4 8 16 
+
+.. _slope_dem:
+
+.. figure:: figures/slope_dem.png
+   :width: 100 %

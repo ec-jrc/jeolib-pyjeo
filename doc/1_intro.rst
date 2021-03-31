@@ -126,8 +126,8 @@ In your local environment, import the pyjeo module::
 
   import pyjeo as pj
 
-Usage in the JEOdesk
-^^^^^^^^^^^^^^^^^^^^
+Usage in JEOdesk
+^^^^^^^^^^^^^^^^
 The pyjeo module is pre-installed and can directly be imported as::
 
   import pyjeo as pj
@@ -136,8 +136,10 @@ Usage in the execute function in the interactive processing JEOlab
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The pyjeo module is automatically imported as pj
 
-Usage on the cluster
-^^^^^^^^^^^^^^^^^^^^
+Usage in JEObatch (HTCondor in cluster)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 In your condor submit file, use this docker file (replace 0.5.31 with latest version)::
   
   Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb10_pyjeo:0.5.31
+
+See also :ref:`Tutorial_jeobatch`:

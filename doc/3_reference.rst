@@ -943,19 +943,25 @@ Digital elevation
 Digital elevation functions from RichDEM
 ========================================
 
-Digital elevation functions from third party packages that implement a data model that is compatible to Numpy arrays can easily be integrated with pyjeo. For instance, the High-Performance Terrain Analysis package `RichDem <https://richdem.readthedocs.io/en/latest/index.html>`_ has a data model similar to pyjeo, that can use Numpy arrays without a memory copy :cite:`RichDEM`.
+Digital elevation functions from third party packages that implement a data model that is compatible to Numpy arrays can easily be integrated with pyjeo. For instance, the High-Performance Terrain Analysis package `RichDem <https://richdem.readthedocs.io/en/latest/index.html>`_ has a data model similar to pyjeo, that can use Numpy arrays without a memory copy :cite:`RichDEM`. The geotransform and projection information must be copied from the Jim to the RichDEM object::
 
-For example, to calculate the slope in degrees, based on :cite:`horn1981hill` the functions from the `terrain attributes <https://richdem.readthedocs.io/en/latest/terrain_attributes.html>`_ can be used. A nice feature is that a no data value (-9999) can be discarded during the calculation::
+  dem_richdem.geotransform = jim.properties.getGeoTransform()
+  dem_richdem.projection = jim.properties.getProjection()
+
+For example, to calculate the slope in degrees, based on :cite:`horn1981hill` the functions from the `terrain attributes <https://richdem.readthedocs.io/en/latest/terrain_attributes.html>`_ can be used. A nice feature is that a no data value (-9999) can be discarded during the calculation. Here all values of the DEM smaller than or equal to 0 are discarded::
 
 
   import richdem as rd
 
-  jimdem = pj.Jim('/path/to/dem.tif')
-  jimdem[jimdem <= 0] = -9999
-  dem_richdem  = rd.rdarray(jimdem.np(), no_data=-9999)
+  jim = pj.Jim('/path/to/dem.tif')
+  jim.pixops.convert('GDT_Float32')
+  jim[jim <= 0] = -9999
+  dem_richdem  = rd.rdarray(jim.np(), no_data=-9999)
+  dem_richdem.geotransform = jim.properties.getGeoTransform()
+  dem_richdem.projection = jim.properties.getProjection()
   slope = rd.TerrainAttribute(dem_richdem, attrib='slope_degrees')
-  jimdem.np()[:] = slope
-  jimdem.properties.setNoDataVals(-9999)
+  jim.np()[:] = slope
+  jim.properties.setNoDataVals(-9999)
 
 
 =======================================
