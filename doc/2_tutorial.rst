@@ -927,9 +927,9 @@ Tutorial on pyjeo in a batch processing environment
 After having tested a program succesfully for a limited spatial subset, it can be upscaled to process larger regions in a high throughput environment. The job scheduler based on `HTCondor <https://research.cs.wisc.edu/htcondor/description.html>`_ will be used as an example here.
 Suppose a program has been created to calculate the slope of a digital elevation model (DEM). The DEM is available as a virtual dataset (VRT) that refers to multiple images in different directories. All images have been defined in the same spatial reference system (epsg:4326). As an output, the slope index is calculated in degrees and stored as an image in GeoTIFF format and in a metric spatial reference system.
 
-The python program to calculate the slope is written using a command line interface based on the `argparse <https://docs.python.org/3/library/argparse.html#module-argparse>`_ module.
+The python program to calculate the slope is written using a command line interface based on the `argparse <https://docs.python.org/3/library/argparse.html#module-argparse>`_ module. Next to the slope, the module supports a plethora of interesting DEM derived attributes, from which a selection are supported in this example.
 
-The program defines arguments for the input (DEM) and output (slope or other DEM derived attribute)::
+The program defines an argument for the input (DEM) and two output arguments (one for the DEM derived attribute and one optional output argument for a copy of the DEM in the region of interest and in the user defined projection)::
 
   parser.add_argument("-input","--input",help="input path for dem",
                       dest="input",required=True,type=str)
@@ -938,7 +938,7 @@ The program defines arguments for the input (DEM) and output (slope or other DEM
   parser.add_argument("-output_dem","--output_dem",help="output path for dem",
                       dest="output_dem",required=False,type=str, default = None)
 
-The DEM attribute to be calculated is defined via the `attribute <https://richdem.readthedocs.io/en/latest/terrain_attributes.html>`_ argument::
+The DEM attribute can be selected via the `attribute <https://richdem.readthedocs.io/en/latest/terrain_attributes.html>`_ argument::
 
   parser.add_argument("-attribute","--attribute",
                       help="attribute to calculate [slope_riserun, \
@@ -962,7 +962,7 @@ In addition, there are arguments for the geographical boundary and the target re
   parser.add_argument("-lry","--lry",help="lower right Y coordinate in dec deg",
                       dest="lry",required=False,type=float, default = None)
 
-Specific for parallel processing are the extra parameters to tile the input image::
+Specific to parallel processing are the extra parameters to tile the input image::
 
   parser.add_argument("-tileindex","--tileindex",help="tileindex to split input",
                       dest="tileindex",required=False,type=int,default=0)
@@ -973,7 +973,7 @@ Specific for parallel processing are the extra parameters to tile the input imag
 
 The tiles will be distributed in parallel to the different processing nodes. The overlap, expressed as a percentage of the tile size, ensures no gaps exist between adjacent tiles due to the warping process.
 
-A new Jim object is created by reading input DEM from file. If a bounding box is provided, only the requested region will be processed. Moreover, that region will be tiled before reading it in memory. Although the VRT refers to multiple files in disk, the Jim object can be created by calling a single constructor, passing the filename of the VRT as an argument::
+A new Jim object is created by reading input DEM from file. If a bounding box is provided, only the requested region will be processed. The coordinates are in the reference system of the DEM (see :ref:`reading_roi` to define the coordinates in the target reference system). Moreover, that region will be tiled before reading it in memory. Although the VRT refers to multiple files in disk, the Jim object can be created by calling a single constructor, passing the filename of the VRT as an argument::
 
   if (args.ulx is not None and
       args.uly is not None and
@@ -1025,7 +1025,7 @@ The following HTCondor script can be used to submit all jobs for the respective 
 
   Universe = docker
   Executable = /usr/bin/python3
-  Arguments = dem.py -input /eos/jeodpp/data/base/Elevation/GLOBAL/AW3D30/VER2-1/Data/VRT/aw3d30_dsm_10deg_relpath.vrt -output_dem /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal)_dem.tif -output /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal).tif -tileindex $(Step) -tiletotal $(tiletotal) -ulx 124.265624628 -uly 42.9853868678 -lrx 130.780007359 -lry 37.669070543 -t_srs epsg:32652
+  Arguments = dem.py -input /eos/jeodpp/data/base/Elevation/GLOBAL/AW3D30/VER2-1/Data/VRT/aw3d30_dsm_10deg_relpath.vrt -output_dem /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal)_dem.tif -output /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal).tif -tileindex $(Step) -tiletotal $(tiletotal) -ulx 5.0 -uly 45.5 -lrx 9.0 -lry 41.5 -t_srs epsg:3035
   transfer_input_files = dem.py
   should_transfer_files   = YES
   when_to_transfer_output = ON_EXIT
@@ -1033,7 +1033,7 @@ The following HTCondor script can be used to submit all jobs for the respective 
   request_cpus = 1
   batch_name = dem_training
   Priority = 1001
-  request_memory = 12GB
+  request_memory = 8GB
   Requirements = EOSisRunning
   Output = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).out
   Error = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).err
@@ -1042,7 +1042,7 @@ The following HTCondor script can be used to submit all jobs for the respective 
 
 :download:`download <code/htc_job_submit_dem.sh>`
 
-The number of jobs equals the number of tiles in which the input is tiled. A submit variable `tiletotal` is used for this purpose that must be defined on the `condor_submit` command line. For instance, to submit four jobs that each process a different tile (four in total)::
+The number of jobs equals the number of tiles in which the input is tiled. A submit variable `tiletotal` is used for this purpose that is defined in the `condor_submit` command line and must correspond to the square of an integer value. For instance, to submit four (2 * 2) jobs that each process a different tile (four in total)::
   
   condor_submit tiletotal=4 htc_job_submit_dem.sh
 
@@ -1056,5 +1056,12 @@ Large mosaics can be visualized smoothly by building overviews, at scales 2-16::
 
 .. _slope_dem:
 
-.. figure:: figures/slope_dem.png
-   :width: 100 %
+Result: Digital elevation model (left) and slope (right) calculated for the Alps in Europe
+
+|pic1| |pic2|
+
+.. |pic1| image:: figures/europe_dem.png
+   :width: 45%
+
+.. |pic2| image:: figures/europe_slope.png
+   :width: 45%

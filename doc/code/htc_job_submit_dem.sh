@@ -20,7 +20,7 @@
 
 Universe = docker
 Executable = /usr/bin/python3
-Arguments = dem.py -input /eos/jeodpp/data/base/Elevation/GLOBAL/AW3D30/VER2-1/Data/VRT/aw3d30_dsm_10deg_relpath.vrt -output_dem /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal)_dem.tif -output /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal).tif -tileindex $(Step) -tiletotal $(tiletotal) -ulx 124.265624628 -uly 42.9853868678 -lrx 130.780007359 -lry 37.669070543 -t_srs epsg:32652
+Arguments = dem.py -input /eos/jeodpp/data/base/Elevation/GLOBAL/AW3D30/VER2-1/Data/VRT/aw3d30_dsm_10deg_relpath.vrt -output_dem /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal)_dem.tif -output /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal).tif -tileindex $(Step) -tiletotal $(tiletotal) -ulx 5.0 -uly 45.5 -lrx 9.0 -lry 41.5 -t_srs epsg:3035
 transfer_input_files = dem.py
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT
@@ -28,7 +28,7 @@ Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb10_pyje
 request_cpus = 1
 batch_name = dem_training
 Priority = 1001
-request_memory = 12GB
+request_memory = 8GB
 Requirements = EOSisRunning
 Output = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).out
 Error = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).err
