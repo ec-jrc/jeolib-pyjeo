@@ -73,7 +73,7 @@ Data model
 
 It is important to understand the data model that is used for a Jim object. For a more detailed description, please refer to :cite:`kempeneers2019`.
 
-The data model used a multi-band three dimensional (3D) model. Each band represents a 3D contiguous array in memory, where data are organized as *[plane][row][column]* (see also :py:meth:`Jim.np`). Two dimensions refer to the spatial domain (x and y) and pyjeo refers to the third dimension as *plane* (see :numref:`cube`). This plane is typically used for either the temporal or spectral dimension, but can also be used to address volumetic data.  The data cube has a single georeference.
+The data model used is a multi-band three dimensional (3D) model. Each band represents a 3D contiguous array in memory, where data are organized as *[plane][row][column]* (see also :py:meth:`Jim.np`). Two dimensions refer to the spatial domain (x and y) and pyjeo refers to the third dimension as *plane* (see :numref:`cube`). This plane is typically used for either the temporal or spectral dimension, but can also be used to address volumetic data.  The data cube has a single georeference.
 
 .. _cube:
 
@@ -115,7 +115,7 @@ However, if handled with care, this can be a powerful technique.
 As shown in :ref:`ndimage` and :ref:`dem_richdem`, third party libraries operating on Numpy arrays can directly written into Jim objects. For instance, to Gaussian filter a Jim object using `SciPy <https://www.scipy.org/>`_, simply use::
 
   from scipy import ndimage
-  jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)[:]
+  jim.np()[:] = ndimage.gaussian_filter(jim.np(), 2)
 
 .. _Tutorial_jim_read:
 

@@ -501,7 +501,7 @@ Convert JimVect object to pandas object
 
 Example::
 
-  import pandas pd
+  import pandas as pd
   v = pj.Jim('/path/to/vector.sqlite')
   pob = pd.DataFrame(v.dict())
 
