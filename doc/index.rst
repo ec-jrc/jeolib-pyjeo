@@ -5,10 +5,8 @@
 
 .. only:: html
 
-    |logo|  pyjeo image processing library: user guide
+    pyjeo image processing library: user guide
     ===================================================
-.. |logo| image:: figures/bdap.png
-
 
 .. toctree::
    :maxdepth: 3

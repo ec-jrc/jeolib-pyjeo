@@ -87,7 +87,7 @@ When creating an geospatial image from file (e.g., in GeoTIFF format), the attri
 
   import pyjeo as pj
 
-  jim = pj.Jim('/path/to/raster.tif'))
+  jim = pj.Jim('/path/to/raster.tif')
   jim.properties.getBBox()
   
   [399960.0, 5100000.0, 405080.0, 5094880.0]
@@ -313,7 +313,7 @@ Compositing is the process of resolving overlapping pixels when images are combi
 
 The maximum composite image can then obtained as follows. By setting the parameter *nodata* to 0, pixel values equal to 0 are not considered for the calculation of the maximum value::
 
-  jim.geometry.reducePlane('median', nodata = 0)
+  jim.geometry.reducePlane('max', nodata = 0)
 
 In the case of a multi-band Jim object, the composite result will also be a multi-band image. The maximum value is calculated for each band individually. Pixel values of the resulting composite in the respective bands are not guaranteed to be selected from the same input plane. If this is required, the parameter *ref_band* can be used. This will be the reference band for which the rule will be calculated. A typical example is the maximum normalized difference vegetation index (NDVI) composite. Suppose a multi-plane and multi-band Jim object contains four bands in total, from which the last band represents the NDVI value. Setting ref_band to 3 (corresponding to the NDVI band) and the rule equal to 'max' will calculate the maximum NDVI composite. All band values of a pixel in the resulting composite will be selected from the plane for which the NDVI was maximum. 
 
@@ -515,7 +515,7 @@ The first 5 features will be ignored, as they have a 0 value for all pixels in t
 Buffering
 =========
 
-To exclude pixels near the borders of a polygon, the parameter *buffer* can be used. To reduce (enlarge) the polygons, use a negative (positive) buffer. The buffer is expressed in the units of the geometry of the Jim object (typically in meter).
+To exclude pixels near the border of a polygon, the parameter *buffer* can be used. To reduce (enlarge) the polygons, use a negative (positive) buffer. The buffer is expressed in the units of the geometry of the Jim object (typically in meter).
 
 To calculate the regional mean and standard deviation for the 3D Jim object with two bands, not taking into account those pixels within 1000 m of the polygon border::
 
