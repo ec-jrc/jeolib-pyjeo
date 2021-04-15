@@ -48,6 +48,7 @@ class _IO(_pj.modules.JimModuleBase):
         force      (bool) Set to True to force full dump even for large images
         =========  ============================================================
         """
+        kwargs.update({'output': str(output)})
         self._jim_object._jipjim.dumpImg(kwargs)
 
     def dumpImg3D(self,
@@ -149,7 +150,7 @@ class _IOVect(_pj.modules.JimVectModuleBase):
         if name:
             kwargs.update({'name': name})
         if output is not None:
-            kwargs.update({'output': output})
+            kwargs.update({'output': str(output)})
 
         self._jim_vect._jipjimvect.dumpOgr(kwargs)
 

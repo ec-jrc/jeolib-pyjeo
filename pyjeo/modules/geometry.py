@@ -43,7 +43,7 @@ def append(jvec1,
       v3 = pj.geometry.append(v1, v2, '/tmp/test.sqlite', oformat='SQLite',
                               co=['OVERWRITE=YES'])
     """
-    kwargs.update({'output': output})
+    kwargs.update({'output': str(output)})
     if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
         avect = jvec1._jipjimvect.merge(jvec2._jipjimvect, kwargs)
         avect.write()
@@ -107,7 +107,7 @@ def convexHull(jim_vect,
     | co               | Creation option for output vector dataset        |
     +------------------+--------------------------------------------------+
     """
-    kwargs.update({'output': output})
+    kwargs.update({'output': str(output)})
 
     avect = jim_vect._jipjimvect.convexHull(kwargs)
     avect.write()
@@ -467,7 +467,7 @@ def extract(jvec,
                                      threshold=thresholds,
                                      bandname=['B02', 'B03', 'B04', 'B08'])
     """
-    kwargs.update({'output': output})
+    kwargs.update({'output': str(output)})
     if 'threshold' in kwargs:
         if kwargs['threshold'] is not None:
             if not isinstance(kwargs['threshold'], list):
@@ -772,7 +772,7 @@ def intersect(jvec,
       sampleintersect.io.write('/path/to/output.sqlite')
 
     """
-    kwargs.update({'output': output})
+    kwargs.update({'output': str(output)})
     if isinstance(jim, _pj.Jim):
         avect = jvec._jipjimvect.intersect(jim._jipjim, kwargs)
         avect.write()
@@ -842,7 +842,7 @@ def join(jvec1,
           v1, v2, '/tmp/test.sqlite', oformat='SQLite',
           co=['OVERWRITE=YES'], key=['id'], method='OUTER_FULL')
     """
-    kwargs.update({'output': output})
+    kwargs.update({'output': str(output)})
     if isinstance(jvec1, _pj.JimVect) and isinstance(jvec2, _pj.JimVect):
         avect = jvec1._jipjimvect.join(jvec2._jipjimvect, kwargs)
         avect.write()
@@ -963,7 +963,7 @@ def polygonize(jim_object,
     |                  | (zero is invalid, non-zero is valid)                 |
     +------------------+------------------------------------------------------+
     """
-    kwargs.update({'output': output})
+    kwargs.update({'output': str(output)})
 
     if isinstance(jim_object, _pj.Jim):
         mask = kwargs.pop('mask', None)
@@ -1271,12 +1271,12 @@ def repeat(jim_object,
     return ret_jim
 
 
-def sample(jim,
+def sample(jim_object,
            output: str,
            **kwargs):
     """Extract a random or grid sample from a raster dataset.
 
-    :param jim: Jim object to sample (multi-band supported, but multi-plane not
+    :param jim_object: Jim object to sample (multi-band supported, but multi-plane not
         yet)
     :param output: Name of the output vector dataset in which the zonal
         statistics will be saved
@@ -1343,10 +1343,9 @@ def sample(jim,
         gridsize = int(jim.nrOfCol()*jim.getDeltaX()/math.sqrt(npoint))
         v = jim.sample(grid=gridsize, buffer=100, rule=['median'],
                        output=outputfn, oformat='SQLite')
-        v.write()
 
     """
-    kwargs.update({'output': output})
+    kwargs.update({'output': str(output)})
     if 'threshold' in kwargs:
         if kwargs['threshold'] is not None:
             if '%' in kwargs['threshold']:
@@ -1354,10 +1353,11 @@ def sample(jim,
             else:
                 kwargs['threshold'] = -kwargs['threshold']
 
+    avect = jim_object._jipjim.extractSample(kwargs)
+    avect.write()
     pjvect = _pj.JimVect()
-    pjvect._set(jim._jipjim.extractSample(kwargs))
+    pjvect._set(avect)
     return pjvect
-
 
 def stackBand(jim_object,
               jim_other=None,
@@ -2272,7 +2272,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                                               name='cloud', nodata=0)
           vcloud.io.write('/path/to/cloud.sqlite')
         """
-        kwargs.update({'output': output})
+        kwargs.update({'output': str(output)})
         mask = kwargs.pop('mask', None)
         if mask is not None:
             if isinstance(mask, _pj.Jim):
@@ -2925,7 +2925,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         """Append JimVect object with another JimVect object.
 
         :param jvec: JimVect object to append
-        :return: joined JimVect object
+        :return: appended JimVect object
 
         Modifies the instance on which the method was called.
 
@@ -3106,7 +3106,7 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             v.io.write('/path/to/output.sqlite)
 
         """
-        kwargs.update({'output': output})
+        kwargs.update({'output': str(output)})
         kwargs.update({'rule': rule})
         if 'threshold' in kwargs:
             if kwargs['threshold'] is not None:
