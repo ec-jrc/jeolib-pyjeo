@@ -616,9 +616,6 @@ class Jim:
                 if isinstance(value, Jim):
                     self.np(band)[item] = value.np(band)
                 else:
-                    print(item)
-                    print(self.np())
-                    print("value: {}".format(value))
                     self.np(band)[item] = value
         else:
             raise exceptions.JimIllegalArgumentError(
@@ -1475,7 +1472,7 @@ class _ParentVect(_jl.VectorOgr):
         if kwargs:
             if vector:
                 if isinstance(vector, JimVect):
-                    kwargs.update({'filename': kwargs.pop('output', None)})
+                    kwargs.update({'filename': str(kwargs.pop('output', None))})
                     super(_ParentVect, self).__init__(vector._jipjimvect,
                                                       kwargs)
                 else:

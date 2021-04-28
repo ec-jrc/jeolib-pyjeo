@@ -822,6 +822,19 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.imageFrameSet() ' \
             '(values outside the frame changed)'
 
+        jim = pj.Jim(ncol = 2024, nrow = 2024, nplane = 2024, otype = 'GDT_Byte')
+        jim.pixops.setData(1)
+        jim.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 0)
+
+        jim[:,0:1,:] = 0
+        jim[:,-1:,:] = 0
+        jim[:,:,0:1] = 0
+        jim[:,:,-1:] = 0
+
+        assert(jim.properties.isEqual(jim1)),\
+            'Error in geometry.imageFrameSet() ' \
+            '(result different from __setitem__)'
+
         # Test imageFrameAdd() for 1-band Jim
 
         jim.geometry.cropBand(0)

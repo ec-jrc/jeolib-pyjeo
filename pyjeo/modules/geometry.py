@@ -3157,9 +3157,11 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
 
           jim = pj.Jim('/path/to/raster.tif')
           v = pj.JimVect('/path/to/vector.sqlite')
-          sampleintersect = pj.geometry.intersect(
-              v, jim, output='/vsimem/intersect', oformat='SQLite',
-              co=['OVERWRITE=YES'])
+          v.geometry.intersect(jim)
+          #or using a function:
+          # sampleintersect = pj.geometry.intersect(
+          #     v, jim, output='/vsimem/intersect', oformat='SQLite',
+          #     co=['OVERWRITE=YES'])
           sampleintersect.io.write('/path/to/output.sqlite')
 
         """
