@@ -824,7 +824,7 @@ class BadGeometry(unittest.TestCase):
 
         jim = pj.Jim(ncol = 2024, nrow = 2024, nplane = 2024, otype = 'GDT_Byte')
         jim.pixops.setData(1)
-        jim.geometry.imageFrameSet(1, 1, 1, 1, 0, 0, 0)
+        jim1 = pj.geometry.imageFrameSet(jim, 1, 1, 1, 1, 0, 0, 0)
 
         jim[:,0:1,:] = 0
         jim[:,-1:,:] = 0
