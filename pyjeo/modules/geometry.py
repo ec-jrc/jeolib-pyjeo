@@ -496,7 +496,6 @@ def extract(jvec,
                 bandname = [
                     't'+str(ifile) for ifile in range(0, len(jim._jipjimlist))]
             kwargs.update({'bandname': bandname})
-            print(bandname)
 
             avect = jim._jipjimlist.extractOgr(jvec._jipjimvect,
                                                kwargs)
