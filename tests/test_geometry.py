@@ -2907,14 +2907,14 @@ class BadGeometryVects(unittest.TestCase):
 
         v1.geometry.join(v2, key=['fid'], method='OUTER_FULL')
         assert len(v1.properties.getFieldNames()) == 3, \
-            print("Error: join OUTER_FULL field count v1 v2")
+            "Error: join OUTER_FULL field count v1 v2"
         assert v1.properties.getFeatureCount() == 5, \
-            print("Error: join OUTER_FULL feature count v1 v2")
+            "Error: join OUTER_FULL feature count v1 v2"
         v1.geometry.join(v3, key=['fid'], method='OUTER_FULL')
         assert len(v1.properties.getFieldNames()) == 4, \
-            print("Error: join OUTER_FULL field count v1, v2, and v3")
+            "Error: join OUTER_FULL field count v1, v2, and v3"
         assert v1.properties.getFeatureCount() == 6, \
-            print("Error: join OUTER_FULL feature count v1, v2, and v3")
+            "Error: join OUTER_FULL feature count v1, v2, and v3"
 
         # INNER
         v1 = pj.JimVect('tests/data/v1.json')
@@ -2923,14 +2923,14 @@ class BadGeometryVects(unittest.TestCase):
 
         v1.geometry.join(v2, key=['fid'], method='INNER')
         assert len(v1.properties.getFieldNames()) == 3, \
-            print("Error: join OUTER_FULL field count v1 v2")
+            "Error: join OUTER_FULL field count v1 v2"
         assert v1.properties.getFeatureCount() == 3, \
-            print("Error: join INNER feature count v1 v2")
+            "Error: join INNER feature count v1 v2"
         v1.geometry.join(v3, key=['fid'], method='INNER')
         assert len(v1.properties.getFieldNames()) == 4, \
-            print("Error: join OUTER_FULL field count v1, v2, and v3")
+            "Error: join OUTER_FULL field count v1, v2, and v3"
         assert v1.properties.getFeatureCount() == 3, \
-            print("Error: join INNER feature count v1, v2, and v3")
+            "Error: join INNER feature count v1, v2, and v3"
 
         # OUTER_LEFT
         v1 = pj.JimVect('tests/data/v1.json')
@@ -2939,14 +2939,14 @@ class BadGeometryVects(unittest.TestCase):
 
         v1.geometry.join(v2, key=['fid'], method='OUTER_LEFT')
         assert len(v1.properties.getFieldNames()) == 3, \
-            print("Error: join OUTER_FULL field count v1 v2")
+            "Error: join OUTER_FULL field count v1 v2"
         assert v1.properties.getFeatureCount() == 4, \
-            print("Error: join OUTER_LEFT feature count v1 v2")
+            "Error: join OUTER_LEFT feature count v1 v2"
         v1.geometry.join(v3, key=['fid'], method='OUTER_LEFT')
         assert len(v1.properties.getFieldNames()) == 4, \
-            print("Error: join OUTER_FULL field count v1, v2, and v3")
+            "Error: join OUTER_FULL field count v1, v2, and v3"
         assert v1.properties.getFeatureCount() == 4, \
-            print("Error: join OUTER_LEFT feature count v1, v2, and v3")
+            "Error: join OUTER_LEFT feature count v1, v2, and v3"
 
         # OUTER_RIGHT
         v1 = pj.JimVect('tests/data/v1.json')
@@ -2955,14 +2955,14 @@ class BadGeometryVects(unittest.TestCase):
 
         v1.geometry.join(v2, key=['fid'], method='OUTER_RIGHT')
         assert len(v1.properties.getFieldNames()) == 3, \
-            print("Error: join OUTER_FULL field count v1 v2")
+            "Error: join OUTER_FULL field count v1 v2"
         assert v1.properties.getFeatureCount() == 4, \
-            print("Error: join OUTER_RIGHT feature count v1 v2")
+            "Error: join OUTER_RIGHT feature count v1 v2"
         v1.geometry.join(v3, key=['fid'], method='OUTER_RIGHT')
         assert len(v1.properties.getFieldNames()) == 4, \
-            print("Error: join OUTER_FULL field count v1, v2, and v3")
+            "Error: join OUTER_FULL field count v1, v2, and v3"
         assert v1.properties.getFeatureCount() == 4, \
-            print("Error: join OUTER_RIGHT feature count v1, v2, and v3")
+            "Error: join OUTER_RIGHT feature count v1, v2, and v3"
 
     @staticmethod
     def test_append():
