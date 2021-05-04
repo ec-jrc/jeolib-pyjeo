@@ -879,7 +879,7 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.imageFrameSubtract() ' \
             '(changed values in the original Jim)'
 
-        jim = pj.Jim(ncol = 2024, nrow = 2024, nplane = 2024, otype = 'GDT_Byte')
+        jim = pj.Jim(ncol = 1024, nrow = 1024, nplane = 3, otype = 'GDT_Byte')
         jim.pixops.setData(1)
         jim1 = pj.geometry.imageFrameSet(jim, 1, 1, 1, 1, 0, 0, 0)
 
