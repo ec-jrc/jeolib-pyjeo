@@ -130,7 +130,6 @@ class _ParentJim(_jl.Jim):
                     elif 'bbox' in kwargs:
                         bbox = kwargs.pop('bbox')
                         kwargs.update({'ulx':bbox[0]})
-                        kwargs.update({'ulx':bbox[0]})
                         kwargs.update({'uly':bbox[1]})
                         kwargs.update({'lrx':bbox[2]})
                         kwargs.update({'lry':bbox[3]})
@@ -158,7 +157,6 @@ class _ParentJim(_jl.Jim):
             else:
                 if 'bbox' in kwargs:
                     bbox = kwargs.pop('bbox')
-                    kwargs.update({'ulx':bbox[0]})
                     kwargs.update({'ulx':bbox[0]})
                     kwargs.update({'uly':bbox[1]})
                     kwargs.update({'lrx':bbox[2]})
