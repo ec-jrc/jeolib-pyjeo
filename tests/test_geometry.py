@@ -1211,6 +1211,29 @@ class BadGeometry(unittest.TestCase):
             '(returned Jim is not equal to the last plane for ' \
             'rule="overwrite")'
 
+        # Test with sum rule via call back function
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nband = 3, nplane=1, otype='UInt16')
+        jim.pixops.setData(1, bands=[0])
+        jim.pixops.setData(2, bands=[1])
+        jim.pixops.setData(3, bands=[2])
+        jim.geometry.stackPlane(pj.Jim(jim))
+
+        jim1 = pj.geometry.cropPlane(jim, 0)
+        for band in range(0, jim.properties.nrOfBand()):
+            jim1.np(band)[:] = np.sum(jim.np(band), axis = 0)
+
+        def getSum(reduced, plane):
+            reduced+=plane
+            return reduced
+
+        jim.geometry.reducePlane(getSum)
+
+        assert jim.properties.isEqual(jim1) ,\
+            'Inconsistency in geometry.reducePlane() with sum callback, ' \
+            'not equal to Numpy implementation'
+        assert jim.stats.getStats(['min','max']) == {'min': [2,4,6], 'max': [2,4,6]} ,\
+            'Inconsistency in geometry.reducePlane() with sum callback'
+
         # Test with rule == 'max'
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3, otype='Byte',
                      uniform=[min, max])

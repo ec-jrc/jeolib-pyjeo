@@ -1704,19 +1704,20 @@ def jim2xr(jim_object: Jim,
                     -jim_object.properties.getDeltaY())
     # Build new copy of xarray Dataset (with memory copy):
     if jim_object.properties.nrOfPlane() > 1:
-        new_dataset = _xr.Dataset({str(b):xr.DataArray(_pj.jim2np(jim_object,b),
-                                                        dims=['time', 'y', 'x'],
-                                                        coords={'time': ['t'+str(plane)
-                                                        for plane in planes],
-                                                        'x': x, 'y': y},
-                                                        attrs={'_FillValue': 0})
-                                for b in bands})
+        x_dataset = _xr.Dataset({str(b):_xr.DataArray(jim2np(jim_object,b),
+                                                      dims=['time', 'y', 'x'],
+                                                      coords={'time': ['t'+str(plane)
+                                                                       for plane in planes],
+                                                              'x': x, 'y': y},
+                                                      attrs={'_FillValue': 0})
+        for b in bands})
     else:
-        x_dataset = _xr.Dataset({str(b):_xr.DataArray(_pj.jim2np(jim_object,b),
-                                                    dims=['y', 'x'],
-                                                    coords={'x': x, 'y': y},
-                                                    attrs={'_FillValue': 0})
-                                for b in bands})
+        x_dataset = _xr.Dataset({str(b):_xr.DataArray(jim2np(jim_object,b),
+                                                      dims=['y', 'x'],
+                                                      coords={'x': x, 'y': y},
+                                                      attrs={'_FillValue': 0})
+        for b in bands})
+    return x_dataset
 
 
 def jimvect2np(jim_object: JimVect,
