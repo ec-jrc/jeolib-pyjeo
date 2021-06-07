@@ -1795,4 +1795,6 @@ def xr2jim(xr_object) -> Jim:
             jim.properties.setGeoTransform(gt)
         else:
             jim.geometry.stackBand(np2jim(xr_object[b].values))
+    if projection is not None:
+        jim.properties.setProjection(projection)
     return jim
