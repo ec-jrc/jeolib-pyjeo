@@ -32,6 +32,20 @@ To install the package without `sudo` right, you can install it with the
 python setup.py install --user
 ```
 
+## pyjeo in Docker
+
+A [Dockerfile](https://github.com/ec-jrc/jeolib-pyjeo/blob/master/docker/Dockerfile_deb10_pyjeo_public) based on a debian10 image is provided under the docker directory in this repository
+
+Create the pyjeo docker image using:
+```
+docker build -t deb10_pyjeo_public:0.1.4 -f Dockerfile_deb10_pyjeo_public .
+```
+
+Run the pyjeo docker image and execute:
+```
+docker run --rm deb10_pyjeo_public:0.1.4 python3 -c "import pyjeo as pj; jim = pj.Jim(ncol = 10, nrow = 10, nband = 3); print(jim.properties.nrOfBand())"
+```
+
 ## Test the installation
 
 From the directory of the repository, run:
