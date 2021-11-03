@@ -143,6 +143,37 @@ class BadPixOps(unittest.TestCase):
             assert min(stats['histogram']) >= 850, \
                 'Error in pixops.stretch(): max is not >= 850'
 
+        """Test multi-band stretch function."""
+        jim = None
+        for tile in tiles:
+            if jim is None:
+                jim = pj.Jim(tile)
+            else:
+                jim.geometry.stackBand(pj.Jim(tile))
+        jim.geometry.stackBand(pj.geometry.cropBand(jim, 0))
+
+        stretched = pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,
+                                      dst_max=255, cc_min=2, cc_max=98)
+        stretched_eq = pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,
+                                         dst_max=255, cc_min=2, cc_max=98,
+                                         eq=True)
+        jim.pixops.stretch(otype='GDT_Byte', dst_min=0, dst_max=255,
+                           cc_min=2, cc_max=98)
+        assert jim.properties.isEqual(stretched), \
+            'Inconsistency in pixops.stretch() ' \
+            '(method returns different result than function)'
+
+        stats = stretched_eq.stats.getStats(['min', 'max', 'histogram'],
+                                            src_min=1, src_max=254, band = 2)
+        assert stats['min'] == 1, \
+            'Error in pixops.stretch(): min is not 1'
+        assert stats['max'] == 254, \
+            'Error in pixops.stretch(): max is not 254'
+        assert max(stats['histogram']) <= 1150, \
+            'Error in pixops.stretch(): max is not < 1150'
+        assert min(stats['histogram']) >= 850, \
+            'Error in pixops.stretch(): max is not >= 850'
+
     @staticmethod
     def test_setFunctions():
         """Test setData, setLevel and setThreshold functions and methods."""

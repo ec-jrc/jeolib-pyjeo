@@ -293,7 +293,7 @@ A bridge to third party packages using `pandas <https://pandas.pydata.org/pandas
   v = pj.JimVect('vector.shp)
   #convert to GeoJSON in memory
   vjson = pj.JimVect(v,output='/vsimem/pj.json', oformat = 'GeoJSON')
-  vjson.io.close()
+  vjson.io.write()
   #create geopandas dataframe from GeoJSON file in memory
   gdf = gpd.read_file('/vsimem/pj.json')
 
