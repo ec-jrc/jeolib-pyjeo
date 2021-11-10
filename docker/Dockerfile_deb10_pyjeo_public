@@ -79,7 +79,7 @@ RUN set -xe \
     && rm mial.tar.gz \
     && rm -rf $INSTALL_HOME/jeolib-miallib*
 
-RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/tags/1.0.3.tar.gz --verbose
+RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/tags/1.0.5.tar.gz --verbose
 
 # - jiplib
 RUN set -xe \
@@ -145,7 +145,7 @@ COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/jiplib/__init__.py 
 COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/jiplib/_jiplib.so /usr/local/lib/python3.7/dist-packages/jiplib
 COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/jiplib/jiplib.py /usr/local/lib/python3.7/dist-packages/jiplib
 COPY --from=pyjeo-dev /usr/local/lib/libmiallib_generic.so /usr/local/lib
-COPY --from=pyjeo-dev /usr/local/lib/libjiplib.so.1.0.4 /usr/local/lib
+COPY --from=pyjeo-dev /usr/local/lib/libjiplib.so.1.0.5 /usr/local/lib
 
 COPY --from=pyjeo-dev $INSTALL_HOME/pyjeo.tar.gz /usr/local/share
 
@@ -159,7 +159,7 @@ RUN cd /usr/local/share \
 
 RUN \
   cd /usr/local/lib/ \
-  && ln -s libjiplib.so.1.0.4 libjiplib.so.1 \
+  && ln -s libjiplib.so.1.0.5 libjiplib.so.1 \
   && ln -s libjiplib.so.1 libjiplib.so \
   && cd /usr/local/share/jeolib-pyjeo* \
   && python3 setup.py install
