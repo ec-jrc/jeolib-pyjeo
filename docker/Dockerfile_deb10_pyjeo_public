@@ -5,7 +5,7 @@ LABEL project="pyjeo" \
       image_name="deb10_pyjeo_public" \
       version="0.1.3" \
       released="2021-06-28" \
-      software_versions="Debian:10 Python:3.7 gdal:2.4.0 pyjeo:1.0.4"\
+      software_versions="Debian:10 Python:3.7 gdal:2.4.0 pyjeo:1.0.5"\
       description="multi-stage build for pyjeo"
       
 ARG NCPU=4
@@ -97,7 +97,7 @@ RUN set -xe \
     && rm jiplib.tar.gz \
     && rm -rf $INSTALL_HOME/jeolib-jiplib*
 
-RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/tags/1.0.4.tar.gz --verbose
+RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/tags/1.0.5.tar.gz --verbose
 
 # - pyjeo
 RUN cd $INSTALL_HOME \
@@ -140,7 +140,7 @@ RUN apt-get update \
 RUN \
   mkdir -p /usr/local/lib/python3.7/dist-packages/jiplib
 
-COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/pyjeo-1.0.4-py3.7.egg /usr/local/lib/python3.7/dist-packages
+COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/pyjeo-1.0.5-py3.7.egg /usr/local/lib/python3.7/dist-packages
 COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/jiplib/__init__.py /usr/local/lib/python3.7/dist-packages/jiplib
 COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/jiplib/_jiplib.so /usr/local/lib/python3.7/dist-packages/jiplib
 COPY --from=pyjeo-dev /usr/local/lib/python3.7/dist-packages/jiplib/jiplib.py /usr/local/lib/python3.7/dist-packages/jiplib
