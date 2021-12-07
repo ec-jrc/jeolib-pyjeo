@@ -11,6 +11,10 @@ pyjeo is released under an
 [GPLv3](http://www.gnu.org/licenses/gpl-3.0.html) license (see
 [COPYING](COPYING))
 
+## Reference
+
+Please refer to pyjeo using this [reference](https://doi.org/10.3390/ijgi8100461).
+
 ## Dependencies
 
 * [miallib](https://github.com/ec-jrc/jeolib-miallib)
@@ -18,6 +22,7 @@ pyjeo is released under an
 
 ## Install
 
+### From source
 Once the dependencies miallib and jiplib are installed, enter the 
 directory of the repository, and run:
 
@@ -32,7 +37,7 @@ To install the package without `sudo` right, you can install it with the
 python setup.py install --user
 ```
 
-## pyjeo in Docker
+### pyjeo in Docker
 
 A [Dockerfile](https://github.com/ec-jrc/jeolib-pyjeo/blob/master/docker/Dockerfile_deb10_pyjeo_public) based on a debian10 image is provided under the docker directory in this repository
 
