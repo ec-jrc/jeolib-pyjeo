@@ -13,7 +13,7 @@ pyjeo is released under an
 
 ## Reference
 
-Please refer to pyjeo using this [reference](https://doi.org/10.3390/ijgi8100461).
+Please refer to pyjeo using this [reference](https://doi.org/10.3390/ijgi8100461): Kempeneers, P.; Pesek, O.; De Marchi, D.; Soille, P. pyjeo: A Python Package for the Analysis of Geospatial Data. ISPRS Int. J. Geo-Inf. 2019, 8, 461. https://doi.org/10.3390/ijgi8100461
 
 ## Dependencies
 
