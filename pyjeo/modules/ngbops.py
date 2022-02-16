@@ -617,7 +617,7 @@ def smoothNoData1d(jim_object,
     """
     kwargs.update({'nodata': nodata})
     if interpolation_type is not None:
-        kwargs.update({'interpolation_type': interpolation_type})
+        kwargs.update({'interp': interpolation_type})
 
     return _pj.Jim(jim_object._jipjim.smoothNoData1d(kwargs))
 
@@ -1585,7 +1585,7 @@ class _NgbOps(_pj.modules.JimModuleBase):
         """
         kwargs.update({'nodata': nodata})
         if interpolation_type is not None:
-            kwargs.update({'interpolation_type': interpolation_type})
+            kwargs.update({'interp': interpolation_type})
 
         self._jim_object._set(self._jim_object._jipjim.smoothNoData1d(kwargs))
 

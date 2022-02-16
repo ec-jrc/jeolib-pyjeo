@@ -1509,12 +1509,12 @@ def warp(jim_object,
     :param jim_object: a Jim object
     :param t_srs: Target spatial reference system
     :param bbox: bounding box (instead of ulx, uly, lrx, lry)
-    :param ulx: Upper left x value of bounding box to crop
-    :param uly: Upper left y value of bounding box to crop
-    :param lrx: Lower right x value of bounding box to crop
-    :param lry: Lower right y value of bounding box to crop
-    :param dx: spatial resolution in x to crop (stride if nogeo is True)
-    :param dy: spatial resolution in y to crop (stride if nogeo is True)
+    :param ulx: Upper left x value of bounding box
+    :param uly: Upper left y value of bounding box
+    :param lrx: Lower right x value of bounding box
+    :param lry: Lower right y value of bounding box
+    :param dx: spatial resolution in x)
+    :param dy: spatial resolution in y)
     :param kwargs: See table below
     :return: Cropped subimage as Jim instance
 
@@ -2760,12 +2760,12 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         :param t_srs: Target spatial reference system
         :param bbox: bounding box (instead of ulx, uly, lrx, lry)
-        :param ulx: Upper left x value of bounding box to crop
-        :param uly: Upper left y value of bounding box to crop
-        :param lrx: Lower right x value of bounding box to crop
-        :param lry: Lower right y value of bounding box to crop
-        :param dx: spatial resolution in x to crop (stride if nogeo is True)
-        :param dy: spatial resolution in y to crop (stride if nogeo is True)
+        :param ulx: Upper left x value of bounding box
+        :param uly: Upper left y value of bounding box
+        :param lrx: Lower right x value of bounding box
+        :param lry: Lower right y value of bounding box
+        :param dx: spatial resolution in x
+        :param dy: spatial resolution in y
         :param kwargs: See table below
 
         +----------+---------------------------------------------------------------------------------------------------+
