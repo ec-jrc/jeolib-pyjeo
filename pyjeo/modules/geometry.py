@@ -64,25 +64,45 @@ def band2plane(jim):
     single band object with 12 planes::
 
         jim2d = pj.Jim('/path/to/multi/band/image.tif')
-        jim2d.properties.nrOfBand()
+
+    Check the dimensions::
+
+        print(jim2d.properties.nrOfBand())
+        print(jim2d.properties.nrOfPlane())
+
+    output::
+
         12
-        jim2d.properties.nrOfPlane()
         1
+
+    Convert the multi-band object to multi-plane object::
+
         jim3d = pj.geometry.band2plane(jim2d)
-        jim3d.properties.nrOfPlane()
-        12
-        jim3d.properties.nrOfBand()
+
+    Check the dimensions::
+
+        print(jim2d.properties.nrOfBand())
+        print(jim2d.properties.nrOfPlane())
+
+    output::
+
         1
+        12
 
     Notice that a multi-band image can also be read directly as
     a multi-plane object::
 
         jim3d = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
-        jim3d.properties.nrOfBand()
-        1
-        jim3d.properties.nrOfPlane()
-        12
 
+    Check the dimensions::
+
+        print(jim3d.properties.nrOfBand())
+        print(jim3d.properties.nrOfPlane())
+
+    output::
+
+        1
+        12
     """
     result = _pj.Jim(jim)
     result.geometry.band2plane()
@@ -889,16 +909,30 @@ def plane2band(jim):
     multi-band object with 1 plane::
 
         jim3d = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
-        jim3d.properties.nrOfBand()
+
+    Check the dimensions::
+
+        print(jim3d.properties.nrOfBand())
+        print(jim3d.properties.nrOfPlane())
+
+    output::
+
         1
-        jim3d.properties.nrOfPlane()
-        12
-        jim2d = pj.geometry.plane2band(jim3d)
-        jim2d.properties.nrOfPlane()
-        1
-        jim2d.properties.nrOfBand()
         12
 
+    Convert the multi-plane object to multi-band object::
+
+        jim2d = pj.geometry.plane2band(jim3d)
+
+    Check the dimensions::
+
+        print(jim2d.properties.nrOfBand())
+        print(jim2d.properties.nrOfPlane())
+
+    output::
+
+        12
+        1
     """
     result = None
     for iplane in range(0, jim.properties.nrOfPlane()):
@@ -1592,25 +1626,45 @@ class _Geometry(_pj.modules.JimModuleBase):
         single band object with 12 planes::
 
            jim = pj.Jim('/path/to/multi/band/image.tif')
-           jim.properties.nrOfBand()
-           12
-           jim.properties.nrOfPlane()
-           1
-           jim.geometry.band2plane()
-           jim.properties.nrOfPlane()
-           12
-           jim.properties.nrOfBand()
-           1
+
+        Check the dimensions::
+
+           print(jim.properties.nrOfBand())
+           print(jim.properties.nrOfPlane())
+
+        output::
+
+            12
+            1
+
+        Convert the multi-band object to multi-plane object::
+
+            jim = pj.geometry.band2plane(jim)
+
+        Check the dimensions::
+
+            print(jim.properties.nrOfBand())
+            print(jim.properties.nrOfPlane())
+
+        output::
+
+            1
+            12
 
         Notice that a multi-band image can also be read directly as
         a multi-plane object::
 
            jim = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
-           jim.properties.nrOfBand()
-           1
-           jim.properties.nrOfPlane()
-           12
 
+        Check the dimensions::
+
+            print(jim.properties.nrOfBand())
+            print(jim.properties.nrOfPlane())
+
+        output::
+
+            1
+            12
         """
         self._jim_object._jipjim.d_band2plane()
 
@@ -2188,16 +2242,31 @@ class _Geometry(_pj.modules.JimModuleBase):
         multi-band object with 1 plane::
 
            jim = pj.Jim('/path/to/multi/band/image.tif', band2plane=True)
-           jim.properties.nrOfBand()
+
+        Check the dimensions::
+
+            print(jim.properties.nrOfBand())
+            print(jim.properties.nrOfPlane())
+
+        output::
+
            1
-           jim.properties.nrOfPlane()
-           12
-           jim.geometry.plane2band()
-           jim.properties.nrOfPlane()
-           1
-           jim.properties.nrOfBand()
            12
 
+        Convert the multi-plane object to multi-band object::
+
+           jim.geometry.plane2band()
+
+
+        Check the dimensions::
+
+            print(jim.properties.nrOfBand())
+            print(jim.properties.nrOfPlane())
+
+        output::
+
+            12
+            1
         """
         result = None
         for iplane in range(0, self._jim_object.properties.nrOfPlane()):

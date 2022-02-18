@@ -230,7 +230,10 @@ class _Stats(_pj.modules.JimModuleBase):
             jim = pj.Jim('/path/to/raster.tif')
             histDict = jim.stats.getStats('histogram', nbnin=10, src_min=0,
                                           src_max=100, nodata=0)
-            histDict
+            print(histDict)
+
+        output::
+
             {'bin': [5.0, 15.0, 25.0, 35.0, 45.0,
                      55.0, 65.0, 75.0, 85.0, 95.0],
             'histogram': [38543.0,
@@ -385,14 +388,22 @@ class _StatsList(_pj.modules.JimListModuleBase):
 
             jim0 = pj.Jim('/path/to/raster0.tif')
             jim1 = pj.Jim('/path/to/raster1.tif')
-            pj.JimList([jim0,jim1]).stats.getStats('regression)
+            theStats = pj.JimList([jim0,jim1]).stats.getStats('regression)
+            print(theStats)
+
+        output:
+
             {'c0': 10.0102, 'c1': 0.633352, 'r2': 0.491198}
 
         Calculate root mean square error between two Jim objects::
 
             jim0 = pj.Jim('/path/to/raster0.tif')
             jim1 = pj.Jim('/path/to/raster1.tif')
-            pj.JimList([jim0, jim1]).stats.getStats('rmse')
+            theStats = pj.JimList([jim0, jim1]).stats.getStats('rmse')
+            print(theStats)
+
+        output:
+
             {'rmse': 10.4638}
 
         """

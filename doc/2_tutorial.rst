@@ -84,12 +84,13 @@ The data model used is a multi-band three dimensional (3D) model. Each band repr
 
 When creating an geospatial image from file (e.g., in GeoTIFF format), the attributes for the geotransform and projection is set automatically and stored in the Jim object. These attributes can be retrieved with the methods in the :py:mod:`properties` module::
 
-
   import pyjeo as pj
 
   jim = pj.Jim('/path/to/raster.tif')
-  jim.properties.getBBox()
+  print(jim.properties.getBBox())
   
+output::
+
   [399960.0, 5100000.0, 405080.0, 5094880.0]
 
 
@@ -142,7 +143,8 @@ In the following example, a large geographical extent is covered by a virtual ra
   vect = pj.JimVect(wkt=wkt_string)
   jim = pj.Jim(worldvrt, bbox = vect.properties.getBBox(), t_srs = vect.properties.getProjection())
 
-   .. note::
+.. note::
+
       Although the bounding box (`bbox`) is defined in a different target spatial reference (`t_srs`), the Jim object is not re-projected (see also :ref:`create_Jim_from_file`).
 
 .. _image_tiling:
@@ -249,7 +251,8 @@ When copying a JimVect object using the :ref:`copy constructor <JimVect_copy_con
 
   v_copy = pj.JimVect(v_original, output = '/tmp/test.sqlite')
 
-   .. note::
+.. note::
+
       Specifying a filename with the prefix */vsimem/* creates a JimVect in memory
 
 Creating a copy of a JimVect in memory::
@@ -281,6 +284,8 @@ Export the vector to a dictionary and print the first values of the keys 'gml-id
 
   print(v.dict()['gml_id'][0])
   print(v.dict()['maskType'][0])
+
+output::
 
   OPAQUE.0
   OPAQUE
@@ -336,7 +341,8 @@ Other pre-defined compositing rules then 'median' are: 'mean', 'min', and 'max'.
 
   jim.geometry.reducePlane(getMaxNDVI)
 
-   .. note::
+.. note::
+      
       The order of the arguments in the call-back function do matter. The call-back function is executed iteratively. The first argument correspond to the current composite image, whereas the second argument correspond to the image to validated for that iteration.
 
 More complex call-back functions can be created, for instance to include cloud masking.
@@ -357,6 +363,7 @@ example::
 
   import pandas as pd
   import pyjeo as pj
+  from pathlib import Path
 
   datadir = Path.home() / 'pyjeo/tests/data'
   vectorfn = datadir / 'modis_ndvi_training.sqlite'
@@ -368,20 +375,23 @@ example::
 
   print(pd.DataFrame(v.dict()))
 
-     b0
-  0  0.000000
-  1  0.000000
-  2  0.000000
-  3  0.000000
-  4  0.000000
-  5  43.142857
-  6  37.181818
-  7  0.022727
-  8  4.375000
-  9  54.500000
-  10 12.637255
+output::
 
-   .. note::
+      label         b0
+  0       1   0.000000
+  1       1   0.000000
+  2       1   0.000000
+  3       1   0.000000
+  4       1   0.000000
+  5       2  43.142857
+  6       2  37.181818
+  7       2   0.022727
+  8       2   4.375000
+  9       2  54.500000
+  10      2  12.637255
+
+.. note::
+
       The field name corresponding to the bands can be set with the list parameter *bandname*.
 
 In case a list of extract rules is provided for the regional statistics, the field names of the features will be prefixed with the rule::
@@ -391,18 +401,20 @@ In case a list of extract rules is provided for the regional statistics, the fie
 
   print(pd.DataFrame(v.dict()))
 
-     meanb0     stdevb0
-  0	 0.000000	  0.000000
-  1	 0.000000	  0.000000
-  2	 0.000000	  0.000000
-  3	 0.000000	  0.000000
-  4	 0.000000	  0.000000
-  5	 43.142857  3.324898
-  6	 37.181818  4.283260
-  7	 0.022727	  0.150756
-  8	 4.375000   4.967831
-  9	 54.500000  4.086563
-  10 12.637255  7.460509
+output::
+
+  	meanb0		stdevb0
+  0	0.000000	0.000000
+  1	0.000000	0.000000
+  2	0.000000	0.000000
+  3	0.000000	0.000000
+  4	0.000000	0.000000
+  5	43.142857	3.324898
+  6	37.181818	4.283260
+  7	0.022727	0.150756
+  8	4.375000	4.967831
+  9	54.500000	4.086563
+  10	12.637255	7.460509
 
 =============================================================
 Regional statistics of a multi-band, single plane Jim object
@@ -416,18 +428,20 @@ For a multi-band Jim object::
 
   print(pd.DataFrame(v.dict()))
 
-     b0         b1
-  0	 0.000000	  0.014925
-  1	 0.000000	  0.000000
-  2	 0.000000	  2.555556
-  3	 0.000000	  0.000000
-  4	 0.000000	  0.000000
-  5	 43.142857  38.642857
-  6	 37.181818  36.090909
-  7	 0.022727	  0.000000
-  8	 4.375000   7.625000
-  9	 54.500000  37.833333
-  10 12.637255  20.774510
+output::
+
+	b0		b1
+  0	0.000000	0.014925
+  1	0.000000	0.000000
+  2	0.000000	2.555556
+  3	0.000000	0.000000
+  4	0.000000	0.000000
+  5	43.142857	38.642857
+  6	37.181818	36.090909
+  7	0.022727	0.000000
+  8	4.375000	7.625000
+  9	54.500000	37.833333
+  10	12.637255	20.774510
 
 The fields will contain the mean value for each feature for the respective bands (b0 and b1). For a list of extract rules, the rules are prefixed to the field names for each of the bands::
 
@@ -436,6 +450,8 @@ The fields will contain the mean value for each feature for the respective bands
                           output='/vsimem/pj.json', oformat='GeoJSON')
 
   print(pd.DataFrame(v.dict()))
+
+output::
 
      meanb0     meanb1   stdevb0   stdevb1
   0  0.000000   0.014925  0.000000  0.122169
@@ -462,6 +478,8 @@ In the case of 3D Jim objects with multiple planes, the field names will be pref
 
   print(pd.DataFrame(v.dict()))
 
+output::
+
      t0b0       t0b1       t1b0       t1b1
   0  0.000000   0.014925   0.000000   0.000000
   1  0.000000   0.000000   0.125000   0.000000
@@ -475,7 +493,8 @@ In the case of 3D Jim objects with multiple planes, the field names will be pref
   9  54.500000  37.833333  44.166667  63.000000
   10 12.637255  20.774510  21.323529  17.215686
 
-   .. note::
+.. note::
+      
       The field name corresponding to the planes can be set with the list parameter *planename*.
 
 ===========================
@@ -487,6 +506,8 @@ Regional statistics can be biased due to outliers in the dataset. In optical rem
   v = pj.geometry.extract(sample, jim, rule='mean', srcnodata = 0,
                           output='/vsimem/pj.json', oformat='GeoJSON')
   print(pd.DataFrame(v.dict()))
+
+output::
 
      t0b0       t0b1       t1b0       t1b1
   0  43.142857  38.642857  46.000000  54.857143
@@ -503,6 +524,8 @@ The first 5 features will be ignored, as they have a 0 value for all pixels in t
                           output='/vsimem/pj.json', oformat='GeoJSON')
 
   print(pd.DataFrame(v.dict()))
+
+output::
 
      meant0b0   meant0b1   meant1b0   meant1b1  stdevt0b0  stdevt0b1  stdevt1b0  stdevt1b1
   0  43.142857  38.642857  46.000000  54.857143   3.324898   2.762584   2.572039   5.613954
@@ -526,6 +549,8 @@ To calculate the regional mean and standard deviation for the 3D Jim object with
 
   print(pd.DataFrame(v.dict()))
 
+output::
+
      meant0b0   meant0b1   meant1b0   meant1b1  stdevt0b0  stdevt0b1  stdevt1b0  stdevt1b1
   0  41.666667  38.000000  46.666667  55.333333   3.055050   4.358899   1.527525   4.725816
   1  36.500000  35.500000  42.500000  54.333333   5.890671   6.595453   2.810694   4.501851
@@ -540,6 +565,8 @@ Likewise, applying a positive buffer of 500 m to include pixels near the border:
                           output='/vsimem/pj.json', oformat='GeoJSON')
 
   print(pd.DataFrame(v.dict()))
+
+output::
 
      meant0b0   meant0b1   meant1b0   meant1b1  stdevt0b0  stdevt0b1  stdevt1b0  stdevt1b1
   0  18.000000  13.000000  10.000000  17.000000   3.927922   2.836833   4.140968   3.709704
@@ -560,6 +587,8 @@ To extract all individual pixels within a polygon, set the *rule* parameter to '
 
   print(pd.DataFrame(v.dict())
   
+output::
+
       t0b0  t0b1  t1b0  t1b1
   0     1.0   0.0   0.0   0.0
   1    41.0  41.0  42.0  45.0
@@ -576,7 +605,8 @@ To extract all individual pixels within a polygon, set the *rule* parameter to '
 
   [139 rows x 4 columns]
 
-   .. note::
+.. note::
+
       Selecting all pixels can result in a very large dataset when there are many large polygons...
 
 =============================================
@@ -604,6 +634,8 @@ As an example, a stratified sample will be selected for the [2, 12, 25, 41, 50] 
                           bandname=['band1', 'band2'])
 
   print(pd.DataFrame(v.dict()))
+
+output::
 
     label  time0band1  time0band2  time2band1  time2band2
   0      2        35.0        34.0        36.0        42.0
@@ -644,7 +676,8 @@ Perform a Gaussian filter in 1D using a standard deviation (sigma) of 2::
   jim = pj.Jim('/path/to/multi-band-image.tif', band2plane = True)
   jim.np()[:] = ndimage.gaussian_filter1d(jim.np(), 2, axis = 0)
 
-   .. note::
+.. note::
+
       Planes of a 3D Jim image are located in the first dimension (axis = 0)
 
 =========================================
@@ -740,6 +773,8 @@ Use the unseen test set to perform an accuracy assessment::
   y_predict = rfModel.predict(x_test)
   print(confusion_matrix(y_test, y_predict))
   print('accuracy score: {}'.format(accuracy_score(y_test, y_predict)))
+
+output::
 
   [[29  8  2  6  0]
   [ 2 14  2  5  2]
@@ -1029,7 +1064,7 @@ The following HTCondor script can be used to submit all jobs for the respective 
   transfer_input_files = dem.py
   should_transfer_files   = YES
   when_to_transfer_output = ON_EXIT
-  Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb10_pyjeo:0.5.31
+  Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb11_pyjeo:0.0.1
   request_cpus = 1
   batch_name = dem_training
   Priority = 1001
