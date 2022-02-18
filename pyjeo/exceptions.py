@@ -3,7 +3,7 @@
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu
 #
-# Copyright (C) 2018-2020 European Union (Joint Research Centre)
+# Copyright (C) 2018-2022 European Union (Joint Research Centre)
 #
 # This file is part of pyjeo.
 #
