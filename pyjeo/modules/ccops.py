@@ -332,15 +332,56 @@ def getRegionalMinima(jim,
 
 def label(jim,
           ngb):
-    """Label each non-zero connected component with a unique label.
+    """Label each connected component (non zero values) with a unique integer value using graph-connectivity.
 
-    Label using graph-connectivity.
+    The labels start from value 2.
 
-    :param jim: a Jim object holding a binary image
-    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4)
-    :return: labeled Jim object
+    :param jim: a Jim object holding a binary image,
+        data must be of unsigned integer type.
+    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4) (horizontally and vertically connected) or pj.Jim(graph=8) (horizontally, vertically, and diagonally connected)
+    :return: labeled Jim object with unique integer values (starting from value 2) for each connected component.
+
+    Example:
+
+    Label horizontally and vertically connected pixels in 2-D image with unique labels::
+
+        jim = pj.Jim(ncol = 5, nrow = 5, otype = 'GDT_UInt16', uniform = [0,2])
+        labeled = pj.ccops.label(jim, pj.Jim(graph=4))
+
+    .. image:: figures/ccops_label.png
+       :width: 65 %
+
+    Left: binary input image
+
+    Right: labeled output image with unique integer values for connected components (here represented by different colors)
+
+    Label horizontally and vertically connected pixels in 3-D image with unique labels::
+
+        jim = pj.Jim(ncol = 3, nrow = 3, nplane = 3, otype = 'GDT_Byte', uniform = [0,2])
+        labeled = pj.ccops.label(jim, pj.Jim(graph=6))
+
+    binary input 3-D image:
+
+    .. image:: figures/ccops_label_3d_input.png
+       :width: 65 %
+
+
+    labeled output image with unique integer values for connected components (here represented by different gray scales):
+
+    .. image:: figures/ccops_label_3d_labeled.png
+       :width: 65 %
+
+
     """
-    return _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, 0))
+
+    dim = 0
+    if jim.properties.nrOfPlane() > 1:
+        dim = 1;
+    jim.geometry.imageFrameAdd(1, 1, 1, 1, dim, dim, 0)
+    ret_jim = _pj.Jim(jim._jipjim.labelBinary(ngb._jipjim, 1, 1, dim))
+    jim.geometry.imageFrameSubtract(1, 1, 1, 1, dim, dim)
+    ret_jim.geometry.imageFrameSubtract(1, 1, 1, 1, dim, dim)
+    return ret_jim
 
 
 def labelConstrainedCCs(jim,
@@ -1213,7 +1254,9 @@ class _CCOps(_pj.modules.JimModuleBase):
         :param ngb: Jim object for neighbourhood, e.g.,
             create with pj.Jim(graph=4)
         """
+        self._jim_object.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, 0)
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
+        self._jim_object.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
 
     def labelConstrainedCCs(self,
                             local_range: int,

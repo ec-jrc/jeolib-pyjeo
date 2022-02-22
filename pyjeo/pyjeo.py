@@ -140,7 +140,7 @@ class _ParentJim(_jl.Jim):
                     super(_ParentJim, self).__init__(kwargs)
             elif 'graph' in kwargs:
                 graph = kwargs.pop('graph')
-                _check_graph(graph, [4, 8])
+                _check_graph(graph, [4, 6, 8, 26])
 
                 if graph == 4:
                     ngb = Jim(ncol=3, nrow=3, otype='Byte')
@@ -148,10 +148,22 @@ class _ParentJim(_jl.Jim):
                     ngb[1, 0] = 1
                     ngb[1, 2] = 1
                     ngb[2, 1] = 1
-                else:
+                elif graph == 8:
                     ngb = Jim(ncol=3, nrow=3, otype='Byte')
                     ngb.pixops.setData(1)
                     ngb[1, 1] = 0
+                if graph == 6:
+                    ngb = Jim(ncol=3, nrow=3, nplane = 3, otype='Byte')
+                    ngb[1, 0, 1] = 1
+                    ngb[1, 2, 1] = 1
+                    ngb[0, 1, 1] = 1
+                    ngb[2, 1, 1] = 1
+                    ngb[1, 1, 0] = 1
+                    ngb[1, 1, 2] = 1
+                elif graph == 26:
+                    ngb = Jim(ncol=3, nrow=3, nplane = 3, otype='Byte')
+                    ngb.pixops.setData(1)
+                    ngb[1, 1, 1] = 0
 
                 super(_ParentJim, self).__init__(ngb._jipjim)
             else:
