@@ -338,7 +338,12 @@ def label(jim,
 
     :param jim: a Jim object holding a binary image,
         data must be of unsigned integer type.
-    :param ngb: Jim object for neighbourhood, e.g., create with pj.Jim(graph=4) (horizontally and vertically connected) or pj.Jim(graph=8) (horizontally, vertically, and diagonally connected)
+    :param ngb: Jim object for neighbourhood, e.g., create with:
+
+         - pj.Jim(graph=4): horizontally and vertically connected in 2-D
+         - pj.Jim(graph=6): horizontally and vertically connected in 3-D
+         - pj.Jim(graph=8): horizontally, vertically, and diagonally connected in 2-D
+         - pj.Jim(graph=26): horizontally, vertically, and diagonally connected in 3-D
     :return: labeled Jim object with unique integer values (starting from value 2) for each connected component.
 
     Example:
