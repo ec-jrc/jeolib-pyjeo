@@ -60,6 +60,9 @@ def band2plane(jim):
 
     The result will be a single band multi-plane object
 
+    .. image:: figures/band2plane.png
+        :width: 85 %
+
     Example: convert a multi-band object with 12 bands to a 3-dimensional
     single band object with 12 planes::
 
@@ -905,6 +908,9 @@ def plane2band(jim):
 
     The result will be a multi-band single plane object
 
+    .. image:: figures/band2plane.png
+        :width: 85 %
+
     Example: convert a single band object with 12 planes to a 2-dimensional
     multi-band object with 1 plane::
 
@@ -1622,6 +1628,9 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         The result will be a single band multi-plane object
 
+        .. image:: figures/band2plane.png
+            :width: 85 %
+
         Example: convert a multi-band object with 12 bands to a 3-dimensional
         single band object with 12 planes::
 
@@ -2237,6 +2246,9 @@ class _Geometry(_pj.modules.JimModuleBase):
         """Convert 3-dimensional 1-band Jim to a 2-dimensional multi-band one.
 
         The result will be a multi-band single plane object
+
+        .. image:: figures/band2plane.png
+            :width: 85 %
 
         Example: convert a single band object with 12 planes to a 2-dimensional
         multi-band object with 1 plane::

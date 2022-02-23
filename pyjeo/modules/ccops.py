@@ -353,12 +353,15 @@ def label(jim,
         jim = pj.Jim(ncol = 5, nrow = 5, otype = 'GDT_UInt16', uniform = [0,2])
         labeled = pj.ccops.label(jim, pj.Jim(graph=4))
 
-    .. image:: figures/ccops_label.png
+    binary input image:
+
+    .. image:: figures/ccops_label2d_input.png
        :width: 65 %
 
-    Left: binary input image
+    labeled output image with unique integer values for connected components (here represented by different gray scales):
 
-    Right: labeled output image with unique integer values for connected components (here represented by different colors)
+    .. image:: figures/ccops_label2d_output.png
+       :width: 65 %
 
     Label horizontally and vertically connected pixels in 3-D image with unique labels::
 
@@ -367,13 +370,13 @@ def label(jim,
 
     binary input 3-D image:
 
-    .. image:: figures/ccops_label_3d_input.png
+    .. image:: figures/ccops_label3d_input.png
        :width: 65 %
 
 
     labeled output image with unique integer values for connected components (here represented by different gray scales):
 
-    .. image:: figures/ccops_label_3d_labeled.png
+    .. image:: figures/ccops_label3d_output.png
        :width: 65 %
 
 
@@ -656,10 +659,35 @@ def labelsSet(label_jim,
 
 
 def labelsSetArea(jim):
-    """Set labels to regions based on Tessel surface.
+    """Set area to regions based on Tessel surface.
 
-    :param jim: Jim object with labels
-    :return: a Jim object with set region labels
+    :param jim: Jim object with labels (data must be of unsigned integer type)
+    :return: a Jim object with area set to region labels
+
+    Example:
+
+    Label horizontally and vertically connected pixels in 2-D image with unique labels and set area::
+
+        jim = pj.Jim(ncol = 5, nrow = 5, otype = 'GDT_UInt16', uniform = [0,2])
+        labeled = pj.ccops.label(jim, pj.Jim(graph=4))
+        area = pj.ccops.labelsSetArea(labeled)
+
+    binary input image:
+
+    .. image:: figures/ccops_label2d_input.png
+       :width: 65 %
+
+    labeled output image with unique integer values for connected components (here represented by different gray scales):
+
+    .. image:: figures/ccops_label2d_output.png
+       :width: 65 %
+
+    output image with area for connected components:
+
+    .. image:: figures/ccops_labelsSetArea2d_output.png
+       :width: 80 %
+
+
     """
     return _pj.Jim(jim._jipjim.labelsSet())
 
@@ -1250,15 +1278,52 @@ class _CCOps(_pj.modules.JimModuleBase):
 
     def label(self,
               ngb):
-        """Label each non-zero connected component with a unique label.
+        """Label each connected component (non zero values) with a unique integer value using graph-connectivity.
 
-        Uses graph-connectivity
-
+        The labels start from value 2.
         Modifies the instance on which the method was called.
 
-        :param ngb: Jim object for neighbourhood, e.g.,
-            create with pj.Jim(graph=4)
+        :param ngb: Jim object for neighbourhood, e.g., create with:
+
+            - pj.Jim(graph=4): horizontally and vertically connected in 2-D
+            - pj.Jim(graph=6): horizontally and vertically connected in 3-D
+            - pj.Jim(graph=8): horizontally, vertically, and diagonally connected in 2-D
+            - pj.Jim(graph=26): horizontally, vertically, and diagonally connected in 3-D
+
+        Example:
+
+        Label horizontally and vertically connected pixels in 2-D image with unique labels::
+
+            jim = pj.Jim(ncol = 5, nrow = 5, otype = 'GDT_UInt16', uniform = [0,2])
+            jim.ccops.label(pj.Jim(graph=4))
+
+        binary input image:
+
+        .. image:: figures/ccops_label2d_input.png
+           :width: 65 %
+
+        labeled output image with unique integer values for connected components (here represented by different gray scales):
+
+        .. image:: figures/ccops_label2d_output.png
+           :width: 65 %
+
+        Label horizontally and vertically connected pixels in 3-D image with unique labels::
+
+            jim = pj.Jim(ncol = 3, nrow = 3, nplane = 3, otype = 'GDT_Byte', uniform = [0,2])
+            jim.ccops.label(pj.Jim(graph=6))
+
+        binary input 3-D image:
+
+        .. image:: figures/ccops_label3d_input.png
+           :width: 65 %
+
+
+        labeled output image with unique integer values for connected components (here represented by different gray scales):
+
+        .. image:: figures/ccops_label3d_output.png
+           :width: 65 %
         """
+
         self._jim_object.geometry.imageFrameAdd(1, 1, 1, 1, 0, 0, 0)
         self._jim_object._jipjim.d_labelBinary(ngb._jipjim, 1, 1, 0)
         self._jim_object.geometry.imageFrameSubtract(1, 1, 1, 1, 0, 0)
@@ -1468,7 +1533,33 @@ class _CCOps(_pj.modules.JimModuleBase):
         self._jim_object._jipjim.d_labelsSet(ival_jim, indic)
 
     def labelsSetArea(self):
-        """Set labels to regions based on Tessel surface."""
+        """Set area to regions based on Tessel surface.
+
+        Example:
+
+        Label horizontally and vertically connected pixels in 2-D image with unique labels and set area::
+
+            jim = pj.Jim(ncol = 5, nrow = 5, otype = 'GDT_UInt16', uniform = [0,2])
+            jim.ccops.label(pj.Jim(graph=4))
+            jim.ccops.labelsSetArea()
+
+        binary input image:
+
+        .. image:: figures/ccops_label2d_input.png
+           :width: 65 %
+
+        labeled output image with unique integer values for connected components (here represented by different gray scales):
+
+        .. image:: figures/ccops_label2d_output.png
+           :width: 65 %
+
+        output image with area for connected components:
+
+        .. image:: figures/ccops_labelsSetArea2d_output.png
+           :width: 80 %
+
+        """
+
         self._jim_object._jipjim.d_labelsSetArea()
 
     def labelsSetGraph(self,
