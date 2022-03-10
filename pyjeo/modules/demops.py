@@ -205,6 +205,22 @@ def flowNew(jim_object,
     return _pj.Jim(jim_object._jipjim.demFlowNew(drain_image._jipjim, graph))
 
 
+def hillShade(jim_object,
+              sza_image,
+              saa_image):
+    """Compute the hillshade of the digital elevation model baseed on Sun angles.
+
+    :param jim_object: a Jim object containing the digital elevation model
+    :param sza_image: a Jim object containing the Sun zenith angle per pixel
+                      data type must be identical to saa_image
+    :param saa_image: a Jim object containing the Sun azimuth angle per pixel
+                      data type must be identical to sza_image
+    :return: a binary Jim object with the hillshade (of type GDT_Byte)
+    """
+
+    return _pj.Jim(jim_object._jipjim.hillShade(sza_image._jipjim, saa_image._jipjim))
+
+
 def pitRemovalCarve(labeled_jim,
                     grey_jim,
                     graph: int,
@@ -592,6 +608,24 @@ class _DEMOps(_pj.modules.JimModuleBase):
         self._jim_object._set(
             self._jim_object._jipjim.demFlowNew(drain_image._jipjim,
                                                 graph))
+
+    def hillShade(self,
+                  sza_image,
+                  saa_image):
+        """Compute the hillshade of the digital elevation model baseed on Sun angles.
+
+        :param jim_object: a Jim object containing the digital elevation model
+        :param sza_image: a Jim object containing the Sun zenith angle per pixel
+                        data type must be identical to saa_image
+        :param saa_image: a Jim object containing the Sun azimuth angle per pixel
+                        data type must be identical to sza_image
+
+        Modifies the instance on which the method was called.
+        """
+
+        self._jim_object._set(
+            self._jim_object._jipjim.hillShade(sza_image._jipjim, saa_image._jipjim))
+
 
     def pitRemovalCarve(self,
                         grey_jim,

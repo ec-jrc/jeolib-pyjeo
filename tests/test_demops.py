@@ -121,6 +121,25 @@ class BadDEMOps(unittest.TestCase):
         # # TODO: Uncomment after bug in jiplib fixed
 
     @staticmethod
+    def test_hillShade():
+        """Test hillShade functions and methods."""
+        dem = pj.Jim(ncol= 50, nrow = 50, otype = 'GDT_Byte')
+        dem[24:25,24:25] = 100
+        sza = pj.Jim(ncol= 50, nrow = 50, otype = 'GDT_Byte')
+        sza.pixops.setData(20)
+        saa = pj.Jim(ncol= 50, nrow = 50, otype = 'GDT_Byte')
+        saa.pixops.setData(180)
+        hs = pj.demops.hillShade(dem, sza, saa)
+
+        assert hs[24,24] == 0, \
+            'Error in demops.hillShade(), max elevation should not be shaded'
+        assert hs[23,24] == 0, \
+            'Error in demops.hillShade(), north of max elevation should be shaded'
+        dem.demops.hillShade(sza, saa)
+        assert dem.properties.isEqual(hs), \
+            'Error in demops.hillShade(), function not equal to method'
+
+    @staticmethod
     def test_drainage_areas():
         """Test drainage area functions and methods."""
         jim = pj.Jim(tiles[0])
