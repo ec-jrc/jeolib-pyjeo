@@ -1806,6 +1806,18 @@ def xr2jim(xr_object) -> Jim:
             gt.append(-dy)
             jim.properties.setGeoTransform(gt)
         else:
+            if jim.properties.nrOfPlane() > 1:
+                assert xr_object[b].values.shape[0] == jim.properties.nrOfPlane() ,\
+                    str("Error: number of planes is not consistent: {} != {}".format(xr_object[b].values.shape[0], jim.properties.nrOfPlane()))
+                assert xr_object[b].values.shape[1] == jim.properties.nrOfRow() ,\
+                    str("Error: number of rows is not consistent: {} != {}".format(xr_object[b].values.shape[1], jim.properties.nrOfRow()))
+                assert xr_object[b].values.shape[2] == jim.properties.nrOfCol() ,\
+                    str("Error: number of cols is not consistent: {} != {}".format(xr_object[b].values.shape[2], jim.properties.nrOfCol()))
+            else:
+                assert xr_object[b].values.shape[0] == jim.properties.nrOfRow() ,\
+                    str("Error: number of rows is not consistent: {} != {}".format(xr_object[b].values.shape[0], jim.properties.nrOfRow()))
+                assert xr_object[b].values.shape[1] == jim.properties.nrOfCol() ,\
+                    str("Error: number of cols is not consistent: {} != {}".format(xr_object[b].values.shape[1], jim.properties.nrOfCol()))
             jim.geometry.stackBand(np2jim(xr_object[b].values))
     if projection is not None:
         jim.properties.setProjection(projection)
