@@ -378,11 +378,15 @@ class Jim:
 
         # xarray coordinates are pixel centered
         x = _np.arange(bbox[0]+self.properties.getDeltaX()/2,
-                        bbox[2]+self.properties.getDeltaX()/2,
-                        self.properties.getDeltaX())
-        y = _np.arange(bbox[1]-self.properties.getDeltaY()/2,
-                        bbox[3]-self.properties.getDeltaY()/2,
-                        -self.properties.getDeltaY())
+                       bbox[2]+self.properties.getDeltaX()/2,
+                       self.properties.getDeltaX())
+        #due to rounding x might overflow
+        x = x[0:self.properties.nrOfCol()]
+        y = np.arange(bbox[1]-self.properties.getDeltaY()/2,
+                      bbox[3]-self.properties.getDeltaY()/2,
+                      -self.properties.getDeltaY())
+        #due to rounding y might overflow
+        y = y[0:self.properties.nrOfRow()]
 
 
         # Build a xarray Dataset reference (without memory copy)
