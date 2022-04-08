@@ -160,6 +160,7 @@ def NDVISeparateBands(jim_red,
 
 def setData(jim,
             value: float,
+            bbox: list = None,
             ulx: float = None,
             uly: float = None,
             lrx: float = None,
@@ -172,6 +173,7 @@ def setData(jim,
 
     :param jim: a Jim object
     :param value: new value for pixels of Jim object
+    :param bbox: bounding box (instead of ulx, uly, lrx, lry)
     :param ulx: upper left corner x coordinate (in projected coordinates
         if geo is True, else in image coordinates)
     :param uly: upper left corner y coordinate (in projected coordinates
@@ -189,10 +191,7 @@ def setData(jim,
     """
     jout = _pj.Jim(jim)
 
-    if bands is None:
-        bands = range(jim.properties.nrOfBand())
-
-    jout.pixops.setData(value, ulx, uly, lrx, lry, bands, dx, dy, nogeo)
+    jout.pixops.setData(value, bbox, ulx, uly, lrx, lry, bands, dx, dy, nogeo)
     return jout
 
 
@@ -478,6 +477,7 @@ class _PixOps(_pj.modules.JimModuleBase):
 
     def setData(self,
                 value: float,
+                bbox: list = None,
                 ulx: float = None,
                 uly: float = None,
                 lrx: float = None,
@@ -489,6 +489,7 @@ class _PixOps(_pj.modules.JimModuleBase):
         """Set range of pixels to value.
 
         :param value: new value for pixels of Jim object
+        :param bbox: bounding box (instead of ulx, uly, lrx, lry)
         :param ulx: upper left corner x coordinate (in projected coordinates
             if geo is True, else in image coordinates)
         :param uly: upper left corner y coordinate (in projected coordinates
@@ -504,25 +505,68 @@ class _PixOps(_pj.modules.JimModuleBase):
             if True
         :return: a Jim object
         """
+
+        if bbox is not None:
+            ulx = bbox[0]
+            uly = bbox[1]
+            lrx = bbox[2]
+            lry = bbox[3]
         if bands is None:
-            bands = range(self._jim_object.properties.nrOfBand())
+            bands = list(range(self._jim_object.properties.nrOfBand()))
+        elif not isinstance(bands,list):
+            bands=[bands]
 
         if all(v is None for v in [ulx, uly, lrx, lry]) and dx == 0 and \
                 dy == 0 and not nogeo:
             for band in bands:
                 self._jim_object._jipjim.setData(value, band)
         else:
-            if ulx is None:
-                ulx = self._jim_object.properties.getUlx()
-            if uly is None:
-                uly = self._jim_object.properties.getUly()
-            if lrx is None:
-                lrx = self._jim_object.properties.getLrx()
-            if lry is None:
-                lry = self._jim_object.properties.getLry()
-            for band in bands:
-                self._jim_object._jipjim.setData(value, ulx, uly, lrx, lry,
-                                                 band, dx, dy, nogeo)
+            if nogeo:
+                if ulx is None:
+                    ulx = 0
+                if uly is None:
+                    uly = 0
+                if lrx is None:
+                    lrx = self._jim_object.properties.nrOfCol()
+                if lry is None:
+                    lry = self._jim_object.properties.nrOfRow()
+                uli = ulx
+                ulj = uly
+                lri = lrx
+                lrj = lry
+            else:
+                if ulx is None:
+                    ulx = self._jim_object.properties.getUlx()
+                if uly is None:
+                    uly = self._jim_object.properties.getUly()
+                if lrx is None:
+                    lrx = self._jim_object.properties.getLrx()
+                if lry is None:
+                    lry = self._jim_object.properties.getLry()
+                upperLeftImage = self._jim_object.geometry.geo2image(ulx, uly)
+                uli = upperLeftImage[0]
+                ulj = upperLeftImage[1]
+                lowerRightImage = self._jim_object.geometry.geo2image(lrx, lry)
+                lri = lowerRightImage[0]
+                lrj = lowerRightImage[1]
+            if lri < 0 or lrj < 0:
+                return None
+            overlapColFrom = max(0, uli)
+            overlapColTo = min(lri, self._jim_object.properties.nrOfCol())
+            overlapRowFrom = max(0, ulj)
+            overlapRowTo = min(lrj, self._jim_object.properties.nrOfRow())
+            strideX = 1
+            if dx > self._jim_object.properties.getDeltaX():
+                strideX = int(dx // self._jim_object.properties.getDeltaX())
+                assert strideX == dx / self._jim_object.properties.getDeltaX()
+            strideY = 1
+            if dy > self._jim_object.properties.getDeltaY():
+                strideY = int(dy // self._jim_object.properties.getDeltaY())
+                assert strideY == dy / self._jim_object.properties.getDeltaY()
+            if self._jim_object.properties.nrOfPlane() > 1:
+                self._jim_object[:, overlapRowFrom:overlapRowTo:strideY, overlapColFrom:overlapColTo:strideX] = value
+            else:
+                self._jim_object[overlapRowFrom:overlapRowTo:strideY, overlapColFrom:overlapColTo:strideX] = value
 
     def setLevel(self,
                  min: float,

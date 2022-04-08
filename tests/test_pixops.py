@@ -222,7 +222,7 @@ class BadPixOps(unittest.TestCase):
         assert levelled_stats['min'] == min, \
             'Error in pixops.setLevel() (min value changed)'
         assert levelled_stats['max'] == max + 1, \
-            'Error in pixops.setLevel() (value not setted)'
+            'Error in pixops.setLevel() (value not set)'
 
         fives = pj.pixops.setData(jim, 5, bands=[0, 1])
         jim.pixops.setData(5, bands=[0, 1])
@@ -245,7 +245,8 @@ class BadPixOps(unittest.TestCase):
                                     stats['mean']]),\
             'Error in pixops.setData() or stats.getStats(band=0)'
 
-        jim.pixops.setData(10, dx=jim.properties.getDeltaX()+0.1, bands=[0, 1])
+        jim.pixops.setData(10, dx=jim.properties.getDeltaX()+500, bands=[0, 1])
+        jim.pixops.setData(10, dx=jim.properties.getDeltaX(), bands=[0, 1])
 
         stats = jim.stats.getStats(band=0)
 
