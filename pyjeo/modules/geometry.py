@@ -197,7 +197,7 @@ def crop(jim_object,
     :param dy: spatial resolution in y to crop (stride if nogeo is True)
     :param nogeo: use image coordinates if True, default is spatial reference
         system coordinates
-    :return: Cropped subimage as Jim instance
+    :return: Cropped image as Jim instance
 
     see :py:meth:`~_Geometry.crop` for an example how to use this function
     """
@@ -309,7 +309,7 @@ def cropBand(jim_object,
 
     :param jim_object: a Jim object
     :param band: List of band indices to crop (index is 0 based)
-    :return: Cropped subimage as Jim instance
+    :return: Cropped image as Jim instance
 
     Example:
 
@@ -388,7 +388,7 @@ def cropPlane(jim_object,
 
     :param jim_object: a Jim object
     :param plane: List of plane indices to crop (index is 0 based)
-    :return: Cropped subimage as Jim instance
+    :return: Cropped image as Jim instance
 
     Example:
 
@@ -1556,7 +1556,7 @@ def warp(jim_object,
     :param dx: spatial resolution in x)
     :param dy: spatial resolution in y)
     :param kwargs: See table below
-    :return: Cropped subimage as Jim instance
+    :return: warped image as Jim instance
 
 
     +----------+---------------------------------------------------------------------------------------------------+
