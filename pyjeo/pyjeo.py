@@ -382,9 +382,9 @@ class Jim:
                        self.properties.getDeltaX())
         #due to rounding x might overflow
         x = x[0:self.properties.nrOfCol()]
-        y = np.arange(bbox[1]-self.properties.getDeltaY()/2,
-                      bbox[3]-self.properties.getDeltaY()/2,
-                      -self.properties.getDeltaY())
+        y = _np.arange(bbox[1]-self.properties.getDeltaY()/2,
+                       bbox[3]-self.properties.getDeltaY()/2,
+                       -self.properties.getDeltaY())
         #due to rounding y might overflow
         y = y[0:self.properties.nrOfRow()]
 
@@ -558,10 +558,10 @@ class Jim:
                                 cropuli = item[dim-1].start
                             if item[dim-1].step:
                                 dx *= item[dim-1].step
-                            # croplri=item[dim-1].stop
                         else:
                             cropuli = item[dim-1]
-                            # croplri=item[dim-1]+1
+                        if cropuli < 0:
+                            cropuli += self.properties.nrOfCol()
                     # rows
                     if len(item) > dim-2:
                         if isinstance(item[dim-2], slice):
@@ -569,10 +569,10 @@ class Jim:
                                 cropulj = item[dim-2].start
                             if item[dim-2].step:
                                 dy *= item[dim-2].step
-                            # croplrj=item[dim-2].stop
                         else:
                             cropulj = item[dim-2]
-                            # croplrj=item[dim-2]+1
+                        if cropulj < 0:
+                            cropulj += self.properties.nrOfRow()
 
                 ul = self.geometry.image2geo(cropuli, cropulj)
                 if band == 0:
