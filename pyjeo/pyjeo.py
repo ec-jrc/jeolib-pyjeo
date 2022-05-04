@@ -1810,7 +1810,7 @@ def xr2jim(xr_object) -> Jim:
             gt.append(-dy)
             jim.properties.setGeoTransform(gt)
         else:
-            if jim.properties.nrOfPlane() > 1:
+            if len(xr_object[b].values.shape) > 2:
                 assert xr_object[b].values.shape[0] == jim.properties.nrOfPlane() ,\
                     str("Error: number of planes is not consistent: {} != {}".format(xr_object[b].values.shape[0], jim.properties.nrOfPlane()))
                 assert xr_object[b].values.shape[1] == jim.properties.nrOfRow() ,\
