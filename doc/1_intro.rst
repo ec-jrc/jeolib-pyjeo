@@ -138,8 +138,9 @@ The pyjeo module is automatically imported as pj
 
 Usage in JEObatch (HTCondor in cluster)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-In your condor submit file, use this docker file (replace 0.5.31 with latest version)::
+In your condor submit file, use this docker file (replace 0.0.4 with latest version)::
   
-  Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb10_pyjeo:0.5.31
+  Docker_image = jeoreg.cidsn.jrc.it:5000/jeodpp-htcondor/base_gdal_py3_deb11_pyjeo:0.0.4
+
 
 See also :ref:`Tutorial_jeobatch`:

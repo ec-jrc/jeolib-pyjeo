@@ -459,7 +459,7 @@ Copy constructor: create a new copy of a JimVect vector data object
 
    Create a new JimVect object from an existing JimVect object, copying all data ::
 
-        v_copy = pj.Jim(v, output = 'newcopy.sqlite')
+        v_copy = pj.JimVect(v, output = 'newcopy.sqlite')
 
 
 Convert JimVect object to dictionary
