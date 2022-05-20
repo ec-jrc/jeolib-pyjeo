@@ -1240,6 +1240,34 @@ class _CCOps(_pj.modules.JimModuleBase):
         Modifies the instance on which the method was called.
 
         :param band: List of band indices to crop (index is 0 based)
+
+        Example:
+
+        Create a binary image that is 1 at the center and border and 0 elsewhere::
+
+            jim = pj.Jim(nrow=30, ncol=30, otype='Byte')
+
+            jim[15-1:15+1,15-1:15+1] = 1
+            jim[15-1:15+1,15-1:15+1] = 1
+            jim[0,:] = 1
+            jim[-1,:] = 1
+            jim[:,0] = 1
+            jim[:,-1] = 1
+
+        binary input image:
+
+        .. image:: figures/distance_input.png
+           :width: 65 %
+
+        To Euclidean distance is calculated from the background pixels (value 0) to the foreground pixels (value 1). If we want to calculate the distance from the foreground to the background, the image must be negated first::
+
+            jim = jim != 1
+            jim.ccops.distance2dEuclideanSquared()
+
+        Squared Euclidean distance image:
+
+        .. image:: figures/distance_output.png
+           :width: 65 %
         """
         self._jim_object._set(
             self._jim_object._jipjim.distance2dEuclideanSquared(band))

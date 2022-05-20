@@ -3,7 +3,8 @@ import pyjeo as pj
 
 jim = pj.Jim(nrow=30, ncol=30, otype='Byte')
 
-jim[jim.properties.nrOfRow()//2-1:jim.properties.nrOfRow()//2+1, jim.properties.nrOfCol()//2-1:jim.properties.nrOfCol()//2+1] = 1
+jim[15-1:15+1,15-1:15+1] = 1
+jim[15-1:15+1,15-1:15+1] = 1
 jim[0,:] = 1
 jim[-1,:] = 1
 jim[:,0] = 1
