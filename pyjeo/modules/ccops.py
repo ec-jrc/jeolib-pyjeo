@@ -244,22 +244,27 @@ def distance2dEuclideanConstrained(marker,
 
 def distance2dEuclideanSquared(jim,
                                band: int = 0):
-    """Compute the squared Euclidean distance transform of im.
+    """Compute the squared Euclidean distance transform in 2-D.
 
-    Jim must be a 2-D binary image. Original algorithm proposed by
-    :cite:`saito-toriwaki94` and then optimised independently by :cite:`hirata96`
-    and :cite:`meijster-roerdink-hesselink2000`. Based on the
-    Euclidean distance transform. Note that a temporary buffer of type
-    UINT16 is used for sums along/lines and columns so that uncontrolled
-    results will occur if an object shows more than 16 2 /2 foreground
-    pixels along a given line or column.
-
-    Modifies the instance on which the method was called.
+    jim must be a binary image. Multi-plane images will be processed
+    plane by plane as 2-D images. The original algorithm was proposed
+    by :cite:`saito-toriwaki94` and then optimised independently by
+    :cite:`hirata96` and :cite:`meijster-roerdink-hesselink2000`.
+    Based on the Euclidean distance transform. Note that a temporary buffer
+    of type UINT16 is used for sums along/lines and columns so that
+    uncontrolled results will occur if an object shows more than 16 2 /2
+    foreground pixels along a given line or column.
 
     :param band: List of band indices to crop (index is 0 based)
     :return: a Jim object
     """
-    return _pj.Jim(jim._jipjim.distance2dEuclideanSquared(band))
+
+    if jim.properties.nrOfPlane() < 2:
+        return _pj.Jim(jim._jipjim.distance2dEuclideanSquared(band))
+    else:
+        return_jim = _pj.Jim(jim)
+        return_jim.ccops.distance2dEuclideanSquared(band)
+        return return_jim
 
 
 def distanceGeodesic(mask,
@@ -1227,14 +1232,15 @@ class _CCOps(_pj.modules.JimModuleBase):
 
     def distance2dEuclideanSquared(self,
                                    band: int = 0):
-        """Compute the squared Euclidean distance transform.
+        """Compute the squared Euclidean distance transform in 2-D.
 
-        im must be a 2-D binary image. Original algorithm proposed by
-        :cite:`saito-toriwaki94` and then optimised independently by
+        The instance must be a binary image. Multi-plane images will be processed
+        plane by plane as 2-D images. The original algorithm was proposed
+        by :cite:`saito-toriwaki94` and then optimised independently by
         :cite:`hirata96` and :cite:`meijster-roerdink-hesselink2000`.
         Based on the Euclidean distance transform. Note that a temporary buffer
         of type UINT16 is used for sums along/lines and columns so that
-        uncontrolled results will occur if an object shows more than 16 2 /2
+        uncontrolled results will occur if an object shows more than 2^16 /2
         foreground pixels along a given line or column.
 
         Modifies the instance on which the method was called.
@@ -1259,7 +1265,7 @@ class _CCOps(_pj.modules.JimModuleBase):
         .. image:: figures/distance_input.png
            :width: 65 %
 
-        To Euclidean distance is calculated from the background pixels (value 0) to the foreground pixels (value 1). If we want to calculate the distance from the foreground to the background, the image must be negated first::
+        To Euclidean distance is calculated from the background pixels (value 0) to the foreground pixels (value 1). If we want to calculate the distance from the foreground to the background (e.g., distance from binary cloud mask to nearest clear pixel), the image must be negated first::
 
             jim = jim != 1
             jim.ccops.distance2dEuclideanSquared()
@@ -1268,9 +1274,31 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         .. image:: figures/distance_output.png
            :width: 65 %
+
+        The cloud mask can then be extended by thresholding the distance image::
+
+
+            jim = jim < 4
+
+        .. image:: figures/distance_threshold.png
+           :width: 65 %
         """
-        self._jim_object._set(
-            self._jim_object._jipjim.distance2dEuclideanSquared(band))
+
+        jim = _pj.Jim(_pj.geometry.cropPlane(
+            self._jim_object, 0))
+        jim._set(
+            jim._jipjim.distance2dEuclideanSquared(band))
+
+        for iplane in range(1, self._jim_object.properties.nrOfPlane()):
+            jimplane = _pj.Jim(_pj.geometry.cropPlane(
+                self._jim_object, iplane))
+            jimplane._set(
+                jimplane._jipjim.distance2dEuclideanSquared(band))
+            jim.geometry.stackPlane(jimplane)
+        self._jim_object._set(jim._jipjim)
+
+        # self._jim_object._set(
+        #     self._jim_object._jipjim.distance2dEuclideanSquared(band))
 
     def distanceGeodesic(self,
                          marker,

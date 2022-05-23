@@ -50,6 +50,30 @@ class BadCCOps(unittest.TestCase):
                jim.properties.nrOfCol()*jim.properties.nrOfRow(), \
             'Error in ccops.distance2dEuclideanSquared()'
 
+        # Test distance2dEuclideanSquared for multi-plane images
+        jim = pj.Jim(tiles[1])
+        jim.geometry.stackPlane(pj.Jim(tiles[0]))
+
+        jim.pixops.convert('Byte')
+        distances2 = pj.ccops.distance2dEuclideanSquared(jim)
+
+        assert(pj.geometry.cropPlane(distances2, 1).properties.isEqual(distances)), \
+            'Error in multi-plane ccops.distance2dEuclideanSquared()'
+
+        assert(not pj.geometry.cropPlane(distances2, 0).properties.isEqual(distances)), \
+            'Error in multi-plane ccops.distance2dEuclideanSquared()'
+
+        jim.ccops.distance2dEuclideanSquared()
+        assert jim.properties.isEqual(distances2), \
+            'Error in multi-plane ccops.distance2dEuclideanSquared()'
+
+        stats = jim.stats.getStats(band=0)
+
+        assert stats['min'] == 0, 'Error in ccops.distance2dEuclideanSquared()'
+        assert stats['max'] <= \
+               jim.properties.nrOfCol()*jim.properties.nrOfRow(), \
+            'Error in ccops.distance2dEuclideanSquared()'
+
         # Test distance2d4
 
         jim = pj.Jim(tiles[0])
