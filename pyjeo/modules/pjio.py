@@ -114,7 +114,7 @@ class _IO(_pj.modules.JimModuleBase):
                     dataset.variables['x'].units = 'm'
                     dataset.variables['x'].standard_name = 'projection_x_coordinate'
                     dataset.variables['y'].units = 'm'
-                    dataset.variables['y'].standard_name = 'projection_x_coordinate'
+                    dataset.variables['y'].standard_name = 'projection_y_coordinate'
                     bands = [x for x in dataset.variables if x not in ['x', 'y', 'time', 'spatial_ref']]
                     [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
                     crs = dataset.createVariable('spatial_ref', 'i4')
