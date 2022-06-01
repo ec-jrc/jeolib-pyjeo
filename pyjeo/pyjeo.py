@@ -1797,6 +1797,8 @@ def xr2jim(xr_object) -> Jim:
             projection = xr_object[b].attrs.get('spatial_ref')
         elif jim is None:
             jim = np2jim(xr_object[b].values)
+            #seems redundant...
+            jim.np(0)[:] = xr_object[b].values
             gt = []
             dx = xr_object[b].coords['x'].values[1]-xr_object[b].coords['x'].values[0]
             dy = xr_object[b].coords['y'].values[0]-xr_object[b].coords['y'].values[1]
@@ -1823,6 +1825,8 @@ def xr2jim(xr_object) -> Jim:
                 assert xr_object[b].values.shape[1] == jim.properties.nrOfCol() ,\
                     str("Error: number of cols is not consistent: {} != {}".format(xr_object[b].values.shape[1], jim.properties.nrOfCol()))
             jim.geometry.stackBand(np2jim(xr_object[b].values))
+            #seems redundant...
+            jim.np(-1)[:] = xr_object[b].values
     if projection is not None:
         jim.properties.setProjection(projection)
     return jim

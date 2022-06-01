@@ -15,3 +15,9 @@
 * custom exceptions used instead of the Python default ones where it made sense
 * JimList.index(jim, start, end) instead of JimList.index(jim)
 * add to JimList.pop(index) default value -> JimList.pop(index=-1)
+
+## 1.0.7 -> 1.0.8
+* support multi-plane images for distance2dEuclideanSquared
+* support for feature segmentBinaryPatterns (requires miallib 1.0.2)
+* write netCDF files conform convention and replace deprecated patial_ref in favour of crs_wkt
+

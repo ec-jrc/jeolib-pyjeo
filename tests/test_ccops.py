@@ -57,11 +57,13 @@ class BadCCOps(unittest.TestCase):
         jim.pixops.convert('Byte')
         distances2 = pj.ccops.distance2dEuclideanSquared(jim)
 
-        assert(pj.geometry.cropPlane(distances2, 1).properties.isEqual(distances)), \
-            'Error in multi-plane ccops.distance2dEuclideanSquared()'
+        assert(pj.geometry.cropPlane(distances2, 1).
+               properties.isEqual(distances)), \
+               'Error in multi-plane ccops.distance2dEuclideanSquared()'
 
-        assert(not pj.geometry.cropPlane(distances2, 0).properties.isEqual(distances)), \
-            'Error in multi-plane ccops.distance2dEuclideanSquared()'
+        assert(not pj.geometry.cropPlane(distances2, 0).
+               properties.isEqual(distances)), \
+               'Error in multi-plane ccops.distance2dEuclideanSquared()'
 
         jim.ccops.distance2dEuclideanSquared()
         assert jim.properties.isEqual(distances2), \
@@ -73,6 +75,35 @@ class BadCCOps(unittest.TestCase):
         assert stats['max'] <= \
                jim.properties.nrOfCol()*jim.properties.nrOfRow(), \
             'Error in ccops.distance2dEuclideanSquared()'
+
+        # Test distance2dEuclideanSquared for multi-plane multi-band images
+        jim = pj.Jim(tiles[0])
+        jim.geometry.stackBand(pj.Jim(tiles[1]))
+        jim1 = pj.Jim(tiles[1])
+        jim1.geometry.stackBand(pj.Jim(tiles[0]))
+        jim.geometry.stackPlane(jim1)
+
+        jim.pixops.convert('Byte')
+        distances1 = pj.ccops.distance2dEuclideanSquared(jim, band = 0)
+        distances2 = pj.ccops.distance2dEuclideanSquared(jim, band = 1)
+
+        assert(distances1.properties.nrOfBand() == 1), \
+               'Error in number of bands ccops.distance2dEuclideanSquared()'
+
+        assert(distances2.properties.nrOfBand() == 1), \
+               'Error in number of bands ccops.distance2dEuclideanSquared()'
+
+        assert(pj.geometry.cropPlane(distances1, 0).
+               properties.isEqual(pj.geometry.cropPlane(distances2, 1))), \
+               'Error in multi-plane ccops.distance2dEuclideanSquared()'
+
+        assert(pj.geometry.cropPlane(distances1, 1).
+               properties.isEqual(pj.geometry.cropPlane(distances2, 0))), \
+               'Error in multi-plane ccops.distance2dEuclideanSquared()'
+
+        assert(pj.geometry.cropPlane(distances1, 0).
+               properties.isEqual(distances)), \
+               'Error in multi-plane ccops.distance2dEuclideanSquared()'
 
         # Test distance2d4
 

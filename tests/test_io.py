@@ -26,10 +26,11 @@ import os
 import random
 import string
 
+testFile = 'tests/data/modis_ndvi_2010.tif'
+ncoutput = pj._get_random_path()
 
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 vector = 'tests/data/modis_ndvi_training.sqlite'
-
 
 class BadIO(unittest.TestCase):
     """Test functions and methods from io module."""
@@ -80,6 +81,30 @@ class BadIOVects(unittest.TestCase):
 
         assert jimv_3.properties.getFeatureCount() == 1, \
             'Error in io.write() (changes not written to the original file)'
+
+    @staticmethod
+    def test_write_tif():
+        tifoutput = '/tmp/test.tif'
+        """Test writing Jim objects to GeoTIFF."""
+        jim = pj.Jim(testFile)
+        jim.io.write(tifoutput)
+        # os.remove(tifoutput)
+
+    @staticmethod
+    def test_write_co():
+        cooutput = '/tmp/testco.tif'
+        """Test writing Jim objects to GeoTIFF."""
+        jim = pj.Jim(testFile)
+        jim.io.write(cooutput, oformat = 'GTiff', co = ['COMPRESS=LZW', 'TILED=YES'])
+        # os.remove(cooutput)
+
+    @staticmethod
+    def test_write_nc():
+        ncoutput = '/tmp/test.nc'
+        """Test writing Jim objects to netCDF."""
+        jim = pj.Jim(testFile, band2plane = True)
+        jim.io.write(ncoutput, oformat = 'netCDF')
+        # os.remove(ncoutput)
 
 
 def load_tests(loader=None, tests=None, pattern=None):

@@ -108,11 +108,19 @@ class _IO(_pj.modules.JimModuleBase):
                 import netCDF4 as nc
                 # Write to NetCDF file
                 self._jim_object.xr().to_netcdf(str(filename))
+
                 # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
                 with nc.Dataset(str(filename), 'a') as dataset:
-                    [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in range(self._jim_object.properties.nrOfBand())]
+                    dataset.variables['x'].units = 'm'
+                    dataset.variables['x'].standard_name = 'projection_x_coordinate'
+                    dataset.variables['y'].units = 'm'
+                    dataset.variables['y'].standard_name = 'projection_x_coordinate'
+                    bands = [x for x in dataset.variables if x not in ['x', 'y', 'time', 'spatial_ref']]
+                    [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
                     crs = dataset.createVariable('spatial_ref', 'i4')
-                    crs.spatial_ref = self._jim_object.properties.getProjection()
+                    crs.crs_wkt = self._jim_object.properties.getProjection()
+            else:
+                self._jim_object._jipjim.write(kwargs)
         else:
             self._jim_object._jipjim.write(kwargs)
 

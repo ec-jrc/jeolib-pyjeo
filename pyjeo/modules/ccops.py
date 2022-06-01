@@ -1277,21 +1277,18 @@ class _CCOps(_pj.modules.JimModuleBase):
 
         The cloud mask can then be extended by thresholding the distance image::
 
-
             jim = jim < 4
 
         .. image:: figures/distance_threshold.png
            :width: 65 %
         """
 
-        jim = _pj.Jim(_pj.geometry.cropPlane(
-            self._jim_object, 0))
+        jim = _pj.geometry.cropPlane(self._jim_object, 0)
         jim._set(
             jim._jipjim.distance2dEuclideanSquared(band))
 
         for iplane in range(1, self._jim_object.properties.nrOfPlane()):
-            jimplane = _pj.Jim(_pj.geometry.cropPlane(
-                self._jim_object, iplane))
+            jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
             jimplane._set(
                 jimplane._jipjim.distance2dEuclideanSquared(band))
             jim.geometry.stackPlane(jimplane)
