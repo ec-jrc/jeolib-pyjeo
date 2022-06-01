@@ -27,7 +27,6 @@ import random
 import string
 
 testFile = 'tests/data/modis_ndvi_2010.tif'
-ncoutput = pj._get_random_path()
 
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
 vector = 'tests/data/modis_ndvi_training.sqlite'
@@ -84,27 +83,27 @@ class BadIOVects(unittest.TestCase):
 
     @staticmethod
     def test_write_tif():
-        tifoutput = '/tmp/test.tif'
+        tifoutput = pj._get_random_path()
         """Test writing Jim objects to GeoTIFF."""
         jim = pj.Jim(testFile)
         jim.io.write(tifoutput)
-        # os.remove(tifoutput)
+        os.remove(tifoutput)
 
     @staticmethod
     def test_write_co():
-        cooutput = '/tmp/testco.tif'
-        """Test writing Jim objects to GeoTIFF."""
+        cooutput = pj._get_random_path()
+        """Test writing Jim objects to GeoTIFF with creation option."""
         jim = pj.Jim(testFile)
         jim.io.write(cooutput, oformat = 'GTiff', co = ['COMPRESS=LZW', 'TILED=YES'])
-        # os.remove(cooutput)
+        os.remove(cooutput)
 
     @staticmethod
     def test_write_nc():
-        ncoutput = '/tmp/test.nc'
+        ncoutput = pj._get_random_path()
         """Test writing Jim objects to netCDF."""
         jim = pj.Jim(testFile, band2plane = True)
         jim.io.write(ncoutput, oformat = 'netCDF')
-        # os.remove(ncoutput)
+        os.remove(ncoutput)
 
 
 def load_tests(loader=None, tests=None, pattern=None):
