@@ -1793,7 +1793,10 @@ def xr2jim(xr_object) -> Jim:
     jim = None
     projection = None
     for b in xr_object:
-        if xr_object[b].attrs.get('spatial_ref') is not None:
+        if xr_object[b].attrs.get('crs_wkt') is not None:
+            projection = xr_object[b].attrs.get('crs_wkt')
+        elif xr_object[b].attrs.get('spatial_ref') is not None:
+            #for backward compatibility
             projection = xr_object[b].attrs.get('spatial_ref')
         elif jim is None:
             jim = np2jim(xr_object[b].values)
