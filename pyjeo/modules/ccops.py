@@ -916,6 +916,23 @@ def seededRegionGrowing(jim,
             seeds._jipjim, ngb._jipjim, 1, 1, 0))
 
 
+def segmentBinaryPatterns(jim_object,
+                          graph: int = 8, size: float = 1.0, transition: int = 1, internal: int = 1):
+    """Morphological segmentation of binary patterns.
+
+    Described in :cite:`soille-vogt2009`, see also :cite:`soille-vogt2022foss4g`
+
+    :param jim_object: input Jim object with pixels of type unsigned char and with foreground pixels set to 2, background pixels set to 1, and no data pixels set to 0.
+    :param size: a float value >=1.0 indicating the width of the edges;
+    :param graph: an integer  (4 or 8) holding for the graph connectivity (default 8)
+    :param transition: a Boolean integer value (0 or 1) indicating how transitions should be processed (default 1)
+    :param internal: a Boolean integer value (0 or 1) indicating how embedded components should be processed with 0 for no special treatment or 1 for assigning special values to pixels belonging to embedded components like core components fully surrounded by a larger core component (default 1)
+    :return: a new Jim object holding the morphological segmentation of the input
+        binary image
+    """
+    return _pj.Jim(jim_object._jipjim.segmentBinaryPatterns(size, graph, transition, internal))
+
+
 def segmentImageMultiband(jimlist,
                           local_range: int,
                           region_size: int,
