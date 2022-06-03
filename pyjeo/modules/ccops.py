@@ -932,8 +932,14 @@ def segmentBinaryPatterns(jim_object,
     :param graph: an integer  (4 or 8) holding for the graph connectivity (default 8)
     :param transition: a Boolean integer value (0 or 1) indicating how transitions should be processed (default 1)
     :param internal: a Boolean integer value (0 or 1) indicating how embedded components should be processed with 0 for no special treatment or 1 for assigning special values to pixels belonging to embedded components like core components fully surrounded by a larger core component (default 1)
-    :return: a new Jim object holding the morphological segmentation of the input
-        binary image
+    :return: a new Jim object holding the morphological segmentation of the input binary image.
+
+    Example::
+    
+      i0=pyjeo.Jim("/vsicurl/https://github.com/ec-jrc/GWB/raw/main/input/example.tif")
+      i1=pyjeo.ccops.segmentBinaryPatterns(i0, 8, 1, 1, 1)
+      i1.io.write("example_MSPA_8111.tif")
+
     """
     return _pj.Jim(jim_object._jipjim.segmentBinaryPatterns(size, graph, transition, internal))
 
