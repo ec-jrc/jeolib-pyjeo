@@ -106,19 +106,21 @@ class _IO(_pj.modules.JimModuleBase):
         if oformat is not None:
             if 'netCDF' in oformat:
                 import netCDF4 as nc
+                from pyproj import CRS
                 # Write to NetCDF file
                 self._jim_object.xr().to_netcdf(str(filename))
-
                 # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
+                crs = CRS(self._jim_object.properties.getProjection())
                 with nc.Dataset(str(filename), 'a') as dataset:
-                    dataset.variables['x'].units = 'm'
-                    dataset.variables['x'].standard_name = 'projection_x_coordinate'
-                    dataset.variables['y'].units = 'm'
-                    dataset.variables['y'].standard_name = 'projection_y_coordinate'
+                    cf_coordinate_system = crs.cs_to_cf()
+                    for coordinate in cf_coordinate_system:
+                        dataset.variables[coordinate['axis'].lower()].units = coordinate['units']
+                        dataset.variables[coordinate['axis'].lower()].standard_name = coordinate['standard_name']
+                        dataset.variables[coordinate['axis'].lower()].long_name = coordinate['long_name']
                     bands = [x for x in dataset.variables if x not in ['x', 'y', 'time', 'spatial_ref']]
                     [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
-                    crs = dataset.createVariable('spatial_ref', 'i4')
-                    crs.crs_wkt = self._jim_object.properties.getProjection()
+                    nc_crs = dataset.createVariable('spatial_ref', 'i4')
+                    nc_crs.crs_wkt = crs.to_cf()['crs_wkt']
             else:
                 self._jim_object._jipjim.write(kwargs)
         else:
