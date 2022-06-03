@@ -923,7 +923,7 @@ def seededRegionGrowing(jim,
 
 def segmentBinaryPatterns(jim_object,
                           graph: int = 8, size: float = 1.0, transition: int = 1, internal: int = 1):
-    """Morphological segmentation of binary patterns.
+    """Morphological segmentation of binary patterns (Morphological Spatial Pattern Analysis MSPA).
 
     Described in :cite:`soille-vogt2009`, see also :cite:`soille-vogt2022foss4g`
 
@@ -932,13 +932,23 @@ def segmentBinaryPatterns(jim_object,
     :param graph: an integer  (4 or 8) holding for the graph connectivity (default 8)
     :param transition: a Boolean integer value (0 or 1) indicating how transitions should be processed (default 1)
     :param internal: a Boolean integer value (0 or 1) indicating how embedded components should be processed with 0 for no special treatment or 1 for assigning special values to pixels belonging to embedded components like core components fully surrounded by a larger core component (default 1)
-    :return: a new Jim object holding the morphological segmentation of the input binary image.
+    :return: a new Jim object of type unsigned char holding the morphological segmentation of the input binary image.
+
+
+    The following table indicates the correspondence between the byte values of the output image and their corresponding class:
+
+    .. image:: figures/mspa_classes.png
+       :width: 65 %
+
+    .. Note::
+      
+      For a visual rendering, a MSPA color table needs to be added to the image.  This can be done upon writing the image on disk.  There are 2 color tables depending on whether the transition parameter was set to 0 (OFF) or 1 (ON):  MSPA_color-table_transitionOFF.txt or MSPA_color-table_transitionON.txt.  See example below (the path to the color table needs to be adpated according to the local installation).
 
     Example::
     
-      i0=pyjeo.Jim("/vsicurl/https://github.com/ec-jrc/GWB/raw/main/input/example.tif")
+      i0=pyjeo.Jim('/vsicurl/https://github.com/ec-jrc/GWB/raw/main/input/example.tif')
       i1=pyjeo.ccops.segmentBinaryPatterns(i0, 8, 1, 1, 1)
-      i1.io.write("example_MSPA_8111.tif")
+      i1.io.write('example_MSPA_8111.tif',  ct = './tests/data/MSPA_color-table_transitionON.txt')
 
     """
     return _pj.Jim(jim_object._jipjim.segmentBinaryPatterns(size, graph, transition, internal))
