@@ -482,8 +482,8 @@ def extract(jvec,
         jim = pj.Jim('/path/to/s2_multiband.tif')
 
         outputfn = '/path/to/output.sqlite'
-        sample = pj.geometry.extract(jim,
-                                     reference,
+        sample = pj.geometry.extract(reference,
+                                     jim,
                                      srcnodata=[0],
                                      output=outputfn,
                                      classes=classes,
@@ -3180,10 +3180,10 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
 
             reference = pj.JimVect('/path/to/reference.sqlite')
             jim0 = pj.Jim('/path/to/raster.tif')
-            v = reference.geometry.extract(
+            reference.geometry.extract(
                 jim0, buffer=-10, rule=['mean'],
                 output='/vsimem/temp.sqlite', oformat='SQLite')
-            v.io.write('/path/to/output.sqlite)
+            reference.io.write('/path/to/output.sqlite)
 
         """
         kwargs.update({'output': str(output)})
