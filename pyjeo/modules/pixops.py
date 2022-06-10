@@ -598,7 +598,7 @@ class _PixOps(_pj.modules.JimModuleBase):
         |                  | set pixel value to no data)                      |
         +------------------+--------------------------------------------------+
         | max              | Maximum threshold value                          |
-        |                  | (if pixel value < max set pixel value to no data)|
+        |                  | (if pixel value > max set pixel value to no data)|
         +------------------+--------------------------------------------------+
         | value            | value to be set if within min and max            |
         |                  | (if not set, valid pixels will remain their input|
