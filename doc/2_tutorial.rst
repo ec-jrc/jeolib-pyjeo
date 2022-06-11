@@ -190,17 +190,9 @@ Depending on the file format, a number of creation options (with the key argumen
 
 .. _Tutorial_netcdf_write:
 
-Few file formats support writing a multi-band 3D raster data. One of those is `NetCDF <https://gdal.org/drivers/raster/netcdf.html#raster-netcdf>`_. Suppose we have created a 3D Jim object, we can write it to a NetCDF file using the xarray conversion (see :ref:`Jim_conversions`)::
+Few file formats support writing a multi-band 3D raster data. One of those is `NetCDF <https://gdal.org/drivers/raster/netcdf.html#raster-netcdf>`_. Suppose we have created a 3D Jim object, we can write it to a NetCDF file::
 
-  import netCDF4 as nc
-  # Write to NetCDF file
-  nc_file = '/tmp/test1.nc'
-  jim.xr().to_netcdf(nc_file)
-  # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
-  with nc.Dataset(nc_file, 'a') as dataset:
-      [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
-      crs = dataset.createVariable('spatial_ref', 'i4')
-      crs.spatial_ref = jim1.properties.getProjection()
+  jim.io.write(ncfile, oformat = 'netCDF')
 
 .. _Tutorial_jimvect:
 
