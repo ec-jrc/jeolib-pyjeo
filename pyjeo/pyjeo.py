@@ -1803,10 +1803,16 @@ def xr2jim(xr_object) -> Jim:
             #seems redundant...
             jim.np(0)[:] = xr_object[b].values
             gt = []
-            dx = xr_object[b].coords['x'].values[1]-xr_object[b].coords['x'].values[0]
-            dy = xr_object[b].coords['y'].values[0]-xr_object[b].coords['y'].values[1]
-            ulx = xr_object[b].coords['x'].values[0]-dx/2.0
-            uly = xr_object[b].coords['y'].values[0]+dy/2.0
+            try:
+                dx = xr_object[b].coords['x'].values[1]-xr_object[b].coords['x'].values[0]
+                dy = xr_object[b].coords['y'].values[0]-xr_object[b].coords['y'].values[1]
+                ulx = xr_object[b].coords['x'].values[0]-dx/2.0
+                uly = xr_object[b].coords['y'].values[0]+dy/2.0
+            except KeyError:
+                dx = xr_object[b].coords['lon'].values[1]-xr_object[b].coords['lon'].values[0]
+                dy = xr_object[b].coords['lat'].values[0]-xr_object[b].coords['lat'].values[1]
+                ulx = xr_object[b].coords['lon'].values[0]-dx/2.0
+                uly = xr_object[b].coords['lat'].values[0]+dy/2.0
             gt.append(ulx)
             gt.append(dx)
             gt.append(0)
