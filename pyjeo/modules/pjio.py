@@ -112,11 +112,18 @@ class _IO(_pj.modules.JimModuleBase):
                 # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
                 crs = CRS(self._jim_object.properties.getProjection())
                 with nc.Dataset(str(filename), 'a') as dataset:
-                    cf_coordinate_system = crs.cs_to_cf()
-                    for coordinate in cf_coordinate_system:
-                        dataset.variables[coordinate['axis'].lower()].units = coordinate['units']
-                        dataset.variables[coordinate['axis'].lower()].standard_name = coordinate['standard_name']
-                        dataset.variables[coordinate['axis'].lower()].long_name = coordinate['long_name']
+                    try:
+                        cf_coordinate_system = crs.cs_to_cf()
+                        for coordinate in cf_coordinate_system:
+                            dataset.variables[coordinate['axis'].lower()].units = coordinate['units']
+                            dataset.variables[coordinate['axis'].lower()].standard_name = coordinate['standard_name']
+                            dataset.variables[coordinate['axis'].lower()].long_name = coordinate['long_name']
+                    except(AttributeError):
+                        print(dataset.variables)
+                        dataset.variables['x'].units = 'm'
+                        dataset.variables['x'].standard_name = 'projection_x_coordinate'
+                        dataset.variables['y'].units = 'm'
+                        dataset.variables['y'].standard_name = 'projection_y_coordinate'
                     bands = [x for x in dataset.variables if x not in ['x', 'y', 'time', 'spatial_ref']]
                     [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
                     nc_crs = dataset.createVariable('spatial_ref', 'i4')
