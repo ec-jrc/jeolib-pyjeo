@@ -41,6 +41,7 @@ RUN apt-get update \
     python3-xarray \
     python3-netcdf4 \
     python3-pyproj \
+    python3-gdal \
     curl \
     git \
     gzip \
@@ -107,68 +108,5 @@ RUN cd $INSTALL_HOME \
     && cd $INSTALL_HOME \
     && rm -rf $INSTALL_HOME/jeolib-pyjeo*
     #&& rm pyjeo.tar.gz
-
-FROM registry.hub.docker.com/library/debian:10 as pyjeo
-
-# Env vars for paths, library versions
-ENV INSTALL_HOME=/home/install
-
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && DEBIAN_FRONTEND=noninteractive  apt-get install -y  --no-install-recommends \
-    apt-utils \
-    python3-setuptools \
-    libboost-serialization1.74.0 \
-    libboost-filesystem1.74.0 \
-    libjsoncpp1 \
-    gsl-bin \
-    libfann2 \
-    fftw3 \
-    libshp2 \
-    gdal-bin \
-    libpython3.9 \
-    python3 \
-    python3-gdal \
-    python3-numpy \
-    python3-wheel \
-    python3-xarray \
-    python3-netcdf4 \
-    python3-pyproj \
-    gzip \
-    tar \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN \
-  mkdir -p /usr/local/lib/python3.9/dist-packages/jiplib
-
-COPY --from=pyjeo-dev /usr/local/lib/python3.9/dist-packages/pyjeo-1.0.8-py3.9.egg /usr/local/lib/python3.9/dist-packages
-COPY --from=pyjeo-dev /usr/local/lib/python3.9/dist-packages/jiplib/__init__.py /usr/local/lib/python3.9/dist-packages/jiplib
-COPY --from=pyjeo-dev /usr/local/lib/python3.9/dist-packages/jiplib/_jiplib.so /usr/local/lib/python3.9/dist-packages/jiplib
-COPY --from=pyjeo-dev /usr/local/lib/python3.9/dist-packages/jiplib/jiplib.py /usr/local/lib/python3.9/dist-packages/jiplib
-COPY --from=pyjeo-dev /usr/local/lib/libmiallib_generic.so.1.0.2 /usr/local/lib
-COPY --from=pyjeo-dev /usr/local/lib/libjiplib.so.1.0.8 /usr/local/lib
-
-COPY --from=pyjeo-dev $INSTALL_HOME/pyjeo.tar.gz /usr/local/share
-
-# - pyjeo
-RUN cd /usr/local/share \
-    && tar xzvf pyjeo.tar.gz \
-    && cd jeolib-pyjeo* \
-    && python3 setup.py install \
-    && cd /usr/local/share \
-    && rm pyjeo.tar.gz
-
-RUN \
-  cd /usr/local/lib/ \
-  && ln -s libmiallib_generic.so.1.0.2 libmiallib_generic.so.1.0 \
-  && ln -s libmiallib_generic.so.1.0 libmiallib_generic.so.1 \
-  && ln -s libmiallib_generic.so.1 libmiallib_generic.so \
-  && ln -s libjiplib.so.1.0.8 libjiplib.so.1.0 \
-  && ln -s libjiplib.so.1.0 libjiplib.so.1 \
-  && ln -s libjiplib.so.1 libjiplib.so \
-  && cd /usr/local/share/jeolib-pyjeo* \
-  && python3 setup.py install
-
-FROM pyjeo AS pyjeo_prod
 
 RUN rm -rf /usr/local/share/jeolib-pyjeo*
