@@ -79,7 +79,7 @@ RUN set -xe \
     && rm mial.tar.gz \
     && rm -rf $INSTALL_HOME/jeolib-miallib*
 
-RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/tags/1.0.8.tar.gz --verbose
+RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/tags/v1.0.8.tar.gz --verbose
 
 # - jiplib
 RUN set -xe \
@@ -97,7 +97,7 @@ RUN set -xe \
     && rm jiplib.tar.gz \
     && rm -rf $INSTALL_HOME/jeolib-jiplib*
 
-RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/tags/1.0.8.tar.gz --verbose
+RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/tags/v1.0.8.tar.gz --verbose
 
 # - pyjeo
 RUN cd $INSTALL_HOME \
