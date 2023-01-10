@@ -21,6 +21,7 @@
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import division
+import copy
 import numpy as _np
 import gc as _gc
 import warnings as _warnings
@@ -48,6 +49,8 @@ class _ParentJim(_jl.Jim):
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
+        self.dimension={'temporal':[],'band':[]} #dictionary with nominal dimensions: {'time':[startDate,startDate+11,...],'band':['B2' 'B3','B4','B8']}
+        self.resolution={'temporal':timedelta(days=1),'spatial':[]} #dictionary with values: {'temporal':datetime.day,'spatial':[100,100]}
         if kwargs:
             if image:
                 if isinstance(image, Jim):
@@ -191,7 +194,9 @@ class _ParentJim(_jl.Jim):
                 kwargs.update({'lrx':lrx})
                 kwargs.update({'lry':lry})
             super(_ParentJim, self).__init__(image)
-
+        if image:
+            self.dimension = copy.deepcopy(image.dimension)
+            self.resolution = copy.deepcopy(image.resolution)
 
 class Jim:
     """Definition of Jim object."""
@@ -1789,6 +1794,7 @@ def xr2jim(xr_object) -> Jim:
     :return: a Jim representation from  an xarray
     """
     import xarray as _xr
+    from pandas import to_datetime
 
     jim = None
     projection = None
@@ -1838,4 +1844,11 @@ def xr2jim(xr_object) -> Jim:
             jim.np(-1)[:] = xr_object[b].values
     if projection is not None:
         jim.properties.setProjection(projection)
+
+    jim.dimension['temporal'] = to_datetime(xr_object.time.data).to_pydatetime().tolist()
+    bands = []
+    for band in xr_object.data_vars:
+        if band != 'spatial_ref':
+            bands.append(band)
+    jim.dimension['band'] = bands
     return jim

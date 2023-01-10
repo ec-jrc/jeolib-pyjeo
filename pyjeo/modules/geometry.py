@@ -20,6 +20,7 @@
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import copy
 import numpy as _np
 import warnings as _warnings
 
@@ -302,13 +303,13 @@ def crop(jim_object,
 
 
 def cropBand(jim_object,
-             band: int):
+             band):
     """Subset raster dataset.
 
     Subset raster dataset in spectral domain.
 
     :param jim_object: a Jim object
-    :param band: List of band indices to crop (index is 0 based)
+    :param band: List of band indices to crop (index is 0 based) or band name(s)
     :return: Cropped image as Jim instance
 
     Example:
@@ -323,8 +324,13 @@ def cropBand(jim_object,
         bands = band
     else:
         bands = [band]
-    band = [jim_object.properties.nrOfBand() + b if b < 0 else b
-            for b in bands]
+    if isinstance(bands[0], int):
+        band = [jim_object.properties.nrOfBand() + b if b < 0 else b
+                for b in bands]
+    else:
+        assert jim_object.dimension['band']
+        band = [jim_object.dimension['band'].index(b) for b in bands]
+
     return _pj.Jim(jim_object._jipjim.cropBand({'band': band}))
 
 
@@ -1399,14 +1405,14 @@ def sample(jim_object,
     return pjvect
 
 def stackBand(jim_object,
-              jim_other=None,
-              band: int = None):
+              jim_other = None,
+              band = None):
     """Stack bands from raster datasets into new multiband Jim object.
 
     :param jim_object: a Jim or JimList object used for stacking the bands
     :param jim_other: a Jim object or jimlist from which to copy bands
         (optional)
-    :param band: List of band indices to stack (index is 0 based).
+    :param band: List of band indices to stack (index is 0 based) or band name.
         Default is to stack all bands.
     :return: Jim object with stacked bands
 
@@ -1430,28 +1436,44 @@ def stackBand(jim_object,
         jim_stacked = pj.geometry.stackBand(jim0, jim1, band=[0, 1, 2])
 
     """
-    def _check_number_of_bands(queried_band: int, nr_of_band: int):
+    def _check_number_of_bands(queried_band, nr_of_band):
         """Raise an error if the user wants to use a band out of bounds."""
         if queried_band is not None and queried_band > nr_of_band:
             raise _pj.exceptions.JimBandsError('Band out of bounds')
 
-    if isinstance(jim_object, _pj.JimList):
-        if band:
-            nr_of_band = jim_object[0].properties.nrOfBand()
-            _check_number_of_bands(band, nr_of_band)
 
+    if band is not None:
+        if isinstance(band, list):
+            bands = band
+        else:
+            bands = [band]
+
+    if isinstance(jim_object, _pj.JimList):
+        #no band dimension allowed for now
+        assert not jim_object.dimension['band']:
+        if band is not None:
+            #only band indices allowed for now
+            for b in bands:
+                assert isinstance(b, int)
+
+            nr_of_band = jim_object[0].properties.nrOfBand()
+            for b in bands:
+                _check_number_of_bands(b, nr_of_band)
             ret_jim = _pj.Jim(
                 jim_object._jipjimlist.stackBand({'band': band}))
         else:
             ret_jim = _pj.Jim(jim_object._jipjimlist.stackBand())
 
         if isinstance(jim_other, _pj.Jim):
-            if band:
+            if band is not None:
                 ret_jim.geometry.stackBand(jim_other, band=band)
             else:
                 ret_jim.geometry.stackBand(jim_other)
         elif isinstance(jim_other, _pj.JimList):
-            if band:
+            if band is not None:
+                #only band indices allowed for now
+                for b in bands:
+                    assert isinstance(b, int)
                 jim_to_stack = _pj.Jim(
                     jim_other._jipjimlist.stackBand({'band': band}))
             else:
@@ -1460,19 +1482,38 @@ def stackBand(jim_object,
             ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                 jim_to_stack._jipjim))
     elif isinstance(jim_object, _pj.Jim):
-        _check_number_of_bands(band, jim_object.properties.nrOfBand())
+        bandindices = copy(bands)
+        if band is not None:
+            if isinstance(bands[0], int):
+                for b in bands:
+                    _check_number_of_bands(b, jim_object.properties.nrOfBand())
+            else:
+                assert jim_object.dimension['band']
+                bandindices = [jim_object.dimension['band'].index(b) for b in bands]
+                for bandindex in bandindices:
+                    _check_number_of_bands(bandindex, jim_object.properties.nrOfBand())
 
         ret_jim = jim_object
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
 
         for jim in jim_other:
-            if band:
+            if band is not None:
+                if isinstance(bands[0], int):
+                    for b in bands:
+                        _check_number_of_bands(b, jim.properties.nrOfBand())
+                else:
+                    assert jim.dimension['band']
+                    bandindices = [jim.dimension['band'].index(b) for b in bands]
+
                 ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
-                    jim._jipjim, {'band': band}))
+                    jim._jipjim, {'band': bandindices}))
+
+                ret_jim.dimension['band'] = ret_jim.dimension['band'] + bands
             else:
                 ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                     jim._jipjim))
+                ret_jim.dimension['band'] = ret_jim.dimension['band'] + jim.dimension['band']
     else:
         raise _pj.exceptions.JimIllegalArgumentError(
             'Expected a Jim or JimList object as the first argument')
@@ -1910,14 +1951,14 @@ class _Geometry(_pj.modules.JimModuleBase):
         #     # return _pj.Jim(self._jim_object.crop(kwargs))
 
     def cropBand(self,
-                 band: int):
+                 band):
         """Subset raster dataset.
 
         Subset raster dataset in spectral domain.
 
         Modifies the instance on which the method was called.
 
-        :param band: List of band indices to crop (index is 0 based)
+        :param band: List of band indices to crop (index is 0 based) or band name(s)
 
         Example:
 
@@ -1931,8 +1972,12 @@ class _Geometry(_pj.modules.JimModuleBase):
             bands = band
         else:
             bands = [band]
-        band = [self._jim_object.properties.nrOfBand() + b if b < 0 else b
-                for b in bands]
+        if isinstance(bands[0], int):
+            band = [self._jim_object.properties.nrOfBand() + b if b < 0 else b
+                    for b in bands]
+        else:
+            assert self._jim_object.dimension['band']
+            band = [self._jim_object.dimension['band'].index(b) for b in bands]
         self._jim_object._jipjim.d_cropBand({'band': band})
 
     def cropOgr(self,
@@ -2756,13 +2801,13 @@ class _Geometry(_pj.modules.JimModuleBase):
 
     def stackBand(self,
                   jim_other,
-                  band: int = None):
+                  band = None):
         """Stack the bands of another Jim object to the current Jim object.
 
         Modifies the instance on which the method was called.
 
         :param jim_other: a Jim object or jimlist from which to copy bands
-        :param band: List of band indices to stack (index is 0 based)
+        :param band: List of band indices to stack (index is 0 based) or band name
 
         Example:
 
@@ -2780,8 +2825,13 @@ class _Geometry(_pj.modules.JimModuleBase):
             jim1 = pj.Jim('/path/to/multiband.tif')
             jim0.geometry.stackBand(jim1, band=[0, 1, 2])
         """
-        if band is not None and band > self._jim_object.properties.nrOfBand():
-            raise _pj.exceptions.JimBandsError('Band out of bounds')
+        if band is not None:
+            if isinstance(band, int):
+                bandindex = band
+            else:
+                bandindex = self._jim_object.dimension['band'].index(band)
+            if bandindex > self._jim_object.properties.nrOfBand():
+                raise _pj.exceptions.JimBandsError('Band out of bounds')
 
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
@@ -2789,9 +2839,11 @@ class _Geometry(_pj.modules.JimModuleBase):
         for jim in jim_other:
             if band:
                 self._jim_object._jipjim.d_stackBand(jim._jipjim,
-                                                     {'band': band})
+                                                     {'band': bandindex})
+                self._jim_object.dimension['band'] = self._jim_object.dimension['band'] + band
             else:
                 self._jim_object._jipjim.d_stackBand(jim._jipjim)
+                self._jim_object.dimension['band'] = jim.dimension['band']
 
     def stackPlane(self,
                    jim_other=None,

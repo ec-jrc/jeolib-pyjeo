@@ -129,33 +129,54 @@ def infimum(jim,
 
 
 def NDVI(jim_object,
-         band_red: int,
-         band_nir: int):
+         band_red,
+         band_nir,
+         name: str = 'NDVI',
+         addBand: bool = False):
     """Compute NDVI on the Jim object.
 
     :param jim_object: Jim object from which the red and NIR bands are to be
         derived
     :param band_red: index of band with values of red
     :param band_nir: index of band with values of NIR
+    :param name: name of band for NDVI
+    :param addBand: add NDVI as a new band
     :return: a Jim object with values of NDVI
     """
+    if jim_object.dimension['band']:
+        if addBand:
+            jim_object.dimension['band'].append(name)
+        else:
+            jim_object.dimension['band'] = name
     red = _pj.geometry.cropBand(jim_object, band_red)
     nir = _pj.geometry.cropBand(jim_object, band_nir)
 
-    return _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
+    ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
+    ndvi.dimension['band'] = jim_object.dimension['band']
+    if addBand:
+        return this.geometry.stackBand(jim_object, ndvi)
+    else:
+        return ndvi
 
 
 def NDVISeparateBands(jim_red,
-                      jim_nir):
+                      jim_nir,
+                      name: str = None):
     """Compute NDVI from two Jim objects.
 
     Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
     :param jim_red: Jim object with values of red
     :param jim_nir: Jim object with values of NIR
+    :param name: name of band for NDVI
     :return: a Jim object with values of NDVI
     """
-    return _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
+    if name is not None:
+        ndvi = _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
+        ndvi.dimension['band'] = name
+        return ndvi
+    else:
+        return _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
 
 
 def setData(jim,
@@ -448,22 +469,47 @@ class _PixOps(_pj.modules.JimModuleBase):
     #     self._jim_object._jipjim.d_pointOpModulo(val)
 
     def NDVI(self,
-             band_red: int,
-             band_nir: int):
+             band_red,
+             band_nir,
+             name: str = 'NDVI',
+             addBand: bool = False):
         """Compute NDVI on the Jim object.
 
         Modifies the instance on which the method was called.
 
         :param band_red: index of band with values of red
         :param band_nir: index of band with values of NIR
+        :param name: name of band for NDVI
+        :param addBand: add NDVI as a new band
         """
-        red = _pj.geometry.cropBand(self._jim_object, band_red)
-        nir = _pj.geometry.cropBand(self._jim_object, band_nir)
+        if jim_object.dimension['band']:
+            if isinstance(band_red, str) and isinstance(band_nir, str):
+                index_red = jim_object.dimension['band'].index(band_red)
+                index_nir = jim_object.dimension['band'].index(band_nir)
+            if addBand:
+                jim_object.dimension['band'].append(name)
+            else:
+                jim_object.dimension['band'] = name
+        else:
+            index_red = band_red
+            index_nir = band_nir
+        red = _pj.geometry.cropBand(self._jim_object, index_red)
+        nir = _pj.geometry.cropBand(self._jim_object, index_nir)
 
-        self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
+        if addBand:
+            ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
+            ndvi.dimension['band'] = jim_object.dimension['band']
+            self._jim_object._set(ndvi._jim_object)
+            if self._jim_object.dimension['band']:
+                self._jim_object.dimension['band'].append(name)
+        else:
+            self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
+            if self._jim_object.dimension['band']:
+                self._jim_object.dimension['band'] = name
 
     def NDVISeparateBands(self,
-                          jim_nir):
+                          jim_nir,
+                          name: str = None):
         """Compute NDVI from two Jims (call on red band, use NIR as param).
 
         Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
@@ -471,9 +517,17 @@ class _PixOps(_pj.modules.JimModuleBase):
         Modifies the instance on which the method was called.
 
         :param jim_nir: Jim object with values of NIR
+        :param name: name of band for NDVI
         """
-        self._jim_object._set(
-            jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
+
+        if name is not None:
+            ndvi = _pj.Jim(jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
+            ndvi.dimension['band'] = name
+
+            self._jim_object._set(ndvi._jim_object)
+        else:
+            self._jim_object._set(
+                jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
 
     def setData(self,
                 value: float,
@@ -482,7 +536,7 @@ class _PixOps(_pj.modules.JimModuleBase):
                 uly: float = None,
                 lrx: float = None,
                 lry: float = None,
-                bands=None,
+                bands = None,
                 dx: int = 0,
                 dy: int = 0,
                 nogeo: bool = False):
