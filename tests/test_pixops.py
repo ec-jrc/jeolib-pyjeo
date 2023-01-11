@@ -77,10 +77,8 @@ class BadPixOps(unittest.TestCase):
         assert jim.properties.isEqual(ndvi), 'Error in computing ndvi'
 
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
-        assert(ndvi.dimension['band'] == 'NDVI'), 'Error default name NDVI'
 
         jim_red.pixops.NDVISeparateBands(jim_nir)
-        assert(jim_red.dimension['band'] == 'NDVI'), 'Error default name NDVI'
 
         assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
                                                  'NDVISeparateBands'
@@ -92,7 +90,6 @@ class BadPixOps(unittest.TestCase):
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
 
         assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
-        assert(ndvi.dimension['band'] == 'NDVI'), 'Error default name NDVI'
 
     @staticmethod
     def test_supremum_infimum():

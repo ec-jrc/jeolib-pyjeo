@@ -26,6 +26,7 @@ import numpy as _np
 import gc as _gc
 import warnings as _warnings
 import os as _os
+from datetime import time, timedelta, datetime
 import math
 from pathlib import Path
 from osgeo import ogr as _ogr
@@ -49,8 +50,6 @@ class _ParentJim(_jl.Jim):
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
-        self.dimension={'temporal':[],'band':[]} #dictionary with nominal dimensions: {'time':[startDate,startDate+11,...],'band':['B2' 'B3','B4','B8']}
-        self.resolution={'temporal':timedelta(days=1),'spatial':[]} #dictionary with values: {'temporal':datetime.day,'spatial':[100,100]}
         if kwargs:
             if image:
                 if isinstance(image, Jim):
@@ -63,8 +62,12 @@ class _ParentJim(_jl.Jim):
                             ' one together with other kwargs than copy_data. '
                             'kwargs ignored.', SyntaxWarning)
                         super(_ParentJim, self).__init__(image._jipjim)
+                    self.dimension = copy.deepcopy(image.dimension)
+                    self.resolution = copy.deepcopy(image.resolution)
                 else:
                     if 'tileindex' in kwargs.keys() and 'tiletotal' in kwargs.keys():
+
+
                         tileindex = kwargs.pop('tileindex')
                         tiletotal = kwargs.pop('tiletotal')
                         try:
@@ -180,6 +183,8 @@ class _ParentJim(_jl.Jim):
         elif image:
             if isinstance(image, Jim):
                 super(_ParentJim, self).__init__(image._jipjim)
+                self.dimension = copy.deepcopy(image.dimension)
+                self.resolution = copy.deepcopy(image.resolution)
             elif isinstance(image, _jl.Jim):
                 super(_ParentJim, self).__init__(image)
             elif isinstance(image, Path):
@@ -194,9 +199,6 @@ class _ParentJim(_jl.Jim):
                 kwargs.update({'lrx':lrx})
                 kwargs.update({'lry':lry})
             super(_ParentJim, self).__init__(image)
-        if image:
-            self.dimension = copy.deepcopy(image.dimension)
-            self.resolution = copy.deepcopy(image.resolution)
 
 class Jim:
     """Definition of Jim object."""
@@ -207,6 +209,9 @@ class Jim:
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
+        self.dimension={'temporal':[],'band':[]} #dictionary with nominal dimensions: {'time':[startDate,startDate+11,...],'band':['B2' 'B3','B4','B8']}
+        self.resolution={'temporal':timedelta(days=1),'spatial':[]} #dictionary with values: {'temporal':datetime.day,'spatial':[100,100]}
+
         self._checkInitParamsSense(image, kwargs)
 
         # remove stdev and uniform from kwargs to use them in feed
@@ -377,8 +382,14 @@ class Jim:
         import xarray as _xr
 
         #jim is a multiband datacube (with multiple planes)
-        planes = range(self.properties.nrOfPlane())
-        bands = range(self.properties.nrOfBand())
+        if self.dimension['temporal']:
+            planes = self.dimension['temporal']
+        else:
+            planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
+        if self.dimension['band']:
+            bands = self.dimension['band']
+        else:
+            bands = [str(b) for b in range(self.properties.nrOfBand())]
         bbox = self.properties.getBBox()
 
         # xarray coordinates are pixel centered
@@ -396,19 +407,20 @@ class Jim:
 
         # Build a xarray Dataset reference (without memory copy)
         # Do not alter shape or destroy x_dataset!
+
         if self.properties.nrOfPlane() > 1:
-            x_dataset = _xr.Dataset({str(b):_xr.DataArray(self.np(b),
-                                                        dims=['time', 'y', 'x'],
-                                                        coords={'time': list(planes),
-                                                        'x': x, 'y': y},
-                                                        attrs={'_FillValue': 0})
-                                    for b in bands})
+            x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+                                                      dims=['time', 'y', 'x'],
+                                                      coords={'time': planes,
+                                                              'x': x, 'y': y},
+                                                      attrs={'_FillValue': 0})
+                                    for band in bands})
         else:
-            x_dataset = _xr.Dataset({str(b):_xr.DataArray(self.np(b),
-                                                        dims=['y', 'x'],
-                                                        coords={'x': x, 'y': y},
-                                                        attrs={'_FillValue': 0})
-                                    for b in bands})
+            x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+                                                      dims=['y', 'x'],
+                                                      coords={'x': x, 'y': y},
+                                                      attrs={'_FillValue': 0})
+                                    for band in bands})
         return x_dataset
 
 
@@ -1711,9 +1723,15 @@ def jim2xr(jim_object: Jim,
     """
     import xarray as _xr
 
-    #jim_object is a multiband datacube (with multiple planes)
-    planes = range(jim_object.properties.nrOfPlane())
-    bands = range(jim_object.properties.nrOfBand())
+    #jim is a multiband datacube (with multiple planes)
+    if self.dimension['temporal']:
+        planes = self.dimension['temporal']
+    else:
+        planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
+    if self.dimension['band']:
+        bands = self.dimension['band']
+    else:
+        bands = [str(b) for b in range(self.properties.nrOfBand())]
     bbox = jim_object.properties.getBBox()
 
     # xarray coordinates are pixel centered
@@ -1723,21 +1741,21 @@ def jim2xr(jim_object: Jim,
     y = _np.arange(bbox[1]-jim_object.properties.getDeltaY()/2,
                     bbox[3]-jim_object.properties.getDeltaY()/2,
                     -jim_object.properties.getDeltaY())
+
     # Build new copy of xarray Dataset (with memory copy):
     if jim_object.properties.nrOfPlane() > 1:
-        x_dataset = _xr.Dataset({str(b):_xr.DataArray(jim2np(jim_object,b),
-                                                      dims=['time', 'y', 'x'],
-                                                      coords={'time': ['t'+str(plane)
-                                                                       for plane in planes],
-                                                              'x': x, 'y': y},
-                                                      attrs={'_FillValue': 0})
-        for b in bands})
+        x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+                                                    dims=['time', 'y', 'x'],
+                                                    coords={'time': planes,
+                                                            'x': x, 'y': y},
+                                                    attrs={'_FillValue': 0})
+                                for band in bands})
     else:
-        x_dataset = _xr.Dataset({str(b):_xr.DataArray(jim2np(jim_object,b),
-                                                      dims=['y', 'x'],
-                                                      coords={'x': x, 'y': y},
-                                                      attrs={'_FillValue': 0})
-        for b in bands})
+        x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+                                                  dims=['y', 'x'],
+                                                  coords={'x': x, 'y': y},
+                                                  attrs={'_FillValue': 0})
+                                for band in bands})
     return x_dataset
 
 

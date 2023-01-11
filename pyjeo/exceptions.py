@@ -45,6 +45,12 @@ class JimInnerParametersError(JimError):
     pass
 
 
+class JimPlanesError(JimError):
+    """Exception class for when Jim plane out of planes."""
+
+    pass
+
+
 class JimBandsError(JimError):
     """Exception class for when Jim band out of bands."""
 

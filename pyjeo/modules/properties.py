@@ -19,6 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
+import copy
 import numpy as _np
 import osgeo
 import pyjeo as _pj
@@ -457,6 +458,25 @@ class _Properties(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.setProjection(*args)
 
+    def getDimension(self, dimension = None):
+        if dimension is None:
+            return copy.deepcopy(self._jim_object.dimension)
+        elif dimension in ['band', 'bands']:
+            return copy.deepcopy(self._jim_object.dimension['band'])
+        elif dimension in ['temporal', 'time']:
+            return copy.deepcopy(self._jim_object.dimension['temporal'])
+        else:
+            raise ValueError("dimension should be temporal or band")
+
+    def setDimension(self, values, dimension = None):
+        if dimension is None:
+            self._jim_object.dimension = values
+        elif dimension in ['band', 'bands']:
+            self._jim_object.dimension['band']=values
+        elif dimension in ['temporal', 'time']:
+            self._jim_object.dimension['temporal']=values
+        else:
+            raise ValueError("dimension should be temporal or band")
 
 class _PropertiesList(_pj.modules.JimListModuleBase):
     """Define all properties methods for JimLists."""
@@ -596,7 +616,6 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
         """Select geographical properties (ulx, uly, ...)."""
         self._jim_list._jipjimlist.selectGeo(*args)
         self._jim_list._set(self._jim_list)
-
 
 class _PropertiesVect(_pj.modules.JimVectModuleBase):
     """Define all properties methods for JimVects."""
