@@ -2,7 +2,7 @@
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu
-# Copyright (C) 2018-2020 European Union (Joint Research Centre)
+# Copyright (C) 2018-2023 European Union (Joint Research Centre)
 #
 # This file is part of pyjeo.
 #
@@ -23,6 +23,8 @@ import pyjeo as pj
 import unittest
 import warnings
 import numpy as np
+# from datetime import time, timedelta, datetime
+from datetime import datetime
 import os
 
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
@@ -84,6 +86,39 @@ class BadGeometry(unittest.TestCase):
             '(function is not equal to method)'
 
     @staticmethod
+    def test_band2plane_dimension():
+        jim3d = pj.Jim(rasterfn, band=[0, 1], band2plane=True)
+        dates = [
+            datetime.strptime('2019-01-01','%Y-%m-%d'),
+            datetime.strptime('2019-01-05','%Y-%m-%d')]
+        jim3d.properties.setDimension({'plane' : dates,
+                                        'band' : ['B2']})
+        jim2d = pj.Jim(rasterfn, band=[0, 1], band2plane=False)
+        jim2d.geometry.band2plane()
+        jim2d.properties.setDimension({'plane' : dates,
+                                        'band':['B3']})
+        assert jim2d.properties.isEqual(jim3d), \
+            'Error in geometry.band2plane() ' \
+            '(read as 3d is not equal to convert to 3d)'
+
+        jim2d.geometry.plane2band()
+        assert jim2d.properties.getDimension(
+            'band') == jim3d.properties.getDimension('plane'), \
+            'Error in geometry.band2plane() dimension band / temporal'
+
+        assert pj.geometry.plane2band(jim3d).properties.getDimension(
+            'band') == jim2d.properties.getDimension('band'), \
+            'Error in function pj.geometry.plane2band()'
+
+        assert pj.geometry.band2plane(jim2d) == jim3d, \
+            'Error in geometry band2plane'
+
+        assert pj.geometry.band2plane(jim2d).properties.getDimension(
+            'plane') == jim3d.properties.getDimension('plane'), \
+            'Error in geometry band2plane, dimension'
+
+
+    @staticmethod
     def test_stack():
         """Test the stackBand and stackPlane methods."""
         jim = pj.Jim(rasterfn, band=[0, 1, 2])
@@ -125,8 +160,8 @@ class BadGeometry(unittest.TestCase):
             '(method returns different result than function)'
         assert jim_stacked.properties.isEqual(jim), \
             'Error in geometry.stackBand(band) ' \
-            '(stacked bands are not equal to an object from which they were ' \
-            'cropped)'
+            '(stacked bands are not equal to an object from which' \
+            'they were cropped)'
 
         # Test the stackPlane() method
         jim0 = pj.Jim(rasterfn, band=0)
@@ -189,24 +224,27 @@ class BadGeometry(unittest.TestCase):
             _ = pj.geometry.stackBand(jim0, jim1,
                                       band=jim0.properties.nrOfBand() + 1)
             raised = False
-        except pj.exceptions.JimBandsError:
+        except pj.exceptions.JimPlanesError:
             raised = True
 
-        assert raised, \
-            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
-            'function where the band argument exceeds the number of bands of' \
-            ' Jims'
+            assert raised, \
+                'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+                'function where planes do not match'
 
+        # Test wrong call of stackBand with the parameter band exceeding
+        # the nrOfBand in Jims
+        jim1.geometry.cropPlane(0)
         try:
-            jim0.geometry.stackBand(jim1, band=jim0.properties.nrOfBand() + 1)
+            _ = pj.geometry.stackBand(jim0, jim1,
+                                    band = jim1.properties.nrOfBand())
             raised = False
         except pj.exceptions.JimBandsError:
             raised = True
 
         assert raised, \
             'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
-            'method where the band argument exceeds the number of bands of' \
-            ' Jims'
+            'function where the band argument exceeds the allowed number of ' \
+            'bands of Jim'
 
         # Test wrong call of stackBand with wrong object type
         try:
@@ -230,6 +268,214 @@ class BadGeometry(unittest.TestCase):
             'Error in catching a call of geometry.stackPlane(jim, jim) ' \
             'function where the first argument is not a Jim or a JimList'
 
+
+    @staticmethod
+    def test_stack_dimension():
+        """Test the stackBand and stackPlane methods."""
+        jim = pj.Jim(rasterfn, band=[0, 1, 2])
+
+        dates = [
+            datetime.strptime('2019-01-01','%Y-%m-%d'),
+            datetime.strptime('2019-02-01','%Y-%m-%d'),
+            datetime.strptime('2019-03-01','%Y-%m-%d')]
+        jim.properties.setDimension(dates, 'band')
+
+        # Test stackBand()
+        jim0to1 = pj.geometry.cropBand(jim, [0, 1])
+        assert jim0to1.properties.getDimension('band') == \
+            dates[0:2], \
+            'Error in geometry.stackBand() dimension band'
+
+        assert jim0to1 == pj.geometry.cropBand(jim, dates[0:2]), \
+            'Error in geometry.stackBand(): cropBand int != datetime'
+        assert pj.geometry.cropBand(jim, dates[0:2]).properties.\
+            getDimension('band') == dates[0:2], \
+            'Error in geometry.stackBand() dimension band'
+
+        jim2 = pj.geometry.cropBand(jim, dates[2])
+        assert jim2.properties.getDimension('band') == \
+            dates[2:3], \
+            'Error in geometry.stackBand() dimension band'
+
+        jim_stacked = pj.geometry.stackBand(jim0to1, jim2)
+        assert jim_stacked.properties.nrOfBand() == \
+               jim0to1.properties.nrOfBand() + jim2.properties.nrOfBand(), \
+            'Error in geometry.stackBand() ' \
+            '(number of bands after stack not equal to the sum of number of ' \
+            'bands of parameters)'
+
+        assert jim_stacked.properties.getDimension('band') == dates, \
+            'Error in geometry.stackBand() dimensions'
+
+        jim0to1.geometry.stackBand(jim2)
+
+        assert jim_stacked.properties.isEqual(jim0to1), \
+            'Inconsistency in geometry.stackBand() ' \
+            '(method returns different result than function)'
+
+        assert jim_stacked.properties.getDimension('band') == \
+            jim0to1.properties.getDimension('band'), \
+            'Error in geometry.stackBand() dimensions'
+
+        assert jim_stacked.properties.isEqual(jim), \
+            'Error in geometry.stackBand() ' \
+            '(stacked bands are not equal to an object from which they \
+            were cropped)'
+
+        # Test stackBand() with band specified
+        jim0to1 = pj.geometry.cropBand(jim, dates[0:2])
+
+        jim_stacked = pj.geometry.stackBand(jim0to1, jim, band=2)
+        assert jim_stacked.properties.nrOfBand() == \
+               jim.properties.nrOfBand(), \
+            'Error in geometry.stackBand(band) ' \
+            '(number of bands after stack not equal to the expected one)'
+
+        jim0to1.geometry.stackBand(jim, band=dates[2])
+
+        assert jim_stacked.properties.isEqual(jim0to1), \
+            'Inconsistency in geometry.stackBand(band) ' \
+            '(method returns different result than function)'
+        assert jim_stacked.properties.isEqual(jim), \
+            'Error in geometry.stackBand(band) ' \
+            '(stacked bands are not equal to an object from which they were ' \
+            'cropped)'
+
+        assert jim.properties.getDimension('band') == jim_stacked.\
+            properties.getDimension('band'), \
+            'Error in geometry.stackBand() dimensions with band specified'
+
+        # Test the stackPlane() method
+        jim0 = pj.Jim(rasterfn, band=0)
+        jim1 = pj.Jim(rasterfn, band=1)
+        jim2 = pj.Jim(rasterfn, band=2)
+        jim0.properties.setDimension(dates[0], 'plane')
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2.properties.setDimension(dates[2], 'plane')
+
+        jimlist = pj.JimList([jim0, jim1, jim2])
+        jimliststack = pj.geometry.stackPlane(jimlist)
+
+        assert jimliststack.properties.getDimension('plane') == dates, \
+            'Error in pj.geometry.stackPlane(jimlist) dimensions'
+
+        jimstack = pj.geometry.stackPlane(pj.geometry.stackPlane(jim0, jim1),
+                                          jim2)
+        assert jimliststack.properties.isEqual(jimstack), \
+            'Error in geometry.stackPlane() ' \
+            '(jimliststack not equal to jimstack)'
+
+        assert jimstack.properties.getDimension('plane') == dates, \
+            'Error in pj.geometry.stackPlane dimensions'
+
+        jim3 = pj.JimList([jim0, jim1, jim2]).geometry.stackPlane()
+        jim3.geometry.cropPlane(dates[0:2])
+
+        assert jim3.properties.getDimension('plane') == dates[0:2], \
+            'Error in pj.geometry.cropPlane dimensions'
+
+        assert pj.geometry.cropPlane(jim3, 0).properties.isEqual(jim0), \
+            'Error jim3 not equal to jim0'
+
+        assert pj.geometry.cropPlane(jim3, 0).properties.getDimension(
+            'plane') == dates[0:1], \
+            'Error in pj.geometry.cropPlane dimensions'
+
+        jim4 = pj.JimList([jim0, jim1, jim2]).geometry.stackPlane()
+        jim4.geometry.cropPlane(dates[1:3])
+        assert pj.geometry.cropPlane(jim4, dates[1]).properties.isEqual(jim1), \
+            'Error cropped jim4 not equal to jim1'
+
+        assert jim4.properties.getDimension('plane') == dates[1:3], \
+            'Error in pj.geometry.cropPlane dimensions'
+
+        jim = pj.JimList([jim3, jim4]).geometry.stackPlane()
+        jim.geometry.cropPlane(dates[1:3])
+        jim.geometry.cropPlane(dates[1])
+        assert jim.properties.isEqual(jim1), \
+            'Error jim not equal to jim1'
+        assert jim.properties.getDimension('plane') == dates[1:2], \
+            'Error in pj.geometry.cropPlane dimensions'
+
+        # Test stackPlane() with only one Jim as a parameter
+        stacked = pj.geometry.stackPlane(jim)
+
+        assert stacked.properties.isEqual(jim), \
+            'Error in geometry.stackPlane(Jim) ' \
+            '(returned object not equal to the only Jim used as a parameter)'
+
+        jim.geometry.stackPlane()
+
+        assert stacked.properties.isEqual(jim), \
+            'Inconsistency in geometry.stackPlane(Jim) ' \
+            '(method returns different result than function)'
+
+        # Test the stackPlane() with self
+
+        jim1 = pj.Jim(rasterfn)
+        jim2 = pj.Jim(jim1)
+        jim1.geometry.stackPlane(pj.Jim(jim1))
+        jim2.geometry.stackPlane(jim2)
+        assert(jim1.properties.isEqual(jim2)), \
+            'Inconsistency in geometry.stackPlane(self)'
+
+        # Test the band2plane() method
+        jimband = pj.Jim(rasterfn, band=[0, 1, 2])
+        jimplane = pj.Jim(rasterfn, band=[0, 1, 2], band2plane=True)
+        jimband.geometry.band2plane()
+        assert jimband.properties.isEqual(jimplane), \
+            'Error in geometry.band2plane() ' \
+            '(jimband not equal to jimsplane)'
+
+        # Test wrong call of stackBand with number of planes not matching
+        # the nrOfBand in Jims
+        try:
+            _ = pj.geometry.stackBand(jim0, jim1,
+                                    band = jim0.properties.nrOfBand() - 1)
+            raised = False
+        except pj.exceptions.JimPlanesError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'function where planes do not match'
+        # Test wrong call of stackBand with the parameter band exceeding
+        # the nrOfBand in Jims
+        jim1.geometry.cropPlane(0)
+
+        try:
+            _ = pj.geometry.stackBand(jim0, jim1,
+                                    band = jim1.properties.nrOfBand())
+            raised = False
+        except pj.exceptions.JimBandsError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim, band) ' \
+            'function where the band argument exceeds the allowed number of ' \
+            'bands of Jim'
+
+        # Test wrong call of stackBand with wrong object type
+        try:
+            _ = pj.geometry.stackBand(1, jim1)
+            raised = False
+        except pj.exceptions.JimIllegalArgumentError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackBand(jim, jim) ' \
+            'function where the first argument is not a Jim or a JimList'
+
+        # Test wrong call of stackPlane with wrong object type
+        try:
+            _ = pj.geometry.stackPlane(1, jim1)
+            raised = False
+        except pj.exceptions.JimIllegalArgumentError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.stackPlane(jim, jim) ' \
+            'function where the first argument is not a Jim or a JimList'
     @staticmethod
     def test_warp():
         """Test the warp method."""

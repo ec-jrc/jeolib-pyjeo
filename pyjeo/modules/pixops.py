@@ -154,7 +154,7 @@ def NDVI(jim_object,
     ndvi.properties.setDimension(jim_object.properties.getDimension())
 
     if name is not None:
-        ndvi.dimension['band'] = name
+        ndvi.properties.setDimension(name, 'band')
 
     if addBand:
         return this.geometry.stackBand(jim_object, ndvi)
@@ -176,7 +176,7 @@ def NDVISeparateBands(jim_red,
     """
     if name is not None:
         ndvi = _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
-        ndvi.dimension['band'] = name
+        ndvi.properties.setDimension(name, 'band')
         return ndvi
     else:
         return _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
@@ -506,11 +506,11 @@ class _PixOps(_pj.modules.JimModuleBase):
             ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
             self._jim_object.geometry.stackBand(ndvi)
             if name is not None:
-                self._jim_object.dimension['band'] += name
+                self._jim_object.properties.setDimension(name, 'band', append = True)
         else:
             self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
             if name is not None:
-                self._jim_object.dimension['band'] = name
+                self._jim_object.properties.setDimension(name, 'band')
 
     def NDVISeparateBands(self,
                           jim_nir,
@@ -527,8 +527,7 @@ class _PixOps(_pj.modules.JimModuleBase):
 
         if name is not None:
             ndvi = _pj.Jim(jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
-            ndvi.dimension['band'] = name
-
+            ndvi.properties.setDimension(name, 'band')
             self._jim_object._set(ndvi._jim_object)
         else:
             self._jim_object._set(

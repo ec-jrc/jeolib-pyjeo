@@ -110,8 +110,6 @@ def band2plane(jim_object):
     """
     result = _pj.Jim(jim_object)
     result.geometry.band2plane()
-    result.dimension['temporal'] = jim_object.dimension['band']
-    result.dimension['band'] = []
     return result
 
 
@@ -333,13 +331,10 @@ def cropBand(jim_object,
             bandindices = [jim_object.properties.nrOfBand() + b
                            if b < 0 else b for b in bands]
             bandnames = [jim_object.dimension['band'][band] for band in bands]
-        elif isinstance(bands[0], str):
+        else:
             bandnames = bands
             bandindices = [jim_object.dimension['band'].index(b)
                            for b in bands]
-        else:
-            raise _pj.exceptions.JimBandsError(
-                'band not supported, use integer or string')
     else:
         if not isinstance(bands[0], int):
             raise _pj.exceptions.JimBandsError(
@@ -350,8 +345,9 @@ def cropBand(jim_object,
     ret_jim = _pj.Jim(jim_object._jipjim.cropBand({'band': bandindices}))
 
     if jim_object.dimension['band']:
-        ret_jim.dimension['band'] = bandnames
-        ret_jim.dimension['temporal'] = jim_object.dimension['temporal']
+        ret_jim.properties.setDimension(bandnames, 'band')
+    if jim_object.dimension['plane']:
+        ret_jim.properties.setDimension(jim_object.properties.getDimension('plane'), 'plane')
     return ret_jim
 
 
@@ -430,9 +426,30 @@ def cropPlane(jim_object,
         planes = plane
     else:
         planes = [plane]
-    plane = [jim_object.properties.nrOfPlane() + b if b < 0 else b
-             for b in planes]
-    return _pj.Jim(jim_object._jipjim.cropPlane({'plane': plane}))
+
+    if jim_object.dimension['plane']:
+        if isinstance(planes[0], int):
+            planeindices = [jim_object.properties.nrofplanes() + p
+                            if p < 0 else p for p in planes]
+            planenames = [jim_object.dimension['plane'][plane] for plane in planes]
+        else:
+            planenames = planes
+            planeindices = [jim_object.dimension['plane'].index(p)
+                            for p in planes]
+    else:
+        if not isinstance(planes[0], int):
+            raise _pj.exceptions.jimplaneserror(
+                'plane not supported, use integer')
+        planeindices = [jim_object.properties.nrofplane() + p
+                        if p < 0 else p for p in planes]
+
+    result = _pj.Jim(jim_object._jipjim.cropPlane({'plane': planeindices}))
+
+    if jim_object.dimension['plane']:
+        result.properties.setDimension(planenames, 'plane')
+    if jim_object.dimension['band']:
+        result.properties.setDimension(jim_object.properties.getDimension('band'), 'band')
+    return result
 
 
 def extract(jvec,
@@ -985,8 +1002,9 @@ def plane2band(jim_object):
             result = jim_plane
         else:
             result.geometry.stackBand(jim_plane)
-    result.dimension['band'] = jim_object.dimension['temporal']
-    result.dimension['temporal'] = []
+
+    result.properties.setDimension(jim_object.properties.getDimension('plane'), 'band')
+    result.properties.setDimension([], 'plane')
     return result
 
 
@@ -1301,8 +1319,8 @@ def reducePlane(jim,
         #             jimreduced[nodata_mask] = nodata
 
     jimreduced.dimension['band'] = jim.dimension['band']
-    if jimreduced.dimension['temporal']:
-        jimreduced.dimension['temporal'] = rule
+    if jimreduced.dimension['plane']:
+        jimreduced.dimension['plane'] = rule
     return jimreduced
 
 
@@ -1322,11 +1340,11 @@ def repeat(jim_object,
     nplane = jim_object.properties.nrOfPlane()
     nband = jim_object.properties.nrOfBand()
     bands = self._jim_object.properties.getDimension('band')
-    planes = self._jim_object.properties.getDimension('temporal')
+    planes = self._jim_object.properties.getDimension('plane')
     if nplane > 1:
         if axis == 0:
             nplane *= n
-            if jim_object.dimension['temporal']:
+            if jim_object.dimension['plane']:
                 planes *= n
         elif axis == 1:
             nrow *= n
@@ -1355,7 +1373,7 @@ def repeat(jim_object,
     for band in range(0, jim_object.properties.nrOfBand()):
         ret_jim.np(band)[:] = jim_object.np(band).repeat(n, axis = axis)
 
-    ret_jim.properties.setDimension({'band': bands, 'temporal': planes})
+    ret_jim.properties.setDimension({'band': bands, 'plane': planes})
     return ret_jim
 
 
@@ -1481,7 +1499,7 @@ def stackBand(jim_object,
     """
     def _check_number_of_bands(queried_band, nr_of_band):
         """Raise an error if the user wants to use a band out of bounds."""
-        if queried_band is not None and queried_band > nr_of_band:
+        if queried_band is not None and queried_band >= nr_of_band:
             raise _pj.exceptions.JimBandsError('Band out of bounds')
 
 
@@ -1508,6 +1526,10 @@ def stackBand(jim_object,
             ret_jim = _pj.Jim(jim_object._jipjimlist.stackBand())
 
         if isinstance(jim_other, _pj.Jim):
+            if ret_jim.properties.nrOfPlane() != \
+               jim_other.properties.nrOfPlane():
+                raise _pj.exceptions.JimPlanesError(
+                    'planes do not match')
             if band is not None:
                 ret_jim.geometry.stackBand(jim_other, band=band)
             else:
@@ -1522,41 +1544,54 @@ def stackBand(jim_object,
             else:
                 jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
 
+            if ret_jim.properties.nrOfPlane() != \
+               jim_to_stack.properties.nrOfPlane():
+                raise _pj.exceptions.JimPlanesError(
+                    'planes do not match')
             ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                 jim_to_stack._jipjim))
     elif isinstance(jim_object, _pj.Jim):
-        if band is not None:
-            bandindices = copy.copy(bands)
-            if isinstance(bands[0], int):
-                for b in bands:
-                    _check_number_of_bands(b, jim_object.properties.nrOfBand())
-            else:
-                assert jim_object.dimension['band']
-                bandindices = [jim_object.dimension['band'].index(b) for b in bands]
-                for bandindex in bandindices:
-                    _check_number_of_bands(bandindex, jim_object.properties.nrOfBand())
-
         ret_jim = jim_object
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
 
         for jim in jim_other:
+            bandnames = []
             if band is not None:
                 if isinstance(bands[0], int):
                     for b in bands:
                         _check_number_of_bands(b, jim.properties.nrOfBand())
+                    bandindices = bands
+                    if jim.properties.getDimension('band'):
+                        bandnames = [jim.properties.getDimension('band')[b] for b in bands]
                 else:
                     assert jim.dimension['band']
                     bandindices = [jim.dimension['band'].index(b) for b in bands]
+                    bandnames = bands
 
+                if jim_object.properties.getDimension('band'):
+                    retbands = ret_jim.properties.getDimension('band') + bandnames
+
+                if ret_jim.properties.nrOfPlane() != \
+                   jim.properties.nrOfPlane():
+                    raise _pj.exceptions.JimPlanesError(
+                        'planes do not match')
                 ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                     jim._jipjim, {'band': bandindices}))
-
-                ret_jim.dimension['band'] = ret_jim.dimension['band'] + bands
+                if jim_object.properties.getDimension('band'):
+                    ret_jim.properties.setDimension(retbands, 'band')
             else:
+                if jim_object.properties.getDimension('band'):
+                    retbands = ret_jim.properties.getDimension('band') + \
+                        jim. properties.getDimension('band')
+                if ret_jim.properties.nrOfPlane() != \
+                   jim.properties.nrOfPlane():
+                    raise _pj.exceptions.JimPlanesError(
+                        'planes do not match')
                 ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
                     jim._jipjim))
-                ret_jim.dimension['band'] += jim.dimension['band']
+                if jim_object.properties.getDimension('band'):
+                    ret_jim.properties.setDimension(retbands, 'band')
     else:
         raise _pj.exceptions.JimIllegalArgumentError(
             'Expected a Jim or JimList object as the first argument')
@@ -1598,12 +1633,13 @@ def stackPlane(jim_object,
     if isinstance(jim_object, _pj.JimList):
         ret_jim = _pj.Jim(jim_object._jipjimlist.stackPlane())
         for jim in jim_object:
-            ret_jim.dimension['temporal'] += jim.dimension['temporal']
+            ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
 
         if jim_other is not None:
             for jim in args_list:
                 ret_jim._jipjim.d_stackPlane(jim._jipjim)
-                ret_jim.dimension['temporal'] += jim.dimension['temporal']
+                ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+
     elif isinstance(jim_object, _pj.Jim):
         if jim_other is None:
             return _pj.Jim(jim_object)
@@ -1612,8 +1648,9 @@ def stackPlane(jim_object,
 
         for jim in args_list:
             ret_jim._jipjim.d_stackPlane(jim._jipjim)
-            if ret_jim.dimension['temporal']:
-                ret_jim.dimension['temporal'] += jim.dimension['temporal']
+            if ret_jim.dimension['plane']:
+                if jim_object.dimension['plane']:
+                    ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
     else:
         raise _pj.exceptions.JimIllegalArgumentError(
             'Expected a Jim or JimList object as the first argument')
@@ -1767,8 +1804,8 @@ class _Geometry(_pj.modules.JimModuleBase):
             12
         """
         self._jim_object._jipjim.d_band2plane()
-        self._jim_object.dimension['temporal'] = self._jim_object.dimension['band']
-        self._jim_object.dimension['band'] = []
+        self._jim_object.properties.setDimension(self._jim_object.properties.getDimension('band'), 'plane')
+        self._jim_object.properties.setDimension([], 'band')
 
     def covers(self,
                bbox: list = None,
@@ -2030,14 +2067,11 @@ class _Geometry(_pj.modules.JimModuleBase):
             if isinstance(bands[0], int):
                 bandindices = [self._jim_object.properties.nrOfBand() + b
                                if b < 0 else b for b in bands]
-                self._jim_object.dimension['band'] = [self._jim_object.dimension['band'][band] for band in bands]
-            elif isinstance(bands[0], str):
-                self._jim_object.dimension['band'] = bands
+                bandnames = [self._jim_object.dimension['band'][band] for band in bands]
+            else:
+                bandnames = bands
                 bandindices = [self._jim_object.dimension['band'].index(b)
                                for b in bands]
-            else:
-                raise _pj.exceptions.JimBandsError(
-                    'band not supported, use integer or string')
         else:
             if not isinstance(bands[0], int):
                 raise _pj.exceptions.JimBandsError(
@@ -2045,6 +2079,9 @@ class _Geometry(_pj.modules.JimModuleBase):
             bandindices = [self._jim_object.properties.nrOfBand() + b
                            if b < 0 else b for b in bands]
         self._jim_object._jipjim.d_cropBand({'band': bandindices})
+
+        if self._jim_object.dimension['band']:
+            self._jim_object.properties.setDimension(bandnames, 'band')
 
     def cropOgr(self,
                 extent,
@@ -2125,25 +2162,25 @@ class _Geometry(_pj.modules.JimModuleBase):
         else:
             planes = [plane]
 
-        if self._jim_object.dimension['temporal']:
+        if self._jim_object.dimension['plane']:
             if isinstance(planes[0], int):
                 planeindices = [self._jim_object.properties.nrofplanes() + p
                                 if p < 0 else p for p in planes]
-                planenames = [self._jim_object.dimension['temporal'][plane] for plane in planes]
+                planenames = [self._jim_object.dimension['plane'][plane] for plane in planes]
             else:
                 planenames = planes
-                planeindices = [self._jim_object.dimension['temporal'].index(p)
+                planeindices = [self._jim_object.dimension['plane'].index(p)
                                 for p in planes]
         else:
             if not isinstance(planes[0], int):
-                raise _pj.exceptions.jimplaneserror(
-                    'plane not supported, use integer')
+                raise _pj.exceptions.JimPlanesError(
+                    'plane not supported, set plane dimension or use integer')
             planeindices = [self._jim_object.properties.nrofplane() + p
                             if p < 0 else p for p in planes]
 
         self._jim_object._jipjim.d_cropPlane({'plane': planeindices})
-        if self._jim_object.dimension['temporal']:
-            self._jim_object.dimension['temporal'] = planenames
+        if self._jim_object.dimension['plane']:
+            self._jim_object.dimension['plane'] = planenames
 
     def geo2image(self,
                   x: float,
@@ -2417,8 +2454,8 @@ class _Geometry(_pj.modules.JimModuleBase):
             else:
                 result.geometry.stackBand(jim_plane)
         self._jim_object._set(result._jipjim)
-        self._jim_object.dimension['band'] = self._jim_object.dimension['temporal']
-        self._jim_object.dimension['temporal'] = []
+        self._jim_object.properties.setDimension(self._jim_object.properties.getDimension('plane'), 'band')
+        self._jim_object.properties.setDimension([], 'plane')
 
     def plotLine(self,
                  x1: int,
@@ -2797,8 +2834,8 @@ class _Geometry(_pj.modules.JimModuleBase):
             #             jimreduced[nodata_mask] = nodata
 
         self._jim_object._set(jimreduced._jipjim)
-        if self._jim_object.dimension['temporal']:
-            self._jim_object.dimension['temporal'] = rule
+        if self._jim_object.dimension['plane']:
+            self._jim_object.dimension['plane'] = rule
 
     def _reducePlaneSimple(self,
                            rule):
@@ -2838,8 +2875,8 @@ class _Geometry(_pj.modules.JimModuleBase):
             jimplane = _pj.geometry.cropPlane(self._jim_object, iplane)
             jimreduced = rule(jimreduced, jimplane)
         self._jim_object._set(jimreduced._jipjim)
-        if self._jim_object.dimension['temporal']:
-            self._jim_object.dimension['temporal'] = rule
+        if self._jim_object.dimension['plane']:
+            self._jim_object.dimension['plane'] = rule
 
     def repeat(self,
                n: int,
@@ -2858,11 +2895,11 @@ class _Geometry(_pj.modules.JimModuleBase):
         nplane = self._jim_object.properties.nrOfPlane()
         nband = self._jim_object.properties.nrOfBand()
         bands = self._jim_object.properties.getDimension('band')
-        planes = self._jim_object.properties.getDimension('temporal')
+        planes = self._jim_object.properties.getDimension('plane')
         if nplane > 1:
             if axis == 0:
                 nplane *= n
-                if self._jim_object.dimension['temporal']:
+                if self._jim_object.dimension['plane']:
                     planes *= n
             elif axis == 1:
                 nrow *= n
@@ -2891,7 +2928,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         for band in range(0, self._jim_object.properties.nrOfBand()):
             ret_jim.np(band)[:] = self._jim_object.np(band).repeat(n, axis = axis)
         self._jim_object._set(ret_jim._jipjim)
-        self._jim_object.properties.setDimension({'band': bands, 'temporal': planes})
+        self._jim_object.properties.setDimension({'band': bands, 'plane': planes})
 
     def stackBand(self,
                   jim_other,
@@ -2944,15 +2981,15 @@ class _Geometry(_pj.modules.JimModuleBase):
 
 
         for jim in jim_other:
-            if band:
+            if band is not None:
                 self._jim_object._jipjim.d_stackBand(jim._jipjim,
                                                      {'band': bandindex})
                 if self._jim_object.dimension['band']:
-                    self._jim_object.dimension['band'] +=  bandname
+                    self._jim_object.properties.setDimension(bandname, 'band', append = True)
             else:
                 self._jim_object._jipjim.d_stackBand(jim._jipjim)
-                if self._jim_object.dimension['band']:
-                    self._jim_object.dimension['band'] += jim.dimension['band']
+            if self._jim_object.dimension['band']:
+                self._jim_object.properties.setDimension(jim.properties.getDimension('band'), 'band', append = True)
 
     def stackPlane(self,
                    jim_other=None,
@@ -2985,7 +3022,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         for jim in args_list:
             self._jim_object._jipjim.d_stackPlane(jim._jipjim)
-            self._jim_object.dimension['temporal'] += jim.dimension['temporal']
+            self._jim_object.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
 
     def warp(self,
              t_srs,
@@ -3152,9 +3189,13 @@ class _GeometryList(_pj.modules.JimListModuleBase):
 
         ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackPlane())
 
+        for jim in self._jim_list:
+            ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+
         if jim_other is not None:
             for jim in args_list:
                 ret_jim._jipjim.d_stackPlane(jim._jipjim)
+                ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
         return ret_jim
 
 

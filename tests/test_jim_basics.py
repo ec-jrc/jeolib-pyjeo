@@ -21,6 +21,7 @@
 
 import pyjeo as pj
 import unittest
+from datetime import datetime
 
 import numpy as np
 import warnings
@@ -555,6 +556,59 @@ class BadBasicMethods(unittest.TestCase):
         rand_jim = pj.Jim(nrow=50, ncol=50, uniform=[0, 2], otype='int8')
         rand_jim[0, 0] = 0
         rand_jim[0, 1] = 1
+        stats = rand_jim.stats.getStats(band=0)
+        twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2], otype='int8')
+
+        twos_masked = twos[rand_jim]
+        stats_masked = twos_masked.stats.getStats(band=0)
+
+        assert stats_masked['max'] == stats['max'] * 2 and \
+               stats_masked['mean'] == stats['mean'] * 2 and \
+               stats_masked['min'] == stats['min'] == 0, \
+            'Error in masking a Jim by Jim (Jim1[Jim2])'
+
+        # Test a nonsense argument in [gs]etters
+        try:
+            rand_jim['a'] = 5
+            raised = False
+        except pj.exceptions.JimIllegalArgumentError:
+            raised = True
+
+        assert raised, 'Error in catching wrong indices like Jim["string"]'
+
+        # Test Jim usage in getters and setters as an argument with dim
+
+        rand_jim = pj.Jim(nplane = 2, nband = 3, nrow=50, ncol=50,
+                          uniform=[0, 2], otype='int8')
+        dates = [
+            datetime.strptime('2019-01-01','%Y-%m-%d'),
+            datetime.strptime('2019-01-05','%Y-%m-%d')]
+        bands = ['B2', 'B3', 'B4']
+        rand_jim.properties.setDimension({'plane' : dates,
+                                          'band' : bands})
+
+        assert (rand_jim[0, 0, 0]).properties.getDimension('plane') \
+            == dates[0:1], \
+            'Error in getter dimension plane'
+        assert (rand_jim[1, 0, 0]).properties.getDimension('plane') \
+            == dates[1:2], \
+            'Error in getter dimension plane'
+        assert (rand_jim[0, 0, 0]).properties.getDimension('band') \
+            == bands, \
+            'Error in getter dimension band'
+        assert (rand_jim[1, 0, 0]).properties.getDimension('band') \
+            == bands, \
+            'Error in getter dimension band'
+        rand_jim[0, 0, 0] = 0
+        rand_jim[0, 0, 1] = 1
+        assert rand_jim.properties.getDimension('plane') \
+            == dates, \
+            'Error in setter dimension plane'
+        assert rand_jim.properties.getDimension('band') \
+            == bands, \
+            'Error in setter dimension band'
+
+        rand_jim.geometry.cropPlane(dates[0])
         stats = rand_jim.stats.getStats(band=0)
         twos = pj.Jim(nrow=50, ncol=50, uniform=[2, 2], otype='int8')
 

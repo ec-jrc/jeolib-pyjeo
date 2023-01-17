@@ -63,7 +63,6 @@ class _ParentJim(_jl.Jim):
                             'kwargs ignored.', SyntaxWarning)
                         super(_ParentJim, self).__init__(image._jipjim)
                     self.dimension = copy.deepcopy(image.dimension)
-                    self.resolution = copy.deepcopy(image.resolution)
                 else:
                     if 'tileindex' in kwargs.keys() and 'tiletotal' in kwargs.keys():
 
@@ -184,7 +183,6 @@ class _ParentJim(_jl.Jim):
             if isinstance(image, Jim):
                 super(_ParentJim, self).__init__(image._jipjim)
                 self.dimension = copy.deepcopy(image.dimension)
-                self.resolution = copy.deepcopy(image.resolution)
             elif isinstance(image, _jl.Jim):
                 super(_ParentJim, self).__init__(image)
             elif isinstance(image, Path):
@@ -209,8 +207,7 @@ class Jim:
         :param image: path to a raster or another Jim object as a basis for
             the Jim object
         """
-        self.dimension={'temporal':[],'band':[]} #dictionary with nominal dimensions: {'time':[startDate,startDate+11,...],'band':['B2' 'B3','B4','B8']}
-        self.resolution={'temporal':timedelta(days=1),'spatial':[]} #dictionary with values: {'temporal':datetime.day,'spatial':[100,100]}
+        self.dimension={'plane':[],'band':[]} #dictionary with nominal dimensions: {'time':[startDate,startDate+11,...],'band':['B2' 'B3','B4','B8']}
 
         self._checkInitParamsSense(image, kwargs)
 
@@ -219,6 +216,9 @@ class Jim:
         uniform = kwargs.pop('uniform', None)
         seed = kwargs.pop('seed', None)
 
+        if image is not None:
+            if isinstance(image, Jim):
+                self.dimension = image.properties.getDimension()
         self._jipjim = _ParentJim(image, kwargs)
 
         self._all = all._All()
@@ -382,8 +382,8 @@ class Jim:
         import xarray as _xr
 
         #jim is a multiband datacube (with multiple planes)
-        if self.dimension['temporal']:
-            planes = self.dimension['temporal']
+        if self.dimension['plane']:
+            planes = self.dimension['plane']
         else:
             planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
         if self.dimension['band']:
@@ -532,6 +532,12 @@ class Jim:
             mask = item > 0
             return Jim(self * mask)
         else:
+            planes = self.properties.getDimension('plane')
+            if isinstance(item, tuple):
+                if len(item) == 3:
+                    if self.properties.getDimension('plane'):
+                        planes = self.properties.getDimension('plane')[item[0]]
+            bands = self.properties.getDimension('band')
             nband = self.properties.nrOfBand()
             for band in range(nband):
                 npresult = _np.array(self.np(band)[item])
@@ -609,6 +615,8 @@ class Jim:
                     gt[5] = -dy
                     result.properties.setGeoTransform(gt)
                 result.np(band)[:] = npresult
+                result.properties.setDimension(bands, 'band')
+                result.properties.setDimension(planes, 'plane')
             return result
 
     def __setitem__(self, item, value):
@@ -1724,8 +1732,8 @@ def jim2xr(jim_object: Jim,
     import xarray as _xr
 
     #jim is a multiband datacube (with multiple planes)
-    if self.dimension['temporal']:
-        planes = self.dimension['temporal']
+    if self.dimension['plane']:
+        planes = self.dimension['plane']
     else:
         planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
     if self.dimension['band']:
@@ -1863,10 +1871,13 @@ def xr2jim(xr_object) -> Jim:
     if projection is not None:
         jim.properties.setProjection(projection)
 
-    jim.dimension['temporal'] = to_datetime(xr_object.time.data).to_pydatetime().tolist()
+    jim.properties.setDimension(to_datetime(xr_object.time.data).to_pydatetime().tolist(), 'plane')
     bands = []
     for band in xr_object.data_vars:
+        #test
+        print("band: {}".format(band))
         if band != 'spatial_ref':
             bands.append(band)
-    jim.dimension['band'] = bands
+    jim.properties.setDimension(bands, 'band')
+    print(jim.properties.getDimension())
     return jim

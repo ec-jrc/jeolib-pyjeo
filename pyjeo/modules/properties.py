@@ -463,20 +463,33 @@ class _Properties(_pj.modules.JimModuleBase):
             return copy.deepcopy(self._jim_object.dimension)
         elif dimension in ['band', 'bands']:
             return copy.deepcopy(self._jim_object.dimension['band'])
-        elif dimension in ['temporal', 'time']:
-            return copy.deepcopy(self._jim_object.dimension['temporal'])
+        elif dimension in ['plane', 'time']:
+            return copy.deepcopy(self._jim_object.dimension['plane'])
         else:
-            raise ValueError("dimension should be temporal or band")
+            raise ValueError("dimension should be plane or band")
 
-    def setDimension(self, values, dimension = None):
+    def setDimension(self, values, dimension = None, append = False):
         if dimension is None:
+            assert append == False, \
+                "Error: append only supported in combination with dimension"
             self._jim_object.dimension = values
-        elif dimension in ['band', 'bands']:
-            self._jim_object.dimension['band']=values
-        elif dimension in ['temporal', 'time']:
-            self._jim_object.dimension['temporal']=values
         else:
-            raise ValueError("dimension should be temporal or band")
+            if isinstance(values, list):
+                listvalues = copy.deepcopy(values)
+            else:
+                listvalues = [values]
+            if dimension in ['band', 'bands']:
+                if append:
+                    self._jim_object.dimension['band'] += listvalues
+                else:
+                    self._jim_object.dimension['band'] = listvalues
+            elif dimension in ['plane', 'temporal', 'time']:
+                if append:
+                    self._jim_object.dimension['plane'] += listvalues
+                else:
+                    self._jim_object.dimension['plane'] = listvalues
+            else:
+                raise ValueError("dimension should be plane or band")
 
 class _PropertiesList(_pj.modules.JimListModuleBase):
     """Define all properties methods for JimLists."""

@@ -72,8 +72,8 @@ class BadPixOps(unittest.TestCase):
         ndvi = pj.pixops.NDVI(jim, 'red', 'nir', name = 'ndvi')
         jim.pixops.NDVI('red', 'nir', name = 'ndvi')
 
-        assert jim.dimension['band'] == 'ndvi', 'Error name ndvi'
-        assert ndvi.dimension['band'] == 'ndvi', 'Error name ndvi'
+        assert jim.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
+        assert ndvi.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
         assert jim.properties.isEqual(ndvi), 'Error in computing ndvi'
 
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
