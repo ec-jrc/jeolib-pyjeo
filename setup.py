@@ -2,7 +2,7 @@
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu
-# Copyright (C) 2018-2022 European Union (Joint Research Centre)
+# Copyright (C) 2018-2023 European Union (Joint Research Centre)
 #
 # This file is part of pyjeo.
 #
@@ -29,7 +29,7 @@ from setuptools import find_packages
 
 setup(
     name='pyjeo',
-    version='1.0.10',
+    version='1.1.0',
     author_email='pieter.kempeneers@.ec.europa.eu',
     url='https://jeodpp.jrc.ec.europa.eu/apps/gitlab/JIPlib/pyJEO',
     description='https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp',
