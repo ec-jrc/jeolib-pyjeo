@@ -19,6 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
+import copy
 import numpy as _np
 import osgeo
 import pyjeo as _pj
@@ -457,6 +458,38 @@ class _Properties(_pj.modules.JimModuleBase):
         """
         self._jim_object._jipjim.setProjection(*args)
 
+    def getDimension(self, dimension = None):
+        if dimension is None:
+            return copy.deepcopy(self._jim_object.dimension)
+        elif dimension in ['band', 'bands']:
+            return copy.deepcopy(self._jim_object.dimension['band'])
+        elif dimension in ['plane', 'time']:
+            return copy.deepcopy(self._jim_object.dimension['plane'])
+        else:
+            raise ValueError("dimension should be plane or band")
+
+    def setDimension(self, values, dimension = None, append = False):
+        if dimension is None:
+            assert append == False, \
+                "Error: append only supported in combination with dimension"
+            self._jim_object.dimension = values
+        else:
+            if isinstance(values, list):
+                listvalues = copy.deepcopy(values)
+            else:
+                listvalues = [values]
+            if dimension in ['band', 'bands']:
+                if append:
+                    self._jim_object.dimension['band'] += listvalues
+                else:
+                    self._jim_object.dimension['band'] = listvalues
+            elif dimension in ['plane', 'temporal', 'time']:
+                if append:
+                    self._jim_object.dimension['plane'] += listvalues
+                else:
+                    self._jim_object.dimension['plane'] = listvalues
+            else:
+                raise ValueError("dimension should be plane or band")
 
 class _PropertiesList(_pj.modules.JimListModuleBase):
     """Define all properties methods for JimLists."""
@@ -596,7 +629,6 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
         """Select geographical properties (ulx, uly, ...)."""
         self._jim_list._jipjimlist.selectGeo(*args)
         self._jim_list._set(self._jim_list)
-
 
 class _PropertiesVect(_pj.modules.JimVectModuleBase):
     """Define all properties methods for JimVects."""

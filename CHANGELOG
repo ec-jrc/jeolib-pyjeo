@@ -21,3 +21,5 @@
 * support for feature segmentBinaryPatterns (requires miallib 1.0.2)
 * write netCDF files conform convention and replace deprecated patial_ref in favour of crs_wkt
 
+## 1.0.10 -> 1.1.0
+* support cube with dimension names for plane and band

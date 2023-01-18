@@ -2,7 +2,7 @@
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu
-# Copyright (C) 2018-2022 European Union (Joint Research Centre)
+# Copyright (C) 2018-2023 European Union (Joint Research Centre)
 #
 # This file is part of pyjeo.
 #
@@ -73,7 +73,9 @@ def convert(jim_object,
             "Output type {} not supported".format(otype))
     # TODO: Support CTypes
 
-    return _pj.Jim(jim_object._jipjim.convertDataType(otype))
+    ret_jim = _pj.Jim(jim_object._jipjim.convertDataType(otype))
+    ret_jim.properties.setDimension(jim_object.properties.getDimension())
+    return ret_jim
 
 
 def histoCompress(jim_object,
@@ -89,12 +91,14 @@ def histoCompress(jim_object,
     :return: a Jim object
     """
     if band is not None:
-        return _pj.Jim(jim_object._jipjim.histoCompress(band))
+        ret_jim = _pj.Jim(jim_object._jipjim.histoCompress(band))
     else:
-        return _pj.Jim(jim_object._jipjim.histoCompress())
+        ret_jim = _pj.Jim(jim_object._jipjim.histoCompress())
 
+    ret_jim.properties.setDimension(jim_object.properties.getDimension())
+    return ret_jim
 
-def infimum(jim,
+def infimum(jim_object,
             *args):
     """Create Jim composed using minimum rule from provided Jim objects.
 
@@ -102,19 +106,19 @@ def infimum(jim,
     :param args: Jim objects
     :return: Jim composed of smalles values from provided Jim objects
     """
-    if isinstance(jim, _pj.JimList):
-        inf = None
-        for newJim in jim:
-            if inf is None:
-                inf = _pj.Jim(jim[0])
+    if isinstance(jim_object, _pj.JimList):
+        ret_jim = None
+        for newJim in jim_object:
+            if ret_jim is None:
+                ret_jim = _pj.Jim(jim_object[0])
             else:
-                inf._jipjim.d_pointOpArith(newJim._jipjim, 4)
+                ret_jim._jipjim.d_pointOpArith(newJim._jipjim, 4)
     else:
-        inf = _pj.Jim(jim)
+        ret_jim = _pj.Jim(jim_object)
     for newJim in args:
-        inf._jipjim.d_pointOpArith(newJim._jipjim, 4)
+        ret_jim._jipjim.d_pointOpArith(newJim._jipjim, 4)
 
-    return inf
+    return ret_jim
 
 
 # def modulo(jim_object, val):
@@ -129,33 +133,53 @@ def infimum(jim,
 
 
 def NDVI(jim_object,
-         band_red: int,
-         band_nir: int):
+         band_red,
+         band_nir,
+         name: str = None,
+         addBand: bool = False):
     """Compute NDVI on the Jim object.
 
     :param jim_object: Jim object from which the red and NIR bands are to be
         derived
     :param band_red: index of band with values of red
     :param band_nir: index of band with values of NIR
+    :param name: name of band for NDVI
+    :param addBand: add NDVI as a new band
     :return: a Jim object with values of NDVI
     """
     red = _pj.geometry.cropBand(jim_object, band_red)
     nir = _pj.geometry.cropBand(jim_object, band_nir)
 
-    return _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
+    ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
+    ndvi.properties.setDimension(jim_object.properties.getDimension())
+
+    if name is not None:
+        ndvi.properties.setDimension(name, 'band')
+
+    if addBand:
+        return this.geometry.stackBand(jim_object, ndvi)
+    else:
+        return ndvi
 
 
 def NDVISeparateBands(jim_red,
-                      jim_nir):
+                      jim_nir,
+                      name: str = None):
     """Compute NDVI from two Jim objects.
 
     Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
 
     :param jim_red: Jim object with values of red
     :param jim_nir: Jim object with values of NIR
+    :param name: name of band for NDVI
     :return: a Jim object with values of NDVI
     """
-    return _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
+    if name is not None:
+        ndvi = _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
+        ndvi.properties.setDimension(name, 'band')
+        return ndvi
+    else:
+        return _pj.Jim(jim_nir._jipjim.pointOpNDI(jim_red._jipjim))
 
 
 def setData(jim,
@@ -192,6 +216,7 @@ def setData(jim,
     jout = _pj.Jim(jim)
 
     jout.pixops.setData(value, bbox, ulx, uly, lrx, lry, bands, dx, dy, nogeo)
+    jout.properties.setDimension(jim.properties.getDimension())
     return jout
 
 
@@ -206,7 +231,9 @@ def setLevel(jim_object,
     :param max:  Maximum threshold value
     :param val:  All pixels within [min,max] are set to val
     """
-    return _pj.Jim(jim_object._jipjim.pointOpSetLevel(min, max, val))
+    ret_jim = _pj.Jim(jim_object._jipjim.pointOpSetLevel(min, max, val))
+    ret_jim.properties.setDimension(jim_object.properties.getDimension())
+    return ret_jim
 
 
 def setThreshold(jim_object,
@@ -219,7 +246,9 @@ def setThreshold(jim_object,
     for help, please refer to the corresponding
     method :py:meth:`~pixops._PixOps.setThreshold`.
     """
-    return _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
+    ret_jim = _pj.Jim(jim_object._jipjim.setThreshold(kwargs))
+    ret_jim.properties.setDimension(jim_object.properties.getDimension())
+    return ret_jim
 
 
 def simpleArithOp(jim1,
@@ -241,29 +270,33 @@ def simpleArithOp(jim1,
     for jim in jims:
         jout._jipjim.d_pointOpArith(jim._jipjim, op)
 
-    return _pj.Jim(jout)
+    ret_jim = _pj.Jim(jout)
+    ret_jim.properties.setDimension(jim1.properties.getDimension())
+    return ret_jim
 
 
-def simpleBitwiseOp(jim,
+def simpleBitwiseOp(jim_object,
                     another_jim,
                     op: int,
                     *args):
     """Create Jim composed using a simple bitwise operation (coded with op).
 
-    :param jim: Jim object
+    :param jim_object: Jim object
     :param another_jim: Jim object (to be sure that at least one is provided)
     :param op: integer for operation type
     :param args: Jim objects
     :return: Jim holding specified bitwise operation with from provided
         Jim objects
     """
-    jout = _pj.Jim(jim)
+    jout = _pj.Jim(jim_object)
     jims = [another_jim]
     jims.extend(args)
     for newJim in jims:
         jout._jipjim.d_pointOpBitwise(newJim._jipjim, op)
 
-    return _pj.Jim(jout)
+    ret_jim = _pj.Jim(jout)
+    ret_jim.properties.setDimension(jim_object.properties.getDimension())
+    return ret_jim
 
 
 def simpleThreshold(jim_object,
@@ -279,7 +312,9 @@ def simpleThreshold(jim_object,
     :param bg_val: All pixels outside [min,max] are set to bg_val
     :param fg_val: All pixels within [min,max] are set to fg_val
     """
-    return _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
+    ret_jim = _pj.Jim(jim_object._jipjim.pointOpThresh(min, max, fg_val, bg_val))
+    ret_jim.properties.setDimension(jim_object.properties.getDimension())
+    return ret_jim
 
 
 def stretch(jim_object,
@@ -324,7 +359,10 @@ def stretch(jim_object,
         jim_stretched = pj.pixops.stretch(jim, otype='GDT_Byte', dst_min=0,
                                           dst_max=255, cc_min=2, cc_max=98)
     """
-    return _pj.Jim(jim_object._jipjim.stretch(kwargs))
+
+    ret_jim = _pj.Jim(jim_object._jipjim.stretch(kwargs))
+    ret_jim.properties.setDimension(jim_object.properties.getDimension())
+    return ret_jim
 
 
 def supremum(jim,
@@ -448,22 +486,35 @@ class _PixOps(_pj.modules.JimModuleBase):
     #     self._jim_object._jipjim.d_pointOpModulo(val)
 
     def NDVI(self,
-             band_red: int,
-             band_nir: int):
+             band_red,
+             band_nir,
+             name: str = None,
+             addBand: bool = False):
         """Compute NDVI on the Jim object.
 
         Modifies the instance on which the method was called.
 
         :param band_red: index of band with values of red
         :param band_nir: index of band with values of NIR
+        :param name: name of band for NDVI
+        :param addBand: add NDVI as a new band
         """
         red = _pj.geometry.cropBand(self._jim_object, band_red)
         nir = _pj.geometry.cropBand(self._jim_object, band_nir)
 
-        self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
+        if addBand:
+            ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
+            self._jim_object.geometry.stackBand(ndvi)
+            if name is not None:
+                self._jim_object.properties.setDimension(name, 'band', append = True)
+        else:
+            self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
+            if name is not None:
+                self._jim_object.properties.setDimension(name, 'band')
 
     def NDVISeparateBands(self,
-                          jim_nir):
+                          jim_nir,
+                          name: str = None):
         """Compute NDVI from two Jims (call on red band, use NIR as param).
 
         Values in both red and NIR equal to 0 will obtain an NDVI value of -2)
@@ -471,9 +522,16 @@ class _PixOps(_pj.modules.JimModuleBase):
         Modifies the instance on which the method was called.
 
         :param jim_nir: Jim object with values of NIR
+        :param name: name of band for NDVI
         """
-        self._jim_object._set(
-            jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
+
+        if name is not None:
+            ndvi = _pj.Jim(jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
+            ndvi.properties.setDimension(name, 'band')
+            self._jim_object._set(ndvi._jim_object)
+        else:
+            self._jim_object._set(
+                jim_nir._jipjim.pointOpNDI(self._jim_object._jipjim))
 
     def setData(self,
                 value: float,
@@ -482,7 +540,7 @@ class _PixOps(_pj.modules.JimModuleBase):
                 uly: float = None,
                 lrx: float = None,
                 lry: float = None,
-                bands=None,
+                bands = None,
                 dx: int = 0,
                 dy: int = 0,
                 nogeo: bool = False):

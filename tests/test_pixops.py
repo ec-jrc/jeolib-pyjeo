@@ -60,6 +60,38 @@ class BadPixOps(unittest.TestCase):
         assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
 
     @staticmethod
+    def test_NDVI_dimension():
+        """Test computing NDVI in different ways."""
+        jim = pj.Jim(testFile, band=[0, 1])
+        jim.dimension['band'] = ['red', 'nir']
+
+        jim_red = pj.geometry.cropBand(jim, 'red')
+        jim_nir = pj.geometry.cropBand(jim, 'nir')
+
+        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
+        ndvi = pj.pixops.NDVI(jim, 'red', 'nir', name = 'ndvi')
+        jim.pixops.NDVI('red', 'nir', name = 'ndvi')
+
+        assert jim.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
+        assert ndvi.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
+        assert jim.properties.isEqual(ndvi), 'Error in computing ndvi'
+
+        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+
+        jim_red.pixops.NDVISeparateBands(jim_nir)
+
+        assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
+                                                 'NDVISeparateBands'
+
+        assert jim_red.properties.isEqual(jim), 'Error in computing NDVI or ' \
+                                                'NDVISeparateBands'
+
+        jim_nir.pixops.convert('Float32')
+        ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+
+        assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
+
+    @staticmethod
     def test_supremum_infimum():
         """Test picking up supremum and infimum from computed NDVIs."""
         for tile in tiles:
