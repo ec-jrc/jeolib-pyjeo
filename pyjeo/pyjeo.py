@@ -1874,10 +1874,7 @@ def xr2jim(xr_object) -> Jim:
     jim.properties.setDimension(to_datetime(xr_object.time.data).to_pydatetime().tolist(), 'plane')
     bands = []
     for band in xr_object.data_vars:
-        #test
-        print("band: {}".format(band))
         if band != 'spatial_ref':
             bands.append(band)
     jim.properties.setDimension(bands, 'band')
-    print(jim.properties.getDimension())
     return jim
