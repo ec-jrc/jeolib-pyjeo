@@ -23,3 +23,8 @@
 
 ## 1.0.10 -> 1.1.0
 * support cube with dimension names for plane and band
+
+## 1.1.0 -> 1.1.1
+* support bbox None in kwargs for Jim
+* preparing for read the docs with requirements
+

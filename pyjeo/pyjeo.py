@@ -1521,10 +1521,11 @@ class _ParentVect(_jl.VectorOgr):
                         kwargs.update({'filename': vector})
                     if 'bbox' in kwargs:
                         bbox = kwargs.pop('bbox')
-                        kwargs.update({'ulx':bbox[0]})
-                        kwargs.update({'uly':bbox[1]})
-                        kwargs.update({'lrx':bbox[2]})
-                        kwargs.update({'lry':bbox[3]})
+                        if bbox is not None:
+                            kwargs.update({'ulx':bbox[0]})
+                            kwargs.update({'uly':bbox[1]})
+                            kwargs.update({'lrx':bbox[2]})
+                            kwargs.update({'lry':bbox[3]})
                     super(_ParentVect, self).__init__(kwargs)
             elif 'wkt' in kwargs:
                 geom = _ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
