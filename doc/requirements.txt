@@ -1,3 +1,2 @@
 sphinxcontrib-bibtex
 sphinx_copybutton
-sphinx.ext.autosummary
