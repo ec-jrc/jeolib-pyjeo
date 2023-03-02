@@ -35,17 +35,15 @@ sys.path.insert(0, os.path.abspath('./_templates'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-#    'sphinx.ext.imgmath',
-    'sphinx.ext.ifconfig',
-#    'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary',
-    'sphinxcontrib.bibtex',
-    'sphinx_copybutton'
-    ]
-
-
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.todo',
+              #    'sphinx.ext.imgmath',
+              'sphinx.ext.ifconfig',
+              #    'sphinx.ext.viewcode',
+              'sphinx.ext.autosummary',
+              'sphinxcontrib.bibtex',
+              'sphinx_copybutton'
+              ]
 
 # Add path to bibtex file
 bibtex_bibfiles = ['./references.bib']
