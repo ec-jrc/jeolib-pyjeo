@@ -8,6 +8,9 @@ version: 2
 # Build from the docs/ directory with Sphinx
 sphinx:
   configuration: doc/conf.py
+  
+submodules:
+  include: all
 
 # Explicitly set the version of Python and its requirements
 python:
