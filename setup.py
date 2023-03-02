@@ -36,5 +36,5 @@ setup(
     license='GPLv3',
     packages=find_packages(exclude=['doc', 'tests']),
     include_package_data=True,
-    install_requires='numpy'
+    install_requires=['numpy', 'jiplip']
 )

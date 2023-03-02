@@ -1,3 +1,2 @@
-Sphinx==3.4.3
 sphinxcontrib-bibtex
 sphinx_copybutton
