@@ -17,7 +17,7 @@ This documentation is written using the `sphinx <http://www.sphinx-doc.org>`_ to
 Online documentation
 ====================
 
-This documentation is available in the source code under the doc directory (details on how to compile can be found in the README.md file). There is online version in html format available on this `website <https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp>`_.
+This documentation is available in the source code under the doc directory (details on how to compile can be found in the README.md file). There is online version in html format available on this `website <https://pyjeo.readthedocs.io>`_.
 
 The documentation is divided in three main parts:
 

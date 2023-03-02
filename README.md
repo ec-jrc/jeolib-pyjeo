@@ -67,7 +67,7 @@ python -W ignore -m unittest -v tests/test_classify.py
 
 ## Documentation
 
-An online documentation is available [here](https://jeodpp.jrc.ec.europa.eu/services/processing/pyjeohelp/)
+An online documentation is available [here](https://pyjeo.readthedocs.io/)
 
 To build the latest documentation from source:
 
