@@ -416,7 +416,7 @@ class Jim:
                                                         attrs={'_FillValue': 0})
                                      for band in bands})
         else:
-            x_dataset = _xr.Dataset({band:_xr.DataArray(_np.expand_dims(self.np(bands.index(band), axis=0)),
+            x_dataset = _xr.Dataset({band:_xr.DataArray(_np.expand_dims(self.np(bands.index(band)), axis=0),
                                                         dims=['time', 'y', 'x'],
                                                         coords={'time': planes,
                                                                 'x': x, 'y': y},
