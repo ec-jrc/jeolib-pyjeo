@@ -408,19 +408,20 @@ class Jim:
         # Build a xarray Dataset reference (without memory copy)
         # Do not alter shape or destroy x_dataset!
 
-        # if self.properties.nrOfPlane() > 1:
-        x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
-                                                    dims=['time', 'y', 'x'],
-                                                    coords={'time': planes,
-                                                            'x': x, 'y': y},
-                                                    attrs={'_FillValue': 0})
-                                 for band in bands})
-        # else:
-        #     x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
-        #                                               dims=['y', 'x'],
-        #                                               coords={'x': x, 'y': y},
-        #                                               attrs={'_FillValue': 0})
-        #                             for band in bands})
+        if self.properties.nrOfPlane() > 1:
+            x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+                                                        dims=['time', 'y', 'x'],
+                                                        coords={'time': planes,
+                                                                'x': x, 'y': y},
+                                                        attrs={'_FillValue': 0})
+                                     for band in bands})
+        else:
+            x_dataset = _xr.Dataset({band:_xr.DataArray(np.expand_dims(self.np(bands.index(band), axis=0)),
+                                                        dims=['time', 'y', 'x'],
+                                                        coords={'time': planes,
+                                                                'x': x, 'y': y},
+                                                        attrs={'_FillValue': 0})
+                                     for band in bands})
         return x_dataset
 
 
