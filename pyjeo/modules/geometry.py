@@ -202,6 +202,7 @@ def crop(jim_object,
 
     see :py:meth:`~_Geometry.crop` for an example how to use this function
     """
+    dimension = jim_object.properties.getDimension()
     if bbox is not None:
         ulx = bbox[0]
         uly = bbox[1]
@@ -256,6 +257,7 @@ def crop(jim_object,
             jimplane = _pj.Jim(_pj.geometry.cropPlane(
                 jim_object, iplane)._jipjim.crop(kwargs))
             jim.geometry.stackPlane(jimplane)
+        jim.properties.setDimension(jim_object.properties.getDimension())
         return jim
 
     else:
@@ -298,6 +300,7 @@ def crop(jim_object,
             jimplane = _pj.Jim(_pj.geometry.cropPlane(
                 jim_object, iplane)._jipjim.crop(kwargs))
             jim.geometry.stackPlane(jimplane)
+
         jim.properties.setDimension(jim_object.properties.getDimension())
         return jim
         # return _pj.Jim(jim_object._jipjim.crop(kwargs))
