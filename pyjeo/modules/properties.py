@@ -773,8 +773,12 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         :return: True if the values are equal, zero otherwise
         """
         if self._jim_vect.properties.isEmpty():
-            raise _pj.exceptions.JimVectEmptyError(
-                'JimVect on which the method was called is empty')
+            # raise _pj.exceptions.JimVectEmptyError(
+            #     'bothJimVect on which the method was called is empty')
+            if other.properties.isEmpty():
+                return True
+            else:
+                return False
 
         if not isinstance(other, _pj.JimVect):
             return False
