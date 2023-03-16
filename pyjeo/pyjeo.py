@@ -381,6 +381,9 @@ class Jim:
         """
         import xarray as _xr
 
+        if not self:
+            raise exceptions.JimEmptyError(
+                'Jim has to have a data to use Jim.xr()')
         #jim is a multiband datacube (with multiple planes)
         if self.dimension['plane']:
             planes = self.dimension['plane']

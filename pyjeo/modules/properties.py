@@ -65,8 +65,12 @@ def isEqual(first_jim,
             return True
     elif isinstance(first_jim, _pj.JimVect):
         if first_jim.properties.isEmpty():
-            raise _pj.exceptions.JimVectEmptyError('first_jim is empty')
-        if second_jim.properties.isEmpty():
+            # raise _pj.exceptions.JimVectEmptyError('first_jim is empty')
+            if second_jim.properties.isEmpty():
+                return True
+            else:
+                return False
+        elif second_jim.properties.isEmpty():
             return False
 
         if not isinstance(second_jim, _pj.JimVect):

@@ -1510,88 +1510,111 @@ def stackBand(jim_object,
             bands = [band]
 
     if isinstance(jim_object, _pj.JimList):
-        #no band dimension allowed for now
-        assert not jim_object[0].dimension['band']
-        if band is not None:
-            #only band indices allowed for now
-            for b in bands:
-                assert isinstance(b, int)
+        #todo: support band dimension
+        if jim_object:
+            if band is not None:
+                #only band indices allowed for now
+                for b in bands:
+                    assert isinstance(b, int)
 
-            nr_of_band = jim_object[0].properties.nrOfBand()
-            for b in bands:
-                _check_number_of_bands(b, nr_of_band)
-            ret_jim = _pj.Jim(
-                jim_object._jipjimlist.stackBand({'band': band}))
+                nr_of_band = jim_object[0].properties.nrOfBand()
+                for b in bands:
+                    _check_number_of_bands(b, nr_of_band)
+                ret_jim = _pj.Jim(
+                    jim_object._jipjimlist.stackBand({'band': band}))
+            else:
+                ret_jim = _pj.Jim(jim_object._jipjimlist.stackBand())
+            ret_jim.properties.setDimension(
+                jim_object[0].properties.getDimension('band'),
+                'band', append = True)
         else:
-            ret_jim = _pj.Jim(jim_object._jipjimlist.stackBand())
+            ret_jim = _pj.Jim()
 
         if isinstance(jim_other, _pj.Jim):
-            if ret_jim.properties.nrOfPlane() != \
-               jim_other.properties.nrOfPlane():
-                raise _pj.exceptions.JimPlanesError(
-                    'planes do not match')
-            if band is not None:
-                ret_jim.geometry.stackBand(jim_other, band=band)
+            if ret_jim:
+                if ret_jim.properties.nrOfPlane() != \
+                jim_other.properties.nrOfPlane():
+                    raise _pj.exceptions.JimPlanesError(
+                        'planes do not match')
+                if band is not None:
+                    ret_jim.geometry.stackBand(jim_other, band=band)
+                else:
+                    ret_jim.geometry.stackBand(jim_other)
             else:
-                ret_jim.geometry.stackBand(jim_other)
+                if band is not None:
+                    ret_jim = _pj.geometry.cropBand(jim_other, band=band)
+                else:
+                    ret_jim = _pj.Jim(jim_other)
         elif isinstance(jim_other, _pj.JimList):
             if band is not None:
                 #only band indices allowed for now
                 for b in bands:
                     assert isinstance(b, int)
-                jim_to_stack = _pj.Jim(
-                    jim_other._jipjimlist.stackBand({'band': band}))
+            if ret_jim:
+                if band is not None:
+                    jim_to_stack = _pj.Jim(
+                        jim_other._jipjimlist.stackBand({'band': band}))
+                else:
+                    jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
+                if ret_jim.properties.nrOfPlane() != \
+                jim_to_stack.properties.nrOfPlane():
+                    raise _pj.exceptions.JimPlanesError(
+                        'planes do not match')
+                ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
+                    jim_to_stack._jipjim))
             else:
-                jim_to_stack = _pj.Jim(jim_other._jipjimlist.stackBand())
+                if jim_other:
+                    ret_jim = _pj.Jim(jim_other._jipjimlist.stackBand())
 
-            if ret_jim.properties.nrOfPlane() != \
-               jim_to_stack.properties.nrOfPlane():
-                raise _pj.exceptions.JimPlanesError(
-                    'planes do not match')
-            ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
-                jim_to_stack._jipjim))
     elif isinstance(jim_object, _pj.Jim):
         ret_jim = jim_object
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
 
-        for jim in jim_other:
-            bandnames = []
-            if band is not None:
-                if isinstance(bands[0], int):
-                    for b in bands:
-                        _check_number_of_bands(b, jim.properties.nrOfBand())
-                    bandindices = bands
-                    if jim.properties.getDimension('band'):
-                        bandnames = [jim.properties.getDimension('band')[b] for b in bands]
+        if jim_object:
+            for jim in jim_other:
+                if not jim:
+                    continue
+                bandnames = []
+                if band is not None:
+                    if isinstance(bands[0], int):
+                        for b in bands:
+                            _check_number_of_bands(b, jim.properties.nrOfBand())
+                        bandindices = bands
+                        if jim.properties.getDimension('band'):
+                            bandnames = [jim.properties.getDimension('band')[b] for b in bands]
+                    else:
+                        assert jim.dimension['band']
+                        bandindices = [jim.dimension['band'].index(b) for b in bands]
+                        bandnames = bands
+
+                    if jim_object.properties.getDimension('band'):
+                        retbands = ret_jim.properties.getDimension('band') + bandnames
+
+                    if ret_jim.properties.nrOfPlane() != \
+                    jim.properties.nrOfPlane():
+                        raise _pj.exceptions.JimPlanesError(
+                            'planes do not match')
+                    ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
+                        jim._jipjim, {'band': bandindices}))
+                    if jim_object.properties.getDimension('band'):
+                        ret_jim.properties.setDimension(retbands, 'band')
                 else:
-                    assert jim.dimension['band']
-                    bandindices = [jim.dimension['band'].index(b) for b in bands]
-                    bandnames = bands
-
-                if jim_object.properties.getDimension('band'):
-                    retbands = ret_jim.properties.getDimension('band') + bandnames
-
-                if ret_jim.properties.nrOfPlane() != \
-                   jim.properties.nrOfPlane():
-                    raise _pj.exceptions.JimPlanesError(
-                        'planes do not match')
-                ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
-                    jim._jipjim, {'band': bandindices}))
-                if jim_object.properties.getDimension('band'):
-                    ret_jim.properties.setDimension(retbands, 'band')
-            else:
-                if jim_object.properties.getDimension('band'):
-                    retbands = ret_jim.properties.getDimension('band') + \
-                        jim. properties.getDimension('band')
-                if ret_jim.properties.nrOfPlane() != \
-                   jim.properties.nrOfPlane():
-                    raise _pj.exceptions.JimPlanesError(
-                        'planes do not match')
-                ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
-                    jim._jipjim))
-                if jim_object.properties.getDimension('band'):
-                    ret_jim.properties.setDimension(retbands, 'band')
+                    if jim_object.properties.getDimension('band'):
+                        retbands = ret_jim.properties.getDimension('band') + \
+                            jim. properties.getDimension('band')
+                    if ret_jim.properties.nrOfPlane() != \
+                    jim.properties.nrOfPlane():
+                        raise _pj.exceptions.JimPlanesError(
+                            'planes do not match')
+                    ret_jim = _pj.Jim(ret_jim._jipjim.stackBand(
+                        jim._jipjim))
+                    if jim_object.properties.getDimension('band'):
+                        ret_jim.properties.setDimension(retbands, 'band')
+        else:
+            if not isinstance(jim_object, _pj.JimList):
+                jim_other = _pj.JimList(jim_other)
+            ret_jim = _pj.geometry.stackBand(jim_other,band)
     else:
         raise _pj.exceptions.JimIllegalArgumentError(
             'Expected a Jim or JimList object as the first argument')
@@ -1631,26 +1654,41 @@ def stackPlane(jim_object,
         args_list.extend(args)
 
     if isinstance(jim_object, _pj.JimList):
-        ret_jim = _pj.Jim(jim_object._jipjimlist.stackPlane())
-        for jim in jim_object:
-            ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+        if jim_object:
+            ret_jim = _pj.Jim(jim_object._jipjimlist.stackPlane())
+            for jim in jim_object:
+                if jim._jipjim:
+                    ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+                else:
+                    continue
+        else:
+            ret_jim = _pj.Jim()
 
         if jim_other is not None:
             for jim in args_list:
-                ret_jim._jipjim.d_stackPlane(jim._jipjim)
-                ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+                if ret_jim:
+                    ret_jim._jipjim.d_stackPlane(jim._jipjim)
+                    ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+                else:
+                    ret_jim = _pj.Jim(jim)
 
     elif isinstance(jim_object, _pj.Jim):
         if jim_other is None:
             return _pj.Jim(jim_object)
 
-        ret_jim = _pj.Jim(jim_object)
+        if jim_object:
+            ret_jim = _pj.Jim(jim_object)
+        else:
+            ret_jim = _pj.Jim()
 
         for jim in args_list:
-            ret_jim._jipjim.d_stackPlane(jim._jipjim)
-            if ret_jim.dimension['plane']:
-                if jim_object.dimension['plane']:
-                    ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+            if not jim:
+                continue
+            if ret_jim:
+                ret_jim._jipjim.d_stackPlane(jim._jipjim)
+                ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+            else:
+                ret_jim = _pj.Jim(jim)
     else:
         raise _pj.exceptions.JimIllegalArgumentError(
             'Expected a Jim or JimList object as the first argument')
@@ -2958,38 +2996,67 @@ class _Geometry(_pj.modules.JimModuleBase):
         """
         if not isinstance(jim_other, list):
             jim_other = [jim_other]
+        bandname = None
         if band is not None:
-            if self._jim_object.dimension['band']:
-                if isinstance(band, int):
-                    if band < 0:
-                        bandindex = jim_other[0].properties.nrOfBand() + band
-                    else:
-                        bandindex = band
-                    bandname = jim_other[0].dimension['band'][band]
-                else:
-                    bandindex = jim_other[0].dimension['band'].index(band)
-                    bandname = band
-            else:
-                if not isinstance(band, int):
-                    raise _pj.exceptions.JimBandsError('band not supported, use integer')
+            # if self._jim_object.dimension['band']:
+            if isinstance(band, int):
                 if band < 0:
                     bandindex = jim_other[0].properties.nrOfBand() + band
                 else:
                     bandindex = band
-            if bandindex > self._jim_object.properties.nrOfBand():
-                raise _pj.exceptions.JimBandsError('Band out of bounds')
-
-
-        for jim in jim_other:
-            if band is not None:
-                self._jim_object._jipjim.d_stackBand(jim._jipjim,
-                                                     {'band': bandindex})
-                if self._jim_object.dimension['band']:
-                    self._jim_object.properties.setDimension(bandname, 'band', append = True)
+                    if jim_other[0].dimension['band']:
+                        bandname = jim_other[0].dimension['band'][band]
             else:
-                self._jim_object._jipjim.d_stackBand(jim._jipjim)
-            if self._jim_object.dimension['band']:
+                assert jim_other[0].dimension['band']
+                bandindex = jim_other[0].dimension['band'].index(band)
+                bandname = band
+            # else:
+            #     if band < 0:
+            #         bandindex = jim_other[0].properties.nrOfBand() + band
+            #     else:
+            #         bandindex = band
+            if self._jim_object:
+                if not self._jim_object.dimension['band']:
+                    if not isinstance(band, int):
+                        raise _pj.exceptions.JimBandsError('band type not supported, use integer')
+                if bandindex > self._jim_object.properties.nrOfBand():
+                    raise _pj.exceptions.JimBandsError('Band out of bounds')
+
+        if self._jim_object:
+            for jim in jim_other:
+                if not jim:
+                    continue
+                if band is not None:
+                    self._jim_object._jipjim.d_stackBand(jim._jipjim,
+                                                        {'band': bandindex})
+                    # if self._jim_object.dimension['band']:
+                    if bandname:
+                        self._jim_object.properties.setDimension(bandname, 'band', append = True)
+                else:
+                    self._jim_object._jipjim.d_stackBand(jim._jipjim)
+                # if self._jim_object.dimension['band']:
                 self._jim_object.properties.setDimension(jim.properties.getDimension('band'), 'band', append = True)
+        else:
+            for jim in jim_other:
+                if not jim:
+                    continue
+
+                if self._jim_object:
+                    if band is not None:
+                        self._jim_object._jipjim.d_stackBand(jim._jipjim,
+                                                            {'band': bandindex})
+                        # if self._jim_object.dimension['band']:
+                        if bandname:
+                            self._jim_object.properties.setDimension(bandname, 'band', append = True)
+                    else:
+                        self._jim_object._jipjim.d_stackBand(jim._jipjim)
+                    # if self._jim_object.dimension['band']:
+                    self._jim_object.properties.setDimension(jim.properties.getDimension('band'), 'band', append = True)
+                else:
+                    self._jim_object._set(jim._jipjim)
+                    self._jim_object.properties.setDimension(jim.properties.getDimension())
+                    if band is not None:
+                        self._jim_object.geometry.cropBand(band)
 
     def stackPlane(self,
                    jim_other=None,
@@ -3020,9 +3087,23 @@ class _Geometry(_pj.modules.JimModuleBase):
         if args:
             args_list.extend(args)
 
-        for jim in args_list:
-            self._jim_object._jipjim.d_stackPlane(jim._jipjim)
-            self._jim_object.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+
+        if self._jim_object:
+            for jim in args_list:
+                if not jim:
+                    continue
+                self._jim_object._jipjim.d_stackPlane(jim._jipjim)
+                self._jim_object.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+        else:
+            for jim in args_list:
+                if not jim:
+                    continue
+                if self._jim_object:
+                    self._jim_object._jipjim.d_stackPlane(jim._jipjim)
+                    self._jim_object.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+                else:
+                    self._jim_object._set(jim._jipjim)
+                    self._jim_object.properties.setDimension(jim.properties.getDimension())
 
     def warp(self,
              t_srs,
@@ -3071,7 +3152,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         reference system::
 
             jim = pj.Jim('/path/to/file.tif')
-            jim.warp('epsg:3035')
+            jim.geometry.warp('epsg:3035')
 
         Read a raster dataset from disk that is in lat lon (epsg:4326), select
         a bounding box in a different spatial reference system (epsg:3035).
@@ -3081,7 +3162,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
             jim = pj.Jim('/path/to/file.tif', t_srs='epsg:3035',
                          ulx=1000000, uly=4000000, lrx=1500000, lry=3500000)
-            jim.warp('epsg:3035', s_srs='epsg:4326')
+            jim.geometry.warp('epsg:3035', s_srs='epsg:4326')
 
         """
         kwargs.update({'t_srs': t_srs})
@@ -3137,15 +3218,18 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             jimlist = pj.JimList([jim0, jim1, jim2])
             jim_stacked = jimlist.geometry.stackBand([0, 2])
         """
-        if band:
-            nr_of_band = self._jim_list[0].properties.nrOfBand()
-            if band is not None and band > nr_of_band:
-                raise _pj.exceptions.JimBandsError('Band out of bounds')
+        if self._jim_list:
+            if band:
+                nr_of_band = self._jim_list[0].properties.nrOfBand()
+                if band is not None and band > nr_of_band:
+                    raise _pj.exceptions.JimBandsError('Band out of bounds')
 
-            ret_jim = _pj.Jim(
-                self._jim_list._jipjimlist.stackBand({'band': band}))
+                ret_jim = _pj.Jim(
+                    self._jim_list._jipjimlist.stackBand({'band': band}))
+            else:
+                ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackBand())
         else:
-            ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackBand())
+            ret_jim = _pj.Jim()
 
         if isinstance(jim_other, _pj.Jim):
             if band:
@@ -3179,6 +3263,7 @@ class _GeometryList(_pj.modules.JimListModuleBase):
             jim1 = pj.Jim('/path/to/raster1.tif')
             jim_stacked = pj.JimList([jim0, jim1]).geometry.stackPlane()
         """
+        #todo: support empty list and empty jim_other
         if not isinstance(jim_other, list):
             args_list = [jim_other]
         else:
@@ -3187,15 +3272,23 @@ class _GeometryList(_pj.modules.JimListModuleBase):
         if args:
             args_list.extend(args)
 
-        ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackPlane())
-
-        for jim in self._jim_list:
-            ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+        if self._jim_list:
+            ret_jim = _pj.Jim(self._jim_list._jipjimlist.stackPlane())
+            for jim in self._jim_list:
+                if jim._jipjim:
+                    ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+                else:
+                    continue
+        else:
+            ret_jim = _pj.Jim()
 
         if jim_other is not None:
             for jim in args_list:
-                ret_jim._jipjim.d_stackPlane(jim._jipjim)
-                ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+                if ret_jim:
+                    ret_jim._jipjim.d_stackPlane(jim._jipjim)
+                    ret_jim.properties.setDimension(jim.properties.getDimension('plane'), 'plane', append = True)
+                else:
+                    ret_jim = _pj.Jim(jim)
         return ret_jim
 
 
