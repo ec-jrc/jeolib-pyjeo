@@ -381,6 +381,7 @@ class Jim:
         """
         import xarray as _xr
         import rioxarray
+        from pyproj import CRS
 
         if not self:
             raise exceptions.JimEmptyError(
@@ -389,7 +390,8 @@ class Jim:
         if self.dimension['plane']:
             planes = self.dimension['plane']
         else:
-            planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
+            planes = ['t'+str(plane) for plane in range(
+                self.properties.nrOfPlane())]
         if self.dimension['band']:
             bands = self.dimension['band']
         else:
@@ -412,22 +414,33 @@ class Jim:
         # Build a xarray Dataset reference (without memory copy)
         # Do not alter shape or destroy x_dataset!
 
+        crs = CRS(self.properties.getProjection())
+        epsg = crs.to_epsg()
+        epsg_string = crs.to_authority()[0] + ':' + (
+                crs.to_authority()[1])
+
         if self.properties.nrOfPlane() > 1:
-            x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
-                                                        dims=['time', 'y', 'x'],
-                                                        coords={'time': planes,
-                                                                'x': x, 'y': y},
-                                                        attrs={'_FillValue': 0})
+            x_dataset = _xr.Dataset({band:_xr.DataArray(
+                self.np(bands.index(band)),
+                dims=['time', 'y', 'x'],
+                coords={'time': planes,
+                         'x': x, 'y': y,
+                        },
+                attrs={'_FillValue': 0})
                                      for band in bands})
         else:
-            x_dataset = _xr.Dataset({band:_xr.DataArray(_np.expand_dims(self.np(bands.index(band)), axis=0),
-                                                        dims=['time', 'y', 'x'],
-                                                        coords={'time': planes,
-                                                                'x': x, 'y': y},
-                                                        attrs={'_FillValue': 0})
+            x_dataset = _xr.Dataset({band:_xr.DataArray(
+                _np.expand_dims(self.np(bands.index(band)), axis=0),
+                dims=['time', 'y', 'x'],
+                coords={'time': planes,
+                         'x': x, 'y': y,
+                        },
+                attrs={'_FillValue': 0})
                                      for band in bands})
-        return x_dataset.rio.write_crs(self.properties.getProjection(), inplace = True)
-
+        x_dataset.rio.write_crs(epsg_string, inplace = True),
+        #x_dataset.rio.write_crs(epsg_string, 
+        #        grid_mapping_name = 'spatial_ref', inplace = True),
+        return x_dataset
 
     @staticmethod
     def _checkInitParamsSense(image, kwargs):
