@@ -415,16 +415,14 @@ class Jim:
         # Do not alter shape or destroy x_dataset!
 
         crs = CRS(self.properties.getProjection())
-        epsg = crs.to_epsg()
-        epsg_string = crs.to_authority()[0] + ':' + (
-                crs.to_authority()[1])
+        crs_wkt = crs.to_cf()['crs_wkt']
 
         if self.properties.nrOfPlane() > 1:
             x_dataset = _xr.Dataset({band:_xr.DataArray(
                 self.np(bands.index(band)),
                 dims=['time', 'y', 'x'],
                 coords={'time': planes,
-                         'x': x, 'y': y,
+                         'y': y, 'x': x,
                         },
                 attrs={'_FillValue': 0})
                                      for band in bands})
@@ -433,13 +431,11 @@ class Jim:
                 _np.expand_dims(self.np(bands.index(band)), axis=0),
                 dims=['time', 'y', 'x'],
                 coords={'time': planes,
-                         'x': x, 'y': y,
+                         'y': y, 'x': x,
                         },
                 attrs={'_FillValue': 0})
                                      for band in bands})
-        x_dataset.rio.write_crs(epsg_string, inplace = True),
-        #x_dataset.rio.write_crs(epsg_string, 
-        #        grid_mapping_name = 'spatial_ref', inplace = True),
+        x_dataset.rio.write_crs(crs_wkt, inplace = True),
         return x_dataset
 
     @staticmethod
