@@ -380,6 +380,7 @@ class Jim:
         :return: xarray representation
         """
         import xarray as _xr
+        import rioxarray
 
         if not self:
             raise exceptions.JimEmptyError(
@@ -425,7 +426,7 @@ class Jim:
                                                                 'x': x, 'y': y},
                                                         attrs={'_FillValue': 0})
                                      for band in bands})
-        return x_dataset
+        return x_dataset.rio.write_crs(self.properties.getProjection(), inplace = True)
 
 
     @staticmethod
@@ -1825,17 +1826,19 @@ def xr2jim(xr_object) -> Jim:
     :return: a Jim representation from  an xarray
     """
     import xarray as _xr
+    import rioxarray
+    from rasterio import crs as _crs
     from pandas import to_datetime
 
     jim = None
-    projection = None
+    projection = xr_object.rio.crs.to_wkt()
     for b in xr_object:
-        if xr_object[b].attrs.get('crs_wkt') is not None:
-            projection = xr_object[b].attrs.get('crs_wkt')
-        elif xr_object[b].attrs.get('spatial_ref') is not None:
+        # if xr_object[b].attrs.get('crs_wkt') is not None:
+            # projection = xr_object[b].attrs.get('crs_wkt')
+        # elif xr_object[b].attrs.get('spatial_ref') is not None:
             #for backward compatibility
-            projection = xr_object[b].attrs.get('spatial_ref')
-        elif jim is None:
+            # projection = xr_object[b].attrs.get('spatial_ref')
+        if jim is None:
             jim = np2jim(xr_object[b].values)
             #seems redundant...
             jim.np(0)[:] = xr_object[b].values
@@ -1873,8 +1876,7 @@ def xr2jim(xr_object) -> Jim:
             jim.geometry.stackBand(np2jim(xr_object[b].values))
             #seems redundant...
             jim.np(-1)[:] = xr_object[b].values
-    if projection is not None:
-        jim.properties.setProjection(projection)
+    jim.properties.setProjection(projection)
 
     jim.properties.setDimension(to_datetime(xr_object.time.data).to_pydatetime().tolist(), 'plane')
     bands = []
