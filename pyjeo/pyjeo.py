@@ -1844,7 +1844,7 @@ def xr2jim(xr_object) -> Jim:
     assert xr_object.sizes.get('x') is not None
     jim = None
     projection = xr_object.rio.crs.to_wkt()
-    if isinstance(xr_object, _xr.core.dataset.Dataset):
+    if isinstance(xr_object, _xr.Dataset):
         for b in xr_object:
             # if xr_object[b].attrs.get('crs_wkt') is not None:
                 # projection = xr_object[b].attrs.get('crs_wkt')
@@ -1908,7 +1908,7 @@ def xr2jim(xr_object) -> Jim:
                 jim.geometry.stackBand(np2jim(xr_object[b].values))
                 #seems redundant...
                 jim.np(-1)[:] = xr_object[b].values
-    elif isinstance(xr_object, _xr.core.dataset.DataArray):
+    elif isinstance(xr_object, _xr.DataArray):
         if jim is None:
             jim = np2jim(xr_object.values)
             #seems redundant...
