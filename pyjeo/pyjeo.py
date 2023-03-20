@@ -1827,9 +1827,10 @@ def xr2jim(xr_object) -> Jim:
     as [planes][rows][columns] for the respective bands
 
     Returns a 3D Jim object with planes and bands
-    xarray must be a cube with identical x and y coordinates for each dataset
-    Notice the (contiguous) data array is organized as [planes][rows][columns]
-    for the respective bands
+    xarray must be a cube with identical x and y coordinates for each
+    dataset
+    Notice the (contiguous) data array is organized as
+    [planes][rows][columns] for the respective bands
 
     :param xr_object: an xarray
     :return: a Jim representation from  an xarray
@@ -1839,29 +1840,96 @@ def xr2jim(xr_object) -> Jim:
     from rasterio import crs as _crs
     from pandas import to_datetime
 
+    assert xr_object.sizes.get('y') is not None
+    assert xr_object.sizes.get('x') is not None
     jim = None
     projection = xr_object.rio.crs.to_wkt()
-    for b in xr_object:
-        # if xr_object[b].attrs.get('crs_wkt') is not None:
-            # projection = xr_object[b].attrs.get('crs_wkt')
-        # elif xr_object[b].attrs.get('spatial_ref') is not None:
-            #for backward compatibility
-            # projection = xr_object[b].attrs.get('spatial_ref')
+    if isinstance(xr_object, xr.core.dataset.Dataset):
+        for b in xr_object:
+            # if xr_object[b].attrs.get('crs_wkt') is not None:
+                # projection = xr_object[b].attrs.get('crs_wkt')
+            # elif xr_object[b].attrs.get('spatial_ref') is not None:
+                #for backward compatibility
+                # projection = xr_object[b].attrs.get('spatial_ref')
+            if jim is None:
+                jim = np2jim(xr_object[b].values)
+                #seems redundant...
+                jim.np(0)[:] = xr_object[b].values
+                gt = []
+                try:
+                    dx = xr_object[b].coords['x'].values[1] - \
+                        xr_object[b].coords['x'].values[0]
+                    dy = xr_object[b].coords['y'].values[0] - \
+                        xr_object[b].coords['y'].values[1]
+                    ulx = xr_object[b].coords['x'].values[0] - dx/2.0
+                    uly = xr_object[b].coords['y'].values[0] + dy/2.0
+                except KeyError:
+                    dx = xr_object[b].coords['lon'].values[1] - \
+                        xr_object[b].coords['lon'].values[0]
+                    dy = xr_object[b].coords['lat'].values[0] - \
+                        xr_object[b].coords['lat'].values[1]
+                    ulx = xr_object[b].coords['lon'].values[0] - dx/2.0
+                    uly = xr_object[b].coords['lat'].values[0] + dy/2.0
+                gt.append(ulx)
+                gt.append(dx)
+                gt.append(0)
+                gt.append(uly)
+                gt.append(0)
+                gt.append(-dy)
+                jim.properties.setGeoTransform(gt)
+            else:
+                if len(xr_object[b].values.shape) > 2:
+                    assert xr_object[b].values.shape[0] == \
+                        jim.properties.nrOfPlane(), \
+                        str("Error: number of planes is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[0],
+                                          jim.properties.nrOfPlane()))
+                    assert xr_object[b].values.shape[1] == \
+                        jim.properties.nrOfRow(), \
+                        str("Error: number of rows is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[1],
+                                          jim.properties.nrOfRow()))
+                    assert xr_object[b].values.shape[2] == \
+                        jim.properties.nrOfCol(), \
+                        str("Error: number of cols is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[2],
+                                          jim.properties.nrOfCol()))
+                else:
+                    assert xr_object[b].values.shape[0] == \
+                        jim.properties.nrOfRow(),\
+                        str("Error: number of rows is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[0],
+                                          jim.properties.nrOfRow()))
+                    assert xr_object[b].values.shape[1] == \
+                        jim.properties.nrOfCol() ,\
+                        str("Error: number of cols is not consistent: {} \
+                        != {}".format(xr_object[b].values.shape[1],
+                                      jim.properties.nrOfCol()))
+                jim.geometry.stackBand(np2jim(xr_object[b].values))
+                #seems redundant...
+                jim.np(-1)[:] = xr_object[b].values
+    elif isinstance(xr_object, xr.core.dataset.DataArray):
         if jim is None:
-            jim = np2jim(xr_object[b].values)
+            jim = np2jim(xr_object.values)
             #seems redundant...
-            jim.np(0)[:] = xr_object[b].values
+            jim.np(0)[:] = xr_object.values
             gt = []
             try:
-                dx = xr_object[b].coords['x'].values[1]-xr_object[b].coords['x'].values[0]
-                dy = xr_object[b].coords['y'].values[0]-xr_object[b].coords['y'].values[1]
-                ulx = xr_object[b].coords['x'].values[0]-dx/2.0
-                uly = xr_object[b].coords['y'].values[0]+dy/2.0
+                dx = xr_object.coords['x'].values[1] - \
+                    xr_object.coords['x'].values[0]
+                dy = xr_object.coords['y'].values[0] - \
+                    xr_object.coords['y'].values[1]
+                ulx = xr_object.coords['x'].values[0] - dx/2.0
+                uly = xr_object.coords['y'].values[0] + dy/2.0
             except KeyError:
-                dx = xr_object[b].coords['lon'].values[1]-xr_object[b].coords['lon'].values[0]
-                dy = xr_object[b].coords['lat'].values[0]-xr_object[b].coords['lat'].values[1]
-                ulx = xr_object[b].coords['lon'].values[0]-dx/2.0
-                uly = xr_object[b].coords['lat'].values[0]+dy/2.0
+                dx = xr_object.coords['lon'].values[1] - \
+                    xr_object.coords['lon'].values[0]
+                dy = xr_object.coords['lat'].values[0] - \
+                    xr_object.coords['lat'].values[1]
+                ulx = xr_object.coords['lon'].values[0] - \
+                    dx/2.0
+                uly = xr_object.coords['lat'].values[0] + \
+                    dy/2.0
             gt.append(ulx)
             gt.append(dx)
             gt.append(0)
@@ -1869,28 +1937,26 @@ def xr2jim(xr_object) -> Jim:
             gt.append(0)
             gt.append(-dy)
             jim.properties.setGeoTransform(gt)
-        else:
-            if len(xr_object[b].values.shape) > 2:
-                assert xr_object[b].values.shape[0] == jim.properties.nrOfPlane() ,\
-                    str("Error: number of planes is not consistent: {} != {}".format(xr_object[b].values.shape[0], jim.properties.nrOfPlane()))
-                assert xr_object[b].values.shape[1] == jim.properties.nrOfRow() ,\
-                    str("Error: number of rows is not consistent: {} != {}".format(xr_object[b].values.shape[1], jim.properties.nrOfRow()))
-                assert xr_object[b].values.shape[2] == jim.properties.nrOfCol() ,\
-                    str("Error: number of cols is not consistent: {} != {}".format(xr_object[b].values.shape[2], jim.properties.nrOfCol()))
-            else:
-                assert xr_object[b].values.shape[0] == jim.properties.nrOfRow() ,\
-                    str("Error: number of rows is not consistent: {} != {}".format(xr_object[b].values.shape[0], jim.properties.nrOfRow()))
-                assert xr_object[b].values.shape[1] == jim.properties.nrOfCol() ,\
-                    str("Error: number of cols is not consistent: {} != {}".format(xr_object[b].values.shape[1], jim.properties.nrOfCol()))
-            jim.geometry.stackBand(np2jim(xr_object[b].values))
-            #seems redundant...
-            jim.np(-1)[:] = xr_object[b].values
+    else:
+        raise TypeError(
+            'xr_object should be xr.core.Dataset or xr.core.DataArray')
     jim.properties.setProjection(projection)
 
-    jim.properties.setDimension(to_datetime(xr_object.time.data).to_pydatetime().tolist(), 'plane')
+    if xr_object.sizes.get('time') is not None:
+        planes = to_datetime(xr_object.time.data).to_pydatetime()
+        if isinstance(planes, np.ndarray):
+            jim.properties.setDimension(planes.tolist(), 'plane')
+        else:
+            jim.properties.setDimension(planes, 'plane')
+
     bands = []
-    for band in xr_object.data_vars:
-        if band != 'spatial_ref':
-            bands.append(band)
+    if isinstance(xr_object, xr.core.dataset.Dataset):
+        for band in xr_object.data_vars:
+            if band != 'spatial_ref':
+                bands.append(band)
+    else:
+        print("Warning: could not get band name from DataArray, setting 0")
+        bands.append(str(0))
     jim.properties.setDimension(bands, 'band')
+
     return jim
