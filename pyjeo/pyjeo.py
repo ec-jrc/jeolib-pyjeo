@@ -1944,7 +1944,7 @@ def xr2jim(xr_object) -> Jim:
 
     if xr_object.sizes.get('time') is not None:
         planes = to_datetime(xr_object.time.data).to_pydatetime()
-        if isinstance(planes, np.ndarray):
+        if isinstance(planes, _np.ndarray):
             jim.properties.setDimension(planes.tolist(), 'plane')
         else:
             jim.properties.setDimension(planes, 'plane')
