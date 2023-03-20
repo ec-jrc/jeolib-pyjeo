@@ -1840,8 +1840,8 @@ def xr2jim(xr_object) -> Jim:
     from rasterio import crs as _crs
     from pandas import to_datetime
 
-    assert _xr_object.sizes.get('y') is not None
-    assert _xr_object.sizes.get('x') is not None
+    assert xr_object.sizes.get('y') is not None
+    assert xr_object.sizes.get('x') is not None
     jim = None
     projection = xr_object.rio.crs.to_wkt()
     if isinstance(xr_object, _xr.core.dataset.Dataset):
