@@ -1871,8 +1871,6 @@ def xr2jim(xr_object) -> Jim:
     gt.append(uly)
     gt.append(0)
     gt.append(-dy)
-    jim.properties.setGeoTransform(gt)
-    jim.properties.setProjection(projection)
     if isinstance(xr_object, _xr.Dataset):
         for b in xr_object:
             if jim:
@@ -1930,5 +1928,7 @@ def xr2jim(xr_object) -> Jim:
         print("Warning: could not get band name from DataArray, setting 0")
         bands.append(str(0))
     jim.properties.setDimension(bands, 'band')
+    jim.properties.setGeoTransform(gt)
+    jim.properties.setProjection(projection)
 
     return jim
