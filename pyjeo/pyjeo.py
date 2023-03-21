@@ -1939,7 +1939,7 @@ def xr2jim(xr_object) -> Jim:
             jim.properties.setGeoTransform(gt)
     else:
         raise TypeError(
-            'xr_object should be xr.core.Dataset or xr.core.DataArray')
+            'xr_object should be xr.Dataset or xr.DataArray')
     jim.properties.setProjection(projection)
 
     if xr_object.coords.get('time') is not None:
@@ -1950,7 +1950,7 @@ def xr2jim(xr_object) -> Jim:
             jim.properties.setDimension(planes, 'plane')
 
     bands = []
-    if isinstance(xr_object, _xr.core.dataset.Dataset):
+    if isinstance(xr_object, _xr.Dataset):
         for band in xr_object.data_vars:
             if band != 'spatial_ref':
                 bands.append(band)
