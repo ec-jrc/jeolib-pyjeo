@@ -175,10 +175,11 @@ class _ParentJim(_jl.Jim):
             else:
                 if 'bbox' in kwargs:
                     bbox = kwargs.pop('bbox')
-                    kwargs.update({'ulx':bbox[0]})
-                    kwargs.update({'uly':bbox[1]})
-                    kwargs.update({'lrx':bbox[2]})
-                    kwargs.update({'lry':bbox[3]})
+                    if bbox is not None:
+                        kwargs.update({'ulx':bbox[0]})
+                        kwargs.update({'uly':bbox[1]})
+                        kwargs.update({'lrx':bbox[2]})
+                        kwargs.update({'lry':bbox[3]})
                 super(_ParentJim, self).__init__(kwargs)
         elif image:
             if isinstance(image, Jim):
@@ -193,10 +194,11 @@ class _ParentJim(_jl.Jim):
         else:
             if 'bbox' in kwargs:
                 bbox = kwargs.pop('bbox')
-                kwargs.update({'ulx':ulx})
-                kwargs.update({'uly':uly})
-                kwargs.update({'lrx':lrx})
-                kwargs.update({'lry':lry})
+                if bbox is not None:
+                    kwargs.update({'ulx':ulx})
+                    kwargs.update({'uly':uly})
+                    kwargs.update({'lrx':lrx})
+                    kwargs.update({'lry':lry})
             super(_ParentJim, self).__init__(image)
 
 class Jim:
@@ -1843,7 +1845,7 @@ def xr2jim(xr_object) -> Jim:
 
     assert xr_object.sizes.get('y') is not None
     assert xr_object.sizes.get('x') is not None
-    jim = pj.Jim()
+    jim = Jim()
     projection = xr_object.rio.crs.to_wkt()
 
     gt = []
