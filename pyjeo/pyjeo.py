@@ -134,10 +134,11 @@ class _ParentJim(_jl.Jim):
                         kwargs.update({'lry':lry})
                     elif 'bbox' in kwargs:
                         bbox = kwargs.pop('bbox')
-                        kwargs.update({'ulx':bbox[0]})
-                        kwargs.update({'uly':bbox[1]})
-                        kwargs.update({'lrx':bbox[2]})
-                        kwargs.update({'lry':bbox[3]})
+                        if bbox is not None:
+                            kwargs.update({'ulx':bbox[0]})
+                            kwargs.update({'uly':bbox[1]})
+                            kwargs.update({'lrx':bbox[2]})
+                            kwargs.update({'lry':bbox[3]})
                     if isinstance(image, Path):
                         kwargs.update({'filename': str(image)})
                     else:
