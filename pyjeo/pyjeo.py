@@ -30,6 +30,10 @@ from datetime import time, timedelta, datetime
 import math
 from pathlib import Path
 from osgeo import ogr as _ogr
+import xarray as _xr
+import rioxarray
+from pyproj import CRS
+
 
 import jiplib as _jl
 
@@ -76,12 +80,16 @@ class _ParentJim(_jl.Jim):
 
                         bbox = None
                         if 'bbox' in kwargs:
+                            #test
+                            print("debug80")
                             bbox = kwargs.pop('bbox')
                         elif ('ulx' in kwargs and 'uly' in kwargs and
                               'lrx' in kwargs and 'lry' in kwargs):
                             bbox = [kwargs.pop('ulx'), kwargs.pop('uly'),
                                     kwargs.pop('lrx'), kwargs.pop('lry')]
                         if bbox is not None:
+                            #test
+                            print("debug86")
                             ncol = int(round(math.sqrt(tiletotal)))
                             nrow = ncol
                             assert ncol * nrow == tiletotal, \
@@ -133,6 +141,8 @@ class _ParentJim(_jl.Jim):
                         kwargs.update({'lrx':lrx})
                         kwargs.update({'lry':lry})
                     elif 'bbox' in kwargs:
+                        #test
+                        print("debug137")
                         bbox = kwargs.pop('bbox')
                         if bbox is not None:
                             kwargs.update({'ulx':bbox[0]})
@@ -174,6 +184,8 @@ class _ParentJim(_jl.Jim):
                 super(_ParentJim, self).__init__(ngb._jipjim)
             else:
                 if 'bbox' in kwargs:
+                    #test
+                    print("debug178")
                     bbox = kwargs.pop('bbox')
                     if bbox is not None:
                         kwargs.update({'ulx':bbox[0]})
@@ -193,6 +205,8 @@ class _ParentJim(_jl.Jim):
                 super(_ParentJim, self).__init__({'filename': image})
         else:
             if 'bbox' in kwargs:
+                #test
+                print("debug197")
                 bbox = kwargs.pop('bbox')
                 if bbox is not None:
                     kwargs.update({'ulx':ulx})
@@ -382,10 +396,6 @@ class Jim:
 
         :return: xarray representation
         """
-        import xarray as _xr
-        import rioxarray
-        from pyproj import CRS
-
         if not self:
             raise exceptions.JimEmptyError(
                 'Jim has to have a data to use Jim.xr()')
@@ -1747,7 +1757,6 @@ def jim2xr(jim_object: Jim,
 
     :return: xarray representation
     """
-    import xarray as _xr
 
     #jim is a multiband datacube (with multiple planes)
     if self.dimension['plane']:

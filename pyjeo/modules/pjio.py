@@ -19,6 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
+import netCDF4 as nc
+from pyproj import CRS
 import pyjeo as _pj
 
 
@@ -105,8 +107,6 @@ class _IO(_pj.modules.JimModuleBase):
         oformat = kwargs.get('oformat')
         if oformat is not None:
             if 'netCDF' in oformat:
-                import netCDF4 as nc
-                from pyproj import CRS
                 # Write to NetCDF file
                 self._jim_object.xr().to_netcdf(str(filename))
                 #no longer needed since xr() adds CRS
