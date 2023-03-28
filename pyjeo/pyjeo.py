@@ -1910,17 +1910,17 @@ def xr2jim(xr_object) -> Jim:
                         str("Error: number of cols is not consistent: {} \
                             != {}".format(xr_object[b].values.shape[2],
                                           jim.properties.nrOfCol()))
-            else:
-                assert xr_object[b].values.shape[0] == \
-                    jim.properties.nrOfRow(),\
-                    str("Error: number of rows is not consistent: {} \
-                        != {}".format(xr_object[b].values.shape[0],
-                                        jim.properties.nrOfRow()))
-                assert xr_object[b].values.shape[1] == \
-                    jim.properties.nrOfCol() ,\
-                    str("Error: number of cols is not consistent: {} \
-                    != {}".format(xr_object[b].values.shape[1],
-                                    jim.properties.nrOfCol()))
+                else:
+                    assert xr_object[b].values.shape[0] == \
+                        jim.properties.nrOfRow(),\
+                        str("Error: number of rows is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[0],
+                                            jim.properties.nrOfRow()))
+                    assert xr_object[b].values.shape[1] == \
+                        jim.properties.nrOfCol() ,\
+                        str("Error: number of cols is not consistent: {} \
+                        != {}".format(xr_object[b].values.shape[1],
+                                        jim.properties.nrOfCol()))
             jim.geometry.stackBand(np2jim(xr_object[b].values))
             #seems redundant...
             jim.np(-1)[:] = xr_object[b].values
