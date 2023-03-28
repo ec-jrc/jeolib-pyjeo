@@ -1886,13 +1886,14 @@ def xr2jim(xr_object) -> Jim:
     gt.append(-dy)
     if isinstance(xr_object, _xr.Dataset):
         for b in xr_object:
-            if projection is None:
-                if xr_object[b].attrs.get('crs_wkt') is not None:
+            if xr_object[b].attrs.get('crs_wkt') is not None:
+                if projection is None:
                     projection = xr_object[b].attrs.get('crs_wkt')
-                elif xr_object[b].attrs.get('spatial_ref') is not None:
-                    #for backward compatibility
+            elif xr_object[b].attrs.get('spatial_ref') is not None:
+                #for backward compatibility
+                if projection is None:
                     projection = xr_object[b].attrs.get('spatial_ref')
-            if jim:
+            elif jim:
                 if len(xr_object[b].values.shape) > 2:
                     assert xr_object[b].values.shape[0] == \
                         jim.properties.nrOfPlane(), \
@@ -1909,17 +1910,17 @@ def xr2jim(xr_object) -> Jim:
                         str("Error: number of cols is not consistent: {} \
                             != {}".format(xr_object[b].values.shape[2],
                                           jim.properties.nrOfCol()))
-                else:
-                    assert xr_object[b].values.shape[0] == \
-                        jim.properties.nrOfRow(),\
-                        str("Error: number of rows is not consistent: {} \
-                            != {}".format(xr_object[b].values.shape[0],
-                                          jim.properties.nrOfRow()))
-                    assert xr_object[b].values.shape[1] == \
-                        jim.properties.nrOfCol() ,\
-                        str("Error: number of cols is not consistent: {} \
-                        != {}".format(xr_object[b].values.shape[1],
-                                      jim.properties.nrOfCol()))
+            else:
+                assert xr_object[b].values.shape[0] == \
+                    jim.properties.nrOfRow(),\
+                    str("Error: number of rows is not consistent: {} \
+                        != {}".format(xr_object[b].values.shape[0],
+                                        jim.properties.nrOfRow()))
+                assert xr_object[b].values.shape[1] == \
+                    jim.properties.nrOfCol() ,\
+                    str("Error: number of cols is not consistent: {} \
+                    != {}".format(xr_object[b].values.shape[1],
+                                    jim.properties.nrOfCol()))
             jim.geometry.stackBand(np2jim(xr_object[b].values))
             #seems redundant...
             jim.np(-1)[:] = xr_object[b].values
