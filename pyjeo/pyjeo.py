@@ -1855,7 +1855,11 @@ def xr2jim(xr_object) -> Jim:
     assert xr_object.sizes.get('y') is not None
     assert xr_object.sizes.get('x') is not None
     jim = Jim()
-    projection = xr_object.rio.crs.to_wkt()
+    thecrs = xr_object.rio.crs
+
+    projection = None
+    if crs is not None:
+        projection = thecrs.to_wkt()
 
     gt = []
     try:
@@ -1882,6 +1886,12 @@ def xr2jim(xr_object) -> Jim:
     gt.append(-dy)
     if isinstance(xr_object, _xr.Dataset):
         for b in xr_object:
+            if projection is None:
+                if xr_object[b].attrs.get('crs_wkt') is not None:
+                    projection = xr_object[b].attrs.get('crs_wkt')
+                elif xr_object[b].attrs.get('spatial_ref') is not None:
+                    #for backward compatibility
+                    projection = xr_object[b].attrs.get('spatial_ref')
             if jim:
                 if len(xr_object[b].values.shape) > 2:
                     assert xr_object[b].values.shape[0] == \
@@ -1938,6 +1948,7 @@ def xr2jim(xr_object) -> Jim:
         bands.append(str(0))
     jim.properties.setDimension(bands, 'band')
     jim.properties.setGeoTransform(gt)
-    jim.properties.setProjection(projection)
+    if projection is not None:
+        jim.properties.setProjection(projection)
 
     return jim
