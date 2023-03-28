@@ -1858,7 +1858,7 @@ def xr2jim(xr_object) -> Jim:
     thecrs = xr_object.rio.crs
 
     projection = None
-    if crs is not None:
+    if thecrs is not None:
         projection = thecrs.to_wkt()
 
     gt = []
