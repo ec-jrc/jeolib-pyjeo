@@ -1903,6 +1903,9 @@ def xr2jim(xr_object) -> Jim:
             jim.properties.setDimension(planes.tolist(), 'plane')
         else:
             jim.properties.setDimension(planes, 'plane')
+    if xr_object.coords.get('spatial_ref') is not None:
+        #xarray needs to be opened with decode_coords="all"
+        projection = xr_object.coords.get('spatial_ref').attrs.get('crs_wkt')
 
     bands = []
     if isinstance(xr_object, _xr.Dataset):
