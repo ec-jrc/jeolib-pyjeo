@@ -746,6 +746,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -769,6 +770,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -792,6 +794,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -815,6 +818,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -838,6 +842,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -861,6 +866,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
