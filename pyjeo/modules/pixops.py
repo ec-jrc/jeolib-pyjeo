@@ -196,34 +196,34 @@ def NDVI(jim_object,
             jim_object.properties.setDimension(name, 'band')
 
 
-def NDVI(jim_object,
-         band_red,
-         band_nir,
-         name: str = None,
-         addBand: bool = False):
-    """Compute NDVI on the Jim object.
+# def NDVI(jim_object,
+#          band_red,
+#          band_nir,
+#          name: str = None,
+#          addBand: bool = False):
+#     """Compute NDVI on the Jim object.
 
-    :param jim_object: Jim object from which the red and NIR bands are to be
-        derived
-    :param band_red: index of band with values of red
-    :param band_nir: index of band with values of NIR
-    :param name: name of band for NDVI
-    :param addBand: add NDVI as a new band
-    :return: a Jim object with values of NDVI
-    """
-    red = _pj.geometry.cropBand(jim_object, band_red)
-    nir = _pj.geometry.cropBand(jim_object, band_nir)
+#     :param jim_object: Jim object from which the red and NIR bands are to be
+#         derived
+#     :param band_red: index of band with values of red
+#     :param band_nir: index of band with values of NIR
+#     :param name: name of band for NDVI
+#     :param addBand: add NDVI as a new band
+#     :return: a Jim object with values of NDVI
+#     """
+#     red = _pj.geometry.cropBand(jim_object, band_red)
+#     nir = _pj.geometry.cropBand(jim_object, band_nir)
 
-    ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
-    ndvi.properties.setDimension(jim_object.properties.getDimension())
+#     ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
+#     ndvi.properties.setDimension(jim_object.properties.getDimension())
 
-    if name is not None:
-        ndvi.properties.setDimension(name, 'band')
+#     if name is not None:
+#         ndvi.properties.setDimension(name, 'band')
 
-    if addBand:
-        return this.geometry.stackBand(jim_object, ndvi)
-    else:
-        return ndvi
+#     if addBand:
+#         return this.geometry.stackBand(jim_object, ndvi)
+#     else:
+#         return ndvi
 
 
 def NDVISeparateBands(jim_red,
