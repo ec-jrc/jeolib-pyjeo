@@ -1917,11 +1917,11 @@ def xr2jim(xr_object) -> Jim:
                                         jim.properties.nrOfCol()))
             jim.geometry.stackBand(np2jim(xr_object[b].values))
             #seems redundant...
-            # jim.np(-1)[:] = xr_object[b].values
+            jim.np(-1)[:] = xr_object[b].values
     elif isinstance(xr_object, _xr.DataArray):
         jim.geometry.stackBand(np2jim(xr_object.values))
         #seems redundant...
-        # jim.np(-1)[:] = xr_object.values
+        jim.np(-1)[:] = xr_object.values
     else:
         raise TypeError(
             'xr_object should be xr.Dataset or xr.DataArray')
