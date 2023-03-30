@@ -178,7 +178,7 @@ def NDVI(jim_object,
                 ndvi *= scale
             ndvi[_np.isnan(ndvi)] = nodata
             ndvi = ndvi.astype(nptype)
-            jimndvi = pj.np2jim(ndvi)
+            jimndvi = _pj.np2jim(ndvi)
             jimndvi.properties.copyGeoReference(ret_jim)
             if name is not None:
                 jimndvi.properties.setDimension(name, 'band')
@@ -570,7 +570,7 @@ class _PixOps(_pj.modules.JimModuleBase):
                 ndvi *= scale
             ndvi[_np.isnan(ndvi)] = nodata
             ndvi = ndvi.astype(nptype)
-            jimndvi = pj.np2jim(ndvi)
+            jimndvi = _pj.np2jim(ndvi)
             jimndvi.properties.copyGeoReference(self._jim_object)
             if name is not None:
                 jimndvi.properties.setDimension(name, 'band')
