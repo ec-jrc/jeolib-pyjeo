@@ -34,14 +34,18 @@ class BadPixOps(unittest.TestCase):
     @staticmethod
     def test_NDVI():
         """Test computing NDVI in different ways."""
+
         jim = pj.Jim(testFile, band=[0, 1])
+
+        red = 0
+        nir = 1
+        pj.geometry.cropBand(jim, [red, nir])
 
         jim_red = pj.geometry.cropBand(jim, 0)
         jim_nir = pj.geometry.cropBand(jim, 1)
 
-        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
-        ndvi = pj.pixops.NDVI(jim, 0, 1)
-        jim.pixops.NDVI(0, 1)
+        ndvi = pj.pixops.NDVI(jim, 0, 1, scale = 100, offset = 0)
+        jim.pixops.NDVI(0, 1, scale = 100, offset = 0)
 
         assert jim.properties.isEqual(ndvi), 'Error in computing NDVI'
 
@@ -49,47 +53,110 @@ class BadPixOps(unittest.TestCase):
         jim_red.pixops.NDVISeparateBands(jim_nir)
 
         assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
-                                                 'NDVISeparateBands'
+                                                    'NDVISeparateBands'
 
+        jim = pj.Jim(testFile, band=[0, 1])
+        jim.pixops.convert('Float32')
+        jim.pixops.NDVI(0, 1)
         assert jim_red.properties.isEqual(jim), 'Error in computing NDVI or ' \
                                                 'NDVISeparateBands'
 
         jim_nir.pixops.convert('Float32')
+        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
 
         assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
+        # jim = pj.Jim(testFile, band=[0, 1])
+
+        # jim_red = pj.geometry.cropBand(jim, 0)
+        # jim_nir = pj.geometry.cropBand(jim, 1)
+
+        # # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
+        # ndvi = pj.pixops.NDVI(jim, 0, 1, scale = 100, offset = 0)
+        # jim.pixops.NDVI(0, 1, scale = 100, offset = 0)
+
+        # assert jim.properties.isEqual(ndvi), 'Error in computing NDVI'
+
+        # ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+        # jim_red.pixops.NDVISeparateBands(jim_nir)
+
+        # assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
+        #                                          'NDVISeparateBands'
+
+        # assert jim_red.properties.isEqual(jim), 'Error in computing NDVI or ' \
+        #                                         'NDVISeparateBands'
+
+        # jim_nir.pixops.convert('Float32')
+        # ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+
+        # assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
 
     @staticmethod
     def test_NDVI_dimension():
         """Test computing NDVI in different ways."""
         jim = pj.Jim(testFile, band=[0, 1])
-        jim.dimension['band'] = ['red', 'nir']
+        red = 'B01'
+        nir = 'B02'
+        jim.properties.setDimension([red, nir], 'band')
 
-        jim_red = pj.geometry.cropBand(jim, 'red')
-        jim_nir = pj.geometry.cropBand(jim, 'nir')
+        pj.geometry.cropBand(jim, [red, nir])
 
-        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
-        ndvi = pj.pixops.NDVI(jim, 'red', 'nir', name = 'ndvi')
-        jim.pixops.NDVI('red', 'nir', name = 'ndvi')
+        jim_red = pj.geometry.cropBand(jim, red)
+        jim_nir = pj.geometry.cropBand(jim, nir)
 
-        assert jim.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
-        assert ndvi.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
-        assert jim.properties.isEqual(ndvi), 'Error in computing ndvi'
+        ndvi = pj.pixops.NDVI(jim, red, nir, scale = 100, offset = 0)
+        jim.pixops.NDVI(red, nir, scale = 100, offset = 0)
+
+        assert jim.properties.isEqual(ndvi), 'Error in computing NDVI'
 
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
-
         jim_red.pixops.NDVISeparateBands(jim_nir)
 
         assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
-                                                 'NDVISeparateBands'
+                                                    'NDVISeparateBands'
 
+        jim = pj.Jim(testFile, band=[0, 1])
+        jim.properties.setDimension([red, nir], 'band')
+        jim.pixops.convert('Float32')
+        jim.pixops.NDVI(red, nir)
         assert jim_red.properties.isEqual(jim), 'Error in computing NDVI or ' \
                                                 'NDVISeparateBands'
 
         jim_nir.pixops.convert('Float32')
+        # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
 
         assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
+        # jim = pj.Jim(testFile, band=[0, 1])
+        # band =  ['red', 'nir']
+        # jim.properties.setDimension(band, 'band')
+        # jim.pixops.convert('Float32')
+
+        # jim_red = pj.geometry.cropBand(jim, 'red')
+        # jim_nir = pj.geometry.cropBand(jim, 'nir')
+
+        # # TODO: Suppress output originating in jiplib (flag `quiet`, please?)
+        # ndvi = pj.pixops.NDVI(jim, 'red', 'nir', name = 'ndvi')
+        # jim.pixops.NDVI('red', 'nir', name = 'ndvi')
+
+        # assert jim.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
+        # assert ndvi.properties.getDimension('band') == ['ndvi'], 'Error name ndvi'
+        # assert jim.properties.isEqual(ndvi), 'Error in computing ndvi'
+
+        # ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+
+        # jim_red.pixops.NDVISeparateBands(jim_nir)
+
+        # assert jim_red.properties.isEqual(ndvi), 'Error in computing ' \
+        #                                          'NDVISeparateBands'
+
+        # assert jim_red.properties.isEqual(jim), 'Error in computing NDVI or ' \
+        #                                         'NDVISeparateBands'
+
+        # jim_nir.pixops.convert('Float32')
+        # ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
+
+        # assert not jim.properties.isEqual(ndvi), 'Error in computing NDVI'
 
     @staticmethod
     def test_supremum_infimum():

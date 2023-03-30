@@ -135,7 +135,7 @@ def infimum(jim_object,
 def NDVI(jim_object,
          red,
          nir,
-         name: str = 'NDVI',
+         name: str = None,
          nodata=-2,
          scale: float = 1.0,
          offset: float = 0,
@@ -157,73 +157,49 @@ def NDVI(jim_object,
                 raise UserWarning("Warning data type is not floating point\
                 , use scale and offset or change data type")
         nptype = jim_object.np().dtype.type
+        if isinstance(red, int):
+            redindex = red
+        else:
+            redindex = jim_object.properties.getDimension(
+                'band').index(red)
+        if isinstance(nir, int):
+            nirindex = nir
+        else:
+            nirindex = jim_object.properties.getDimension(
+                'band').index(nir)
         if addBand:
-            rednp = jim_object.np(
-                jim_object.properties.getDimension('band').index(
-                    red)).astype(float)
-            nirnp = jim_object.np(
-                jim_object.properties.getDimension('band').index(
-                    nir)).astype(float)
+            ret_jim = _pj.Jim(jim_object)
+            rednp = ret_jim.np(redindex).astype(float)
+            nirnp = ret_jim.np(nirindex).astype(float)
             ndvi = (nirnp - rednp) / (rednp + nirnp)
             if offset != 0:
                 ndvi += offset
             if scale != 1:
                 ndvi *= scale
-            ndvi[np.isnan(ndvi)] = nodata
+            ndvi[_np.isnan(ndvi)] = nodata
             ndvi = ndvi.astype(nptype)
             jimndvi = pj.np2jim(ndvi)
-            jimndvi.properties.copyGeoReference(self._jim_object)
-            jimndvi.properties.setDimension(name, 'band')
-            jim_object.geometry.stackBand(jimndvi)
+            jimndvi.properties.copyGeoReference(ret_jim)
+            if name is not None:
+                jimndvi.properties.setDimension(name, 'band')
+            ret_jim.geometry.stackBand(jimndvi)
         else:
-            jim_object.geometry.crop([red, nir])
-            jim_object.pixops.convert('GDT_Float32')
-            rednp = jim_object.np(
-                jim_object.properties.getDimension('band').index(
-                    red)).astype(float)
-            nirnp = jim_object.np(
-                jim_object.properties.getDimension('band').index(
-                    nir)).astype(float)
+            ret_jim = _pj.geometry.cropBand(jim_object, [red, nir])
+            ret_jim.pixops.convert('GDT_Float32')
+            rednp = ret_jim.np(redindex).astype(float)
+            nirnp = ret_jim.np(nirindex).astype(float)
             ndvi = (nirnp - rednp) / (rednp + nirnp)
             if offset != 0:
                 ndvi += offset
             if scale != 1:
                 ndvi *= scale
-            ndvi[np.isnan(ndvi)] = nodata
+            ndvi[_np.isnan(ndvi)] = nodata
             ndvi = ndvi.astype(nptype)
-            jim_object.np(0)[:] = ndvi
-            jim_object.geometry.cropBand(0)
-            jim_object.properties.setDimension(name, 'band')
-
-
-# def NDVI(jim_object,
-#          band_red,
-#          band_nir,
-#          name: str = None,
-#          addBand: bool = False):
-#     """Compute NDVI on the Jim object.
-
-#     :param jim_object: Jim object from which the red and NIR bands are to be
-#         derived
-#     :param band_red: index of band with values of red
-#     :param band_nir: index of band with values of NIR
-#     :param name: name of band for NDVI
-#     :param addBand: add NDVI as a new band
-#     :return: a Jim object with values of NDVI
-#     """
-#     red = _pj.geometry.cropBand(jim_object, band_red)
-#     nir = _pj.geometry.cropBand(jim_object, band_nir)
-
-#     ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
-#     ndvi.properties.setDimension(jim_object.properties.getDimension())
-
-#     if name is not None:
-#         ndvi.properties.setDimension(name, 'band')
-
-#     if addBand:
-#         return this.geometry.stackBand(jim_object, ndvi)
-#     else:
-#         return ndvi
+            ret_jim.np(0)[:] = ndvi
+            ret_jim.geometry.cropBand(0)
+            if name is not None:
+                ret_jim.properties.setDimension(name, 'band')
+        return ret_jim
 
 
 def NDVISeparateBands(jim_red,
@@ -552,7 +528,7 @@ class _PixOps(_pj.modules.JimModuleBase):
     def NDVI(self,
              red,
              nir,
-             name: str = 'NDVI',
+             name: str = None,
              nodata=-2,
              scale: float = 1.0,
              offset: float = 0,
@@ -574,70 +550,47 @@ class _PixOps(_pj.modules.JimModuleBase):
                 raise UserWarning("Warning data type is not floating point\
                 , use scale and offset or change data type")
         nptype = self._jim_object.np().dtype.type
+        if isinstance(red, int):
+            redindex = red
+        else:
+            redindex = self._jim_object.properties.getDimension(
+                'band').index(red)
+        if isinstance(nir, int):
+            nirindex = nir
+        else:
+            nirindex = self._jim_object.properties.getDimension(
+                'band').index(nir)
         if addBand:
-            rednp = self._jim_object.np(
-                self._jim_object.properties.getDimension('band').index(
-                    red)).astype(float)
-            nirnp = self._jim_object.np(
-                self._jim_object.properties.getDimension('band').index(
-                    nir)).astype(float)
+            rednp = self._jim_object.np(redindex).astype(float)
+            nirnp = self._jim_object.np(nirindex).astype(float)
             ndvi = (nirnp - rednp) / (rednp + nirnp)
             if offset != 0:
                 ndvi += offset
             if scale != 1:
                 ndvi *= scale
-            ndvi[np.isnan(ndvi)] = nodata
+            ndvi[_np.isnan(ndvi)] = nodata
             ndvi = ndvi.astype(nptype)
             jimndvi = pj.np2jim(ndvi)
             jimndvi.properties.copyGeoReference(self._jim_object)
-            jimndvi.properties.setDimension(name, 'band')
+            if name is not None:
+                jimndvi.properties.setDimension(name, 'band')
             self._jim_object.geometry.stackBand(jimndvi)
         else:
-            self._jim_object.geometry.crop([red, nir])
+            self._jim_object.geometry.cropBand([red, nir])
             self._jim_object.pixops.convert('GDT_Float32')
-            rednp = self._jim_object.np(
-                self._jim_object.properties.getDimension('band').index(
-                    red)).astype(float)
-            nirnp = self._jim_object.np(
-                self._jim_object.properties.getDimension('band').index(
-                    nir)).astype(float)
+            rednp = self._jim_object.np(redindex).astype(float)
+            nirnp = self._jim_object.np(nirindex).astype(float)
             ndvi = (nirnp - rednp) / (rednp + nirnp)
             if offset != 0:
                 ndvi += offset
             if scale != 1:
                 ndvi *= scale
-            ndvi[np.isnan(ndvi)] = nodata
+            ndvi[_np.isnan(ndvi)] = nodata
             ndvi = ndvi.astype(nptype)
-            self.np(0)[:] = ndvi
-            self.geometry.cropBand(0)
-            self._jim_object.properties.setDimension(name, 'band')
-
-    # def NDVI(self,
-    #          band_red,
-    #          band_nir,
-    #          name: str = None,
-    #          addBand: bool = False):
-    #     """Compute NDVI on the Jim object.
-
-    #     Modifies the instance on which the method was called.
-
-    #     :param band_red: index of band with values of red
-    #     :param band_nir: index of band with values of NIR
-    #     :param name: name of band for NDVI
-    #     :param addBand: add NDVI as a new band
-    #     """
-    #     red = _pj.geometry.cropBand(self._jim_object, band_red)
-    #     nir = _pj.geometry.cropBand(self._jim_object, band_nir)
-
-    #     if addBand:
-    #         ndvi = _pj.Jim(nir._jipjim.pointOpNDI(red._jipjim))
-    #         self._jim_object.geometry.stackBand(ndvi)
-    #         if name is not None:
-    #             self._jim_object.properties.setDimension(name, 'band', append = True)
-    #     else:
-    #         self._jim_object._set(nir._jipjim.pointOpNDI(red._jipjim))
-    #         if name is not None:
-    #             self._jim_object.properties.setDimension(name, 'band')
+            self._jim_object.np(0)[:] = ndvi
+            self._jim_object.geometry.cropBand(0)
+            if name is not None:
+                self._jim_object.properties.setDimension(name, 'band')
 
     def NDVISeparateBands(self,
                           jim_nir,
