@@ -1700,7 +1700,7 @@ def stackPlane(jim_object,
 
 
 def warp(jim_object,
-         t_srs,
+         t_srs = None,
          bbox: list = None,
          ulx: float = None,
          uly: float = None,
@@ -3109,7 +3109,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                     self._jim_object.properties.setDimension(jim.properties.getDimension())
 
     def warp(self,
-             t_srs,
+             t_srs = None,
              bbox: list = None,
              ulx: float = None,
              uly: float = None,
