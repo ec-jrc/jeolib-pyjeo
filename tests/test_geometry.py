@@ -664,6 +664,53 @@ class BadGeometry(unittest.TestCase):
             '(after warping to a different projection and back and ' \
             'after cropping to the original extent, nrOfRow changed)'
 
+        #Test the warp method without re-projection for resampling
+
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
+
+        dates = [
+            datetime.strptime('2019-01-01','%Y-%m-%d'),
+            datetime.strptime('2019-01-05','%Y-%m-%d')]
+        bands = ['B0', 'B1']
+
+        jim0.geometry.stackPlane(pj.Jim(rasterfn, band=[2, 3]))
+        jim0.properties.setDimension({'plane' : dates,
+                                      'band' : bands})
+
+        bbox = jim0.properties.getBBox()
+        projection = jim0.properties.getProjection()
+
+        jim_cubic = pj.geometry.warp(jim0, dx = 100, dy = 100,
+                                     resample = 'cubic')
+
+        jim_near = pj.geometry.warp(jim0, dx = 100, dy = 100,
+                                    resample = 'near')
+        assert not jim_cubic.properties.isEqual(jim_near), \
+            'Error in geometry.warp(): resampling method'
+
+        jim0.geometry.warp(dx = 100, dy = 100, resample = 'cubic')
+
+        assert jim_cubic.properties.isEqual(jim0), \
+            'Error in geometry.warp() ' \
+            'function not equal to method'
+
+        assert jim0.properties.nrOfPlane() == len(dates), \
+            'Error in geometry.warp(): len plane'
+        assert jim0.properties.nrOfBand() == len(bands), \
+            'Error in geometry.warp(): len band'
+        assert jim0.properties.getDimension('plane') == dates, \
+            'Error in geometry.warp(): dimension plane'
+        assert jim0.properties.getDimension('band') == bands, \
+            'Error in geometry.warp(): dimension band'
+        assert jim0.properties.getDeltaX() == 100, \
+            'Error in geometry.warp(): dx is not 100'
+        assert jim0.properties.getDeltaY() == 100, \
+            'Error in geometry.warp(): dy is not 100'
+        assert jim0.properties.getBBox() == bbox, \
+            'Error in geometry.warp(): bbox'
+        assert jim0.properties.getProjection() == projection, \
+            'Error in geometry.warp(): projection'
+
     @staticmethod
     def test_extract_loop():
         """Test the extract method looping over bands using join function."""
