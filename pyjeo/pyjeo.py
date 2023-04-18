@@ -1757,14 +1757,14 @@ def jim2xr(jim_object: Jim,
     """
 
     #jim is a multiband datacube (with multiple planes)
-    if self.dimension['plane']:
-        planes = self.dimension['plane']
+    if jim_object.properties.getDimension('plane'):
+        planes = jim_object.properties.getDimension('plane')
     else:
-        planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
-    if self.dimension['band']:
-        bands = self.dimension['band']
+        planes = ['t'+str(plane) for plane in range(jim_object.properties.nrOfPlane())]
+    if jim_object.properties.getDimension('band'):
+        bands = jim_object.properties.getDimension('band')
     else:
-        bands = [str(b) for b in range(self.properties.nrOfBand())]
+        bands = [str(b) for b in range(jim_object.properties.nrOfBand())]
     bbox = jim_object.properties.getBBox()
 
     # xarray coordinates are pixel centered
@@ -1777,14 +1777,14 @@ def jim2xr(jim_object: Jim,
 
     # Build new copy of xarray Dataset (with memory copy):
     if jim_object.properties.nrOfPlane() > 1:
-        x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+        x_dataset = _xr.Dataset({band:_xr.DataArray(jim_object.np(bands.index(band)),
                                                     dims=['time', 'y', 'x'],
                                                     coords={'time': planes,
                                                             'x': x, 'y': y},
                                                     attrs={'_FillValue': 0})
                                 for band in bands})
     else:
-        x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+        x_dataset = _xr.Dataset({band:_xr.DataArray(jim_object.np(bands.index(band)),
                                                   dims=['y', 'x'],
                                                   coords={'x': x, 'y': y},
                                                   attrs={'_FillValue': 0})
