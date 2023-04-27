@@ -280,6 +280,51 @@ class BadGeometry(unittest.TestCase):
             datetime.strptime('2019-03-01','%Y-%m-%d')]
         jim.properties.setDimension(dates, 'band')
 
+        # Test stackBand() with empty Jim
+        jimempty = pj.Jim()
+        jim0to1 = pj.geometry.cropBand(jim, [0, 1])
+        jimempty.geometry.stackBand(jim0to1)
+        assert jimempty.properties.getDimension('band') == \
+            dates[0:2], \
+            'Error in geometry.stackBand() with empty Jim dimension band'
+        assert jimempty.properties.isEqual(jim0to1), \
+            'Error in geometry.stackBand() with empty Jim'
+
+        jimempty = pj.Jim()
+        jim0to1 = pj.geometry.cropBand(jim, [0, 1])
+        jimempty = pj.geometry.stackBand(jimempty, jim0to1)
+        assert jimempty.properties.getDimension('band') == \
+            dates[0:2], \
+            'Error in geometry.stackBand() with empty Jim dimension band'
+        assert jimempty.properties.isEqual(jim0to1), \
+            'Error in geometry.stackBand() with empty Jim and Jim'
+
+        jimempty = pj.Jim()
+        jim0to1 = pj.geometry.cropBand(jim, [0, 1])
+        jimempty = pj.geometry.stackBand(jim0to1, jimempty)
+        assert jimempty.properties.getDimension('band') == \
+            dates[0:2], \
+            'Error in geometry.stackBand() with empty Jim dimension band'
+        assert jimempty.properties.isEqual(jim0to1), \
+            'Error in geometry.stackBand() with Jim and empty Jim'
+
+        jimempty = pj.Jim()
+        jimempty.geometry.stackBand(jim0to1, 0)
+        assert jimempty.properties.getDimension('band') == \
+            dates[0:1], \
+            'Error in geometry.stackBand() with empty Jim selected band'
+        assert jimempty.properties.isEqual(jim0to1), \
+            'Error in geometry.stackBand() with empty Jim'
+
+        jimempty = pj.Jim()
+        jimempty.geometry.stackBand(
+            jim0to1, datetime.strptime('2019-01-01','%Y-%m-%d'),)
+        assert jimempty.properties.getDimension('band') == \
+            dates[0:1], \
+            'Error in geometry.stackBand() with empty Jim selected band'
+        assert jimempty.properties.isEqual(jim0to1), \
+            'Error in geometry.stackBand() with empty Jim'
+
         # Test stackBand()
         jim0to1 = pj.geometry.cropBand(jim, [0, 1])
         assert jim0to1.properties.getDimension('band') == \
@@ -345,7 +390,98 @@ class BadGeometry(unittest.TestCase):
             properties.getDimension('band'), \
             'Error in geometry.stackBand() dimensions with band specified'
 
+        # Test the stackPlane() with empty Jim
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim3 = pj.geometry.stackPlane(jim1, jim2)
+        assert jim3.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(jim, empty)'
+        assert(jim3.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(jim, empty)'
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim3 = pj.geometry.stackPlane(jim2, jim1)
+        assert jim3.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(empty, jim)'
+        assert(jim3.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(empty, jim)'
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim3 = pj.geometry.stackPlane(jim1, [jim2])
+        assert jim3.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(jim, [empty])'
+        assert(jim3.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(empty, jim)'
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim3 = pj.geometry.stackPlane(jim2, [jim1])
+        assert jim3.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(empty, [jim])'
+        assert(jim3.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(empty, jim)'
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim3 = pj.geometry.stackPlane(jim1, [jim2, pj.Jim()])
+        assert jim3.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(jim, [empty])'
+        assert(jim3.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(empty, jim)'
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim3 = pj.geometry.stackPlane(jim2, [pj.Jim(), jim1, pj.Jim()])
+        assert jim3.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(empty, [jim])'
+        assert(jim3.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(empty, jim)'
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim1.geometry.stackPlane(jim2)
+        assert jim1.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(empty, [jim])'
+        assert(jim1.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(empty, jim)'
+
+        jim1 = pj.Jim(rasterfn)
+        jim1.properties.setDimension(dates[1], 'plane')
+        jim2 = pj.Jim()
+        jim2.geometry.stackPlane(jim1)
+        assert jim2.properties.getDimension() == \
+            jim1.properties.getDimension(), \
+            'Inconsistency in dimension geometry.stackPlane(empty, [jim])'
+        assert(jim2.properties.isEqual(jim1)), \
+            'Inconsistency in geometry.stackPlane(empty, jim)'
+
+        # Test the stackPlane() with empty JimList
+        jimlist = pj.JimList([])
+        jimliststack = pj.geometry.stackPlane(jimlist)
+        assert not jimliststack, \
+            'Error in pj.geometry.stackPlane(jimlist) function empty list'
+        assert jimlist.geometry.stackPlane().properties.isEqual(pj.Jim()), \
+            'Error in pj.geometry.stackPlane(jimlist) method empty list'
+
         # Test the stackPlane() method
+
         jim0 = pj.Jim(rasterfn, band=0)
         jim1 = pj.Jim(rasterfn, band=1)
         jim2 = pj.Jim(rasterfn, band=2)
@@ -431,7 +567,7 @@ class BadGeometry(unittest.TestCase):
         # the nrOfBand in Jims
         try:
             _ = pj.geometry.stackBand(jim0, jim1,
-                                    band = jim0.properties.nrOfBand() - 1)
+                                      band = jim0.properties.nrOfBand() - 1)
             raised = False
         except pj.exceptions.JimPlanesError:
             raised = True
@@ -527,6 +663,53 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.warp() ' \
             '(after warping to a different projection and back and ' \
             'after cropping to the original extent, nrOfRow changed)'
+
+        #Test the warp method without re-projection for resampling
+
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
+
+        dates = [
+            datetime.strptime('2019-01-01','%Y-%m-%d'),
+            datetime.strptime('2019-01-05','%Y-%m-%d')]
+        bands = ['B0', 'B1']
+
+        jim0.geometry.stackPlane(pj.Jim(rasterfn, band=[2, 3]))
+        jim0.properties.setDimension({'plane' : dates,
+                                      'band' : bands})
+
+        bbox = jim0.properties.getBBox()
+        projection = jim0.properties.getProjection()
+
+        jim_cubic = pj.geometry.warp(jim0, dx = 100, dy = 100,
+                                     resample = 'cubic')
+
+        jim_near = pj.geometry.warp(jim0, dx = 100, dy = 100,
+                                    resample = 'near')
+        assert not jim_cubic.properties.isEqual(jim_near), \
+            'Error in geometry.warp(): resampling method'
+
+        jim0.geometry.warp(dx = 100, dy = 100, resample = 'cubic')
+
+        assert jim_cubic.properties.isEqual(jim0), \
+            'Error in geometry.warp() ' \
+            'function not equal to method'
+
+        assert jim0.properties.nrOfPlane() == len(dates), \
+            'Error in geometry.warp(): len plane'
+        assert jim0.properties.nrOfBand() == len(bands), \
+            'Error in geometry.warp(): len band'
+        assert jim0.properties.getDimension('plane') == dates, \
+            'Error in geometry.warp(): dimension plane'
+        assert jim0.properties.getDimension('band') == bands, \
+            'Error in geometry.warp(): dimension band'
+        assert jim0.properties.getDeltaX() == 100, \
+            'Error in geometry.warp(): dx is not 100'
+        assert jim0.properties.getDeltaY() == 100, \
+            'Error in geometry.warp(): dy is not 100'
+        assert jim0.properties.getBBox() == bbox, \
+            'Error in geometry.warp(): bbox'
+        assert jim0.properties.getProjection() == projection, \
+            'Error in geometry.warp(): projection'
 
     @staticmethod
     def test_extract_loop():

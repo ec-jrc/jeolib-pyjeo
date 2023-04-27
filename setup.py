@@ -29,12 +29,12 @@ from setuptools import find_packages
 
 setup(
     name='pyjeo',
-    version='1.1.1',
+    version='1.1.2',
     author_email='pieter.kempeneers@.ec.europa.eu',
     url='https://github.com/ec-jrc/jeolib-pyjeo',
     description='https://pyjeo.readthedocs.io/',
     license='GPLv3',
     packages=find_packages(exclude=['doc', 'tests']),
     include_package_data=True,
-    install_requires=['numpy', 'xarray']
+    install_requires=['numpy', 'rioxarray', 'xarray']
 )

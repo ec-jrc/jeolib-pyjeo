@@ -65,8 +65,12 @@ def isEqual(first_jim,
             return True
     elif isinstance(first_jim, _pj.JimVect):
         if first_jim.properties.isEmpty():
-            raise _pj.exceptions.JimVectEmptyError('first_jim is empty')
-        if second_jim.properties.isEmpty():
+            # raise _pj.exceptions.JimVectEmptyError('first_jim is empty')
+            if second_jim.properties.isEmpty():
+                return True
+            else:
+                return False
+        elif second_jim.properties.isEmpty():
             return False
 
         if not isinstance(second_jim, _pj.JimVect):
@@ -224,40 +228,43 @@ class _Properties(_pj.modules.JimModuleBase):
 
         :return: The datatype id of this Jim object
         """
-        otype = self._jim_object._jipjim.getDataType()
-        if otype == 1:
-            return 'Byte'
-        elif otype == 2:
-            return 'UInt16'
-        elif otype == 3:
-            return 'Int16'
-        elif otype == 4:
-            return 'UInt32'
-        elif otype == 5:
-            return 'Int32'
-        elif otype == 6:
-            return 'Float32'
-        elif otype == 7:
-            return 'Float64'
-        elif otype == 8:
-            return 'CInt16'
-        elif otype == 9:
-            return 'CInt32'
-        elif otype == 10:
-            return 'CFloat32'
-        elif otype == 11:
-            return 'CFloat64'
-        elif otype == 12:
-            return 'TypeCount'
-        elif otype == 14:
-            return 'Int64'
-        elif otype == 15:
-            return 'UInt64'
-        elif otype == 16:
-            return 'JDT_Word'
+        if self._jim_object:
+            otype = self._jim_object._jipjim.getDataType()
+            if otype == 1:
+                return 'Byte'
+            elif otype == 2:
+                return 'UInt16'
+            elif otype == 3:
+                return 'Int16'
+            elif otype == 4:
+                return 'UInt32'
+            elif otype == 5:
+                return 'Int32'
+            elif otype == 6:
+                return 'Float32'
+            elif otype == 7:
+                return 'Float64'
+            elif otype == 8:
+                return 'CInt16'
+            elif otype == 9:
+                return 'CInt32'
+            elif otype == 10:
+                return 'CFloat32'
+            elif otype == 11:
+                return 'CFloat64'
+            elif otype == 12:
+                return 'TypeCount'
+            elif otype == 14:
+                return 'Int64'
+            elif otype == 15:
+                return 'UInt64'
+            elif otype == 16:
+                return 'JDT_Word'
+            else:
+                raise _pj.exceptions.JimInnerParametersError(
+                    "Unknown data format".format(otype))
         else:
-            raise _pj.exceptions.JimInnerParametersError(
-                "Unknown data format".format(otype))
+            return None
 
     def getDeltaX(self):
         """Get the pixel cell spacing in x.
@@ -769,8 +776,12 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         :return: True if the values are equal, zero otherwise
         """
         if self._jim_vect.properties.isEmpty():
-            raise _pj.exceptions.JimVectEmptyError(
-                'JimVect on which the method was called is empty')
+            # raise _pj.exceptions.JimVectEmptyError(
+            #     'bothJimVect on which the method was called is empty')
+            if other.properties.isEmpty():
+                return True
+            else:
+                return False
 
         if not isinstance(other, _pj.JimVect):
             return False

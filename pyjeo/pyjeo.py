@@ -21,15 +21,21 @@
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import division
+import math
 import copy
 import numpy as _np
 import gc as _gc
 import warnings as _warnings
 import os as _os
+from rasterio import crs as _crs
+from pandas import to_datetime
 from datetime import time, timedelta, datetime
-import math
 from pathlib import Path
 from osgeo import ogr as _ogr
+import xarray as _xr
+import rioxarray
+from pyproj import CRS
+
 
 import jiplib as _jl
 
@@ -134,10 +140,11 @@ class _ParentJim(_jl.Jim):
                         kwargs.update({'lry':lry})
                     elif 'bbox' in kwargs:
                         bbox = kwargs.pop('bbox')
-                        kwargs.update({'ulx':bbox[0]})
-                        kwargs.update({'uly':bbox[1]})
-                        kwargs.update({'lrx':bbox[2]})
-                        kwargs.update({'lry':bbox[3]})
+                        if bbox is not None:
+                            kwargs.update({'ulx':bbox[0]})
+                            kwargs.update({'uly':bbox[1]})
+                            kwargs.update({'lrx':bbox[2]})
+                            kwargs.update({'lry':bbox[3]})
                     if isinstance(image, Path):
                         kwargs.update({'filename': str(image)})
                     else:
@@ -174,10 +181,11 @@ class _ParentJim(_jl.Jim):
             else:
                 if 'bbox' in kwargs:
                     bbox = kwargs.pop('bbox')
-                    kwargs.update({'ulx':bbox[0]})
-                    kwargs.update({'uly':bbox[1]})
-                    kwargs.update({'lrx':bbox[2]})
-                    kwargs.update({'lry':bbox[3]})
+                    if bbox is not None:
+                        kwargs.update({'ulx':bbox[0]})
+                        kwargs.update({'uly':bbox[1]})
+                        kwargs.update({'lrx':bbox[2]})
+                        kwargs.update({'lry':bbox[3]})
                 super(_ParentJim, self).__init__(kwargs)
         elif image:
             if isinstance(image, Jim):
@@ -192,10 +200,11 @@ class _ParentJim(_jl.Jim):
         else:
             if 'bbox' in kwargs:
                 bbox = kwargs.pop('bbox')
-                kwargs.update({'ulx':ulx})
-                kwargs.update({'uly':uly})
-                kwargs.update({'lrx':lrx})
-                kwargs.update({'lry':lry})
+                if bbox is not None:
+                    kwargs.update({'ulx':ulx})
+                    kwargs.update({'uly':uly})
+                    kwargs.update({'lrx':lrx})
+                    kwargs.update({'lry':lry})
             super(_ParentJim, self).__init__(image)
 
 class Jim:
@@ -379,13 +388,15 @@ class Jim:
 
         :return: xarray representation
         """
-        import xarray as _xr
-
+        if not self:
+            raise exceptions.JimEmptyError(
+                'Jim has to have a data to use Jim.xr()')
         #jim is a multiband datacube (with multiple planes)
         if self.dimension['plane']:
             planes = self.dimension['plane']
         else:
-            planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
+            planes = ['t'+str(plane) for plane in range(
+                self.properties.nrOfPlane())]
         if self.dimension['band']:
             bands = self.dimension['band']
         else:
@@ -408,21 +419,29 @@ class Jim:
         # Build a xarray Dataset reference (without memory copy)
         # Do not alter shape or destroy x_dataset!
 
-        if self.properties.nrOfPlane() > 1:
-            x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
-                                                      dims=['time', 'y', 'x'],
-                                                      coords={'time': planes,
-                                                              'x': x, 'y': y},
-                                                      attrs={'_FillValue': 0})
-                                    for band in bands})
-        else:
-            x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
-                                                      dims=['y', 'x'],
-                                                      coords={'x': x, 'y': y},
-                                                      attrs={'_FillValue': 0})
-                                    for band in bands})
-        return x_dataset
+        crs = CRS(self.properties.getProjection())
+        crs_wkt = crs.to_cf()['crs_wkt']
 
+        if self.properties.nrOfPlane() > 1:
+            x_dataset = _xr.Dataset({band:_xr.DataArray(
+                self.np(bands.index(band)),
+                dims=['time', 'y', 'x'],
+                coords={'time': planes,
+                         'y': y, 'x': x,
+                        },
+                attrs={'_FillValue': 0})
+                                     for band in bands})
+        else:
+            x_dataset = _xr.Dataset({band:_xr.DataArray(
+                _np.expand_dims(self.np(bands.index(band)), axis=0),
+                dims=['time', 'y', 'x'],
+                coords={'time': planes,
+                         'y': y, 'x': x,
+                        },
+                attrs={'_FillValue': 0})
+                                     for band in bands})
+        x_dataset.rio.write_crs(crs_wkt, inplace = True),
+        return x_dataset
 
     @staticmethod
     def _checkInitParamsSense(image, kwargs):
@@ -717,6 +736,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -740,6 +760,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -763,6 +784,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -786,6 +808,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -809,6 +832,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -832,6 +856,7 @@ class Jim:
                           self.properties.nrOfPlane(), _jl.GDT_Byte))
         jim.properties.setGeoTransform(self.properties.getGeoTransform())
         jim.properties.setProjection(self.properties.getProjection())
+        jim.properties.setDimension(self.properties.getDimension())
         if isinstance(right, Jim):
             self._checkNumberOfBands(right)
 
@@ -1730,17 +1755,16 @@ def jim2xr(jim_object: Jim,
 
     :return: xarray representation
     """
-    import xarray as _xr
 
     #jim is a multiband datacube (with multiple planes)
-    if self.dimension['plane']:
-        planes = self.dimension['plane']
+    if jim_object.properties.getDimension('plane'):
+        planes = jim_object.properties.getDimension('plane')
     else:
-        planes = ['t'+str(plane) for plane in range(self.properties.nrOfPlane())]
-    if self.dimension['band']:
-        bands = self.dimension['band']
+        planes = ['t'+str(plane) for plane in range(jim_object.properties.nrOfPlane())]
+    if jim_object.properties.getDimension('band'):
+        bands = jim_object.properties.getDimension('band')
     else:
-        bands = [str(b) for b in range(self.properties.nrOfBand())]
+        bands = [str(b) for b in range(jim_object.properties.nrOfBand())]
     bbox = jim_object.properties.getBBox()
 
     # xarray coordinates are pixel centered
@@ -1753,14 +1777,14 @@ def jim2xr(jim_object: Jim,
 
     # Build new copy of xarray Dataset (with memory copy):
     if jim_object.properties.nrOfPlane() > 1:
-        x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+        x_dataset = _xr.Dataset({band:_xr.DataArray(jim_object.np(bands.index(band)),
                                                     dims=['time', 'y', 'x'],
                                                     coords={'time': planes,
                                                             'x': x, 'y': y},
                                                     attrs={'_FillValue': 0})
                                 for band in bands})
     else:
-        x_dataset = _xr.Dataset({band:_xr.DataArray(self.np(bands.index(band)),
+        x_dataset = _xr.Dataset({band:_xr.DataArray(jim_object.np(bands.index(band)),
                                                   dims=['y', 'x'],
                                                   coords={'x': x, 'y': y},
                                                   attrs={'_FillValue': 0})
@@ -1813,69 +1837,113 @@ def xr2jim(xr_object) -> Jim:
     as [planes][rows][columns] for the respective bands
 
     Returns a 3D Jim object with planes and bands
-    xarray must be a cube with identical x and y coordinates for each dataset
-    Notice the (contiguous) data array is organized as [planes][rows][columns]
-    for the respective bands
+    xarray must be a cube with identical x and y coordinates for each
+    dataset
+    Notice the (contiguous) data array is organized as
+    [planes][rows][columns] for the respective bands
 
     :param xr_object: an xarray
     :return: a Jim representation from  an xarray
     """
-    import xarray as _xr
-    from pandas import to_datetime
+    assert xr_object.sizes.get('y') is not None
+    assert xr_object.sizes.get('x') is not None
 
-    jim = None
+    jim = Jim()
+
     projection = None
-    for b in xr_object:
-        if xr_object[b].attrs.get('crs_wkt') is not None:
-            projection = xr_object[b].attrs.get('crs_wkt')
-        elif xr_object[b].attrs.get('spatial_ref') is not None:
-            #for backward compatibility
-            projection = xr_object[b].attrs.get('spatial_ref')
-        elif jim is None:
-            jim = np2jim(xr_object[b].values)
-            #seems redundant...
-            jim.np(0)[:] = xr_object[b].values
-            gt = []
-            try:
-                dx = xr_object[b].coords['x'].values[1]-xr_object[b].coords['x'].values[0]
-                dy = xr_object[b].coords['y'].values[0]-xr_object[b].coords['y'].values[1]
-                ulx = xr_object[b].coords['x'].values[0]-dx/2.0
-                uly = xr_object[b].coords['y'].values[0]+dy/2.0
-            except KeyError:
-                dx = xr_object[b].coords['lon'].values[1]-xr_object[b].coords['lon'].values[0]
-                dy = xr_object[b].coords['lat'].values[0]-xr_object[b].coords['lat'].values[1]
-                ulx = xr_object[b].coords['lon'].values[0]-dx/2.0
-                uly = xr_object[b].coords['lat'].values[0]+dy/2.0
-            gt.append(ulx)
-            gt.append(dx)
-            gt.append(0)
-            gt.append(uly)
-            gt.append(0)
-            gt.append(-dy)
-            jim.properties.setGeoTransform(gt)
-        else:
-            if len(xr_object[b].values.shape) > 2:
-                assert xr_object[b].values.shape[0] == jim.properties.nrOfPlane() ,\
-                    str("Error: number of planes is not consistent: {} != {}".format(xr_object[b].values.shape[0], jim.properties.nrOfPlane()))
-                assert xr_object[b].values.shape[1] == jim.properties.nrOfRow() ,\
-                    str("Error: number of rows is not consistent: {} != {}".format(xr_object[b].values.shape[1], jim.properties.nrOfRow()))
-                assert xr_object[b].values.shape[2] == jim.properties.nrOfCol() ,\
-                    str("Error: number of cols is not consistent: {} != {}".format(xr_object[b].values.shape[2], jim.properties.nrOfCol()))
-            else:
-                assert xr_object[b].values.shape[0] == jim.properties.nrOfRow() ,\
-                    str("Error: number of rows is not consistent: {} != {}".format(xr_object[b].values.shape[0], jim.properties.nrOfRow()))
-                assert xr_object[b].values.shape[1] == jim.properties.nrOfCol() ,\
-                    str("Error: number of cols is not consistent: {} != {}".format(xr_object[b].values.shape[1], jim.properties.nrOfCol()))
+
+    if xr_object.coords.get('spatial_ref') is not None:
+        #xarray needs to be opened with decode_coords="all"
+        projection = xr_object.coords.get('spatial_ref').attrs.get('crs_wkt')
+    elif xr_object.rio.crs:
+        projection = xr_object.rio.crs.to_wkt()
+
+    gt = []
+    try:
+        dx = xr_object.coords['x'].values[1] - \
+            xr_object.coords['x'].values[0]
+        dy = xr_object.coords['y'].values[0] - \
+            xr_object.coords['y'].values[1]
+        ulx = xr_object.coords['x'].values[0] - dx/2.0
+        uly = xr_object.coords['y'].values[0] + dy/2.0
+    except KeyError:
+        dx = xr_object.coords['lon'].values[1] - \
+            xr_object.coords['lon'].values[0]
+        dy = xr_object.coords['lat'].values[0] - \
+            xr_object.coords['lat'].values[1]
+        ulx = xr_object.coords['lon'].values[0] - \
+            dx/2.0
+        uly = xr_object.coords['lat'].values[0] + \
+            dy/2.0
+    gt.append(ulx)
+    gt.append(dx)
+    gt.append(0)
+    gt.append(uly)
+    gt.append(0)
+    gt.append(-dy)
+    if isinstance(xr_object, _xr.Dataset):
+        for b in xr_object:
+            if b == 'spatial_ref':
+                if projection is None:
+                    projection = xr_object[b].attrs.get('crs_wkt')
+                continue
+            if jim:
+                if len(xr_object[b].values.shape) > 2:
+                    assert xr_object[b].values.shape[0] == \
+                        jim.properties.nrOfPlane(), \
+                        str("Error: number of planes is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[0],
+                                          jim.properties.nrOfPlane()))
+                    assert xr_object[b].values.shape[1] == \
+                        jim.properties.nrOfRow(), \
+                        str("Error: number of rows is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[1],
+                                          jim.properties.nrOfRow()))
+                    assert xr_object[b].values.shape[2] == \
+                        jim.properties.nrOfCol(), \
+                        str("Error: number of cols is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[2],
+                                          jim.properties.nrOfCol()))
+                else:
+                    assert xr_object[b].values.shape[0] == \
+                        jim.properties.nrOfRow(),\
+                        str("Error: number of rows is not consistent: {} \
+                            != {}".format(xr_object[b].values.shape[0],
+                                            jim.properties.nrOfRow()))
+                    assert xr_object[b].values.shape[1] == \
+                        jim.properties.nrOfCol() ,\
+                        str("Error: number of cols is not consistent: {} \
+                        != {}".format(xr_object[b].values.shape[1],
+                                        jim.properties.nrOfCol()))
             jim.geometry.stackBand(np2jim(xr_object[b].values))
             #seems redundant...
             jim.np(-1)[:] = xr_object[b].values
+    elif isinstance(xr_object, _xr.DataArray):
+        jim.geometry.stackBand(np2jim(xr_object.values))
+        #seems redundant...
+        jim.np(-1)[:] = xr_object.values
+    else:
+        raise TypeError(
+            'xr_object should be xr.Dataset or xr.DataArray')
+
+    if xr_object.coords.get('time') is not None:
+        planes = to_datetime(xr_object.time.data).to_pydatetime()
+        if isinstance(planes, _np.ndarray):
+            jim.properties.setDimension(planes.tolist(), 'plane')
+        else:
+            jim.properties.setDimension(planes, 'plane')
+
+    bands = []
+    if isinstance(xr_object, _xr.Dataset):
+        for band in xr_object.data_vars:
+            if band != 'spatial_ref':
+                bands.append(band)
+    else:
+        print("Warning: could not get band name from DataArray, setting 0")
+        bands.append(str(0))
+    jim.properties.setDimension(bands, 'band')
+    jim.properties.setGeoTransform(gt)
     if projection is not None:
         jim.properties.setProjection(projection)
 
-    jim.properties.setDimension(to_datetime(xr_object.time.data).to_pydatetime().tolist(), 'plane')
-    bands = []
-    for band in xr_object.data_vars:
-        if band != 'spatial_ref':
-            bands.append(band)
-    jim.properties.setDimension(bands, 'band')
     return jim

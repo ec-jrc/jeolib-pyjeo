@@ -19,6 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
 
+import netCDF4 as nc
+from pyproj import CRS
 import pyjeo as _pj
 
 
@@ -105,10 +107,9 @@ class _IO(_pj.modules.JimModuleBase):
         oformat = kwargs.get('oformat')
         if oformat is not None:
             if 'netCDF' in oformat:
-                import netCDF4 as nc
-                from pyproj import CRS
                 # Write to NetCDF file
                 self._jim_object.xr().to_netcdf(str(filename))
+                #no longer needed since xr() adds CRS
                 # Add crs to nc file (Doing it directly with xarray is possible but a little tricky)
                 crs = CRS(self._jim_object.properties.getProjection())
                 with nc.Dataset(str(filename), 'a') as dataset:
@@ -126,8 +127,10 @@ class _IO(_pj.modules.JimModuleBase):
                         dataset.variables['y'].standard_name = 'projection_y_coordinate'
                     bands = [x for x in dataset.variables if x not in ['x', 'y', 'time', 'spatial_ref']]
                     [dataset.variables[str(band)].setncattr('grid_mapping', 'spatial_ref') for band in bands]
-                    nc_crs = dataset.createVariable('spatial_ref', 'i4')
-                    nc_crs.crs_wkt = crs.to_cf()['crs_wkt']
+                    if dataset.variables.get('spatial_ref') is None:
+                        nc_crs = dataset.createVariable('spatial_ref', 'i4')
+                    dataset.variables['spatial_ref'].crs_wkt = crs.to_cf()['crs_wkt']
+                    #nc_crs.crs_wkt = crs.to_cf()['crs_wkt']
             else:
                 self._jim_object._jipjim.write(kwargs)
         else:
