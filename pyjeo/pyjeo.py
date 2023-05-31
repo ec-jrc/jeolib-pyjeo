@@ -392,13 +392,13 @@ class Jim:
             raise exceptions.JimEmptyError(
                 'Jim has to have a data to use Jim.xr()')
         #jim is a multiband datacube (with multiple planes)
-        if self.dimension['plane']:
-            planes = self.dimension['plane']
+        if self.properties.getDimension('plane'):
+            planes = self.properties.getDimension('plane')
         else:
             planes = ['t'+str(plane) for plane in range(
                 self.properties.nrOfPlane())]
-        if self.dimension['band']:
-            bands = self.dimension['band']
+        if self.properties.getDimension('band'):
+            bands = self.properties.getDimension('band')
         else:
             bands = [str(b) for b in range(self.properties.nrOfBand())]
         bbox = self.properties.getBBox()

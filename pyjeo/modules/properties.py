@@ -458,14 +458,19 @@ class _Properties(_pj.modules.JimModuleBase):
                       *args):
         """Set the projection for this dataset.
 
-        Set it in well known text (wkt) format or as a string epsg:<epsgcode>.
+        Set it in well known text (wkt) format or as a string epsg:<code>.
 
-        :args: the projection for this dataset in well known text (wkt) format
+        :args: projection for this dataset in well known text (wkt) format
             or as a string epsg:<epsgcode>.
         """
         self._jim_object._jipjim.setProjection(*args)
 
     def getDimension(self, dimension = None):
+        """Get the (band and plane) dimension labels for this dataset.
+
+        :dimension: 'band' or 'plane'. None will return both as a dict
+        :return: list of dimension labels, if set
+        """
         if dimension is None:
             return copy.deepcopy(self._jim_object.dimension)
         elif dimension in ['band', 'bands']:
@@ -476,6 +481,32 @@ class _Properties(_pj.modules.JimModuleBase):
             raise ValueError("dimension should be plane or band")
 
     def setDimension(self, values, dimension = None, append = False):
+        """Set the (band and plane) dimension labels for this dataset.
+
+        :values: array of labels (or dict to set both 'band' or 'plane').
+        :dimension: 'band' or 'plane'. None will set both as a dict
+        :append: append to existing dimension labels if True
+
+        Set band labels of raster with two bands:
+            jim.properties.setDimension(['B0', 'B1'], 'band')
+
+        Set plane labels:
+            from datetime import datetime
+            dates = [
+                datetime.strptime('2019-01-01','%Y-%m-%d'),
+                datetime.strptime('2019-01-05','%Y-%m-%d')]
+            jim.properties.setDimension(['B0', 'B1'], 'band')
+            jim.properties.setDimension(dates, 'plane')
+
+        Set both band and plane labels:
+            from datetime import datetime
+            bands = ['B0', 'B1']
+            dates = [
+                datetime.strptime('2019-01-01','%Y-%m-%d'),
+                datetime.strptime('2019-01-05','%Y-%m-%d')]
+            jim.properties.setDimension({'plane' : dates,
+                                        'band' : bands})
+        """
         if dimension is None:
             assert append == False, \
                 "Error: append only supported in combination with dimension"

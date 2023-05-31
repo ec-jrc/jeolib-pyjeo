@@ -1323,7 +1323,7 @@ def reducePlane(jim,
 
     jimreduced.dimension['band'] = jim.dimension['band']
     if jimreduced.dimension['plane']:
-        jimreduced.dimension['plane'] = rule
+        jimreduced.dimension['plane'] = [rule]
     return jimreduced
 
 
@@ -2876,7 +2876,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         self._jim_object._set(jimreduced._jipjim)
         if self._jim_object.dimension['plane']:
-            self._jim_object.dimension['plane'] = rule
+            self._jim_object.dimension['plane'] = [rule]
 
     def _reducePlaneSimple(self,
                            rule):
@@ -2917,7 +2917,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             jimreduced = rule(jimreduced, jimplane)
         self._jim_object._set(jimreduced._jipjim)
         if self._jim_object.dimension['plane']:
-            self._jim_object.dimension['plane'] = rule
+            self._jim_object.dimension['plane'] = [rule]
 
     def repeat(self,
                n: int,
