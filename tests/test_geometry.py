@@ -35,7 +35,6 @@ nutsfn = 'tests/data/nuts_italy.sqlite'
 clc = 'tests/data/clc_32632.tif'
 outputfn = pj._get_random_path()
 
-
 class BadGeometry(unittest.TestCase):
     """Test functions and methods from geometry module."""
 
@@ -723,10 +722,10 @@ class BadGeometry(unittest.TestCase):
         nband = jim0.properties.nrOfBand()
 
         for band in range(0, nband):
-            jl0 = pj.JimList([pj.geometry.cropBand(jim0, band)])
-            bandname = 'B' + str(band)
+            jim = pj.Jim(pj.geometry.cropBand(jim0, band))
+            bandname = ['B' + str(band)]
             if not band:
-                v = pj.geometry.extract(sampleid, jl0, rule='mean',
+                v = pj.geometry.extract(sampleid, jim, rule='mean',
                                         output=outputfn, oformat='SQLite',
                                         co=['OVERWRITE=YES'],
                                         bandname=bandname)
@@ -737,13 +736,13 @@ class BadGeometry(unittest.TestCase):
             else:
                 v1 = pj.JimVect(outputfn)
                 v2 = pj.geometry.extract(sampleid,
-                                         jl0, rule='mean',
+                                         jim, rule='mean',
                                          output='/vsimem/v2.sqlite',
                                          oformat='SQLite',
                                          co=['OVERWRITE=YES'],
                                          bandname=bandname)
                 v = pj.geometry.join(v1, v2, output=outputfn, oformat='SQLite',
-                                     co=['OVERWRITE=YES'], key=['fid'])
+                                        co=['OVERWRITE=YES'], key=['fid'])
                 assert v.properties.getFeatureCount() == 11, \
                     'Error in geometry.extract() feature count (2)'
                 if band == 11:
@@ -752,43 +751,8 @@ class BadGeometry(unittest.TestCase):
                 v1.io.close()
                 v2.io.close()
                 v.io.close()
-            jl0.io.close()
+            jim.io.close()
         sampleid.io.close()
-        os.remove(outputfn)
-
-    @staticmethod
-    def test_extract_list_multiband():
-        """Test the extractOgr method for list with multibands."""
-        jim0 = pj.Jim(rasterfn, band=[0, 1])
-        sample = pj.JimVect(vectorfn)
-        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
-                              newfield='fid', co=['OVERWRITE=YES'])
-        sample.io.close()
-        jl0 = pj.JimList([jim0])
-
-        nband = jim0.properties.nrOfBand()
-
-        bandname = []
-        for band in range(0, nband):
-            bandname.append('B' + str(band))
-        v = pj.geometry.extract(sampleid, jl0, rule='mean',
-                                output=outputfn, oformat='SQLite',
-                                co=['OVERWRITE=YES'],
-                                bandname=bandname)
-
-        field_names = v.properties.getFieldNames()
-
-        assert v.properties.getFeatureCount() == 11, \
-            'Error in geometry.extract() feature count (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extract() field names (1)'
-        assert 'fid' in field_names, \
-            'Error in geometry.extract() field names (1)'
-        assert len(field_names) == nband + 2, \
-            'Error in geometry.extract() field names (1)'
-        jl0.io.close()
-        sampleid.io.close()
-        v.io.close()
         os.remove(outputfn)
 
     @staticmethod
@@ -838,8 +802,8 @@ class BadGeometry(unittest.TestCase):
         os.remove(newsamplefn)
 
     @staticmethod
-    def test_extract_plane():
-        """Test the extractOgr method for multiplanes."""
+    def test_extract_multiband_name():
+        """Test the extractOgr method for jim with multibands with names."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)
         sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
@@ -850,10 +814,60 @@ class BadGeometry(unittest.TestCase):
 
         planename = []
         for plane in range(0, jim0.properties.nrOfPlane()):
+            planename.append('time' + str(plane))
+        bandname = []
+        jim0.properties.setDimension({'plane': planename, 'band': bandname})
+        for band in range(0, nband):
+            bandname.append('band' + str(band))
+        v = pj.geometry.extract(sampleid, jim0, rule='mean',
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'])
+
+        field_names = v.properties.getFieldNames()
+
+        assert v.properties.getFeatureCount() == 11, \
+            'Error in geometry.extract() feature count (1)'
+        assert 'time0band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'time0band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'fid' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert len(field_names) == nband + 2, \
+            'Error in geometry.extract() field names (1)'
+
+        newsamplefn = pj._get_random_path()
+        sampleid.geometry.extract(jim0, rule='mean',
+                                  output=newsamplefn, oformat='SQLite',
+                                  co=['OVERWRITE=YES'],
+                                  bandname=bandname)
+        assert sampleid.properties.isEqual(v), \
+            'Error in geometry.extract() function not equal to method'
+
+        sampleid.io.close()
+        v.io.close()
+        os.remove(outputfn)
+        os.remove(newsamplefn)
+
+    @staticmethod
+    def test_extract_plane():
+        """Test the extractOgr method for multiplanes."""
+        jim0 = pj.Jim(rasterfn, band= [0, 1], band2plane = True)
+        sample = pj.JimVect(vectorfn)
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                                newfield='fid', co=['OVERWRITE=YES'])
+        sample.io.close()
+
+        nplane = jim0.properties.nrOfPlane()
+
+        planename = []
+        for plane in range(0, jim0.properties.nrOfPlane()):
             planename.append('T' + str(plane))
         bandname = []
-        for band in range(0, nband):
+        for band in range(0, jim0.properties.nrOfBand()):
             bandname.append('B' + str(band))
+
+        jim0.properties.setDimension({'plane': planename, 'band': bandname})
         v = pj.geometry.extract(sampleid, jim0, rule='mean',
                                 output=outputfn, oformat='SQLite',
                                 co=['OVERWRITE=YES'],
@@ -868,7 +882,48 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.extract() field names (1)'
         assert 'label' in field_names, \
             'Error in geometry.extract() field names (1)'
-        assert len(field_names) == nband + 2, \
+        assert len(field_names) == nplane + 2, \
+            'Error in geometry.extract() field names (1)'
+        sampleid.io.close()
+        v.io.close()
+        os.remove(outputfn)
+
+    @staticmethod
+    def test_extract_plane_name():
+        """Test the extractOgr method for multiplanes names."""
+        jim0 = pj.Jim(rasterfn, band= [0, 1], band2plane = True)
+        sample = pj.JimVect(vectorfn)
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                                newfield='fid', co=['OVERWRITE=YES'])
+        sample.io.close()
+
+        nplane = jim0.properties.nrOfPlane()
+
+        planename = []
+        for plane in range(0, jim0.properties.nrOfPlane()):
+            planename.append('time' + str(plane))
+        bandname = []
+        for band in range(0, jim0.properties.nrOfBand()):
+            bandname.append('band' + str(band))
+
+        jim0.properties.setDimension({'plane': planename, 'band': bandname})
+        v = pj.geometry.extract(sampleid, jim0, rule='mean',
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'])
+
+        field_names = v.properties.getFieldNames()
+
+        assert v.properties.getFeatureCount() == 11, \
+            'Error in geometry.extract() feature count (1)'
+        assert 'fid' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'label' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'time0band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'time1band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert len(field_names) == nplane + 2, \
             'Error in geometry.extract() field names (1)'
         sampleid.io.close()
         v.io.close()
@@ -893,9 +948,9 @@ class BadGeometry(unittest.TestCase):
         planename = []
         bandname = []
         for plane in range(0, nplane):
-            planename.append('Time' + str(plane))
+            planename.append('time' + str(plane))
         for band in range(0, nband):
-            bandname.append('Band' + str(band))
+            bandname.append('band' + str(band))
         v = pj.geometry.extract(sampleid, jim0, rule=['mean', 'stdev'],
                                 output=outputfn, oformat='SQLite',
                                 co=['OVERWRITE=YES'],
@@ -909,6 +964,63 @@ class BadGeometry(unittest.TestCase):
         assert 'fid' in field_names, \
             'Error in geometry.extract() field names (1)'
         assert 'label' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert len(field_names) == (nband + nplane) * len(rule) + 2, \
+            'Error in geometry.extract() field names (1)'
+        sampleid.io.close()
+        v.io.close()
+        os.remove(outputfn)
+
+    @staticmethod
+    def test_extract_band_plane_name():
+        """Test the extract method for multiband multiplanes names."""
+        sample = pj.JimVect(vectorfn)
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
+        sample.io.close()
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
+        jim1 = pj.Jim(rasterfn, band=[6, 7])
+        jim0.geometry.stackPlane(jim1)
+
+        nband = jim0.properties.nrOfBand()
+        nplane = jim0.properties.nrOfPlane()
+
+        rule = ['mean', 'stdev']
+
+        planename = []
+        bandname = []
+        for plane in range(0, nplane):
+            planename.append('time' + str(plane))
+        for band in range(0, nband):
+            bandname.append('band' + str(band))
+        jim0.properties.setDimension({'plane': planename, 'band': bandname})
+        v = pj.geometry.extract(sampleid, jim0, rule=['mean', 'stdev'],
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'])
+
+        field_names = v.properties.getFieldNames()
+
+        assert v.properties.getFeatureCount() == 11, \
+            'Error in geometry.extract() feature count (1)'
+        assert 'fid' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'label' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime0band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime1band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime0band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime1band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime0band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime1band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime0band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime1band1' in field_names, \
             'Error in geometry.extract() field names (1)'
         assert len(field_names) == (nband + nplane) * len(rule) + 2, \
             'Error in geometry.extract() field names (1)'
@@ -960,9 +1072,9 @@ class BadGeometry(unittest.TestCase):
         planename = []
         bandname = []
         for plane in range(0, jim0.properties.nrOfPlane()):
-            planename.append('Time' + str(plane))
+            planename.append('time' + str(plane))
         for band in range(0, jim0.properties.nrOfBand()):
-            bandname.append('Band' + str(band))
+            bandname.append('band' + str(band))
         v = pj.geometry.extract(sampleid, jim0, rule=['allpoints'],
                                 output=outputfn, oformat='SQLite',
                                 co=['OVERWRITE=YES'],
@@ -976,6 +1088,71 @@ class BadGeometry(unittest.TestCase):
 
         assert v.properties.getFeatureCount() == 20, \
             'Error in geometry.extract() feature count'
+        assert len(field_names) == nband + nplane + 1, \
+            'Error in geometry.extract() field names'
+        sampleid.io.close()
+        v.io.close()
+        os.remove(outputfn)
+
+    @staticmethod
+    def test_extract_allpoints_name():
+        """Test the extract method for allpoints name."""
+        sample = pj.JimVect(vectorfn)
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid3',
+                              newfield='fid', co=['OVERWRITE=YES'])
+        sample.io.close()
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
+        jim1 = pj.Jim(rasterfn, band=[6, 7])
+        jim0.geometry.stackPlane(jim1)
+
+        nband = jim0.properties.nrOfBand()
+        nplane = jim0.properties.nrOfPlane()
+
+        planename = []
+        bandname = []
+        for plane in range(0, jim0.properties.nrOfPlane()):
+            planename.append('time' + str(plane))
+        for band in range(0, jim0.properties.nrOfBand()):
+            bandname.append('band' + str(band))
+        jim0.properties.setDimension({'plane': planename, 'band': bandname})
+        v = pj.geometry.extract(sampleid, jim0, rule=['allpoints'],
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'],
+                                copy='label')
+
+        field_names = v.properties.getFieldNames()
+
+        assert v.properties.getFeatureCount() == 307, \
+            'Error in geometry.extract() feature count'
+        assert len(field_names) == nband + nplane + 1, \
+            'Error in geometry.extract() field names'
+        sampleid.io.close()
+        v.io.close()
+        os.remove(outputfn)
+
+        sample = pj.JimVect(nutsfn)
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid4',
+                              newfield='fid', co=['OVERWRITE=YES'])
+        sample.io.close()
+        v = pj.geometry.extract(sampleid, jim0, rule=['allpoints'],
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'],
+                                copy='nuts3id',
+                                classes=[53, 62],
+                                threshold=[10, 10])
+
+        field_names = v.properties.getFieldNames()
+
+        assert v.properties.getFeatureCount() == 20, \
+            'Error in geometry.extract() feature count'
+        assert 'time0band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'time1band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'time0band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'time1band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
         assert len(field_names) == nband + nplane + 1, \
             'Error in geometry.extract() field names'
         sampleid.io.close()
@@ -999,20 +1176,56 @@ class BadGeometry(unittest.TestCase):
                                 output=outputfn,
                                 classes=classes,
                                 threshold=thresholds,
-                                bandname=['B02', 'B03', 'B04', 'B08'],
+                                bandname=['b02', 'b03', 'b04', 'b08'],
                                 co=['OVERWRITE=YES'])
 
         assert v.properties.getFeatureCount() == 80, \
             'Error in extract method for thematic reference: feature count'
         assert 'label' in v.properties.getFieldNames(), \
             'Error in extract method for thematic reference: no label'
-        assert 'b02' in v.properties.getFieldNames(), \
+        assert 't0b02' in v.properties.getFieldNames(), \
+            'Error in extract method for thematic reference: no t0b02'
+        assert 't0b03' in v.properties.getFieldNames(), \
+            'Error in extract method for thematic reference: no t0b03'
+        assert 't0b04' in v.properties.getFieldNames(), \
+            'Error in extract method for thematic reference: no t0b04'
+        assert 't0b08' in v.properties.getFieldNames(), \
+            'Error in extract method for thematic reference: no t0b08'
+        v.io.close()
+        os.remove(outputfn)
+
+    @staticmethod
+    def test_extract_image_name():
+        """Test the extract method for thematic reference name."""
+        jim0 = pj.Jim(rasterfn, band=[0, 1, 2, 3])
+        jim0.geometry.warp('epsg:32632')
+        reference = pj.Jim(clc, dx=500, dy=500)
+        bbox = reference.properties.getBBox()
+        jim0.geometry.crop(ulx=bbox[0], uly=bbox[1], lrx=bbox[2], lry=bbox[3])
+
+        classes = [2, 12, 25, 41, 50]
+        thresholds = [20, 20, 20, 20, 20]
+
+        bandname=['b02', 'b03', 'b04', 'b08']
+        jim0.properties.setDimension({'plane': ['t0'], 'band': bandname})
+        v = pj.geometry.extract(reference, jim0, srcnodata=[0],
+                                rule='mean',
+                                output=outputfn,
+                                classes=classes,
+                                threshold=thresholds,
+                                co=['OVERWRITE=YES'])
+
+        assert v.properties.getFeatureCount() == 80, \
+            'Error in extract method for thematic reference: feature count'
+        assert 'label' in v.properties.getFieldNames(), \
+            'Error in extract method for thematic reference: no label'
+        assert 't0b02' in v.properties.getFieldNames(), \
             'Error in extract method for thematic reference: no b2'
-        assert 'b03' in v.properties.getFieldNames(), \
+        assert 't0b03' in v.properties.getFieldNames(), \
             'Error in extract method for thematic reference: no b3'
-        assert 'b04' in v.properties.getFieldNames(), \
+        assert 't0b04' in v.properties.getFieldNames(), \
             'Error in extract method for thematic reference: no b4'
-        assert 'b08' in v.properties.getFieldNames(), \
+        assert 't0b08' in v.properties.getFieldNames(), \
             'Error in extract method for thematic reference: no b8'
         v.io.close()
         os.remove(outputfn)
