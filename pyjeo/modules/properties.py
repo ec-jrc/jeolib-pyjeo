@@ -487,10 +487,12 @@ class _Properties(_pj.modules.JimModuleBase):
         :dimension: 'band' or 'plane'. None will set both as a dict
         :append: append to existing dimension labels if True
 
-        Set band labels of raster with two bands:
+        Set band labels of raster with two bands::
+
             jim.properties.setDimension(['B0', 'B1'], 'band')
 
-        Set plane labels:
+        Set plane labels::
+
             from datetime import datetime
             dates = [
                 datetime.strptime('2019-01-01','%Y-%m-%d'),
@@ -498,7 +500,8 @@ class _Properties(_pj.modules.JimModuleBase):
             jim.properties.setDimension(['B0', 'B1'], 'band')
             jim.properties.setDimension(dates, 'plane')
 
-        Set both band and plane labels:
+        Set both band and plane labels::
+
             from datetime import datetime
             bands = ['B0', 'B1']
             dates = [
