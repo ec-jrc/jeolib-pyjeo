@@ -29,7 +29,7 @@ from setuptools import find_packages
 
 setup(
     name='pyjeo',
-    version='1.1.2',
+    version='1.1.3',
     author_email='pieter.kempeneers@.ec.europa.eu',
     url='https://github.com/ec-jrc/jeolib-pyjeo',
     description='https://pyjeo.readthedocs.io/',

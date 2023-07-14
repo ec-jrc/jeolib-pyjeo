@@ -146,7 +146,8 @@ class _ParentJim(_jl.Jim):
                             kwargs.update({'lrx':bbox[2]})
                             kwargs.update({'lry':bbox[3]})
                     if isinstance(image, Path):
-                        kwargs.update({'filename': str(image)})
+                        imagefn = str(image).replace('file:','')
+                        kwargs.update({'filename': imagefn})
                     else:
                         kwargs.update({'filename': image})
                     super(_ParentJim, self).__init__(kwargs)
@@ -194,7 +195,8 @@ class _ParentJim(_jl.Jim):
             elif isinstance(image, _jl.Jim):
                 super(_ParentJim, self).__init__(image)
             elif isinstance(image, Path):
-                super(_ParentJim, self).__init__({'filename': str(image)})
+                imagefn = str(image).replace('file:','')
+                super(_ParentJim, self).__init__({'filename': imagefn})
             else:
                 super(_ParentJim, self).__init__({'filename': image})
         else:
@@ -392,13 +394,13 @@ class Jim:
             raise exceptions.JimEmptyError(
                 'Jim has to have a data to use Jim.xr()')
         #jim is a multiband datacube (with multiple planes)
-        if self.dimension['plane']:
-            planes = self.dimension['plane']
+        if self.properties.getDimension('plane'):
+            planes = self.properties.getDimension('plane')
         else:
             planes = ['t'+str(plane) for plane in range(
                 self.properties.nrOfPlane())]
-        if self.dimension['band']:
-            bands = self.dimension['band']
+        if self.properties.getDimension('band'):
+            bands = self.properties.getDimension('band')
         else:
             bands = [str(b) for b in range(self.properties.nrOfBand())]
         bbox = self.properties.getBBox()
@@ -1541,7 +1543,8 @@ class _ParentVect(_jl.VectorOgr):
                                                       kwargs)
                 else:
                     if isinstance(vector, Path):
-                        kwargs.update({'filename': str(vector)})
+                        vectorfn = str(vector).replace('file:','')
+                        kwargs.update({'filename': vectorfn})
                     else:
                         kwargs.update({'filename': vector})
                     if 'bbox' in kwargs:
@@ -1558,14 +1561,16 @@ class _ParentVect(_jl.VectorOgr):
             else:
                 filename = kwargs.pop('output', None)
                 if isinstance(filename, Path):
-                    kwargs.update({'filename': str(filename)})
+                    vectorfn = str(filename).replace('file:','')
+                    kwargs.update({'filename': vectorfn})
                 else:
                     kwargs.update({'filename': filename})
                 super(_ParentVect, self).__init__(kwargs)
         else:
             if vector:
                 if isinstance(vector, Path):
-                    super(_ParentVect, self).__init__(str(vector))
+                    vectorfn = str(vector).replace('file:','')
+                    super(_ParentVect, self).__init__(vectorfn)
                 else:
                     super(_ParentVect, self).__init__(vector)
             else:
@@ -1604,7 +1609,8 @@ class JimVect:
         :return: a JimVect object
         """
         if isinstance(vector, Path):
-            self._jipjimvect = _ParentVect(str(vector), kwargs)
+            vectorfn = str(vector).replace('file:','')
+            self._jipjimvect = _ParentVect(vectorfn, kwargs)
         else:
             self._jipjimvect = _ParentVect(vector, kwargs)
 

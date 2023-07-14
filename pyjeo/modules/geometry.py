@@ -551,29 +551,44 @@ def extract(jvec,
         kwargs['class'] = classes
 
     pjvect = _pj.JimVect()
+    bandname = kwargs.pop('bandname', None)
+    planename = kwargs.pop('planename', None)
     if isinstance(jvec, _pj.JimVect):
-        bandname = kwargs.pop('bandname', None)
         kwargs.update({'rule': rule})
         if isinstance(jim, _pj.Jim):
             if bandname is None:
+                bandname = jim.properties.getDimension('band')
+                if not bandname:
+                    bandname = [
+                        'b' + str(band)
+                        for band in range(0, jim.properties.nrOfBand())]
+            kwargs.update({'bandname': bandname})
+            if planename is None:
+                planename = jim.properties.getDimension('plane')
+                if not planename:
+                    planename = [
+                        't' + str(plane)
+                        for plane in range(0, jim.properties.nrOfPlane())]
+            kwargs.update({'planename': planename})
+            avect = jim._jipjim.extractOgr(jvec._jipjimvect, kwargs)
+        else:
+            raise _pj.exceptions.JimVectIllegalArgumentError(
+                'extract() must operate on Jim')
+    elif isinstance(jvec, _pj.Jim):
+        if bandname is None:
+            bandname = jim.properties.getDimension('band')
+            if not bandname:
                 bandname = [
                     'b' + str(band)
                     for band in range(0, jim.properties.nrOfBand())]
-            kwargs.update({'bandname': bandname})
-            avect = jim._jipjim.extractOgr(jvec._jipjimvect, kwargs)
-        elif isinstance(jim, _pj.JimList):
-            #todo: support multi-band images in JimList...
-            if bandname is None:
-                bandname = [
-                    't'+str(ifile) for ifile in range(0, len(jim._jipjimlist))]
-            kwargs.update({'bandname': bandname})
-
-            avect = jim._jipjimlist.extractOgr(jvec._jipjimvect,
-                                               kwargs)
-        else:
-            raise _pj.exceptions.JimVectIllegalArgumentError(
-                'extract() must operate on Jim or JimList')
-    elif isinstance(jvec, _pj.Jim):
+        kwargs.update({'bandname': bandname})
+        if planename is None:
+            planename = jim.properties.getDimension('plane')
+            if not planename:
+                planename = [
+                    't' + str(plane)
+                    for plane in range(0, jim.properties.nrOfPlane())]
+        kwargs.update({'planename': planename})
         avect = jim._jipjim.extractImg(jvec._jipjim, kwargs)
     else:
         raise _pj.exceptions.JimVectIllegalArgumentError(
@@ -1323,7 +1338,7 @@ def reducePlane(jim,
 
     jimreduced.dimension['band'] = jim.dimension['band']
     if jimreduced.dimension['plane']:
-        jimreduced.dimension['plane'] = rule
+        jimreduced.dimension['plane'] = [rule]
     return jimreduced
 
 
@@ -2876,7 +2891,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         self._jim_object._set(jimreduced._jipjim)
         if self._jim_object.dimension['plane']:
-            self._jim_object.dimension['plane'] = rule
+            self._jim_object.dimension['plane'] = [rule]
 
     def _reducePlaneSimple(self,
                            rule):
@@ -2917,7 +2932,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             jimreduced = rule(jimreduced, jimplane)
         self._jim_object._set(jimreduced._jipjim)
         if self._jim_object.dimension['plane']:
-            self._jim_object.dimension['plane'] = rule
+            self._jim_object.dimension['plane'] = [rule]
 
     def repeat(self,
                n: int,
@@ -3499,25 +3514,27 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
             kwargs['class'] = classes
 
         bandname = kwargs.pop('bandname', None)
+        planename = kwargs.pop('planename', None)
         if isinstance(jim, _pj.Jim):
             if bandname is None:
-                bandname = [
-                    'b' + str(band)
-                    for band in range(0, jim.properties.nrOfBand())]
+                bandname = jim.properties.getDimension('band')
+                if not bandname:
+                    bandname = [
+                        'b' + str(band)
+                        for band in range(0, jim.properties.nrOfBand())]
             kwargs.update({'bandname': bandname})
-            avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect, kwargs)
-        elif isinstance(jim, _pj.JimList):
-            #todo: support multi-band images in JimList...
-            if bandname is None:
-                bandname = [
-                    't'+str(ifile) for ifile in range(0, len(jim._jipjimlist))]
-            kwargs.update({'bandname': bandname})
-
-            avect = jim._jipjimlist.extractOgr(self._jim_vect._jipjimvect,
-                                               kwargs)
+            if planename is None:
+                planename = jim.properties.getDimension('plane')
+                if not planename:
+                    planename = [
+                        't' + str(plane)
+                        for plane in range(0, jim.properties.nrOfPlane())]
+            kwargs.update({'planename': planename})
+            avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect,
+                                           kwargs)
         else:
             raise _pj.exceptions.JimVectIllegalArgumentError(
-                'extract must operate on Jim or JimList')
+                'extract must operate on Jim')
         avect.write()
         self._jim_vect._set(avect)
 

@@ -143,7 +143,7 @@ def NDVI(jim_object,
         """Compute NDVI on the Jim object.
 
         :param jim_object: Jim object from which the red and NIR bands are
-        to be derived
+            to be derived
         :param red: index of band with values of red
         :param nir: index of band with values of NIR
         :param name: name of band for NDVI

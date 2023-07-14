@@ -732,7 +732,7 @@ Create a 3D Jim object that loads the raster data containing all features (read 
 
 Extract features from the Jim object::
 
-  featurevect = jim.geometry.extract(reference, rule=['allpoints'],
+  featurevect = pj.geometry.extract(reference, jim, rule=['allpoints'],
                                      output='/vsimem/features.sqlite',
                                      oformat='SQLite',
                                      co=['OVERWRITE=YES'],
@@ -822,7 +822,7 @@ Refer to random_forest_classifier_ to create a training and test data set
 Create a support vector machine (SVM) classifier from sklearn and fit the model using the training data ::
 
   svmModel = SVC(gamma='auto')
-  svmModel.fit(preprocessing.MinMaxScaler().fit_transform(x_train,
+  svmModel.fit(preprocessing.MinMaxScaler().fit_transform(x_train),
                                                           y_train.ravel())
 
 Classify the image using the Numpy representation of the Jim object::
