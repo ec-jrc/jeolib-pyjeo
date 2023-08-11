@@ -432,7 +432,7 @@ def cropPlane(jim_object,
 
     if jim_object.dimension['plane']:
         if isinstance(planes[0], int):
-            planeindices = [jim_object.properties.nrofplanes() + p
+            planeindices = [jim_object.properties.nrOfPlane() + p
                             if p < 0 else p for p in planes]
             planenames = [jim_object.dimension['plane'][plane] for plane in planes]
         else:
@@ -443,7 +443,7 @@ def cropPlane(jim_object,
         if not isinstance(planes[0], int):
             raise _pj.exceptions.jimplaneserror(
                 'plane not supported, use integer')
-        planeindices = [jim_object.properties.nrofplane() + p
+        planeindices = [jim_object.properties.nrOfPlane() + p
                         if p < 0 else p for p in planes]
 
     result = _pj.Jim(jim_object._jipjim.cropPlane({'plane': planeindices}))
@@ -2220,7 +2220,7 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         if self._jim_object.dimension['plane']:
             if isinstance(planes[0], int):
-                planeindices = [self._jim_object.properties.nrofplanes() + p
+                planeindices = [self._jim_object.properties.nrOfPlane() + p
                                 if p < 0 else p for p in planes]
                 planenames = [self._jim_object.dimension['plane'][plane] for plane in planes]
             else:
