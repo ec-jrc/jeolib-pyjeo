@@ -1,0 +1,48 @@
+# Author(s): Pieter.Kempeneers@ec.europa.eu,
+#            Ondrej Pesek,
+#            Pierre.Soille@ec.europa.eu
+# Copyright (C) 2018-2023 European Union (Joint Research Centre)
+#
+# This file is part of pyjeo.
+#
+# pyjeo is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# pyjeo is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[metadata]
+name = 'pyjeo'
+version = '1.1.4'
+
+[tool.setuptools.packages]
+
+find = {}  # Scan the project directory with the default parameters
+# include = ["modules/*.py"]
+# exclude = ["doc", "tests"]
+
+[project]
+name = 'pyjeo'
+version = '1.1.4'
+description = 'pyjeo is a library for image processing for geospatial data implemented in JRC Ispra.'
+authors = [
+        { name = "Pieter Kempeneers", email = "Pieter.Kempeneers@ec.europa.eu"},
+        { name = "Ondrej Pesek", email = "pesej.ondrek@gmail.com"},
+        { name = "Pierre Soille", email = "Pierre.Soille@ec.europa.eu"},
+]
+requires-python = ">=3.8"
+license = {text = "GPLv3"}
+
+[project.urls]
+documentation = 'https://readthedocs.org/projects/pyjeo'
+repository = 'https://github.com/ec-jrc/jeolib-pyjeo'
