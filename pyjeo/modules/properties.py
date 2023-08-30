@@ -21,7 +21,9 @@
 
 import copy
 import numpy as _np
-import osgeo
+# import osgeo
+from pyproj import CRS
+from pyproj import Transformer
 import pyjeo as _pj
 
 # def imageInfo(jim_object):
@@ -173,44 +175,61 @@ class _Properties(_pj.modules.JimModuleBase):
         """
         bbox = self._jim_object._jipjim.getBoundingBox()
         if t_srs is not None:
-            # create coordinate transformation
-            inSpatialRef = osgeo.osr.SpatialReference()
-            outSpatialRef = osgeo.osr.SpatialReference()
-
-            inSpatialRef.ImportFromWkt(self._jim_object.properties.getProjection())
-            if int(osgeo.__version__[0]) >= 3:
-                #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
-                inSpatialRef.SetAxisMappingStrategy(
-                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
-                outSpatialRef.SetAxisMappingStrategy(
-                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            #using pyproj
+            crs_from = CRS(self._jim_object.properties.getProjection())
             if isinstance(t_srs, int):
-                outSpatialRef.ImportFromEPSG(t_srs)
+                crs_to = CRS("EPSG:"+str(t_srs))
             elif isinstance(t_srs, str):
-                if 'EPSG:' in t_srs:
-                    t_srs=int(t_srs.split("EPSG:",1)[1])
-                    outSpatialRef.ImportFromEPSG(t_srs)
-                elif 'epsg:' in t_srs:
-                    t_srs=int(t_srs.split("epsg:",1)[1])
-                    outSpatialRef.ImportFromEPSG(t_srs)
+                if 'epsg:' in t_srs:
+                    crs_to = CRS(t_srs.upper())
                 else:
-                    outSpatialRef.ImportFromWkt(t_srs)
+                    crs_to = CRS(t_srs)
             else:
                 raise JimIllegalArgumentError("Error: coordinate reference "
                                               "system must be integer "
                                               "representing epsg code or string")
-            coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
-                                                                outSpatialRef)
-            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
-            point.AddPoint(bbox[0], bbox[1])
-            point.Transform(coordTransform)
-            ulx = point.GetX()
-            uly = point.GetY()
-            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
-            point.AddPoint(bbox[2], bbox[3])
-            point.Transform(coordTransform)
-            lrx = point.GetX()
-            lry = point.GetY()
+            transformer = Transformer.from_crs(crs_from, crs_to, always_xy=True)
+            ulx, uly = transformer.transform(bbox[0], bbox[1])
+            lrx, lry = transformer.transform(bbox[2], bbox[3])
+            # # using osgeo
+            # # create coordinate transformation
+            # inSpatialRef = osgeo.osr.SpatialReference()
+            # outSpatialRef = osgeo.osr.SpatialReference()
+
+            # inSpatialRef.ImportFromWkt(self._jim_object.properties.getProjection())
+            # if int(osgeo.__version__[0]) >= 3:
+            #     #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
+            #     inSpatialRef.SetAxisMappingStrategy(
+            #         osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            #     outSpatialRef.SetAxisMappingStrategy(
+            #         osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            # if isinstance(t_srs, int):
+            #     outSpatialRef.ImportFromEPSG(t_srs)
+            # elif isinstance(t_srs, str):
+            #     if 'EPSG:' in t_srs:
+            #         t_srs=int(t_srs.split("EPSG:",1)[1])
+            #         outSpatialRef.ImportFromEPSG(t_srs)
+            #     elif 'epsg:' in t_srs:
+            #         t_srs=int(t_srs.split("epsg:",1)[1])
+            #         outSpatialRef.ImportFromEPSG(t_srs)
+            #     else:
+            #         outSpatialRef.ImportFromWkt(t_srs)
+            # else:
+            #     raise JimIllegalArgumentError("Error: coordinate reference "
+            #                                   "system must be integer "
+            #                                   "representing epsg code or string")
+            # coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
+            #                                                     outSpatialRef)
+            # point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            # point.AddPoint(bbox[0], bbox[1])
+            # point.Transform(coordTransform)
+            # ulx = point.GetX()
+            # uly = point.GetY()
+            # point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            # point.AddPoint(bbox[2], bbox[3])
+            # point.Transform(coordTransform)
+            # lrx = point.GetX()
+            # lry = point.GetY()
             bbox = [ulx, uly, lrx, lry]
         return bbox
 
@@ -584,44 +603,61 @@ class _PropertiesList(_pj.modules.JimListModuleBase):
         """
         bbox = self._jim_list._jipjimlist.getBoundingBox()
         if t_srs is not None:
-            # create coordinate transformation
-            inSpatialRef = osgeo.osr.SpatialReference()
-            outSpatialRef = osgeo.osr.SpatialReference()
-
-            inSpatialRef.ImportFromWkt(self._jim_list[0].properties.getProjection())
-            if int(osgeo.__version__[0]) >= 3:
-                #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
-                inSpatialRef.SetAxisMappingStrategy(
-                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
-                outSpatialRef.SetAxisMappingStrategy(
-                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            #using pyproj
+            crs_from = CRS(self._jim_list[0].properties.getProjection())
             if isinstance(t_srs, int):
-                outSpatialRef.ImportFromEPSG(t_srs)
+                crs_to = CRS("EPSG:"+str(t_srs))
             elif isinstance(t_srs, str):
-                if 'EPSG:' in t_srs:
-                    t_srs=int(t_srs.split("EPSG:",1)[1])
-                    outSpatialRef.ImportFromEPSG(t_srs)
-                elif 'epsg:' in t_srs:
-                    t_srs=int(t_srs.split("epsg:",1)[1])
-                    outSpatialRef.ImportFromEPSG(t_srs)
+                if 'epsg:' in t_srs:
+                    crs_to = CRS(t_srs.upper())
                 else:
-                    outSpatialRef.ImportFromWkt(t_srs)
+                    crs_to = CRS(t_srs)
             else:
                 raise JimIllegalArgumentError("Error: coordinate reference "
                                               "system must be integer "
                                               "representing epsg code or string")
-            coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
-                                                                outSpatialRef)
-            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
-            point.AddPoint(bbox[0], bbox[1])
-            point.Transform(coordTransform)
-            ulx = point.GetX()
-            uly = point.GetY()
-            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
-            point.AddPoint(bbox[2], bbox[3])
-            point.Transform(coordTransform)
-            lrx = point.GetX()
-            lry = point.GetY()
+            transformer = Transformer.from_crs(crs_from, crs_to, always_xy=True)
+            ulx, uly = transformer.transform(bbox[0], bbox[1])
+            lrx, lry = transformer.transform(bbox[2], bbox[3])
+            # # using osgeo
+            # # create coordinate transformation
+            # inSpatialRef = osgeo.osr.SpatialReference()
+            # outSpatialRef = osgeo.osr.SpatialReference()
+
+            # inSpatialRef.ImportFromWkt(self._jim_list[0].properties.getProjection())
+            # if int(osgeo.__version__[0]) >= 3:
+            #     #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
+            #     inSpatialRef.SetAxisMappingStrategy(
+            #         osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            #     outSpatialRef.SetAxisMappingStrategy(
+            #         osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            # if isinstance(t_srs, int):
+            #     outSpatialRef.ImportFromEPSG(t_srs)
+            # elif isinstance(t_srs, str):
+            #     if 'EPSG:' in t_srs:
+            #         t_srs=int(t_srs.split("EPSG:",1)[1])
+            #         outSpatialRef.ImportFromEPSG(t_srs)
+            #     elif 'epsg:' in t_srs:
+            #         t_srs=int(t_srs.split("epsg:",1)[1])
+            #         outSpatialRef.ImportFromEPSG(t_srs)
+            #     else:
+            #         outSpatialRef.ImportFromWkt(t_srs)
+            # else:
+            #     raise JimIllegalArgumentError("Error: coordinate reference "
+            #                                   "system must be integer "
+            #                                   "representing epsg code or string")
+            # coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
+            #                                                     outSpatialRef)
+            # point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            # point.AddPoint(bbox[0], bbox[1])
+            # point.Transform(coordTransform)
+            # ulx = point.GetX()
+            # uly = point.GetY()
+            # point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            # point.AddPoint(bbox[2], bbox[3])
+            # point.Transform(coordTransform)
+            # lrx = point.GetX()
+            # lry = point.GetY()
             bbox = [ulx, uly, lrx, lry]
         return bbox
 
@@ -682,44 +718,61 @@ class _PropertiesVect(_pj.modules.JimVectModuleBase):
         """
         bbox = self._jim_vect._jipjimvect.getBoundingBox()
         if t_srs is not None:
-            # create coordinate transformation
-            inSpatialRef = osgeo.osr.SpatialReference()
-            outSpatialRef = osgeo.osr.SpatialReference()
-
-            inSpatialRef.ImportFromWkt(self._jim_vect.properties.getProjection())
-            if int(osgeo.__version__[0]) >= 3:
-                #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
-                inSpatialRef.SetAxisMappingStrategy(
-                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
-                outSpatialRef.SetAxisMappingStrategy(
-                    osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            #using pyproj
+            crs_from = CRS(self._jim_vect.properties.getProjection())
             if isinstance(t_srs, int):
-                outSpatialRef.ImportFromEPSG(t_srs)
+                crs_to = CRS("EPSG:"+str(t_srs))
             elif isinstance(t_srs, str):
-                if 'EPSG:' in t_srs:
-                    t_srs=int(t_srs.split("EPSG:",1)[1])
-                    outSpatialRef.ImportFromEPSG(t_srs)
-                elif 'epsg:' in t_srs:
-                    t_srs=int(t_srs.split("epsg:",1)[1])
-                    outSpatialRef.ImportFromEPSG(t_srs)
+                if 'epsg:' in t_srs:
+                    crs_to = CRS(t_srs.upper())
                 else:
-                    outSpatialRef.ImportFromWkt(t_srs)
+                    crs_to = CRS(t_srs)
             else:
                 raise JimIllegalArgumentError("Error: coordinate reference "
                                               "system must be integer "
                                               "representing epsg code or string")
-            coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
-                                                                outSpatialRef)
-            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
-            point.AddPoint(bbox[0], bbox[1])
-            point.Transform(coordTransform)
-            ulx = point.GetX()
-            uly = point.GetY()
-            point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
-            point.AddPoint(bbox[2], bbox[3])
-            point.Transform(coordTransform)
-            lrx = point.GetX()
-            lry = point.GetY()
+            transformer = Transformer.from_crs(crs_from, crs_to, always_xy=True)
+            ulx, uly = transformer.transform(bbox[0], bbox[1])
+            lrx, lry = transformer.transform(bbox[2], bbox[3])
+            # # using osgeo
+            # #create coordinate transformation
+            # inSpatialRef = osgeo.osr.SpatialReference()
+            # outSpatialRef = osgeo.osr.SpatialReference()
+
+            # inSpatialRef.ImportFromWkt(self._jim_vect.properties.getProjection())
+            # if int(osgeo.__version__[0]) >= 3:
+            #     #hanges axis order: https://github.com/OSGeo/gdal/issues/1546
+            #     inSpatialRef.SetAxisMappingStrategy(
+            #         osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            #     outSpatialRef.SetAxisMappingStrategy(
+            #         osgeo.osr.OAMS_TRADITIONAL_GIS_ORDER)
+            # if isinstance(t_srs, int):
+            #     outSpatialRef.ImportFromEPSG(t_srs)
+            # elif isinstance(t_srs, str):
+            #     if 'EPSG:' in t_srs:
+            #         t_srs=int(t_srs.split("EPSG:",1)[1])
+            #         outSpatialRef.ImportFromEPSG(t_srs)
+            #     elif 'epsg:' in t_srs:
+            #         t_srs=int(t_srs.split("epsg:",1)[1])
+            #         outSpatialRef.ImportFromEPSG(t_srs)
+            #     else:
+            #         outSpatialRef.ImportFromWkt(t_srs)
+            # else:
+            #     raise JimIllegalArgumentError("Error: coordinate reference "
+            #                                   "system must be integer "
+            #                                   "representing epsg code or string")
+            # coordTransform = osgeo.osr.CoordinateTransformation(inSpatialRef,
+            #                                                     outSpatialRef)
+            # point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            # point.AddPoint(bbox[0], bbox[1])
+            # point.Transform(coordTransform)
+            # ulx = point.GetX()
+            # uly = point.GetY()
+            # point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
+            # point.AddPoint(bbox[2], bbox[3])
+            # point.Transform(coordTransform)
+            # lrx = point.GetX()
+            # lry = point.GetY()
             bbox = [ulx, uly, lrx, lry]
         return bbox
 
