@@ -30,16 +30,21 @@ directory of the repository, and run:
 sudo python setup.py install
 ```
 
-To install the package without `sudo` right, you can install it with the
+To install the package without `sudo` rights, you can install it with the
 `--user` flag.
 
 ```
 python setup.py install --user
 ```
 
+To also install the dependencies [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
+and [miallib](https://github.com/ec-jrc/jeolib-miallib) without sudo rights,
+please check the corresponding section in [jiplib].
+
 ### pyjeo in Docker
 
-A [Dockerfile](https://github.com/ec-jrc/jeolib-pyjeo/blob/master/docker/Dockerfile_deb10_pyjeo_public) based on a debian10 image is provided under the docker directory in this repository
+A [Dockerfile](https://github.com/ec-jrc/jeolib-pyjeo/blob/master/docker/Dockerfile_deb10_pyjeo_public)
+based on a debian10 image is provided under the docker directory in this repository
 
 Create the pyjeo docker image using:
 ```
