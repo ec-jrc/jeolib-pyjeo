@@ -27,14 +27,7 @@ Once the dependencies miallib and jiplib are installed, enter the
 directory of the repository, and run:
 
 ```
-sudo python setup.py install
-```
-
-To install the package without `sudo` rights, you can install it with the
-`--user` flag.
-
-```
-python setup.py install --user
+pip install pyjeo-1.1.4-py3-none-any.whl
 ```
 
 To also install the dependencies [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
