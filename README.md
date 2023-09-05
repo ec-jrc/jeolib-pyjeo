@@ -23,16 +23,27 @@ Please refer to pyjeo as: Kempeneers, P.; Pesek, O.; De Marchi, D.; Soille, P. p
 ## Install
 
 ### From source
-Once the dependencies miallib and jiplib are installed, enter the 
-directory of the repository, and run:
+Make sure to install the dependencies [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
+and [miallib](https://github.com/ec-jrc/jeolib-miallib), please check the corresponding section in [jiplib](https://github.com/ec-jrc/jeolib-jiplib).
+
+Once the dependencies miallib and jiplib are installed, clone the
+[pyjeo](https://github.com/ec-jrc/jeolib-pyjeo) repository.
 
 ```
-pip install pyjeo-1.1.4-py3-none-any.whl
+git clone https://github.com/ec-jrc/jeolib-pyjeo.git
 ```
 
-To also install the dependencies [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
-and [miallib](https://github.com/ec-jrc/jeolib-miallib) without sudo rights,
-please check the corresponding section in [jiplib].
+Enter the created directory and build a wheel using pip:
+
+```
+pip wheel .
+```
+
+Install pyjeo (in your virtual python environment):
+
+```
+pip install pyjeo-*.whl
+```
 
 ### pyjeo in Docker
 
