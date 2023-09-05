@@ -31,12 +31,13 @@ from rasterio import crs as _crs
 from pandas import to_datetime
 from datetime import time, timedelta, datetime
 from pathlib import Path
-from osgeo import ogr as _ogr
+# from osgeo import ogr as _ogr
+import json
+import shapely.wkt
+import shapely.geometry
 import xarray as _xr
 import rioxarray
 from pyproj import CRS
-
-
 import jiplib as _jl
 
 from .modules import pjio as io, properties, pixops, ngbops, geometry, \
@@ -1556,8 +1557,12 @@ class _ParentVect(_jl.VectorOgr):
                             kwargs.update({'lry':bbox[3]})
                     super(_ParentVect, self).__init__(kwargs)
             elif 'wkt' in kwargs:
-                geom = _ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
-                super(_ParentVect, self).__init__(geom.ExportToJson())
+                # geom = _ogr.CreateGeometryFromWkt(kwargs.pop('wkt'))
+                # super(_ParentVect, self).__init__(geom.ExportToJson())
+                # Convert to a shapely.geometry.polygon.Polygon object
+                geom = shapely.wkt.loads(kwargs.pop('wkt'))
+                g2 = shapely.geometry.mapping(geom)
+                super(_ParentVect, self).__init__(json.dumps(g2))
             else:
                 filename = kwargs.pop('output', None)
                 if isinstance(filename, Path):

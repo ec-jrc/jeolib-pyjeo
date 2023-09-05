@@ -23,23 +23,32 @@ Please refer to pyjeo as: Kempeneers, P.; Pesek, O.; De Marchi, D.; Soille, P. p
 ## Install
 
 ### From source
-Once the dependencies miallib and jiplib are installed, enter the 
-directory of the repository, and run:
+Make sure to install the dependencies [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
+and [miallib](https://github.com/ec-jrc/jeolib-miallib), please check the corresponding section in [jiplib](https://github.com/ec-jrc/jeolib-jiplib).
+
+Once the dependencies miallib and jiplib are installed, clone the
+[pyjeo](https://github.com/ec-jrc/jeolib-pyjeo) repository.
 
 ```
-sudo python setup.py install
+git clone https://github.com/ec-jrc/jeolib-pyjeo.git
 ```
 
-To install the package without `sudo` right, you can install it with the
-`--user` flag.
+Enter the created directory and build a wheel using pip:
 
 ```
-python setup.py install --user
+pip wheel .
+```
+
+Install pyjeo (in your virtual python environment):
+
+```
+pip install pyjeo-*.whl
 ```
 
 ### pyjeo in Docker
 
-A [Dockerfile](https://github.com/ec-jrc/jeolib-pyjeo/blob/master/docker/Dockerfile_deb10_pyjeo_public) based on a debian10 image is provided under the docker directory in this repository
+A [Dockerfile](https://github.com/ec-jrc/jeolib-pyjeo/blob/master/docker/Dockerfile_deb10_pyjeo_public)
+based on a debian10 image is provided under the docker directory in this repository
 
 Create the pyjeo docker image using:
 ```
