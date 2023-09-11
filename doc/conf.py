@@ -48,7 +48,7 @@ extensions = ['sphinx.ext.autodoc',
 # Add path to bibtex file
 bibtex_bibfiles = ['./references.bib']
 
-autodoc_mock_imports = ['jiplib', 'numpy', 'osgeo', 'rasterio', 'pandas', 'xarray', 'rioxarray', 'netCDF4']
+autodoc_mock_imports = ['jiplib', 'numpy', 'rasterio', 'pandas', 'xarray', 'rioxarray', 'netCDF4', 'pyproj', 'shapely']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
