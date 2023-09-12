@@ -52,12 +52,12 @@ based on a debian10 image is provided under the docker directory in this reposit
 
 Create the pyjeo docker image using:
 ```
-docker build -t deb10_pyjeo_public:0.1.4 -f Dockerfile_deb10_pyjeo_public .
+docker build --build-arg user=$(id -u -n) --build-arg group=$(id -g -n) --build-arg uid=$(id -u) --build-arg gid=$(id -g) -t deb12_pyjeo_public -f Dockerfile_deb12_pyjeo_public . 
 ```
 
 Run the pyjeo docker image and execute:
 ```
-docker run --rm deb10_pyjeo_public:0.1.4 python3 -c "import pyjeo as pj; jim = pj.Jim(ncol = 10, nrow = 10, nband = 3); print(jim.properties.nrOfBand())"
+docker run --rm deb12_pyjeo_public python3 -c "import pyjeo as pj; jim = pj.Jim(ncol = 10, nrow = 10, nband = 3); print(jim.properties.nrOfBand())"
 ```
 
 ## Test the installation
