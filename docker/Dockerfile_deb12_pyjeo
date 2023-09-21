@@ -139,7 +139,7 @@ RUN set -xe \
     && cd $INSTALL_HOME/jeolib-jiplib* \
     && mkdir build \
     && cd build \
-    && cmake -DCMAKE_PREFIX_PATH=${INSTALL_HOME}/miallib \
+    && cmake -DCMAKE_PREFIX_PATH=${INSTALL_HOME}/miallib .. \
     && cmake --build . \
     && cp jiplib-*.whl $INSTALL_HOME \
     && cd $INSTALL_HOME \
