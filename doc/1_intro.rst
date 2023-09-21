@@ -86,9 +86,10 @@ The Simplified Wrapper and Interface Generator (SWIG) produces a wrapper file th
 Installation
 ------------
 
-From the directory of the repository, run::
+From the directory of the repository, create and install the pyjeo wheel (preferably in a virtual environment)::
 
-  sudo python setup.py install
+ pip wheel . \
+ pip install pyjeo-*.whl \ 
 
 Testing
 -------

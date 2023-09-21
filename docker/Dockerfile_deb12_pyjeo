@@ -40,8 +40,14 @@ ARG INSTALL_HOME=/home/install
 ARG VIRTUAL_ENV=/home/${user}/venv
 ENV INSTALL_HOME=${INSTALL_HOME}
 ENV VIRTUAL_ENV=${VIRTUAL_ENV}
+
 #
+# Create user
 #
+
+RUN groupadd -g ${gid} ${group} \
+    && useradd -u ${uid} -g ${group} -s /bin/bash -m ${user}
+
 #
 #Install dependences from the Debian repository
 #
@@ -74,9 +80,6 @@ RUN apt-get update \
 
 FROM pyjeo-base AS pyjeo-build
   
-# Prepare directory to install libraries and wheels
-RUN mkdir $INSTALL_HOME
-
 #
 #Install dependences from the Debian repository
 #
@@ -96,6 +99,11 @@ RUN apt-get update \
     tar \
     unzip \
   && rm -rf /var/lib/apt/lists/*
+
+USER ${uid}:${gid}
+
+# Prepare directory to install libraries and wheels
+RUN mkdir $INSTALL_HOME
 
 #
 # Compile and build miallib dependency library
@@ -126,16 +134,15 @@ RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeoli
 
 RUN set -xe \
     && cd $INSTALL_HOME \
-    && mkdir ${INSTALL_HOME}/jiplib \
     && tar xzvf jiplib.tar.gz \
     && cd $INSTALL_HOME/jeolib-jiplib* \
     && mkdir build \
     && cd build \
-    && cmake -DCMAKE_PREFIX_PATH=${INSTALL_HOME}/miallib -DCMAKE_INSTALL_PREFIX=${INSTALL_HOME}/jiplib .. \
+    && cmake -DCMAKE_PREFIX_PATH=${INSTALL_HOME}/miallib \
     && cmake --build . \
-    && cmake --install . \
     && cp jiplib-*.whl $INSTALL_HOME \
     && cd $INSTALL_HOME \
+    && rm -rf ${INSTALL_HOME}/miallib \
     && rm jiplib.tar.gz \
     && rm -rf $INSTALL_HOME/jeolib-jiplib*
 
@@ -149,34 +156,28 @@ RUN cd $INSTALL_HOME \
     && cp pyjeo-*.whl $INSTALL_HOME \
     && cd $INSTALL_HOME \
     && rm -rf jeolib-pyjeo* \
-    && rm pyjeo.tar.gz \
-    && rm -rf ${INSTALL_HOME}/miallib && rm -rf ${INSTALL_HOME}/jiplib
-
+    && rm pyjeo.tar.gz
 
 FROM pyjeo-base AS pyjeo
+
+RUN groupadd -g ${gid} ${group} \
+    && useradd -u ${uid} -g ${group} -s /bin/bash -m ${user}
+
+USER ${uid}:${gid}
 
 # Prepare directory to install libraries and wheels
 RUN mkdir $INSTALL_HOME
 
 COPY --from=pyjeo-build ${INSTALL_HOME} ${INSTALL_HOME}
 
-RUN groupadd -g ${gid} ${group} \
-    && useradd -u ${uid} -g ${group} -s /bin/bash -m ${user}
-
 #
 # Install python libraries in virtual environment as user
 #
-
-USER ${uid}:${gid}
-
 RUN mkdir ${VIRTUAL_ENV} \
     && virtualenv ${VIRTUAL_ENV}/pyjeo \
     && . ${VIRTUAL_ENV}/pyjeo/bin/activate \
     && pip install ${INSTALL_HOME}/jiplib-*.whl \
-    && pip install ${INSTALL_HOME}/pyjeo-*.whl
+    && pip install ${INSTALL_HOME}/pyjeo-*.whl \
+    && rm -rf ${INSTALL_HOME}
 
-USER root:root
-RUN rm -rf ${INSTALL_HOME}
-
-USER ${uid}:${gid}
 ENV PATH="$VIRTUAL_ENV/pyjeo/bin:$PATH"
