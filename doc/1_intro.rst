@@ -87,9 +87,11 @@ Installation
 ------------
 
 Please make sure dependencies `miallib <https://github.com/ec-jrc/jeolib-miallib>`_ and `jiplib <https://github.com/ec-jrc/jeolib-jiplib>`_ are already installed.
-To install pyjeo, enter the directory of the repository, and run::
 
-  sudo python setup.py install
+From the directory of the repository, create and install the pyjeo wheel (preferably in a virtual environment)::
+
+ pip wheel . \
+ pip install pyjeo-*.whl \ 
 
 Testing
 -------

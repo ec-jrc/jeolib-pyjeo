@@ -23,7 +23,7 @@ build-backend = "setuptools.build_meta"
 
 [metadata]
 name = 'pyjeo'
-version = '1.1.5'
+version = '1.1.6'
 
 [tool.setuptools.packages]
 
@@ -33,7 +33,7 @@ find = {}  # Scan the project directory with the default parameters
 
 [project]
 name = 'pyjeo'
-version = '1.1.5'
+version = '1.1.6'
 description = 'pyjeo is a library for image processing for geospatial data implemented in JRC Ispra.'
 authors = [
         { name = "Pieter Kempeneers", email = "Pieter.Kempeneers@ec.europa.eu"},
@@ -42,6 +42,7 @@ authors = [
 ]
 requires-python = ">=3.8"
 license = {text = "GPLv3"}
+dependencies = ['numpy', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
 
 [project.urls]
 documentation = 'https://readthedocs.org/projects/pyjeo'
