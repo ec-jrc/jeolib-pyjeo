@@ -109,12 +109,13 @@ RUN mkdir $INSTALL_HOME
 # Compile and build miallib dependency library
 #  
 
-RUN curl -L --output $INSTALL_HOME/mial.tar.gz https://github.com/ec-jrc/jeolib-miallib/archive/refs/tags/v1.1.1.tar.gz --verbose
+#RUN curl -L --output $INSTALL_HOME/miallib.tar.gz https://github.com/ec-jrc/jeolib-miallib/archive/refs/tags/v1.1.1.tar.gz --verbose
+RUN curl -L --output $INSTALL_HOME/miallib.tar.gz https://github.com/ec-jrc/jeolib-miallib/archive/refs/heads/master.tar.gz --verbose
 
 RUN set -xe \
     && cd $INSTALL_HOME \
     && mkdir ${INSTALL_HOME}/miallib \
-    && tar xzvf mial.tar.gz \
+    && tar xzvf miallib.tar.gz \
     && cd $INSTALL_HOME/jeolib-miallib* \
     && mkdir build \
     && cd build \
@@ -122,15 +123,15 @@ RUN set -xe \
     && cmake --build . \
     && cmake --install . \
     && cd $INSTALL_HOME \
-    && rm mial.tar.gz \
+    && rm miallib.tar.gz \
     && rm -rf $INSTALL_HOME/jeolib-miallib*
 
 #
 # Compile and build jiplib dependency library
 #  
 
-RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/tags/v1.1.3.tar.gz --verbose
-#RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/heads/develop.tar.gz --verbose
+#RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/tags/v1.1.3.tar.gz --verbose
+RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/heads/master.tar.gz --verbose
 
 RUN set -xe \
     && cd $INSTALL_HOME \
@@ -146,8 +147,8 @@ RUN set -xe \
     && rm jiplib.tar.gz \
     && rm -rf $INSTALL_HOME/jeolib-jiplib*
 
-RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/tags/v1.1.6.tar.gz --verbose
-#RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/heads/develop.tar.gz --verbose
+#RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/tags/v1.1.6.tar.gz --verbose
+RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/heads/master.tar.gz --verbose
 
 RUN cd $INSTALL_HOME \
     && tar xzvf pyjeo.tar.gz \
