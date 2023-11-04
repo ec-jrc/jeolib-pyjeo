@@ -5,6 +5,8 @@
 #             --build-arg group=$(id -g -n) \
 #             --build-arg uid=$(id -u) \
 #             --build-arg gid=$(id -g) \
+#             --build-arg http_proxy=${http_proxy} \
+#             --build-arg https_proxy=${https_proxy} \
 #             -t deb12_pyjeo_public -f Dockerfile_deb12_pyjeo_public . 
 
 FROM debian:bookworm as pyjeo-base

@@ -40,7 +40,7 @@ class BadGeometry(unittest.TestCase):
 
     @staticmethod
     def test_covers():
-        """Test the band2plane method."""
+        """Test the covers method."""
         jim= pj.Jim(rasterfn, band=0)
         bbox = jim.properties.getBBox()
         ulx = bbox [0]
@@ -49,23 +49,100 @@ class BadGeometry(unittest.TestCase):
         lry = bbox [3]
         bbox = [ulx, uly, lrx, lry]
         assert(jim.geometry.covers(ulx = ulx, uly = uly,
-                                   lrx = lrx, lry = lry) ==
-               jim.geometry.covers(bbox = bbox)), \
-               'Error in method geometry.covers() bbox'
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_COVERED') ==
+            jim.geometry.covers(bbox = bbox,
+                                coverType = 'ALL_COVERED')), \
+            'Error in method geometry.covers() bbox'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_TOUCHED') ==
+            jim.geometry.covers(bbox = bbox, coverType = 'ALL_TOUCHED')), \
+            'Error in method geometry.covers() bbox'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                lrx = lrx, lry = lry) ==
+                jim.geometry.covers(bbox = bbox)), \
+                'Error in method geometry.covers() bbox'
         assert(pj.geometry.covers(jim, ulx = ulx, uly = uly,
-                                  lrx = lrx, lry = lry) ==
-               pj.geometry.covers(jim, bbox = bbox)), \
-               'Error in function geometry.covers() bbox'
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_COVERED') ==
+            pj.geometry.covers(jim, bbox = bbox,
+                                coverType = 'ALL_COVERED')), \
+            'Error in function geometry.covers() bbox'
+        assert(pj.geometry.covers(jim, ulx = ulx, uly = uly,
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_TOUCHED') ==
+            pj.geometry.covers(jim, bbox = bbox,
+                                coverType = 'ALL_TOUCHED')), \
+            'Error in function geometry.covers() bbox'
+        assert(pj.geometry.covers(jim, ulx = ulx, uly = uly,
+                                lrx = lrx, lry = lry) ==
+            pj.geometry.covers(jim, bbox = bbox)), \
+            'Error in function geometry.covers() bbox'
         assert(jim.geometry.covers(ulx = ulx, uly = uly,
-                                   lrx = lrx, lry = lry) ==
-               pj.geometry.covers(jim, bbox = bbox)), \
-               'Error in function geometry.covers() function not equal to method'
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_COVERED') ==
+            pj.geometry.covers(jim, bbox = bbox,
+                                coverType = 'ALL_COVERED')), \
+            'Error in function geometry.covers() function not equal to method'
         assert(jim.geometry.covers(ulx = ulx, uly = uly,
-                                   lrx = lrx, lry = lry) == True), \
-               'Error in method geometry.covers() must be True'
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_TOUCHED') ==
+            pj.geometry.covers(jim, bbox = bbox,
+                                coverType = 'ALL_TOUCHED')), \
+            'Error in function geometry.covers() function not equal to method'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                    lrx = lrx, lry = lry) ==
+                pj.geometry.covers(jim, bbox = bbox)), \
+                'Error in function geometry.covers() function not equal to method'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_COVERED') == False), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                lrx = lrx, lry = lry,
+                                coverType = 'ALL_TOUCHED') == True), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx, uly = uly,
+                                lrx = lrx, lry = lry) == True), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx + 10, uly = uly - 10,
+                                lrx = lrx - 10, lry = lry + 10,
+                                coverType = 'ALL_COVERED') == True), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx + 10, uly = uly - 10,
+                                lrx = lrx - 10, lry = lry + 10,
+                                coverType = 'ALL_TOUCHED') == True), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx + 10, uly = uly - 10,
+                                lrx = lrx - 10, lry = lry + 10) == True), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx + 10, uly = uly - 10,
+                                lrx = lrx + 10, lry = lry - 10,
+                                coverType = 'ALL_COVERED') == False), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx + 10, uly = uly - 10,
+                                lrx = lrx - 10, lry = lry + 10,
+                                coverType = 'ALL_TOUCHED') == True), \
+                'Error in method geometry.covers() must be True'
+        assert(jim.geometry.covers(ulx = ulx + 10, uly = uly - 10,
+                                lrx = lrx - 10, lry = lry + 10) == True), \
+                'Error in method geometry.covers() must be True'
         assert(jim.geometry.covers(ulx = 2*ulx, uly = uly,
-                                   lrx = 2*lrx, lry = lry) == False), \
-               'Error in method geometry.covers() must be False'
+                                lrx = 2*lrx, lry = lry,
+                                coverType = 'ALL_COVERED') == False), \
+                                'Error in method geometry.covers() must be False'
+        assert(jim.geometry.covers(ulx = 2*ulx, uly = uly,
+                                lrx = 2*lrx, lry = lry,
+                                coverType = 'ALL_TOUCHED') == False), \
+                                'Error in method geometry.covers() must be False'
+        assert(jim.geometry.covers(ulx = 2*ulx, uly = uly,
+                                lrx = 2*lrx, lry = lry) == False), \
+                                'Error in method geometry.covers() must be False'
+        assert(jim.geometry.covers(ulx = 2*ulx, uly = uly,
+                                lrx = 2*lrx, lry = lry,
+                                coverType = 'ALL_COVERED') == False), \
+                                'Error in method geometry.covers() must be False'
 
     @staticmethod
     def test_band2plane():
@@ -677,6 +754,43 @@ class BadGeometry(unittest.TestCase):
                                       'band' : bands})
 
         bbox = jim0.properties.getBBox()
+        dx = jim0.properties.getDeltaX()
+        dy = jim0.properties.getDeltaY()
+        ulx, uly, lrx, lry = bbox
+        projection = jim0.properties.getProjection()
+        bbox_extended = [ulx - dx,
+                         uly + dy,
+                         lrx + dx,
+                         lry - dy]
+
+        jim_near = pj.geometry.warp(jim0, bbox = bbox_extended,
+                                    resample = 'near',
+                                    nodata = 255)
+        assert jim_near.np(0)[0,0,0] == 255, \
+            'Error in geometry.warp(): extend bounds 0 0 0 with nodata 255 band 0'
+        assert jim_near.np(1)[0,0,0] == 255, \
+            'Error in geometry.warp(): extend bounds 0 0 0 with nodata 255 band 1'
+        assert jim_near.np(0)[-1,-1,-1] == 255, \
+            'Error in geometry.warp(): extend bounds -1 -1 -1 with nodata 255 band 0'
+        assert jim_near.np(1)[-1,-1,-1] == 255, \
+            'Error in geometry.warp(): extend bounds -1 -1 -1 with nodata 255 band 1'
+        assert jim_near.properties.getBBox() == bbox_extended, \
+            'Error in geometry.warp(): bbox_extended'
+        assert jim_near.properties.getProjection() == projection, \
+            'Error in geometry.warp(): projection'
+
+        jim_near = pj.geometry.warp(jim0, bbox = bbox,
+                                    resample = 'near',
+                                    nodata = 255)
+        assert jim_near.properties.isEqual(jim0), \
+            'Error in geometry.warp(): recover original from extended jim'
+        assert jim_near.properties.getBBox() == bbox, \
+            'Error in geometry.warp(): bbox'
+        assert jim_near.properties.getProjection() == projection, \
+            'Error in geometry.warp(): projection'
+
+        #Test the warp method without re-projection for resampling
+
         projection = jim0.properties.getProjection()
 
         jim_cubic = pj.geometry.warp(jim0, dx = 100, dy = 100,

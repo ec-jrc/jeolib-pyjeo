@@ -147,7 +147,8 @@ def covers(jim_object,
            ulx: float = None,
            uly: float = None,
            lrx: float = None,
-           lry: float = None):
+           lry: float = None,
+           coverType: str =  'ALL_TOUCHED', **kwargs):
     """Check if Jim object covers bounding box
 
     :param jim_object: a Jim object
@@ -155,7 +156,7 @@ def covers(jim_object,
     :param ulx: Upper left x value of bounding box to crop
     :param uly: Upper left y value of bounding box to crop
     :param lrx: Lower right x value of bounding box to crop
-    :param lry: Lower right y value of bounding box to crop
+    :param coverType: 'ALL_TOUCHED' (default) or 'ALL_COVERED'
     :return: True if Jim object covers bounding box, else False
 
     see :py:meth:`~_Geometry.covers` for an example how to use this function
@@ -166,9 +167,7 @@ def covers(jim_object,
         uly = bbox[1]
         lrx = bbox[2]
         lry = bbox[3]
-        return jim_object._jipjim.covers(ulx, uly, lrx, lry)
-    else:
-        return jim_object._jipjim.covers(ulx, uly, lrx, lry)
+    return jim_object._jipjim.covers(ulx, uly, lrx, lry, coverType, **kwargs)
 
 
 def crop(jim_object,
@@ -1863,12 +1862,14 @@ class _Geometry(_pj.modules.JimModuleBase):
         self._jim_object.properties.setDimension(self._jim_object.properties.getDimension('band'), 'plane')
         self._jim_object.properties.setDimension([], 'band')
 
+    #todo: support coverType
     def covers(self,
                bbox: list = None,
                ulx: float = None,
                uly: float = None,
                lrx: float = None,
-               lry: float = None):
+               lry: float = None,
+               coverType: str =  'ALL_TOUCHED', **kwargs):
         """Check if Jim object covers bounding box
 
         :param jim_object: a Jim object
@@ -1877,6 +1878,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param uly: Upper left y value of bounding box to crop
         :param lrx: Lower right x value of bounding box to crop
         :param lry: Lower right y value of bounding box to crop
+        :param coverType: 'ALL_TOUCHED' (default) or 'ALL_COVERED'
         :return: True if Jim object covers bounding box, else False
 
         Example: check if Jim (for instance in lat lon coordinates)
@@ -1898,9 +1900,7 @@ class _Geometry(_pj.modules.JimModuleBase):
             uly = bbox[1]
             lrx = bbox[2]
             lry = bbox[3]
-            return self._jim_object._jipjim.covers(ulx, uly, lrx, lry)
-        else:
-            return self._jim_object._jipjim.covers(ulx, uly, lrx, lry)
+        return self._jim_object._jipjim.covers(ulx, uly, lrx, lry, coverType, **kwargs)
 
     def crop(self,
              bbox: list = None,
@@ -3158,8 +3158,6 @@ class _Geometry(_pj.modules.JimModuleBase):
         |          | (default: near).                                                                                  |
         |          | Check `GDAL link <https://gdal.org/doxygen/gdalwarper_8h.html#a4775b029869df1f9270ad554c063384>`_ |
         |          | for available options.                                                                            |
-        +----------+---------------------------------------------------------------------------------------------------+
-        | nodata   | Nodata value to put in image if out of bounds                                                     |
         +----------+---------------------------------------------------------------------------------------------------+
         | nodata   | Nodata value to put in image if out of bounds                                                     |
         +----------+---------------------------------------------------------------------------------------------------+
