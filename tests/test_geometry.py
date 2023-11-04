@@ -1287,6 +1287,126 @@ class BadGeometry(unittest.TestCase):
             '(returned planes were changed)'
 
         #Test crop()
+        raster = pj.Jim(rasterfn, band=[0, 1])
+        raster_stacked = pj.geometry.stackPlane(raster, raster)
+        bbox_orig = raster_stacked.properties.getBBox()
+        bbox_1 = [bbox_orig[0] + raster_dx, bbox_orig[1] - raster_dy,
+                bbox_orig[2] - raster_dx, bbox_orig[3] + raster_dy]
+
+        raster_1 = pj.geometry.crop(raster_stacked, bbox = bbox_1)
+        assert raster_1.properties.getBBox() == bbox_1, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBox() != bbox_1'
+        assert raster_1.properties.nrOfCol() == raster.properties.nrOfCol() - 2, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.nrOfCol() != raster.properties.nrOfCol() - 2'
+        assert raster_1.properties.nrOfRow() == raster.properties.nrOfRow() - 2, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.nrOfRow() != raster.properties.nrOfRow() - 2'
+        assert raster_1.np(0)[0, 0, 0] == raster_stacked.np(0)[0, 1, 1], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(0)[0, 0] == raster.np()[1, 1]'
+        assert raster_1.np(0)[0, -1, -1] == raster_stacked.np(0)[0, -2, -2], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(0)[-1, -1] == raster.np()[-2, -2]'
+        assert raster_1.np(0)[1, 0, 0] == raster_stacked.np(0)[1, 1, 1], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(0)[0, 0] == raster.np()[1, 1]'
+        assert raster_1.np(0)[1, -1, -1] == raster_stacked.np(0)[1, -2, -2], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(0)[-1, -1] == raster.np()[-2, -2]'
+        assert raster_1.np(1)[0, 0, 0] == raster_stacked.np(1)[0, 1, 1], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(1)[0, 0] == raster.np()[1, 1]'
+        assert raster_1.np(1)[0, -1, -1] == raster_stacked.np(1)[0, -2, -2], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(1)[-1, -1] == raster.np()[-2, -2]'
+        assert raster_1.np(1)[1, 0, 0] == raster_stacked.np(1)[1, 1, 1], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(1)[0, 0] == raster.np()[1, 1]'
+        assert raster_1.np(1)[1, -1, -1] == raster_stacked.np(1)[1, -2, -2], \
+            'Error in geometry.crop() ' \
+            'raster_1.np(1)[-1, -1] == raster.np()[-2, -2]'
+
+        bbox_05 = [bbox_orig[0] + raster_dx/2, bbox_orig[1] - raster_dy/2, bbox_orig[2] - raster_dx/2, bbox_orig[3] + raster_dy/2]
+        raster_1 = pj.geometry.crop(raster_stacked, bbox = bbox_05)
+        assert raster_1.properties.getBBox() == bbox_05, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBox() != bbox_05'
+        assert raster_1.properties.nrOfCol() == raster.properties.nrOfCol() - 1, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.nrOfCol() != raster.properties.nrOfCol() - 1'
+        assert raster_1.properties.nrOfRow() == raster.properties.nrOfRow() - 1, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.nrOfRow() != raster.properties.nrOfRow() - 1'
+
+        bbox_15 = [bbox_orig[0] + raster_dx/2, bbox_orig[1] - raster_dy/2, bbox_orig[2], bbox_orig[3]]
+        raster_1 = pj.geometry.crop(raster_stacked, bbox = bbox_15)
+        assert raster_1.properties.getBBox()[0] == bbox_05[0], \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBox()[0] == bbox_05[0]'
+        assert raster_1.properties.getBBox()[1] == bbox_05[1], \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBox()[1] == bbox_05[1]'
+        assert raster_1.properties.getBBox()[2] == bbox_orig[2] + raster_dx/2, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBox()[2] == bbox_orig[2] + raster_dx/2'
+        assert raster_1.properties.getBBox()[3] == bbox_orig[3] - raster_dy/2, \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBox()[3] == bbox_orig[3] - raster_dy/2'
+        assert raster_1.properties.nrOfCol() == raster.properties.nrOfCol(), \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.nrOfCol() != raster.properties.nrOfCol()'
+        assert raster_1.properties.nrOfRow() == raster.properties.nrOfRow(), \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.nrOfRow() != raster.properties.nrOfRow()'
+
+        #align
+        raster_1 = pj.geometry.crop(raster_stacked, bbox = bbox_1, align = True)
+        #should be alrearaster_dy aligned
+        assert raster_1.properties.getBBox()[0] == bbox_1[0], \
+            'Error in geometry.raster_1.properties.getBBox()() ' \
+            'raster_1.properties.getBBox()[0] != bbox_1[0]'
+        assert raster_1.properties.getBBox()[1] == bbox_1[1], \
+            'Error in geometry.raster_1.properties.getBBox()() ' \
+            'raster_1.properties.getBBox()[1] != bbox_1[1]'
+        assert raster_1.properties.getBBox()[2] == bbox_1[2], \
+            'Error in geometry.raster_1.properties.getBBox()() ' \
+            'raster_1.properties.getBBox()[2] != bbox_1[2]'
+        assert raster_1.properties.getBBox()[3] == bbox_1[3], \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBBox()[3] != bbox_1[3]'
+
+        raster_1 = pj.geometry.crop(raster_stacked, bbox = bbox_05, align = True)
+        #should be original bbox
+        assert raster_1.properties.getBBox()[0] == bbox_orig[0], \
+            'Error in geometry.raster_1.properties.getBBox()() ' \
+            'raster_1.properties.getBBox()[0] != bbox_orig[0]'
+        assert raster_1.properties.getBBox()[1] == bbox_orig[1], \
+            'Error in geometry.raster_1.properties.getBBox()() ' \
+            'raster_1.properties.getBBox()[1] != bbox_orig[1]'
+        assert raster_1.properties.getBBox()[2] == bbox_orig[2], \
+            'Error in geometry.raster_1.properties.getBBox()() ' \
+            'raster_1.properties.getBBox()[2] != bbox_orig[2]'
+        assert raster_1.properties.getBBox()[3] == bbox_orig[3], \
+            'Error in geometry.crop() ' \
+            'raster_1.properties.getBBox()[3] != bbox_orig[3]'
+
+
+        raster_15 = pj.geometry.crop(raster_stacked, bbox = bbox_15, align = True)
+        #should be original bbox
+        assert raster_15.properties.getBBox()[0] == bbox_orig[0], \
+            'Error in geometry.raster_15.properties.getBBox()() ' \
+            'raster_15.properties.getBBox()[0] != bbox_orig[0]'
+        assert raster_15.properties.getBBox()[1] == bbox_orig[1], \
+            'Error in geometry.raster_15.properties.getBBox()() ' \
+            'raster_15.properties.getBBox()[1] != bbox_orig[1]'
+        assert raster_15.properties.getBBox()[2] == bbox_orig[2], \
+            'Error in geometry.raster_15.properties.getBBox()() ' \
+            'raster_15.properties.getBBox()[2] != bbox_orig[2]'
+        assert raster_15.properties.getBBox()[3] == bbox_orig[3], \
+            'Error in geometry.crop() ' \
+            'raster_15.properties.getBBox()[3] != bbox_orig[3]'
         raster_crop = pj.geometry.crop(raster, bbox = raster_bbox_cropped)
         assert raster_crop.properties.getBBox() == raster_bbox_cropped, \
             'Error in geometry.crop() ' \
