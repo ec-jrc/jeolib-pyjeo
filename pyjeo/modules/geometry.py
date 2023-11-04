@@ -174,13 +174,12 @@ def crop(jim_object,
          bbox: list = None,
          ulx: float = None,
          uly: float = None,
-         ulz: float = None,
          lrx: float = None,
          lry: float = None,
-         lrz: float = None,
          dx: float = None,
          dy: float = None,
-         nogeo: bool = False, **kwargs):
+         align: bool = False,
+         **kwargs):
     """Subset raster dataset.
 
     Subset raster dataset according in spatial (subset region) domain
@@ -189,120 +188,69 @@ def crop(jim_object,
     :param bbox: bounding box (instead of ulx, uly, lrx, lry)
     :param ulx: Upper left x value of bounding box to crop
     :param uly: Upper left y value of bounding box to crop
-    :param ulz: Upper left z value of bounding box to crop
     :param lrx: Lower right x value of bounding box to crop
     :param lry: Lower right y value of bounding box to crop
-    :param lrz: Lower right y value of bounding box to crop
     :param dx: spatial resolution in x to crop (stride if nogeo is True)
     :param dy: spatial resolution in y to crop (stride if nogeo is True)
-    :param nogeo: use image coordinates if True, default is spatial reference
-        system coordinates
+    :param align: align to original pixels
+    :param kwargs: See table below
     :return: Cropped image as Jim instance
+
+    +----------+---------------------------------------------------------------------------------------------------+
+    | key      | value                                                                                             |
+    +==========+===================================================================================================+
+    | resample | Resample algorithm used for reading pixel data in                                                 |
+    |          | case of interpolation                                                                             |
+    |          | (default: near).                                                                                  |
+    |          | Check `GDAL link <https://gdal.org/doxygen/gdalwarper_8h.html#a4775b029869df1f9270ad554c063384>`_ |
+    |          | for available options.                                                                            |
+    +----------+---------------------------------------------------------------------------------------------------+
+    | nodata   | Nodata value to put in image if out of bounds                                                     |
+    +----------+---------------------------------------------------------------------------------------------------+
 
     see :py:meth:`~_Geometry.crop` for an example how to use this function
     """
-    dimension = jim_object.properties.getDimension()
+
     if bbox is not None:
         ulx = bbox[0]
         uly = bbox[1]
         lrx = bbox[2]
         lry = bbox[3]
-    if ulz is not None or lrz is not None:
-        assert len(kwargs) == 0, 'It is not supported to use both z coords ' \
-                                 'and special cropping parameters'
-        jim = _pj.Jim(jim_object)
-        jim.geometry.crop(ulx, uly, ulz, lrx, lry, lrz, dx, dy, nogeo,
-                          **kwargs)
-        return jim
-    elif len(kwargs) == 0:
-        if nogeo:
-            if ulx is None:
-                ulx = 0
-            if uly is None:
-                uly = 0
-            if lrx is None:
-                lrx = jim_object.properties.nrOfCol()-1
-            if lry is None:
-                lry = jim_object.properties.nrOfRow()-1
-            if dx is None:
-                dx = 1
-            if dy is None:
-                dy = 1
-        else:
-            if ulx is None:
-                ulx = jim_object.properties.getUlx()
-            if uly is None:
-                uly = jim_object.properties.getUly()
-            if lrx is None:
-                lrx = jim_object.properties.getLrx()
-            if lry is None:
-                lry = jim_object.properties.getLry()
-            if dx is None:
-                dx = jim_object.properties.getDeltaX()
-            if dy is None:
-                dy = jim_object.properties.getDeltaY()
 
-        kwargs.update({'ulx': ulx})
-        kwargs.update({'uly': uly})
-        kwargs.update({'lrx': lrx})
-        kwargs.update({'lry': lry})
-        kwargs.update({'dx': dx})
-        kwargs.update({'dy': dy})
-        kwargs.update({'nogeo': nogeo})
+    if dx is None:
+        dx = jim_object.properties.getDeltaX()
+    if dy is None:
+        dy = jim_object.properties.getDeltaY()
 
-        jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(
-            kwargs))
-        for iplane in range(1, jim_object.properties.nrOfPlane()):
-            jimplane = _pj.Jim(_pj.geometry.cropPlane(
-                jim_object, iplane)._jipjim.crop(kwargs))
-            jim.geometry.stackPlane(jimplane)
-        jim.properties.setDimension(jim_object.properties.getDimension())
-        return jim
+    if align:
+        if ulx > jim_object.properties.getUlx():
+            ulx -= (ulx-jim_object.properties.getUlx()) % dx
+        elif ulx < jim_object.properties.getUlx():
+            ulx += (jim_object.properties.getUlx()-ulx) % dx
+        if lrx < jim_object.properties.getLrx():
+            lrx += (jim_object.properties.getLrx() - lrx) % dx
+        elif lrx > jim_object.properties.getLrx():
+            lrx -= (lrx - jim_object.properties.getLrx()) % dx
 
-    else:
-        if nogeo:
-            uli = ulx
-            ulj = uly
-            lri = lrx
-            lrj = lry
-            upperLeft = jim_object._jipjim.image2geo(ulx, uly)
-            lowerRight = jim_object._jipjim.image2geo(lrx, lry)
-            ulx = upperLeft[0]
-            uly = upperLeft[1]
-            lrx = lowerRight[0] + jim_object.properties.getDeltaX() / 2.0
-            lry = lowerRight[1] - jim_object.properties.getDeltaY() / 2.0
-            if dx is None:
-                dx = 1
-            if dy is None:
-                dy = 1
-        else:
-            if ulx is None:
-                ulx = jim_object.properties.getUlx()
-            if uly is None:
-                uly = jim_object.properties.getUly()
-            if lrx is None:
-                lrx = jim_object.properties.getLrx()
-            if lry is None:
-                lry = jim_object.properties.getLry()
-            if dx is None:
-                dx = jim_object.properties.getDeltaX()
-            if dy is None:
-                dy = jim_object.properties.getDeltaY()
-        kwargs.update({'ulx': ulx})
-        kwargs.update({'uly': uly})
-        kwargs.update({'lrx': lrx})
-        kwargs.update({'lry': lry})
+        if uly > jim_object.properties.getUly():
+            uly -= (uly-jim_object.properties.getUly()) % dy
+        elif uly < jim_object.properties.getUly():
+            uly += (jim_object.properties.getUly()-uly) % dy
+        if lry < jim_object.properties.getLry():
+            lry += (jim_object.properties.getLry() - lry) % dy
+        elif lry > jim_object.properties.getLry():
+            lry -= (lry - jim_object.properties.getLry()) % dy
 
-        jim = _pj.Jim(_pj.geometry.cropPlane(jim_object, 0)._jipjim.crop(
-            kwargs))
-        for iplane in range(1, jim_object.properties.nrOfPlane()):
-            jimplane = _pj.Jim(_pj.geometry.cropPlane(
-                jim_object, iplane)._jipjim.crop(kwargs))
-            jim.geometry.stackPlane(jimplane)
-
-        jim.properties.setDimension(jim_object.properties.getDimension())
-        return jim
-        # return _pj.Jim(jim_object._jipjim.crop(kwargs))
+    return _pj.geometry.warp(jim_object,
+                             None,
+                             None,
+                             ulx,
+                             uly,
+                             lrx,
+                             lry,
+                             dx,
+                             dy,
+                             **kwargs)
 
 
 def cropBand(jim_object,
@@ -1718,10 +1666,8 @@ def warp(jim_object,
          bbox: list = None,
          ulx: float = None,
          uly: float = None,
-         ulz: float = None,
          lrx: float = None,
          lry: float = None,
-         lrz: float = None,
          dx: float = None,
          dy: float = None,
          **kwargs):
@@ -1906,13 +1852,11 @@ class _Geometry(_pj.modules.JimModuleBase):
              bbox: list = None,
              ulx: float = None,
              uly: float = None,
-             ulz: float = None,
              lrx: float = None,
              lry: float = None,
-             lrz: float = None,
              dx: float = None,
              dy: float = None,
-             nogeo: bool = False,
+             align: bool = False,
              **kwargs):
         """Subset raster dataset.
 
@@ -1921,16 +1865,24 @@ class _Geometry(_pj.modules.JimModuleBase):
         :param bbox: bounding box (instead of ulx, uly, lrx, lry)
         :param ulx: Upper left x value of bounding box to crop
         :param uly: Upper left y value of bounding box to crop
-        :param ulz: Upper left z value of bounding box to crop
         :param lrx: Lower right x value of bounding box to crop
         :param lry: Lower right y value of bounding box to crop
-        :param lrz: Lower right y value of bounding box to crop
         :param dx: spatial resolution in x to crop (stride if nogeo is True)
         :param dy: spatial resolution in y to crop (stride if nogeo is True)
-        :param nogeo: use image coordinates if True, default is spatial
-            reference system coordinates
-        :param nodata: set no data in case the specified bounding box is not
-            within the object boundaries (default is 0)
+        :param align: align to original pixels
+        :param kwargs: See table below
+
+        +----------+---------------------------------------------------------------------------------------------------+
+        | key      | value                                                                                             |
+        +==========+===================================================================================================+
+        | resample | Resample algorithm used for reading pixel data in                                                 |
+        |          | case of interpolation                                                                             |
+        |          | (default: near).                                                                                  |
+        |          | Check `GDAL link <https://gdal.org/doxygen/gdalwarper_8h.html#a4775b029869df1f9270ad554c063384>`_ |
+        |          | for available options.                                                                            |
+        +----------+---------------------------------------------------------------------------------------------------+
+        | nodata   | Nodata value to put in image if out of bounds                                                     |
+        +----------+---------------------------------------------------------------------------------------------------+
 
         Example:
 
@@ -1959,143 +1911,45 @@ class _Geometry(_pj.modules.JimModuleBase):
                               lry=jim.properties.nrOfRow()+1, nogeo=True)
 
         """
-        dimension = self._jim_object.properties.getDimension()
         if bbox is not None:
             ulx = bbox[0]
             uly = bbox[1]
             lrx = bbox[2]
             lry = bbox[3]
-        if ulz is not None or lrz is not None:
-            assert len(kwargs) == 0, \
-                'It is not supported to use both z coords and special ' \
-                'cropping parameters'
-            gt = self._jim_object.properties.getGeoTransform()
-            nr_of_cols = self._jim_object.properties.nrOfCol()
-            nr_of_rows = self._jim_object.properties.nrOfRow()
-            if nogeo:
-                if ulx is None:
-                    ulx = 0
-                if uly is None:
-                    uly = 0
-                if ulz is None:
-                    ulz = 0
-                if lrx is None:
-                    lrx = self._jim_object.properties.nrOfCol()
-                if lry is None:
-                    lry = self._jim_object.properties.nrOfRow()
-                if lrz is None:
-                    lrz = self._jim_object.properties.nrOfPlane()
-                if dx is None:
-                    dx = 1
-                if dy is None:
-                    dy = 1
-                uli = ulx
-                ulj = uly
-                lri = lrx
-                lrj = lry
-                upperLeft = self._jim_object.geometry.image2geo(float(ulx),
-                                                                float(uly))
-                lowerRight = self._jim_object.geometry.image2geo(float(lrx),
-                                                                 float(lry))
-                ulx = upperLeft[0]
-                uly = upperLeft[1]
-            else:
-                upperLeftImage = self._jim_object.geometry.geo2image(ulx, uly)
-                uli = upperLeftImage[0]
-                ulj = upperLeftImage[1]
-                lowerRightImage = self._jim_object.geometry.geo2image(lrx, lry)
-                lri = lowerRightImage[0]
-                lrj = lowerRightImage[1]
-            for iband in range(0, self._jim_object.properties.nrOfBand()):
-                self._jim_object._jipjim.d_imageFrameSubtract([
-                    uli, nr_of_cols - lri,
-                    ulj, nr_of_rows - lrj,
-                    ulz, self._jim_object.properties.nrOfPlane() - lrz])
-            gt[0] = ulx
-            gt[3] = uly
-            self._jim_object.properties.setGeoTransform(gt)
-        else:
-            if nogeo:
-                if ulx is None:
-                    ulx = 0
-                if uly is None:
-                    uly = 0
-                if lrx is None:
-                    lrx = self._jim_object.properties.nrOfCol()
-                if lry is None:
-                    lry = self._jim_object.properties.nrOfRow()
-                if dx is None:
-                    dx = 1
-                if dy is None:
-                    dy = 1
-            else:
-                if ulx is None:
-                    ulx = self._jim_object.properties.getUlx()
-                if uly is None:
-                    uly = self._jim_object.properties.getUly()
-                if lrx is None:
-                    lrx = self._jim_object.properties.getLrx()
-                if lry is None:
-                    lry = self._jim_object.properties.getLry()
-                if dx is None:
-                    dx = self._jim_object.properties.getDeltaX()
-                if dy is None:
-                    dy = self._jim_object.properties.getDeltaY()
-            kwargs.update({'ulx': ulx})
-            kwargs.update({'uly': uly})
-            kwargs.update({'lrx': lrx})
-            kwargs.update({'lry': lry})
-            kwargs.update({'dx': dx})
-            kwargs.update({'dy': dy})
-            kwargs.update({'nogeo': nogeo})
 
-            jim = _pj.Jim(_pj.geometry.cropPlane(self._jim_object,
-                                                 0)._jipjim.crop(kwargs))
-            for iplane in range(1, self._jim_object.properties.nrOfPlane()):
-                jimplane = _pj.Jim(_pj.geometry.cropPlane(
-                    self._jim_object, iplane)._jipjim.crop(kwargs))
-                jim.geometry.stackPlane(jimplane)
-            self._jim_object._set(jim._jipjim)
-            # self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
-        # else:
-        #     if nogeo:
-        #         uli = ulx
-        #         ulj = uly
-        #         lri = lrx
-        #         lrj = lry
-        #         upperLeft = self._jim_object.geometry.image2geo(ulx, uly)
-        #         lowerRight = self._jim_object.geometry.image2geo(lrx, lry)
-        #         ulx = upperLeft[0]
-        #         uly = upperLeft[1]
-        #         lrx = lowerRight[0]+self._jim_object.properties.getDeltaX()/2.0
-        #         lry = lowerRight[1]-self._jim_object.properties.getDeltaY()/2.0
-        #         if dx is None:
-        #             dx = 1
-        #         if dy is None:
-        #             dy = 1
-        #     else:
-        #         if ulx is None:
-        #             ulx = self._jim_object.properties.getUlx()
-        #         if uly is None:
-        #             uly = self._jim_object.properties.getUly()
-        #         if lrx is None:
-        #             lrx = self._jim_object.properties.getLrx()
-        #         if lry is None:
-        #             lry = self._jim_object.properties.getLry()
-        #         if dx is None:
-        #             dx = self._jim_object.properties.getDeltaX()
-        #         if dy is None:
-        #             dy = self._jim_object.properties.getDeltaY()
-        #     kwargs.update({'ulx': ulx})
-        #     kwargs.update({'uly': uly})
-        #     kwargs.update({'lrx': lrx})
-        #     kwargs.update({'lry': lry})
-        #     kwargs.update({'dx': dx})
-        #     kwargs.update({'dy': dy})
-        #     kwargs.update({'nogeo': nogeo})
-        #     self._jim_object._set(self._jim_object._jipjim.crop(kwargs))
-        #     # return _pj.Jim(self._jim_object.crop(kwargs))
-        self._jim_object.properties.setDimension(dimension)
+        if dx is None:
+            dx = self._jim_object.properties.getDeltaX()
+        if dy is None:
+            dy = self._jim_object.properties.getDeltaY()
+
+        if align:
+            if ulx > self._jim_object.properties.getUlx():
+                ulx -= (ulx-self._jim_object.properties.getUlx()) % dx
+            elif ulx < self._jim_object.properties.getUlx():
+                ulx += (self._jim_object.properties.getUlx()-ulx) % dx
+            if lrx < self._jim_object.properties.getLrx():
+                lrx += (self._jim_object.properties.getLrx() - lrx) % dx
+            elif lrx > self._jim_object.properties.getLrx():
+                lrx -= (lrx - self._jim_object.properties.getLrx()) % dx
+
+            if uly > self._jim_object.properties.getUly():
+                uly -= (uly-self._jim_object.properties.getUly()) % dy
+            elif uly < self._jim_object.properties.getUly():
+                uly += (self._jim_object.properties.getUly()-uly) % dy
+            if lry < self._jim_object.properties.getLry():
+                lry += (self._jim_object.properties.getLry() - lry) % dy
+            elif lry > self._jim_object.properties.getLry():
+                lry -= (lry - self._jim_object.properties.getLry()) % dy
+
+        self._jim_object.geometry.warp(None,
+                                       None,
+                                       ulx,
+                                       uly,
+                                       lrx,
+                                       lry,
+                                       dx,
+                                       dy,
+                                       **kwargs)
 
     def cropBand(self,
                  band):
@@ -3128,10 +2982,8 @@ class _Geometry(_pj.modules.JimModuleBase):
              bbox: list = None,
              ulx: float = None,
              uly: float = None,
-             ulz: float = None,
              lrx: float = None,
              lry: float = None,
-             lrz: float = None,
              dx: float = None,
              dy: float = None,
              **kwargs):

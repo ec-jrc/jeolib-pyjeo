@@ -86,6 +86,8 @@ The Simplified Wrapper and Interface Generator (SWIG) produces a wrapper file th
 Installation
 ------------
 
+Please make sure dependencies `miallib <https://github.com/ec-jrc/jeolib-miallib>`_ and `jiplib <https://github.com/ec-jrc/jeolib-jiplib>`_ are already installed.
+
 From the directory of the repository, create and install the pyjeo wheel (preferably in a virtual environment)::
 
  pip wheel . \
