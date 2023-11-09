@@ -24,6 +24,7 @@ import unittest
 from datetime import datetime
 
 import numpy as np
+import xarray as xr
 import warnings
 
 
@@ -1420,6 +1421,28 @@ class BadBasicMethods(unittest.TestCase):
         assert jim2.properties.isEqual(jim0), \
             'Error in the usage of byte strings inside arguments'
 
+    @staticmethod
+    def test_xr():
+        """Test the parsing of arguments as bytes, unicode, etc."""
+        jim = pj.Jim(testFile, band=[0, 1])
+
+        dates = [
+            datetime.strptime('2019-01-01','%Y-%m-%d'),
+            datetime.strptime('2019-01-05','%Y-%m-%d')]
+        bands = ['B0', 'B1']
+
+        jim.geometry.stackPlane(pj.Jim(rasterfn, band=[2, 3]))
+        jim.properties.setDimension({'plane' : dates,
+                                    'band' : bands})
+
+        x = pj.jim2xr(jim)
+        assert jim.xr() == x, \
+            'Inconsistency in bridging to xarray  ' \
+            '(pj.jim2xr() != jim.xr(0) is identical)'
+
+        assert jim.properties.isEqual(pj.xr2jim(x)), \
+            'Inconsistency in bridging to xarray  ' \
+            '(pj.jim2xr() -> xr2jim() is not equal)'
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
