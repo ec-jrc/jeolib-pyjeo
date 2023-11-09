@@ -436,7 +436,7 @@ class Jim:
                                      for band in bands})
         else:
             x_dataset = _xr.Dataset({band:_xr.DataArray(
-                _np.expand_dims(self.np(bands.index(band)), axis=0),
+                _np.expand_dims(self.np(bands.index(band)), axis = 0),
                 dims=['time', 'y', 'x'],
                 coords={'time': planes,
                          'y': y, 'x': x,
@@ -1788,18 +1788,24 @@ def jim2xr(jim_object: Jim,
 
     # Build new copy of xarray Dataset (with memory copy):
     if jim_object.properties.nrOfPlane() > 1:
-        x_dataset = _xr.Dataset({band:_xr.DataArray(jim_object.np(bands.index(band)),
-                                                    dims=['time', 'y', 'x'],
-                                                    coords={'time': planes,
-                                                            'x': x, 'y': y},
-                                                    attrs={'_FillValue': 0})
-                                for band in bands})
+        x_dataset = _xr.Dataset({band:_xr.DataArray(
+            jim_object.np(bands.index(band)),
+            dims=['time', 'y', 'x'],
+            coords={'time': planes, 'x': x, 'y': y},
+            attrs={'_FillValue': 0})
+                                 for band in bands})
     else:
-        x_dataset = _xr.Dataset({band:_xr.DataArray(jim_object.np(bands.index(band)),
-                                                  dims=['y', 'x'],
-                                                  coords={'x': x, 'y': y},
-                                                  attrs={'_FillValue': 0})
-                                for band in bands})
+        x_dataset = _xr.Dataset({band:_xr.DataArray(
+            _np.expand_dims(jim_object.np(bands.index(band)), axis = 0),
+            dims=['time', 'y', 'x'],
+            coords={'time': planes,
+                    'y': y, 'x': x},
+            attrs={'_FillValue': 0})
+                                 for band in bands})
+
+    crs = CRS(jim_object.properties.getProjection())
+    crs_wkt = crs.to_cf()['crs_wkt']
+    x_dataset.rio.write_crs(crs_wkt, inplace = True),
     return x_dataset
 
 
@@ -1870,22 +1876,19 @@ def xr2jim(xr_object) -> Jim:
         projection = xr_object.rio.crs.to_wkt()
 
     gt = []
-    try:
-        dx = xr_object.coords['x'].values[1] - \
-            xr_object.coords['x'].values[0]
-        dy = xr_object.coords['y'].values[0] - \
-            xr_object.coords['y'].values[1]
-        ulx = xr_object.coords['x'].values[0] - dx/2.0
-        uly = xr_object.coords['y'].values[0] + dy/2.0
-    except KeyError:
-        dx = xr_object.coords['lon'].values[1] - \
-            xr_object.coords['lon'].values[0]
-        dy = xr_object.coords['lat'].values[0] - \
-            xr_object.coords['lat'].values[1]
-        ulx = xr_object.coords['lon'].values[0] - \
-            dx/2.0
-        uly = xr_object.coords['lat'].values[0] + \
-            dy/2.0
+
+    xdata = xr_object.coords.get('x')
+    if xdata is None:
+        xdata = xr_object.coords.get('lon').data
+        ydata = xr_object.coords.get('lat').data
+    else:
+        xdata = xr_object.coords['x'].data
+        ydata = xr_object.coords['y'].data
+    dx = xdata[1] - xdata[0]
+    dy = ydata[0] - ydata[1]
+    ulx = xdata[0] - dx/2.0
+    uly = ydata[0] + dy/2.0
+
     gt.append(ulx)
     gt.append(dx)
     gt.append(0)
@@ -1899,40 +1902,42 @@ def xr2jim(xr_object) -> Jim:
                     projection = xr_object[b].attrs.get('crs_wkt')
                 continue
             if jim:
-                if len(xr_object[b].values.shape) > 2:
-                    assert xr_object[b].values.shape[0] == \
+                xshape = xr_object[b].data.shape
+                if len(xshape) > 2:
+                    assert xshape[0] == \
                         jim.properties.nrOfPlane(), \
                         str("Error: number of planes is not consistent: {} \
-                            != {}".format(xr_object[b].values.shape[0],
+                            != {}".format(xshape[0],
                                           jim.properties.nrOfPlane()))
-                    assert xr_object[b].values.shape[1] == \
+                    assert xshape[1] == \
                         jim.properties.nrOfRow(), \
                         str("Error: number of rows is not consistent: {} \
-                            != {}".format(xr_object[b].values.shape[1],
+                            != {}".format(xshape[1],
                                           jim.properties.nrOfRow()))
-                    assert xr_object[b].values.shape[2] == \
+                    assert xr_object[b].data.shape[2] == \
                         jim.properties.nrOfCol(), \
                         str("Error: number of cols is not consistent: {} \
-                            != {}".format(xr_object[b].values.shape[2],
+                            != {}".format(xshape[2],
                                           jim.properties.nrOfCol()))
                 else:
-                    assert xr_object[b].values.shape[0] == \
+                    # assert xr_object.sizes['x'] ==
+                    assert xshape[0] == \
                         jim.properties.nrOfRow(),\
                         str("Error: number of rows is not consistent: {} \
-                            != {}".format(xr_object[b].values.shape[0],
+                            != {}".format(xshape[0],
                                             jim.properties.nrOfRow()))
-                    assert xr_object[b].values.shape[1] == \
+                    assert xshape[1] == \
                         jim.properties.nrOfCol() ,\
                         str("Error: number of cols is not consistent: {} \
-                        != {}".format(xr_object[b].values.shape[1],
+                        != {}".format(xshape[1],
                                         jim.properties.nrOfCol()))
-            jim.geometry.stackBand(np2jim(xr_object[b].values))
+            jim.geometry.stackBand(np2jim(xr_object[b].data))
             #seems redundant...
-            jim.np(-1)[:] = xr_object[b].values
+            jim.np(-1)[:] = xr_object[b].data
     elif isinstance(xr_object, _xr.DataArray):
-        jim.geometry.stackBand(np2jim(xr_object.values))
+        jim.geometry.stackBand(np2jim(xr_object.data))
         #seems redundant...
-        jim.np(-1)[:] = xr_object.values
+        jim.np(-1)[:] = xr_object.data
     else:
         raise TypeError(
             'xr_object should be xr.Dataset or xr.DataArray')
