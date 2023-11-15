@@ -1424,6 +1424,7 @@ class BadBasicMethods(unittest.TestCase):
     @staticmethod
     def test_xr():
         """Test the parsing of arguments as bytes, unicode, etc."""
+
         jim = pj.Jim(testFile, band=[0, 1])
 
         dates = [
@@ -1431,18 +1432,31 @@ class BadBasicMethods(unittest.TestCase):
             datetime.strptime('2019-01-05','%Y-%m-%d')]
         bands = ['B0', 'B1']
 
+        jim.properties.setDimension({'plane' : dates[0:1],
+                                    'band' : bands})
+        x = pj.jim2xr(jim)
+
+        assert jim.xr().time == np.datetime64(dates[0]), \
+            'inconsistency in bridging to xarray single plane ' \
+            'time not consistent'
+
+        assert jim.xr() == x, \
+            'Inconsistency in bridging to xarray single plane ' \
+            '(pj.jim2xr() != jim.xr(0) is identical)'
+
         jim.geometry.stackPlane(pj.Jim(rasterfn, band=[2, 3]))
         jim.properties.setDimension({'plane' : dates,
                                     'band' : bands})
 
         x = pj.jim2xr(jim)
         assert jim.xr() == x, \
-            'Inconsistency in bridging to xarray  ' \
+            'Inconsistency in bridging to xarray multi-plane ' \
             '(pj.jim2xr() != jim.xr(0) is identical)'
 
         assert jim.properties.isEqual(pj.xr2jim(x)), \
             'Inconsistency in bridging to xarray  ' \
             '(pj.jim2xr() -> xr2jim() is not equal)'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests."""
