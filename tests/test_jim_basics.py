@@ -1431,7 +1431,7 @@ class BadBasicMethods(unittest.TestCase):
             datetime.strptime('2019-01-01','%Y-%m-%d'),
             datetime.strptime('2019-01-05','%Y-%m-%d')]
         bands = ['B0', 'B1']
- 
+
         jim.properties.setDimension({'plane' : dates[0:1],
                                     'band' : bands})
         x = pj.jim2xr(jim)
