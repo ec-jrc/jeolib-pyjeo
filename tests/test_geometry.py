@@ -1193,14 +1193,14 @@ class BadGeometry(unittest.TestCase):
                                 output=outputfn, oformat='SQLite',
                                 co=['OVERWRITE=YES'],
                                 copy='nuts3id',
-                                classes=[53, 62],
+                                classes=[255],
                                 bandname=bandname,
                                 planename=planename,
-                                threshold=[10, 10])
+                                threshold=[10])
 
         field_names = v.properties.getFieldNames()
 
-        assert v.properties.getFeatureCount() == 20, \
+        assert v.properties.getFeatureCount() == 10, \
             'Error in geometry.extract() feature count'
         assert len(field_names) == nband + nplane + 1, \
             'Error in geometry.extract() field names'
@@ -1252,12 +1252,12 @@ class BadGeometry(unittest.TestCase):
                                 output=outputfn, oformat='SQLite',
                                 co=['OVERWRITE=YES'],
                                 copy='nuts3id',
-                                classes=[53, 62],
-                                threshold=[10, 10])
+                                classes=[255],
+                                threshold=[10])
 
         field_names = v.properties.getFieldNames()
 
-        assert v.properties.getFeatureCount() == 20, \
+        assert v.properties.getFeatureCount() == 10, \
             'Error in geometry.extract() feature count'
         assert 'time0band0' in field_names, \
             'Error in geometry.extract() field names (1)'
