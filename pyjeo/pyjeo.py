@@ -1757,8 +1757,7 @@ def jim2np(jim_object: Jim,
             'input must be of Jim type')
 
 
-def jim2xr(jim_object: Jim,
-           copy_data: bool = True):
+def jim2xr(jim_object: Jim):
     """Return xarray from Jim object.
 
     The (contiguous) data array is organized
