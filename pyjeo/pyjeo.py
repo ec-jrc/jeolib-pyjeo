@@ -347,7 +347,7 @@ class Jim:
 
         print('\n'.join(methods))
 
-    def np(self, band: int = 0):
+    def np(self, band = 0):
         """Return numpy array from Jim object.
 
         The (contiguous) data array is organized
@@ -377,11 +377,20 @@ class Jim:
         except TypeError:
             raise exceptions.JimInnerParametersError(
                 'Jim has to have a data type and dimensions to use Jim.np()')
-        if band >= self.properties.nrOfBand():
+
+        bandindex = band
+        if not isinstance(band, int):
+            if self.dimension['band']:
+                bandindex = self.dimension['band'].index(band)
+            else:
+                raise _pj.exceptions.JimBandsError(
+                    'band not supported, use integer')
+
+        if bandindex >= self.properties.nrOfBand():
             raise exceptions.JimBandsError('Band out of bounds')
-        elif band < 0:
-            band = self.properties.nrOfBand() + band
-        return _jl.jim2np(self._jipjim, band, False)
+        elif bandindex < 0:
+            bandindex = self.properties.nrOfBand() + bandindex
+        return _jl.jim2np(self._jipjim, bandindex, False)
 
     def xr(self):
         """Return xarray from Jim object.
@@ -1733,7 +1742,7 @@ class JimVect:
 
 
 def jim2np(jim_object: Jim,
-           band: int = 0,
+           band = 0,
            copy_data: bool = True) -> _np.ndarray:
     """Return a numpy representation of a Jim object.
 
@@ -1748,6 +1757,17 @@ def jim2np(jim_object: Jim,
         if not jim_object:
             raise exceptions.JimEmptyError(
                 'Jim has to have a data to use Jim.np()')
+        bandindex = band
+        if not isinstance(band, int):
+            if jim_object.dimension['band']:
+                bandindex = jim_object.dimension['band'].index(band)
+            else:
+                raise _pj.exceptions.JimBandsError(
+                    'band not supported, use integer')
+
+        if bandindex >= jim_object.properties.nrOfBand():
+            raise exceptions.JimBandsError('Band out of bounds')
+
         return _jl.jim2np(jim_object._jipjim, band, copy_data)
     elif isinstance(jim_object, JimVect):
         raise exceptions.JimVectNotSupportedError(

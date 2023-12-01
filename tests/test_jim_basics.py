@@ -308,7 +308,7 @@ class BadBasicMethods(unittest.TestCase):
 
         jim_np = pj.jim2np(jim)
 
-        assert (jim_np == jim.np()).all(), 'np function not equal to method '
+        assert (jim_np == jim.np()).all(), 'np function not equal to method'
 
         new_jim = pj.np2jim(jim_np)
 
@@ -361,6 +361,15 @@ class BadBasicMethods(unittest.TestCase):
         assert raised, 'Error in catching a call of Jim.np(band) with ' \
                        'band value greater than number of bands'
 
+        multib_jim.properties.setDimension(['B1', 'B2', 'B3', 'B4', 'B5'],
+                                           'band')
+        assert band.np(2) == band.np('B3'), \
+            'np(bandindex) != np(bandname)'
+
+        jim_np = pj.jim2np(jim, band = 'B3')
+
+        assert (jim_np == jim.np('B3')).all(), \
+            'np function not equal to method '
     @staticmethod
     def test_getters_setters():
         """Test getters and setters."""
