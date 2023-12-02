@@ -90,8 +90,9 @@ def alphaTreeToCCs(atree,
 
 
 def convertRgbToHsx(jim,
-                    x_type: str):
+                    x_type: str = 'V'):
     """Convert RGB to HSX.
+    Use rgb2hsv from skimage.color for other datatypes and rollaxis(0,3)
 
     Returns the hue, saturation, and value, lightness, or intensity channels
     of an input RGB colour image. The hue component is identical for all 3
@@ -107,50 +108,67 @@ def convertRgbToHsx(jim,
     """
     assert jim.properties.nrOfBand() == 3, \
         'Error: input jim must be multi-band image with three bands (r, g, b)'
-    jimr = _pj.geometry.cropBand(jim, 0)
-    jimg = _pj.geometry.cropBand(jim, 1)
-    jimb = _pj.geometry.cropBand(jim, 2)
+    assert jim.properties.getDataType() == 'Byte', \
+        'Error: input jim must be of byte data type'
 
-    jimlist = _pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb, x_type))
-    return jimlist.geometry.stackBand()
+    if x_type == 'V':
+       x_int = 0
+    elif x_type == 'L':
+       x_int = 1
+    else:
+       x_int = 2
 
+    jimr = _pj.geometry.cropBand(jim, 0)._jipjim
+    jimg = _pj.geometry.cropBand(jim, 1)._jipjim
+    jimb = _pj.geometry.cropBand(jim, 2)._jipjim
 
-def convertHsiToRgb(jim):
-    """Convert HSI to RGB.
-
-    Takes the hue, saturation, and intensity channels of a colour image
-    and returns an image node containing a colour RGB image.
-
-    :param jim: multi-band Jim with three bands representing hue, saturation,
-        and intensity channels
-    :return: Jim with three bands containing the RGB channels
-    """
-    assert jim.properties.nrOfBand() == 3, \
-        'Error: input jim must be multi-band image with three bands (h, s, i)'
-    jimh = _pj.geometry.cropBand(jim, 0)
-    jims = _pj.geometry.cropBand(jim, 1)
-    jimi = _pj.geometry.cropBand(jim, 2)
-
-    return _pj.Jim(jimh._jipjim.convertRgbToHsx(jims, jimi))
+    return _pj.Jim(jimr.convertRgbToHsx(jimg, jimb, x_int).stackBand())
 
 
-def convertHlsToRgb(jim):
-    """Convert HLS to RGB.
+# TODO: Test
+# def convertHsiToRgb(jim):
+#     """Convert HSI to RGB.
 
-    Takes the hue, lightness, and saturation channels of a colour image
-    and returns an image node containing a colour RGB image.
+#     Takes the hue, saturation, and intensity channels of a colour image
+#     and returns an image node containing a colour RGB image.
 
-    :param jim: multi-band Jim with three bands representing hue, lightness,
-        and saturation channels
-    :return: Jim with three bands containing the RGB channels
-    """
-    assert jim.properties.nrOfBand() == 3, \
-        'Error: input jim must be multi-band image with three bands (h, s, i)'
-    jimh = _pj.geometry.cropBand(jim, 0)
-    jiml = _pj.geometry.cropBand(jim, 1)
-    jims = _pj.geometry.cropBand(jim, 2)
+#     :param jim: multi-band Jim with three bands representing hue, saturation,
+#         and intensity channels
+#     :return: Jim with three bands containing the RGB channels
+#     """
+#     assert jim.properties.nrOfBand() == 3, \
+#         'Error: input jim must be multi-band image with three bands (h, s, i)'
+#     assert jim.properties.getDataType() == 'Byte', \
+#         'Error: input jim must be of byte data type'
 
-    return _pj.Jim(jimh._jipjim.convertRgbToHsx(jiml, jims))
+#     jimh = _pj.geometry.cropBand(jim, 0)._jipjim
+#     jims = _pj.geometry.cropBand(jim, 1)._jipjim
+#     jimi = _pj.geometry.cropBand(jim, 2)._jipjim
+
+#     return _pj.Jim(jimh.convertHsiToRgb(jims, jimi))
+
+
+# TODO: Test
+# def convertHlsToRgb(jim):
+#     """Convert HLS to RGB.
+
+#     Takes the hue, lightness, and saturation channels of a colour image
+#     and returns an image node containing a colour RGB image.
+
+#     :param jim: multi-band Jim with three bands representing hue, lightness,
+#         and saturation channels
+#     :return: Jim with three bands containing the RGB channels
+#     """
+#     assert jim.properties.nrOfBand() == 3, \
+#         'Error: input jim must be multi-band image with three bands (h, s, i)'
+#     assert jim.properties.getDataType() == 'Byte', \
+#         'Error: input jim must be of byte data type'
+
+#     jimh = _pj.geometry.cropBand(jim, 0)._jipjim
+#     jiml = _pj.geometry.cropBand(jim, 1)._jipjim
+#     jims = _pj.geometry.cropBand(jim, 2)._jipjim
+
+#     return _pj.Jim(jimh.convertHlsToRgb(jiml, jims))
 
 
 def dbscan(jim_dissim,
@@ -1114,8 +1132,9 @@ class _CCOps(_pj.modules.JimModuleBase):
             label_jim._jipjim, lut, rule))
 
     def convertRgbToHsx(self,
-                        x_type: str):
-        """Convert RGB to HSX.
+                        x_type: str = 'V'):
+        """Convert RGB to HSX (only for byte images)
+        Use rgb2hsv from skimage.color for other datatypes and rollaxis(0,3)
 
         Returns the hue, saturation, and value, lightness, or intensity
         channels of an input RGB colour image. The hue component is identical
@@ -1131,47 +1150,64 @@ class _CCOps(_pj.modules.JimModuleBase):
         assert self._jim_object.properties.nrOfBand() == 3, \
             'Error: input jim must be multi-band image with three bands ' \
             '(r, g, b)'
-        jimr = _pj.geometry.cropBand(self._jim_object, 0)
-        jimg = _pj.geometry.cropBand(self._jim_object, 1)
-        jimb = _pj.geometry.cropBand(self._jim_object, 2)
+        assert self._jim_object.properties.getDataType() == 'Byte', \
+            'Error: input jim must be of byte data type'
 
-        jimlist = _pj.JimList(jimr._jipjim.convertRgbToHsx(jimg, jimb,
-                                                           x_type))
-        self._jim_object._set(jimlist.geometry.stackBand())
+        if x_type == 'V':
+            x_int = 0
+        elif x_type == 'L':
+            x_int = 1
+        else:
+            x_int = 2
 
-    def convertHsiToRgb(self):
-        """Convert HSI to RGB.
+        jimr = _pj.geometry.cropBand(self._jim_object, 0)._jipjim
+        jimg = _pj.geometry.cropBand(self._jim_object, 1)._jipjim
+        jimb = _pj.geometry.cropBand(self._jim_object, 2)._jipjim
 
-        Takes the hue, saturation, and intensity channels of a colour image
-        and returns an image node containing a colour RGB image.
+        self._jim_object._set(jimr.convertRgbToHsx(jimg,
+                                                   jimb,
+                                                   x_int).stackBand())
 
-        Modifies the instance on which the method was called.
-        """
-        assert self._jim_object.properties.nrOfBand() == 3, \
-            'Input jim must be multi-band image with three bands ' \
-            '(h, s, i)'
-        jimh = _pj.geometry.cropBand(self._jim_object, 0)
-        jims = _pj.geometry.cropBand(self._jim_object, 1)
-        jimi = _pj.geometry.cropBand(self._jim_object, 2)
+    # TODO: Test
+    # def convertHsiToRgb(self):
+    #     """Convert HSI to RGB.
 
-        self._jim_object._set(jimh._jipjim.convertHsiToRgb(jims, jimi))
+    #     Takes the hue, saturation, and intensity channels of a colour image
+    #     and returns an image node containing a colour RGB image.
 
-    def convertHlsToRgb(self):
-        """Convert HLS to RGB.
+    #     Modifies the instance on which the method was called.
+    #     """
+    #     assert self._jim_object.properties.nrOfBand() == 3, \
+    #         'Input jim must be multi-band image with three bands ' \
+    #         '(h, s, i)'
+    #     assert self._jim_object.properties.getDataType() == 'Byte', \
+    #         'Error: input jim must be of byte data type'
 
-        Takes the hue, lightness, and saturation channels of a colour image
-        and returns an image node containing a colour RGB image.
+    #     jimh = _pj.geometry.cropBand(self._jim_object, 0)._jipjim
+    #     jims = _pj.geometry.cropBand(self._jim_object, 1)._jipjim
+    #     jimi = _pj.geometry.cropBand(self._jim_object, 2)._jipjim
 
-        Modifies the instance on which the method was called.
-        """
-        assert self._jim_object.properties.nrOfBand() == 3, \
-            'Input jim must be multi-band image with three bands ' \
-            '(h, s, i)'
-        jimh = _pj.geometry.cropBand(self._jim_object, 0)
-        jiml = _pj.geometry.cropBand(self._jim_object, 1)
-        jims = _pj.geometry.cropBand(self._jim_object, 2)
+    #     self._jim_object._set(jimh.convertHsiToRgb(jims,
+    #                                                jimi).stackBand())
 
-        self._jim_object._set(jimh._jipjim.convertHlsToRgb(jiml, jims))
+    # TODO: Test
+    # def convertHlsToRgb(self):
+    #     """Convert HLS to RGB.
+
+    #     Takes the hue, lightness, and saturation channels of a colour image
+    #     and returns an image node containing a colour RGB image.
+
+    #     Modifies the instance on which the method was called.
+    #     """
+    #     assert self._jim_object.properties.nrOfBand() == 3, \
+    #         'Input jim must be multi-band image with three bands ' \
+    #         '(h, s, i)'
+    #     jimh = _pj.geometry.cropBand(self._jim_object, 0)._jipjim
+    #     jiml = _pj.geometry.cropBand(self._jim_object, 1)._jipjim
+    #     jims = _pj.geometry.cropBand(self._jim_object, 2)._jipjim
+
+    #     self._jim_object._set(jimh.convertHlsToRgb(jiml,
+    #                                                jims).stackBand())
 
     def dbscan(self,
                eps: float,
