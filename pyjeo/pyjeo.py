@@ -1768,7 +1768,7 @@ def jim2np(jim_object: Jim,
         if bandindex >= jim_object.properties.nrOfBand():
             raise exceptions.JimBandsError('Band out of bounds')
 
-        return _jl.jim2np(jim_object._jipjim, band, copy_data)
+        return _jl.jim2np(jim_object._jipjim, bandindex, copy_data)
     elif isinstance(jim_object, JimVect):
         raise exceptions.JimVectNotSupportedError(
             'input must be of Jim type, use jimvect2np for JimVect')

@@ -363,13 +363,14 @@ class BadBasicMethods(unittest.TestCase):
 
         multib_jim.properties.setDimension(['B1', 'B2', 'B3', 'B4', 'B5'],
                                            'band')
-        assert band.np(2) == band.np('B3'), \
+        assert (multib_jim.np(2) == multib_jim.np('B3')).all(), \
             'np(bandindex) != np(bandname)'
 
-        jim_np = pj.jim2np(jim, band = 'B3')
+        jim_np = pj.jim2np(multib_jim, band = 'B3')
 
-        assert (jim_np == jim.np('B3')).all(), \
+        assert (jim_np == multib_jim.np('B3')).all(), \
             'np function not equal to method '
+
     @staticmethod
     def test_getters_setters():
         """Test getters and setters."""
