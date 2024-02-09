@@ -79,7 +79,7 @@ class _ParentJim(_jl.Jim):
                         try:
                             overlap = kwargs.pop('overlap')
                         except KeyError:
-                            overlap = 5
+                            overlap = 0
 
                         bbox = None
                         if 'bbox' in kwargs:
