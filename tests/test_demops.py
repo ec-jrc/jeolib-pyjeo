@@ -38,6 +38,9 @@ class BadDEMOps(unittest.TestCase):
         slope = pj.demops.slope(jim)
         stats = slope.stats.getStats(band=0)
 
+        assert slope == jim.demops.slope(), \
+            'Error: function demops.slope() not identical to method'
+        jim.demops.slope()
         assert stats['max'] <= 90, \
             'Error: max>90 in demops.slope()'
         assert stats['min'] >= 0, \

@@ -26,10 +26,55 @@ import numpy as np
 
 
 tiles = ['tests/data/red1.tif', 'tests/data/red2.tif']
+rasterfn = 'tests/data/modis_ndvi_2010.tif'
 
 
 class BadCCOps(unittest.TestCase):
     """Test functions and methods from ccops modules."""
+
+    @staticmethod
+    def test_colorsys():
+        """Test color system conversions."""
+        jim = pj.Jim(rasterfn, band = [0, 1, 2])
+        jim.pixops.convert('GDT_Byte')
+        hsv = pj.ccops.convertRgbToHsx(jim, 'V')
+        jim.ccops.convertRgbToHsx('V')
+        assert jim.properties.isEqual(hsv), \
+            'Inconsistency in ccops.convertRgbToHsx(V)' \
+            '(method returns different result than function)'
+
+        jim = pj.Jim(rasterfn, band = [0, 1, 2])
+        jim.pixops.convert('GDT_Byte')
+        hsv = pj.ccops.convertRgbToHsx(jim, 'L')
+        jim.ccops.convertRgbToHsx('L')
+        assert jim.properties.isEqual(hsv), \
+            'Inconsistency in ccops.convertRgbToHsx(L)' \
+            '(method returns different result than function)'
+
+        jim = pj.Jim(rasterfn, band = [0, 1, 2])
+        jim.pixops.convert('GDT_Byte')
+        hsv = pj.ccops.convertRgbToHsx(jim, 'I')
+        jim.ccops.convertRgbToHsx('I')
+        assert jim.properties.isEqual(hsv), \
+            'Inconsistency in ccops.convertRgbToHsx(I)' \
+            '(method returns different result than function)'
+
+        # jim = pj.Jim(rasterfn, band = [0, 1, 2])
+        # jim.pixops.convert('GDT_Byte')
+        # rgb = pj.ccops.convertHsiToRgb(jim)
+        # jim.ccops.convertHsiToRgb()
+        # assert jim.properties.isEqual(rgb), \
+        #     'Inconsistency in ccops.convertHsiToRgb()' \
+        #     '(method returns different result than function)'
+
+        # jim = pj.Jim(rasterfn, band = [0, 1, 2])
+        # jim.pixops.convert('GDT_Byte')
+        # rgb = pj.ccops.convertHlsToRgb(jim)
+        # jim.ccops.convertHlsToRgb()
+        # assert jim.properties.isEqual(rgb), \
+        #     'Inconsistency in ccops.convertHlsToRgb()' \
+        #     '(method returns different result than function)'
+
 
     @staticmethod
     def test_distances():

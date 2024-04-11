@@ -684,6 +684,47 @@ class _DEMOps(_pj.modules.JimModuleBase):
             self._jim_object._jipjim.demPitRemovalOptimal(grey_jim._jipjim,
                                                           graph, maxfl, flag))
 
+    def slope(self,
+              scale: float = 1.0,
+              zscale: float = 1.0,
+              percent: bool = False):
+        """Compute the slope of a Jim object.
+
+        :param scale: horizontal scale
+        :param zscale: vertical scale
+        :param percent: if True, return value in percents, degrees otherwise
+        :return: a Jim object representing the slope
+        """
+        tapsdx = _np.array(
+            [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]])
+        tapsdy = _np.array(
+            [[-1.0, -2.0, -1.0], [0.0, 0.0, 0.0], [1.0, 2.0, 1.0]])
+        tapsdx *= zscale
+        tapsdy *= zscale
+        jimdy = _pj.Jim(self._jim_object)
+        if self._jim_object.properties.getDataType() != 'Float32' and \
+        self._jim_object.properties.getDataType() != 'Float64':
+            self._jim_object.pixops.convert(otype="Float32")
+            jimdy.pixops.convert(otype="Float32")
+        self._jim_object.ngbops.firfilter2d(
+            tapsdx, nodata=self._jim_object.properties.getNoDataVals(), norm=True)
+        self._jim_object.np()[:] = _np.absolute(abs(self._jim_object.np()))
+        self._jim_object.np()[:] = self._jim_object.np() / (self._jim_object.properties.getDeltaX() * scale)
+        self._jim_object.np()[:] = self._jim_object.np() * self._jim_object.np()
+        jimdy.ngbops.firfilter2d(
+            tapsdy, nodata=self._jim_object.properties.getNoDataVals(), norm=True)
+        jimdy = abs(jimdy)
+        jimdy /= jimdy.properties.getDeltaX()*scale
+        jimdy *= jimdy
+        rad2deg = 180.0 / _np.pi
+        self._jim_object._set(self._jim_object + jimdy)
+        self._jim_object.np()[:] = _np.sqrt(self._jim_object.np())
+        if percent:
+            self._jim_object.np()[:] = self._jim_object.np() * 100
+        else:
+            self._jim_object.np()[:] = _np.arctan(self._jim_object.np())
+            self._jim_object.np()[:] = self._jim_object.np() * rad2deg
+
     def slopeD8(self):
         """
         Compute the steepest slope within a 3x3 neighbourhood for each pixel.

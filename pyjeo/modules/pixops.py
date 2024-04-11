@@ -186,8 +186,8 @@ def NDVI(jim_object,
         else:
             ret_jim = _pj.geometry.cropBand(jim_object, [red, nir])
             ret_jim.pixops.convert('GDT_Float32')
-            rednp = ret_jim.np(redindex).astype(float)
-            nirnp = ret_jim.np(nirindex).astype(float)
+            rednp = ret_jim.np(0).astype(float)
+            nirnp = ret_jim.np(1).astype(float)
             ndvi = (nirnp - rednp) / (rednp + nirnp)
             if offset != 0:
                 ndvi += offset
@@ -578,8 +578,8 @@ class _PixOps(_pj.modules.JimModuleBase):
         else:
             self._jim_object.geometry.cropBand([red, nir])
             self._jim_object.pixops.convert('GDT_Float32')
-            rednp = self._jim_object.np(redindex).astype(float)
-            nirnp = self._jim_object.np(nirindex).astype(float)
+            rednp = self._jim_object.np(0).astype(float)
+            nirnp = self._jim_object.np(1).astype(float)
             ndvi = (nirnp - rednp) / (rednp + nirnp)
             if offset != 0:
                 ndvi += offset

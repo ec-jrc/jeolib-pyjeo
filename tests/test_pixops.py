@@ -99,8 +99,6 @@ class BadPixOps(unittest.TestCase):
         nir = 'B02'
         jim.properties.setDimension([red, nir], 'band')
 
-        pj.geometry.cropBand(jim, [red, nir])
-
         jim_red = pj.geometry.cropBand(jim, red)
         jim_nir = pj.geometry.cropBand(jim, nir)
 
@@ -108,6 +106,19 @@ class BadPixOps(unittest.TestCase):
         jim.pixops.NDVI(red, nir, scale = 100, offset = 0)
 
         assert jim.properties.isEqual(ndvi), 'Error in computing NDVI'
+
+        jim = pj.Jim(testFile, band=[3, 0, 1])
+        swir = 'B03'
+        jim.properties.setDimension([swir, red, nir], 'band')
+
+        ndvi2 = pj.pixops.NDVI(jim, red, nir, scale = 100, offset = 0)
+        assert ndvi2.properties.isEqual(ndvi), 'Error in computing NDVI, ' \
+                                               'ordering'
+
+        jim.pixops.NDVI(red, nir, scale = 100, offset = 0)
+
+        assert jim.properties.isEqual(ndvi), 'Error in computing NDVI, ' \
+                                             'ordering'
 
         ndvi = pj.pixops.NDVISeparateBands(jim_red, jim_nir)
         jim_red.pixops.NDVISeparateBands(jim_nir)
