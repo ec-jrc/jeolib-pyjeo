@@ -871,6 +871,40 @@ class BadGeometry(unittest.TestCase):
 
     @staticmethod
     def test_extract_multiband():
+        """Test the extract method with percentiles."""
+        sample = pj.JimVect(vectorfn)
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
+        sample.io.close()
+        jim0 = pj.Jim(rasterfn, band=0)
+
+        rule = ['min','percentile','max','mean','stdev']
+        perc = [2.5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95, 97.5]
+
+        v = pj.geometry.extract(sampleid, jim0, rule=rule, perc = perc,
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'])
+
+        field_names = v.properties.getFieldNames()
+
+        assert v.properties.getFeatureCount() == 11, \
+            'Error in geometry.extract() feature count (1)'
+        assert 'fid' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'label' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        fields = ['label', 'fid', 'mint0b0', 'perct0b02.5', 'perct0b010', 'perct0b020', 'perct0b025', 'perct0b030', 'perct0b040', 'perct0b050', 'perct0b060', 'perct0b070', 'perct0b075', 'perct0b080', 'perct0b090', 'perct0b095', 'perct0b097.5', 'maxt0b0', 'meant0b0', 'stdevt0b0']
+        for field in fields:
+            assert field in field_names, \
+                'Error in geometry.extract() field names'.format(field)
+        assert len(field_names) == len(rule) - 1 + 2 + len(perc), \
+            'Error in geometry.extract() field names (1)'
+        sampleid.io.close()
+        v.io.close()
+        os.remove(outputfn)
+
+    @staticmethod
+    def test_extract_multiband():
         """Test the extractOgr method for jim with multibands."""
         jim0 = pj.Jim(rasterfn, band=[0, 1])
         sample = pj.JimVect(vectorfn)

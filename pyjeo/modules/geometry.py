@@ -433,6 +433,9 @@ def extract(jvec,
     | classes          | Only when overlaying Jim thematic raster dataset |
     |                  | dataset.                                         |
     +------------------+--------------------------------------------------+
+    | cover            | Which polygons to include based on coverage      |
+    |                  | (ALL_TOUCHED, ALL_COVERED), default ALL_TOUCHED  |
+    +------------------+--------------------------------------------------+
     | bandname         | List of band names corresponding to list of      |
     |                  | bands to extract                                 |
     +------------------+--------------------------------------------------+
