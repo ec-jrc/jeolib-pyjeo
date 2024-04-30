@@ -578,6 +578,34 @@ class BadBasicMethods(unittest.TestCase):
                stats_masked['min'] == stats['min'] == 0, \
             'Error in masking a Jim by Jim (Jim1[Jim2])'
 
+        """Test the setter for multi-band and multi-plane Jim
+        using single band single plane maskf."""
+        jim0 = pj.Jim(testFile, band = 0)
+        jim0.pixops.setData(0)
+        jim = pj.Jim(testFile, band2plane = True)
+        jim[jim0 == 0] = 0
+        for iplane in list(range(jim.properties.nrOfPlane())):
+            assert pj.geometry.cropPlane(
+                jim, iplane).properties.isEqual(jim0) ,\
+            "Error: plane {} is not 0".format(iplane)
+
+        jim = pj.Jim(testFile)
+        jim[jim0 == 0] = 0
+        for iband in list(range(jim.properties.nrOfBand())):
+            assert pj.geometry.cropBand(
+                jim, iband).properties.isEqual(jim0) ,\
+            "Error: band {} is not 0".format(iband)
+
+        jim = pj.Jim(testFile, band = [0, 1, 2], band2plane = True)
+        jim1 = pj.Jim(testFile, band = [3, 4, 5], band2plane = True)
+        jim.geometry.stackBand(jim1)
+        jim[jim0 == 0] = 0
+        for iband in list(range(jim.properties.nrOfBand())):
+            for iplane in list(range(jim.properties.nrOfPlane())):
+                assert pj.geometry.cropPlane(pj.geometry.cropBand(
+                    jim, iband), iplane).properties.isEqual(jim0) ,\
+                "Error: band {}, plane {} is not 0".format(iband, iplane)
+
         # Test a nonsense argument in [gs]etters
         try:
             rand_jim['a'] = 5
