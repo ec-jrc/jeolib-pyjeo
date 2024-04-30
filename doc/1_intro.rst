@@ -10,7 +10,7 @@ Organization of pyjeo
 Modules
 ^^^^^^^
 
-The pyjeo package is grouped in modules. A module combines a number of operations that belong together. The models defined pyjeo are:
+The pyjeo package is grouped in modules. A module combines a number of operations that belong together. The modules defined in pyjeo are:
 
  * properties: get properties of a class object
  * io: input/output operations
