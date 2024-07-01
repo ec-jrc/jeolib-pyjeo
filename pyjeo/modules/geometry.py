@@ -433,6 +433,9 @@ def extract(jvec,
     | classes          | Only when overlaying Jim thematic raster dataset |
     |                  | dataset.                                         |
     +------------------+--------------------------------------------------+
+    | cover            | Which polygons to include based on coverage      |
+    |                  | (ALL_TOUCHED, ALL_COVERED), default ALL_TOUCHED  |
+    +------------------+--------------------------------------------------+
     | bandname         | List of band names corresponding to list of      |
     |                  | bands to extract                                 |
     +------------------+--------------------------------------------------+
@@ -517,7 +520,12 @@ def extract(jvec,
                         't' + str(plane)
                         for plane in range(0, jim.properties.nrOfPlane())]
             kwargs.update({'planename': planename})
-            avect = jim._jipjim.extractOgr(jvec._jipjimvect, kwargs)
+            try:
+                avect = jim._jipjim.extractOgr(jvec._jipjimvect, kwargs)
+            except SystemError:
+                raise _pj.exceptions.JimVectError(
+                    "Error in extract, make sure vector is covered by raster " \
+                    "and projections are identical")
         else:
             raise _pj.exceptions.JimVectIllegalArgumentError(
                 'extract() must operate on Jim')
@@ -1673,17 +1681,17 @@ def warp(jim_object,
          **kwargs):
     """Warp a raster dataset to a target spatial reference system.
 
-    :param jim_object: a Jim object
+    :param jim_object: a Jim or JimVect object
     :param t_srs: Target spatial reference system
     :param bbox: bounding box (instead of ulx, uly, lrx, lry)
     :param ulx: Upper left x value of bounding box
     :param uly: Upper left y value of bounding box
     :param lrx: Lower right x value of bounding box
     :param lry: Lower right y value of bounding box
-    :param dx: spatial resolution in x)
-    :param dy: spatial resolution in y)
-    :param kwargs: See table below
-    :return: warped image as Jim instance
+    :param dx: spatial resolution in x (only for Jim object)
+    :param dy: spatial resolution in y (only for Jim object)
+    :param kwargs: See table below (only for Jim object)
+    :return: warped object
 
 
     +----------+---------------------------------------------------------------------------------------------------+
@@ -1701,7 +1709,7 @@ def warp(jim_object,
     | nodata   | Nodata value to put in image if out of bounds                                                     |
     +----------+---------------------------------------------------------------------------------------------------+
 
-    Example:
+    Example Jim:
 
     Read a raster dataset from disk and warp to the target spatial reference
     system::
@@ -1719,6 +1727,16 @@ def warp(jim_object,
                      uly=4000000, lrx=1500000, lry=3500000)
         jim_warped = pj.geometry.warp(jim, 'epsg:3035', s_srs='epsg:4326')
 
+
+    Example JimVect:
+
+    Read a vector dataset from disk and warp to epsg:4326. Retain only
+    those features within the defined  bounding box::
+
+        v = pj.JimVect('/path/to/vector.sqlite')
+        v_warped = pj.geometry.warp(v, t_srs = 'epsg:4326', 
+                                    ulx = 9.8, uly = 45.8,
+                                    lrx = 10.2, lry = 45.5)
     """
     kwargs.update({'t_srs': t_srs})
 
@@ -1745,8 +1763,21 @@ def warp(jim_object,
         jim.properties.setDimension(jim_object.properties.getDimension())
         return jim
     elif isinstance(jim_object, _pj.JimVect):
-        raise _pj.exceptions.JimVectNotSupportedError(
-            "warp not supported yet for JimVect")
+        output = kwargs.get('output')
+        if output is None:
+            raise _pj.exceptions.JimIllegalArgumentError(
+                'output parameter is required')
+        v = _pj.JimVect(jim_object, **kwargs)
+
+        if kwargs.get('ulx') \
+            and kwargs.get('uly') \
+            and kwargs.get('lrx') \
+            and kwargs.get('lry'):
+            for ilayer in range(v._jipjimvect.getLayerCount()):
+                v._jipjimvect.destroyFeatures(ilayer)
+                v._jipjimvect.setSpatialFilterRect(ulx, uly, lrx, lry, ilayer)
+                v._jipjimvect.readFeatures(ilayer)
+        return v
 
 
 class _Geometry(_pj.modules.JimModuleBase):
@@ -3380,8 +3411,13 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
                         't' + str(plane)
                         for plane in range(0, jim.properties.nrOfPlane())]
             kwargs.update({'planename': planename})
-            avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect,
-                                           kwargs)
+            try:
+                avect = jim._jipjim.extractOgr(self._jim_vect._jipjimvect,
+                                            kwargs)
+            except SystemError:
+                raise _pj.exceptions.JimVectError(
+                    "Error in extract, make sure vector is covered by raster " \
+                    "and projections are identical")
         else:
             raise _pj.exceptions.JimVectIllegalArgumentError(
                 'extract must operate on Jim')
@@ -3477,3 +3513,53 @@ class _GeometryVect(_pj.modules.JimVectModuleBase):
         else:
             raise _pj.exceptions.JimVectIllegalArgumentError(
                 'Can only join two JimVect objects')
+
+    def warp(self,
+             t_srs = None,
+             bbox: list = None,
+             ulx: float = None,
+             uly: float = None,
+             lrx: float = None,
+             lry: float = None,
+             **kwargs):
+        """Warp JimVect object
+
+        Modifies the instance on which the method was called.
+
+        :param jim_object: a Jim or JimVect object
+        :param t_srs: Target spatial reference system
+        :param bbox: bounding box (instead of ulx, uly, lrx, lry)
+        :param ulx: Upper left x value of bounding box
+        :param uly: Upper left y value of bounding box
+        :param lrx: Lower right x value of bounding box
+        :param lry: Lower right y value of bounding box
+
+        Example: warp vector to epsg:4326.
+        Retain only those features within the defined  bounding box::
+
+            v = pj.JimVect('/path/to/vector.sqlite')
+            v.geometry.warp(t_srs = 'epsg:4326', 
+                            ulx = 9.8, uly = 45.8,
+                            lrx = 10.2, lry = 45.5)
+        """
+
+        non_existing_path = _pj._get_random_path()
+        non_existing_path = os.path.join('/vsimem',
+            os.path.basename(non_existing_path))
+        kwargs.update({'output': non_existing_path})
+
+        kwargs.update({'t_srs': t_srs})
+
+        if bbox is not None:
+            ulx = bbox[0]
+            uly = bbox[1]
+            lrx = bbox[2]
+            lry = bbox[3]
+
+        kwargs.update({'ulx': ulx})
+        kwargs.update({'uly': uly})
+        kwargs.update({'lrx': lrx})
+        kwargs.update({'lry': lry})
+
+        avect = _pj.geometry.warp(self._jim_vect, **kwargs)
+        self._jim_vect._set(avect._jipjimvect)

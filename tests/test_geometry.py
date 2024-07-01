@@ -825,6 +825,63 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.warp(): projection'
 
     @staticmethod
+    def test_warp_jimvect():
+        """Test the warp method and function for JimVect."""
+        v = pj.JimVect(vectorfn)
+        v_warped = pj.geometry.warp(v, output = outputfn,
+                                    t_srs = 'epsg:4326',
+                                    co = ['overwrite=YES'])
+        assert '4326' in v_warped.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after warp'
+        v_warped.geometry.warp(t_srs = v.properties.getProjection())
+        assert v_warped.properties.getProjection() == v.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after re-warp'
+        isEqual = True
+        if v.properties.getLayerCount() != \
+                v_warped.properties.getLayerCount():
+            isEqual = False
+        assert isEqual
+        if v.properties.getFeatureCount() != \
+                v_warped.properties.getFeatureCount():
+            isEqual = False
+        #bounding boxes are slightly different
+        # if v.properties.getBBox() != v_warped.properties.getBBox():
+        #     isEqual = False
+
+        for ilayer in range(0, v.properties.getLayerCount()):
+            jim1_fieldnames = v.properties.getFieldNames()
+            jim2_fieldnames = v_warped.properties.getFieldNames()
+            if jim1_fieldnames != jim2_fieldnames:
+                isEqual = False
+            if not np.array_equal(v.np(ln=ilayer),
+                                   v_warped.np(ln=ilayer)):
+                isEqual = False
+        assert isEqual, \
+            'Error in jimvect.geometry.warp(): back and forth not identic'
+        ulx = 9.8
+        uly = 45.8
+        lrx = 10.2
+        lry = 45.5
+        bbox = [ulx, uly, lrx, lry]
+        v_crop = pj.geometry.warp(v, output = outputfn,
+                                  t_srs = 'epsg:4326', bbox = bbox,
+                                  co = ['overwrite=YES'])
+        assert '4326' in v_crop.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after warp func'
+        assert v_crop.properties.getFeatureCount() == 3, \
+            'Error in jimvect.geometry.warp: crop feature count'
+        v.geometry.warp(t_srs = 'epsg:4326',
+                        ulx = ulx,
+                        uly = uly,
+                        lrx = lrx,
+                        lry = lry)
+        assert '4326' in v.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after warp method'
+        assert(v_crop.properties.isEqual(v_crop)), \
+            'Error jimvect.geometry.warp: function not equal to method'
+        os.remove(outputfn)
+
+    @staticmethod
     def test_extract_loop():
         """Test the extract method looping over bands using join function."""
         jim0 = pj.Jim(rasterfn)
@@ -867,6 +924,40 @@ class BadGeometry(unittest.TestCase):
                 v.io.close()
             jim.io.close()
         sampleid.io.close()
+        os.remove(outputfn)
+
+    @staticmethod
+    def test_extract_multiband():
+        """Test the extract method with percentiles."""
+        sample = pj.JimVect(vectorfn)
+        sampleid = pj.JimVect(sample, output='/vsimem/sampleid',
+                              newfield='fid', co=['OVERWRITE=YES'])
+        sample.io.close()
+        jim0 = pj.Jim(rasterfn, band=0)
+
+        rule = ['min','percentile','max','mean','stdev']
+        perc = [2.5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95, 97.5]
+
+        v = pj.geometry.extract(sampleid, jim0, rule=rule, perc = perc,
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'])
+
+        field_names = v.properties.getFieldNames()
+
+        assert v.properties.getFeatureCount() == 11, \
+            'Error in geometry.extract() feature count (1)'
+        assert 'fid' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'label' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        fields = ['label', 'fid', 'mint0b0', 'perct0b02.5', 'perct0b010', 'perct0b020', 'perct0b025', 'perct0b030', 'perct0b040', 'perct0b050', 'perct0b060', 'perct0b070', 'perct0b075', 'perct0b080', 'perct0b090', 'perct0b095', 'perct0b097.5', 'maxt0b0', 'meant0b0', 'stdevt0b0']
+        for field in fields:
+            assert field in field_names, \
+                'Error in geometry.extract() field names'.format(field)
+        assert len(field_names) == len(rule) - 1 + 2 + len(perc), \
+            'Error in geometry.extract() field names (1)'
+        sampleid.io.close()
+        v.io.close()
         os.remove(outputfn)
 
     @staticmethod
@@ -1180,6 +1271,7 @@ class BadGeometry(unittest.TestCase):
         os.remove(outputfn)
 
         sample = pj.JimVect(nutsfn)
+        sample.geometry.warp(t_srs = jim0.properties.getProjection())
         sampleid = pj.JimVect(sample, output='/vsimem/sampleid2',
                               newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
@@ -1205,6 +1297,76 @@ class BadGeometry(unittest.TestCase):
         assert len(field_names) == nband + nplane + 1, \
             'Error in geometry.extract() field names'
         sampleid.io.close()
+        v.io.close()
+        os.remove(outputfn)
+
+    @staticmethod
+    def test_extract_warp():
+        """Test the extract method for multiband multiplanes names."""
+        sample = pj.JimVect(vectorfn)
+        sample_warped = pj.geometry.warp(sample, 
+                                        output = '/vsimem/sample_warped',
+                                        t_srs = 'epsg:4326')
+        jim0 = pj.Jim(rasterfn, band=[0, 1])
+        jim1 = pj.Jim(rasterfn, band=[6, 7])
+        jim0.geometry.stackPlane(jim1)
+
+        nband = jim0.properties.nrOfBand()
+        nplane = jim0.properties.nrOfPlane()
+
+        rule = ['mean', 'stdev']
+
+        planename = []
+        bandname = []
+        for plane in range(0, nplane):
+            planename.append('time' + str(plane))
+        for band in range(0, nband):
+            bandname.append('band' + str(band))
+        jim0.properties.setDimension({'plane': planename, 'band': bandname})
+        try:
+            v = pj.geometry.extract(sample_warped, jim0, 
+                                    rule=['mean', 'stdev'],
+                                    output=outputfn, oformat='SQLite',
+                                    co=['OVERWRITE=YES'])
+        except pj.exceptions.JimVectError:
+            raised = True
+
+        assert raised, \
+            'Error in catching a call of geometry.plotLine() ' \
+            'function where the Jim argument is a multi-plane object'
+
+        jim0.geometry.warp(t_srs = 'epsg:4326')
+        v = pj.geometry.extract(sample_warped, jim0, 
+                                rule=['mean', 'stdev'],
+                                output=outputfn, oformat='SQLite',
+                                co=['OVERWRITE=YES'])
+
+        field_names = v.properties.getFieldNames()
+
+        print(v.properties.getFeatureCount())
+        assert v.properties.getFeatureCount() == 12, \
+            'Error in geometry.extract() feature count (1)'
+        assert 'label' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime0band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime1band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime0band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'meantime1band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime0band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime1band0' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime0band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert 'stdevtime1band1' in field_names, \
+            'Error in geometry.extract() field names (1)'
+        assert len(field_names) == (nband + nplane) * len(rule) + 1, \
+            'Error in geometry.extract() field names (1)'
+        sample.io.close()
         v.io.close()
         os.remove(outputfn)
 
@@ -1245,6 +1407,7 @@ class BadGeometry(unittest.TestCase):
         os.remove(outputfn)
 
         sample = pj.JimVect(nutsfn)
+        sample.geometry.warp(t_srs = jim0.properties.getProjection())
         sampleid = pj.JimVect(sample, output='/vsimem/sampleid4',
                               newfield='fid', co=['OVERWRITE=YES'])
         sample.io.close()
