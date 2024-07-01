@@ -85,6 +85,7 @@ To build the latest documentation from source:
 * python3-sphinx
 * sphinx-rtd-theme
 * sphinxcontrib-bibtex
+* sphinx_copybutton
 
 Go to directory `doc` and run `make html`.
 
