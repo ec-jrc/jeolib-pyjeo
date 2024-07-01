@@ -828,10 +828,14 @@ class BadGeometry(unittest.TestCase):
     def test_warp_jimvect():
         """Test the warp method and function for JimVect."""
         v = pj.JimVect(vectorfn)
-        v_warped = pj.geometry.warp(v, output = outputfn, t_srs = 'epsg:4326', co = ['overwrite=YES'])
+        v_warped = pj.geometry.warp(v, output = outputfn,
+                                    t_srs = 'epsg:4326',
+                                    co = ['overwrite=YES'])
+        assert '4326' in v_warped.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after warp'
         v_warped.geometry.warp(t_srs = v.properties.getProjection())
-        v_warped.io.write('/scratch/kempepi/tmp/test_warped.sqlite')
-
+        assert v_warped.properties.getProjection() == v.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after re-warp'
         isEqual = True
         if v.properties.getLayerCount() != \
                 v_warped.properties.getLayerCount():
@@ -840,13 +844,6 @@ class BadGeometry(unittest.TestCase):
         if v.properties.getFeatureCount() != \
                 v_warped.properties.getFeatureCount():
             isEqual = False
-        assert isEqual
-        if v.properties.getProjection() != \
-                v_warped.properties.getProjection():
-            isEqual = False
-            print("v.properties.getProjection(): {}".format(v.properties.getProjection()))
-            print("v_warped.properties.getProjection(): {}".format(v_warped.properties.getProjection()))
-        assert isEqual
         #bounding boxes are slightly different
         # if v.properties.getBBox() != v_warped.properties.getBBox():
         #     isEqual = False
@@ -866,7 +863,11 @@ class BadGeometry(unittest.TestCase):
         lrx = 10.2
         lry = 45.5
         bbox = [ulx, uly, lrx, lry]
-        v_crop = pj.geometry.warp(v, output = outputfn, t_srs = 'epsg:4326', bbox = bbox, co = ['overwrite=YES'])
+        v_crop = pj.geometry.warp(v, output = outputfn,
+                                  t_srs = 'epsg:4326', bbox = bbox,
+                                  co = ['overwrite=YES'])
+        assert '4326' in v_crop.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after warp func'
         assert v_crop.properties.getFeatureCount() == 3, \
             'Error in jimvect.geometry.warp: crop feature count'
         v.geometry.warp(t_srs = 'epsg:4326',
@@ -874,6 +875,8 @@ class BadGeometry(unittest.TestCase):
                         uly = uly,
                         lrx = lrx,
                         lry = lry)
+        assert '4326' in v.properties.getProjection() ,\
+            'Error in warp for JimVect: projection info after warp method'
         assert(v_crop.properties.isEqual(v_crop)), \
             'Error jimvect.geometry.warp: function not equal to method'
         os.remove(outputfn)
