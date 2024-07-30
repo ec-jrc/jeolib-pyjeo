@@ -68,7 +68,7 @@ Jim constructor: create Jim object from file
     =========  ==============================================================================
     tileindex  Read only a portion (1 / tiletotal) of the image
     tiletotal  Amount of tiles in which the image must be divided (must be a squared integer)
-    overlap    Overlap used for tiling (expressed in percentage), default is 5 %
+    overlap    Overlap used for tiling (expressed in percentage), default is 0 (no overlap)
     align      Align the read portion of the file with the original pixel boundaries
     =========  ==============================================================================
 
