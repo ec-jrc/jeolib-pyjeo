@@ -155,12 +155,11 @@ Image tiling
 
 Jim objects support a tiling approach when reading from file with with the specific keys *tileindex*, *tiletotal*, and *overlap* (see also :ref:`create_Jim_from_file`).
 
-As an example, we read only a portion of the image from file, dividing in *tiletotal* tiles (tiletotal must be a squared integer, e.g., 2^2 = 4, 3^2 = 9, ..., 32^2 = 1024,...). The parameter *tileindex* indicates the tile to be read (from 0 to *tiletotal*-1). As a default an *overlap* of 5% is used. An overlap > 0 is of particular interest when tiles must be re-projected or in case of a neighborhood operation::
+As an example, we read only a portion of the image from file, dividing in *tiletotal* tiles (tiletotal must be a squared integer, e.g., 2^2 = 4, 3^2 = 9, ..., 32^2 = 1024,...). The parameter *tileindex* indicates the tile to be read (from 0 to *tiletotal*-1). An overlap > 0 is of particular interest when tiles must be re-projected or in case of a neighborhood operation::
 
-  ifn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
   tiletotal = 16
   for tileindex in range(0,16):
-    jim = pj.Jim(ifn, tileindex = 0, tiletotal = tiletotal, overlap = 5)
+    jim = pj.Jim('/path/to/raster.tif', tileindex = 0, tiletotal = tiletotal, overlap = 5)
     # do stuff with jim ...
     #write tiled result
     jim.io.write('result_'+str(tileindex)+'.tif')
@@ -266,7 +265,7 @@ JimVect objects can be easily exported to a Python dictionary (:py:meth:`JimVect
 
 Create a JimVect object from a cloud vector in GML format and print the field names::
 
-  fn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/QI_DATA/MSK_CLOUDS_B00.gml'
+  fn = 'MSK_CLOUDS_B00.gml'
   v = pj.JimVect(fn)
   print(v.properties.getFieldNames())
 
@@ -1052,7 +1051,7 @@ The following HTCondor script can be used to submit all jobs for the respective 
 
   Universe = docker
   Executable = /usr/bin/python3
-  Arguments = dem.py -input /eos/jeodpp/data/base/Elevation/GLOBAL/AW3D30/VER2-1/Data/VRT/aw3d30_dsm_10deg_relpath.vrt -output_dem /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal)_dem.tif -output /eos/jeodpp/data/projects/BDA/training/slope_dem_$(Step)_$(tiletotal).tif -tileindex $(Step) -tiletotal $(tiletotal) -ulx 5.0 -uly 45.5 -lrx 9.0 -lry 41.5 -t_srs epsg:3035
+  Arguments = dem.py -input aw3d30_dsm_10deg_relpath.vrt -output_dem slope_dem_$(Step)_$(tiletotal)_dem.tif -output slope_dem_$(Step)_$(tiletotal).tif -tileindex $(Step) -tiletotal $(tiletotal) -ulx 5.0 -uly 45.5 -lrx 9.0 -lry 41.5 -t_srs epsg:3035
   transfer_input_files = dem.py
   should_transfer_files   = YES
   when_to_transfer_output = ON_EXIT
@@ -1062,9 +1061,9 @@ The following HTCondor script can be used to submit all jobs for the respective 
   Priority = 1001
   request_memory = 8GB
   Requirements = EOSisRunning
-  Output = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).out
-  Error = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).err
-  Log = /eos/jeodpp/htcondor/processing_logs/BDA/kempepi/training/dem_$(ClusterId)_$(Step).log
+  Output = dem_$(ClusterId)_$(Step).out
+  Error = dem_$(ClusterId)_$(Step).err
+  Log = dem_$(ClusterId)_$(Step).log
   queue $(tiletotal)
 
 :download:`download <code/htc_job_submit_dem.sh>`
@@ -1075,11 +1074,11 @@ The number of jobs equals the number of tiles in which the input is tiled. A sub
 
 An output image is created for each tile. To obtain a single mosaic, create VRT with a `srcnodata` that corresponds to the no data value used for the calculation of the DEM attribute (-9999)::
 
-  gdalbuildvrt -srcnodata -9999 /eos/jeodpp/data/projects/BDA/training/slope_dem.vrt /eos/jeodpp/data/projects/BDA/training/slope_dem_*_4.tif
+  gdalbuildvrt -srcnodata -9999 slope_dem_*_4.tif
 
 Large mosaics can be visualized smoothly by building overviews, at scales 2-16::
 
-  gdaladdo -ro /eos/jeodpp/data/projects/BDA/training/slope_dem.vrt 2 4 8 16 
+  gdaladdo -ro slope_dem.vrt 2 4 8 16 
 
 .. _slope_dem:
 
