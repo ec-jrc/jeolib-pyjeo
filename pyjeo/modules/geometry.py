@@ -2453,7 +2453,7 @@ class _Geometry(_pj.modules.JimModuleBase):
         Example: create a polygon vector file from a Sentinel-2 classification
         raster dataset, where clouds are represented by the pixel value 9::
 
-          sclfn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L2A/2018/07/01/065/S2A_MSIL2A_20180701T102021_N0208_R065_T33UUT_20180701T141038.SAFE/GRANULE/L2A_T33UUT_A015792_20180701T102404/IMG_DATA/R20m/T33UUT_20180701T102021_SCL_20m.jp2'
+          sclfn = 'T33UUT_20180701T102021_SCL_20m.jp2'
           sclJim = pj.Jim(sclfn)
           sclJim[sclJim != 9] = 0
           sclJim[sclJim == 9] = 1
