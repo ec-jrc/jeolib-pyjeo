@@ -77,14 +77,14 @@ Jim constructor: create Jim object from file
    Create Jim image object by opening an existing file (file content will
    automatically be read in memory)::
 
-        ifn='/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        ifn='T32TNR_20170805T102031_B08.jp2'
         jim = pj.Jim(ifn)
         # do stuff with jim ...
 
    Create Jim image object by opening an existing file for specific region of
    interest and spatial resolution using cubic convolution resampling::
 
-        ifn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        ifn = 'T32TNR_20170805T102031_B08.jp2'
         jim0 = pj.Jim(ifn, noread=True)
         ULX = jim0.properties.getUlx()
         ULY = jim0.properties.getUly()
@@ -95,7 +95,7 @@ Jim constructor: create Jim object from file
 
    Create Jim image object by opening an existing file, reading 10 columns and row, starting from the sixth (index=5) row and column::
 
-        ifn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
+        ifn = 'T32TNR_20170805T102031_B08.jp2'
         jim = pj.Jim(ifn, ulx=5, uly=5, lrx=14, lry=14, nogeo=True)
         # do stuff with jim ...
 
@@ -348,8 +348,8 @@ get Jim items
 
       Crop a raster dataset according to the extent of a vector dataset (crop_to_cutline), set all pixels not covered to 0 (or value defined as no data)::
 
-        ifn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-        cfn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/QI_DATA/MSK_CLOUDS_B00.gml'
+        ifn = 'T32TNR_20170805T102031_B08.jp2'
+        cfn = 'MSK_CLOUDS_B00.gml'
         jim = pj.Jim(ifn)
         v = pj.JimVect(cfn)
         jimcloud = jim[v]
@@ -396,8 +396,8 @@ Set Jim items
 
         Set a gml cloud mask to a Jim image (setting all cloudy pixels to 255)::
 
-          ifn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/IMG_DATA/T32TNR_20170805T102031_B08.jp2'
-          cfn = '/eos/jeodpp/data/SRS/Copernicus/S2/scenes/source/L1C/2017/08/05/065/S2A_MSIL1C_20170805T102031_N0205_R065_T32TNR_20170805T102535.SAFE/GRANULE/L1C_T32TNR_A011073_20170805T102535/QI_DATA/MSK_CLOUDS_B00.gml'
+          ifn = 'T32TNR_20170805T102031_B08.jp2'
+          cfn = 'MSK_CLOUDS_B00.gml'
           jim = pj.Jim(ifn)
           v = pj.JimVect(cfn)
           jim[v] = 255
