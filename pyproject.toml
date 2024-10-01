@@ -42,7 +42,7 @@ authors = [
 ]
 requires-python = ">=3.8"
 license = {text = "GPLv3"}
-dependencies = ['numpy', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
+dependencies = ['numpy<2', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
 
 [project.urls]
 documentation = 'https://readthedocs.org/projects/pyjeo'
