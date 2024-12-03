@@ -1801,9 +1801,13 @@ def jim2xr(jim_object: Jim):
     x = _np.arange(bbox[0]+jim_object.properties.getDeltaX()/2,
                     bbox[2]+jim_object.properties.getDeltaX()/2,
                     jim_object.properties.getDeltaX())
+    #due to rounding x might overflow
+    x = x[0:jim_object.properties.nrOfCol()]
     y = _np.arange(bbox[1]-jim_object.properties.getDeltaY()/2,
                     bbox[3]-jim_object.properties.getDeltaY()/2,
                     -jim_object.properties.getDeltaY())
+    #due to rounding y might overflow
+    y = y[0:jim_object.properties.nrOfRow()]
 
     # Build new copy of xarray Dataset (with memory copy):
     if jim_object.properties.nrOfPlane() > 1:
