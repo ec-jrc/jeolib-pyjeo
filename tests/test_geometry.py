@@ -347,7 +347,7 @@ class BadGeometry(unittest.TestCase):
 
     @staticmethod
     def test_stack_dimension():
-        """Test the stackBand and stackPlane methods."""
+        """Test the stackBand and stackPlane methods with dimensions."""
         jim = pj.Jim(rasterfn, band=[0, 1, 2])
 
         dates = [
@@ -3372,6 +3372,87 @@ class BadGeometry(unittest.TestCase):
             '(for rule="quantile", q=0.5, the minimum value of returned object is not' \
             ' >= the minimum of the original object)'
 
+
+        # Test with rule == 'quantile' with multiple quantiles and nodata specified
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
+                     nband=2, otype='Byte', uniform=[min, max])
+        jim[2, 0, 0] = max
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        jim[:, 2, 2] = nodata
+        jim.np(1)[:, 2, 2] = nodata + 1
+        jim[0, 3, 3] = nodata
+        jim[1, 3, 3] = nodata + 1
+        jim[2, 3, 3] = nodata + 2
+        jim.np(1)[0, 3, 3] = nodata + 1
+        jim.np(1)[1, 3, 3] = nodata
+        jim.np(1)[2, 3, 3] = nodata + 1
+        jim.np(0)[0, 4, 4] = nodata + 1
+        jim.np(1)[0, 4, 4] = nodata
+        jim.np(1)[1, 4, 4] = nodata
+        jim.np(1)[2, 4, 4] = nodata
+        jim.np(1)[0, 0, 0] = 3 * max
+        jim.np(1)[1, 0, 0] = 2 * max
+        jim.np(1)[2, 0, 0] = nodata
+        stats = jim.stats.getStats()
+
+        quantiles = [0.25, 0.5, 0.75]
+        reduced = pj.geometry.reducePlane(jim, nodata=nodata, rule='quantile',
+                q=quantiles)
+        jim.geometry.reducePlane(nodata=nodata, rule='quantile',
+                q=quantiles)
+
+        stats_reduced = jim.stats.getStats()
+
+        assert jim.properties.isEqual(reduced), \
+            'Inconsistency in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == len(quantiles), \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 3)'
+        assert jim.properties.nrOfBand() == 2, \
+            'Error in geometry.reducePlane() ' \
+            '(number of bands changed)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[1, 0, 0] == int(np.median([max, max, min])), \
+            'Error in geometry.reducePlane() ' \
+            '(rule="quantile", q=0.5 did not return median value for all the planes)'
+        assert jim.np(1)[1, 0, 0] == int(np.median([3 * max, 2 * max])), \
+            'Error in geometry.reducePlane(ref_band) ' \
+            '(for rule="quantile", q=0.5, the used indices of max values are not ' \
+            'the ones from the ref_band)'
+        assert jim.np(0)[1, 3, 3] == int(np.median([nodata + 1, nodata + 2])), \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(not ignoring the nodata values for rule="quantile", q=0.5)'
+        assert jim.np(1)[1, 3, 3] == nodata + 1, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(not ignoring the nodata values for other bands than band 0 ' \
+            'for rule="quantile", q=0.5)'
+        assert jim.np(1)[1, 4, 4] == nodata, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(ignoring also the nodata values in other bands than ref_band ' \
+            'for rule="quantile", q=0.5)'
+        assert jim.np(0)[1, 2, 2] == nodata, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(the returned object not containing nodata on a place where ' \
+            'nodata was in all planes for rule="quantile", q=0.5)'
+        assert jim.np(1)[1, 2, 2] == nodata + 1, \
+            'Error in geometry.reducePlane(nodata) ' \
+            '(the returned object not containing nodata in all bands on a ' \
+            'place where nodata was in all planes in the ref_band for ' \
+            'rule="quantile", q=0.5)'
+        assert stats_reduced['max'][0] <= stats['max'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is not' \
+            ' <= the maximum of the original object)'
+        assert stats_reduced['min'][0] >= stats['min'][0], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="quantile", q=0.5, the min value of returned object is not >= ' \
+            'the mean of the original object)'
+
         # Test call with a callback rule
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
                      nband=2, otype='int16', uniform=[min, max])
@@ -3584,7 +3665,7 @@ class BadGeometryLists(unittest.TestCase):
 
     @staticmethod
     def test_stack():
-        """Test the stackBand and stackPlane methods."""
+        """Test the stackBand and stackPlane methods for JimList."""
         nrow = ncol = 5
         nplane = nband = 2
         jim1 = pj.Jim(nrow=nrow, ncol=ncol, nband=nband, nplane=nplane,

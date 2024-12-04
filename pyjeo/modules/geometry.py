@@ -388,7 +388,7 @@ def cropPlane(jim_object,
                             for p in planes]
     else:
         if not isinstance(planes[0], int):
-            raise _pj.exceptions.jimplaneserror(
+            raise _pj.exceptions.JimPlanesError(
                 'plane not supported, use integer')
         planeindices = [jim_object.properties.nrOfPlane() + p
                         if p < 0 else p for p in planes]
@@ -1213,13 +1213,15 @@ def reducePlane(jim,
                         kwargs.update({'axis': 0})
                         jimreduced.np(iband)[:] = nan_func(
                             jim.np(iband), **kwargs)
-                        jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         jim.np(iband)[
                             mask.np() == nodata] = _np.nan
                         kwargs.update({'axis': 0})
                         jimreduced.np(iband)[:] = nan_func(
                             jim.np(iband), **kwargs)
+                    if jimreduced.properties.nrOfPlane() > 1:
+                        jimreduced.np(iband)[:, nodata_mask] = nodata
+                    else:
                         jimreduced.np(iband)[nodata_mask] = nodata
                 else:
                     kwargs.update({'axis': 0})
@@ -2717,13 +2719,15 @@ class _Geometry(_pj.modules.JimModuleBase):
                             kwargs.update({'axis': 0})
                             jimreduced.np(iband)[:] = nan_func(
                                 self._jim_object.np(iband), **kwargs)
-                            jimreduced.np(iband)[nodata_mask] = nodata
                         else:
                             self._jim_object.np(iband)[
                                 mask.np() == nodata] = _np.nan
                             kwargs.update({'axis': 0})
                             jimreduced.np(iband)[:] = nan_func(
                                 self._jim_object.np(iband), **kwargs)
+                        if jimreduced.properties.nrOfPlane() > 1:
+                            jimreduced.np(iband)[:, nodata_mask] = nodata
+                        else:
                             jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         kwargs.update({'axis': 0})
