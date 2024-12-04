@@ -2992,8 +2992,16 @@ class BadGeometry(unittest.TestCase):
         jim[0, 0, 0] = min
         stats = jim.stats.getStats()
 
+        jim.properties.setDimension({'plane': ['t0', 't1', 't2'],
+            'band': ['B0']})
         reduced = pj.geometry.reducePlane(jim, rule='quantile', q=0.5)
+        assert reduced.properties.getDimension('plane') == ['quantile_0.5'], \
+            'Error in pj.geometry.reducePlane(), quantile not in dimension'
+
         jim.geometry.reducePlane(rule='quantile', q=0.5)
+        assert jim.properties.getDimension('plane') == ['quantile_0.5'], \
+            'Error in method geometry.reducePlane(), ' \
+            'quantile not in dimension'
 
         stats_reduced = jim.stats.getStats()
 
@@ -3307,6 +3315,62 @@ class BadGeometry(unittest.TestCase):
             'Error in geometry.reducePlane() ' \
             '(for rule="quantile", q=0.5, the min value of returned object is not >= ' \
             'the mean of the original object)'
+
+        # Test with rule == 'quantile and multiple quantiles'
+        jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3, otype='Byte',
+                     uniform=[min, max])
+        jim[2, 0, 0] = nodata
+        jim[1, 0, 0] = max
+        jim[0, 0, 0] = min
+        stats = jim.stats.getStats()
+
+        jim.properties.setDimension({'plane': ['t0', 't1', 't2'],
+            'band': ['B0']})
+        reduced = pj.geometry.reducePlane(jim, rule='quantile', 
+                q=[0.25, 0.5, 0.75])
+        assert reduced.properties.getDimension('plane') == [
+               'quantile_0.25', 'quantile_0.5', 'quantile_0.75'] , \
+            'Error in pj.geometry.reducePlane(), quantiles not in dimension'
+
+        jim.geometry.reducePlane(rule='quantile',
+                q=[0.25, 0.5, 0.75])
+        assert jim.properties.getDimension('plane') == [
+               'quantile_0.25', 'quantile_0.5', 'quantile_0.75'] , \
+            'Error in method geometry.reducePlane(), ' \
+            'quantiles not in dimension'
+
+        stats_reduced = pj.geometry.cropPlane(jim, 
+                ['quantile_0.5']).stats.getStats()
+
+        assert jim.properties.isEqual(reduced), \
+            'Inconsistency in geometry.reducePlane() ' \
+            '(method returns different result than function)'
+        assert jim.properties.nrOfPlane() == 3, \
+            'Error in geometry.reducePlane() ' \
+            '(number of planes not reduced to 3)'
+        assert jim.properties.nrOfRow() == jim.properties.nrOfCol() == \
+               nr_of_row, \
+            'Error in geometry.reducePlane() ' \
+            '(number of rows or number of columns changed)'
+        assert jim.np()[0, 0, 0] == int(np.quantile([min, max, nodata], 
+                q = 0.25)), \
+            'Error in geometry.reducePlane() ' \
+            '(rule="quantile" q=0.25)'
+        assert jim.np()[1, 0, 0] == np.median([min, max, nodata]), \
+            'Error in geometry.reducePlane() ' \
+            '(rule="quantile" q=0.5 did not return median value)'
+        assert jim.np()[2, 0, 0] == int(np.quantile([min, max, nodata],
+                q = 0.75)), \
+            'Error in geometry.reducePlane() ' \
+            '(rule="quantile" q=0.75)'
+        assert stats_reduced['max'] <= stats['max'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is not' \
+            ' <= the maximum of the original object)'
+        assert stats_reduced['min'] >= stats['min'], \
+            'Error in geometry.reducePlane() ' \
+            '(for rule="quantile", q=0.5, the minimum value of returned object is not' \
+            ' >= the minimum of the original object)'
 
         # Test call with a callback rule
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,

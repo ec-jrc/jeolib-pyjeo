@@ -1128,7 +1128,13 @@ def reducePlane(jim,
         )
         return jim
 
-    jimreduced = _pj.geometry.cropPlane(jim, 0)
+    jimreduced = _pj.Jim()
+
+    qs = kwargs.get('q')
+    if rule == 'quantile':
+        assert qs is not None
+        if not isinstance(qs, list):
+            qs = [qs]
 
     if isinstance(rule, str):
         nr_of_row = jim.properties.nrOfRow()
@@ -1136,12 +1142,16 @@ def reducePlane(jim,
 
         if rule in ('mean', 'avg', 'median', 'quantile'):
             if rule == 'median':
+                jimreduced = _pj.geometry.cropPlane(jim, 0)
                 nan_func = _np.nanmedian
                 func = _np.median
             elif rule == 'quantile':
+                jimreduced = _pj.geometry.cropPlane(jim, 
+                        [i for i in range(len(qs))])
                 nan_func = _np.nanquantile
                 func = _np.quantile
             else:
+                jimreduced = _pj.geometry.cropPlane(jim, 0)
                 nan_func = _np.nanmean
                 func = _np.mean
 
@@ -1220,6 +1230,7 @@ def reducePlane(jim,
                     jimreduced.pixops.convert(otype=d_type)
                     jim.pixops.convert(otype=d_type)
         else:
+            jimreduced = _pj.geometry.cropPlane(jim, 0)
             if nodata is not None and ref_band is None:
                 raise _pj.exceptions.JimIllegalArgumentError(
                     'use ref_band option for nodata')
@@ -1300,7 +1311,10 @@ def reducePlane(jim,
 
     jimreduced.dimension['band'] = jim.dimension['band']
     if jimreduced.dimension['plane']:
-        jimreduced.dimension['plane'] = [rule]
+        if rule == 'quantile':
+            jimreduced.dimension['plane'] = ['quantile_' + str(q) for q in qs]
+        else:
+            jimreduced.dimension['plane'] = [rule]
     return jimreduced
 
 
@@ -2617,19 +2631,30 @@ class _Geometry(_pj.modules.JimModuleBase):
             )
             return None
 
-        jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
+        jimreduced = _pj.Jim()
+
+        qs = kwargs.get('q')
+        if rule == 'quantile':
+            assert qs is not None
+            if not isinstance(qs, list):
+                qs = [qs]
+
         if isinstance(rule, str):
             nr_of_row = self._jim_object.properties.nrOfRow()
             nr_of_col = self._jim_object.properties.nrOfCol()
 
             if rule in ('mean', 'avg', 'median', 'quantile'):
                 if rule == 'median':
+                    jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
                     nan_func = _np.nanmedian
                     func = _np.median
-                elif rule =='quantile':
+                elif rule == 'quantile':
+                    jimreduced = _pj.geometry.cropPlane(self._jim_object, 
+                            [i for i in range(len(qs))])
                     nan_func = _np.nanquantile
                     func = _np.quantile
                 else:
+                    jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
                     nan_func = _np.nanmean
                     func = _np.mean
 
@@ -2709,6 +2734,7 @@ class _Geometry(_pj.modules.JimModuleBase):
                         jimreduced.pixops.convert(otype=d_type)
                         self._jim_object.pixops.convert(otype=d_type)
             else:
+                jimreduced = _pj.geometry.cropPlane(self._jim_object, 0)
                 if nodata is not None and ref_band is None:
                     raise _pj.exceptions.JimIllegalArgumentError(
                         'use ref_band option for nodata')
@@ -2790,7 +2816,10 @@ class _Geometry(_pj.modules.JimModuleBase):
 
         self._jim_object._set(jimreduced._jipjim)
         if self._jim_object.dimension['plane']:
-            self._jim_object.dimension['plane'] = [rule]
+            if rule == 'quantile':
+                self._jim_object.dimension['plane'] = ['quantile_' + str(q) for q in qs]
+            else:
+                self._jim_object.dimension['plane'] = [rule]
 
     def _reducePlaneSimple(self,
                            rule):
