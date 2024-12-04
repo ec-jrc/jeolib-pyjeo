@@ -1107,11 +1107,12 @@ def rasterize(jim_object,
 def reducePlane(jim,
                 rule='overwrite',
                 ref_band: int = None,
-                nodata: float = None):
+                nodata: float = None,
+                **kwargs):
     """Reduce planes of Jim object.
 
     :param jim: jim object on which to reduce planes
-    :param rule: rule to reduce (mean, median, min or max)
+    :param rule: rule to reduce (mean, median, quantile, min or max)
         or callback function
     :param ref_band: band on which to apply rule
         (default is to check all bands,
@@ -1133,10 +1134,13 @@ def reducePlane(jim,
         nr_of_row = jim.properties.nrOfRow()
         nr_of_col = jim.properties.nrOfCol()
 
-        if rule in ('mean', 'avg', 'median'):
+        if rule in ('mean', 'avg', 'median', 'quantile'):
             if rule == 'median':
                 nan_func = _np.nanmedian
                 func = _np.median
+            elif rule == 'quantile':
+                nan_func = _np.nanquantile
+                func = _np.quantile
             else:
                 nan_func = _np.nanmean
                 func = _np.mean
@@ -1196,18 +1200,21 @@ def reducePlane(jim,
 
                         # compute the reduction function
                         jim.np(iband)[jim.np(iband) == nodata] = _np.nan
+                        kwargs.update({'axis': 0})
                         jimreduced.np(iband)[:] = nan_func(
-                            jim.np(iband), axis=0)
+                            jim.np(iband), **kwargs)
                         jimreduced.np(iband)[nodata_mask] = nodata
                     else:
                         jim.np(iband)[
                             mask.np() == nodata] = _np.nan
+                        kwargs.update({'axis': 0})
                         jimreduced.np(iband)[:] = nan_func(
-                            jim.np(iband), axis=0)
+                            jim.np(iband), **kwargs)
                         jimreduced.np(iband)[nodata_mask] = nodata
                 else:
+                    kwargs.update({'axis': 0})
                     jimreduced.np(iband)[:] = func(
-                        jim.np(iband), axis=0)
+                        jim.np(iband), **kwargs)
             if nodata is not None:
                 if d_type not in ('GDT_Float32', 'GDT_Float64'):
                     jimreduced.pixops.convert(otype=d_type)
@@ -2572,7 +2579,8 @@ class _Geometry(_pj.modules.JimModuleBase):
     def reducePlane(self,
                     rule='overwrite',
                     ref_band: int = None,
-                    nodata: float = None):
+                    nodata: float = None,
+                    **kwargs):
         """Reduce planes of Jim object.
 
         :param rule: rule to reduce (mean, median, min or max)
@@ -2614,10 +2622,13 @@ class _Geometry(_pj.modules.JimModuleBase):
             nr_of_row = self._jim_object.properties.nrOfRow()
             nr_of_col = self._jim_object.properties.nrOfCol()
 
-            if rule in ('mean', 'avg', 'median'):
+            if rule in ('mean', 'avg', 'median', 'quantile'):
                 if rule == 'median':
                     nan_func = _np.nanmedian
                     func = _np.median
+                elif rule =='quantile':
+                    nan_func = _np.nanquantile
+                    func = _np.quantile
                 else:
                     nan_func = _np.nanmean
                     func = _np.mean
@@ -2678,18 +2689,21 @@ class _Geometry(_pj.modules.JimModuleBase):
                             # compute the reduction function
                             self._jim_object.np(iband)[self._jim_object.np(
                                 iband) == nodata] = _np.nan
+                            kwargs.update({'axis': 0})
                             jimreduced.np(iband)[:] = nan_func(
-                                self._jim_object.np(iband), axis=0)
+                                self._jim_object.np(iband), **kwargs)
                             jimreduced.np(iband)[nodata_mask] = nodata
                         else:
                             self._jim_object.np(iband)[
                                 mask.np() == nodata] = _np.nan
+                            kwargs.update({'axis': 0})
                             jimreduced.np(iband)[:] = nan_func(
-                                self._jim_object.np(iband), axis=0)
+                                self._jim_object.np(iband), **kwargs)
                             jimreduced.np(iband)[nodata_mask] = nodata
                     else:
+                        kwargs.update({'axis': 0})
                         jimreduced.np(iband)[:] = func(
-                            self._jim_object.np(iband), axis=0)
+                            self._jim_object.np(iband), **kwargs)
                 if nodata is not None:
                     if d_type not in ('GDT_Float32', 'GDT_Float64'):
                         jimreduced.pixops.convert(otype=d_type)

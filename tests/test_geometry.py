@@ -2984,7 +2984,7 @@ class BadGeometry(unittest.TestCase):
             '(for rule="mean", the mean value of returned object is not < ' \
             'the mean of the original object)'
 
-        # Test with rule == 'median'
+        # Test with rule == 'quantile'
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3, otype='Byte',
                      uniform=[min, max])
         jim[2, 0, 0] = nodata
@@ -2992,8 +2992,8 @@ class BadGeometry(unittest.TestCase):
         jim[0, 0, 0] = min
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, rule='median')
-        jim.geometry.reducePlane(rule='median')
+        reduced = pj.geometry.reducePlane(jim, rule='quantile', q=0.5)
+        jim.geometry.reducePlane(rule='quantile', q=0.5)
 
         stats_reduced = jim.stats.getStats()
 
@@ -3009,17 +3009,17 @@ class BadGeometry(unittest.TestCase):
             '(number of rows or number of columns changed)'
         assert jim.np()[0, 0] == np.median([min, max, nodata]), \
             'Error in geometry.reducePlane() ' \
-            '(rule="median" did not return median value for all the planes)'
+            '(rule="quantile" q=0.5 did not return median value for all the planes)'
         assert stats_reduced['max'] <= stats['max'], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the maximum value of returned object is not' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is not' \
             ' <= the maximum of the original object)'
         assert stats_reduced['min'] >= stats['min'], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the minimum value of returned object is not' \
+            '(for rule="quantile", q=0.5, the minimum value of returned object is not' \
             ' >= the minimum of the original object)'
 
-        # Test with rule == 'median' and multibands
+        # Test with rule == 'quantile' and multibands
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[2, 0, 0] = nodata
@@ -3027,8 +3027,8 @@ class BadGeometry(unittest.TestCase):
         jim[0, 0, 0] = min
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, rule='median')
-        jim.geometry.reducePlane(rule='median')
+        reduced = pj.geometry.reducePlane(jim, rule='quantile', q=0.5)
+        jim.geometry.reducePlane(rule='quantile', q=0.5)
 
         stats_reduced = jim.stats.getStats()
 
@@ -3044,19 +3044,19 @@ class BadGeometry(unittest.TestCase):
             '(number of rows or number of columns changed)'
         assert jim.np()[0, 0] == np.median([min, max, nodata]), \
             'Error in geometry.reducePlane() ' \
-            '(rule="median" did not return median value for all the planes)'
+            '(rule="quantile" q=0.5 did not return median value for all the planes)'
         assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the maximum value of returned object is not' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is not' \
             ' <= the maximum of the original object)'
         assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the minimum value of returned object is not' \
+            '(for rule="quantile", q=0.5, the minimum value of returned object is not' \
             ' >= the minimum of the original object)'
 
-        # Test with rule == 'median' and band specified (2 planes)
+        # Test with rule == 'quantile' and band specified (2 planes)
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=2,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[1, 0, 0] = max
@@ -3065,8 +3065,8 @@ class BadGeometry(unittest.TestCase):
         jim.np(1)[1, 0, 0] = 2 * max
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, ref_band=0, rule='median')
-        jim.geometry.reducePlane(ref_band=0, rule='median')
+        reduced = pj.geometry.reducePlane(jim, ref_band=0, rule='quantile', q=0.5)
+        jim.geometry.reducePlane(ref_band=0, rule='quantile', q=0.5)
 
         stats_reduced = jim.stats.getStats()
 
@@ -3085,23 +3085,23 @@ class BadGeometry(unittest.TestCase):
             '(number of rows or number of columns changed)'
         assert jim.np()[0, 0] == np.median([min, max]), \
             'Error in geometry.reducePlane() ' \
-            '(rule="median" did not return median value for all the planes)'
+            '(rule="quantile", q=0.5 did not return median value for all the planes)'
         assert jim.np(1)[0, 0] == np.median([3 * max, 2 * max]), \
             'Error in geometry.reducePlane(ref_band) ' \
-            '(for rule="median", the used indices of max values are not the ' \
+            '(for rule="quantile", q=0.5, the used indices of max values are not the ' \
             'ones from the ref_band)'
         assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the maximum value of returned object is ' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is ' \
             'not <= the maximum of the original object)'
         assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the min value of returned object is not >= ' \
+            '(for rule="quantile", q=0.5, the min value of returned object is not >= ' \
             'the min of the original object)'
 
-        # Test with rule == 'median' and band specified (>2 planes)
+        # Test with rule == 'quantile' and band specified (>2 planes)
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[2, 0, 0] = (max + min) / 4
@@ -3112,8 +3112,8 @@ class BadGeometry(unittest.TestCase):
         jim.np(1)[2, 0, 0] = 2 * max
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, ref_band=0, rule='median')
-        jim.geometry.reducePlane(ref_band=0, rule='median')
+        reduced = pj.geometry.reducePlane(jim, ref_band=0, rule='quantile', q=0.5)
+        jim.geometry.reducePlane(ref_band=0, rule='quantile', q=0.5)
 
         stats_reduced = jim.stats.getStats()
 
@@ -3134,25 +3134,25 @@ class BadGeometry(unittest.TestCase):
             '2-planes Jim)'
         assert jim.np()[0, 0] == np.median([max, min, int((max + min) / 4)]), \
             'Error in geometry.reducePlane() ' \
-            '(rule="median" did not return median value for all the planes' \
+            '(rule="quantile", q=0.5 did not return median value for all the planes' \
             ' for more than 2-planes Jim)'
         assert jim.np(1)[0, 0] == np.median([3 * max, 2 * max, 2 * max]), \
             'Error in geometry.reducePlane(ref_band) ' \
-            '(for rule="median", the used indices of max values are not the ' \
+            '(for rule="quantile", q=0.5, the used indices of max values are not the ' \
             'ones from the ref_band for more than 2-planes Jim)'
         assert all(stats_reduced['max'][i] <= stats['max'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the maximum value of returned object is not' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is not' \
             ' <= the maximum of the original object for more than 2-planes ' \
             'Jim)'
         assert all(stats_reduced['min'][i] >= stats['min'][i] for i in range(
             len(stats['max']))), \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the min value of returned object is not >= ' \
+            '(for rule="quantile", q=0.5, the min value of returned object is not >= ' \
             'the min of the original object for more than 2-planes Jim)'
 
-        # Test with rule == 'median' and nodata and ref_band specified
+        # Test with rule == 'quantile' and nodata and ref_band specified
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[2, 0, 0] = nodata + 1
@@ -3176,8 +3176,8 @@ class BadGeometry(unittest.TestCase):
         stats = jim.stats.getStats()
 
         reduced = pj.geometry.reducePlane(
-            jim, ref_band=0, nodata=nodata, rule='median')
-        jim.geometry.reducePlane(ref_band=0, nodata=nodata, rule='median')
+            jim, ref_band=0, nodata=nodata, rule='quantile', q=0.5)
+        jim.geometry.reducePlane(ref_band=0, nodata=nodata, rule='quantile', q=0.5)
 
         stats_reduced = jim.stats.getStats()
 
@@ -3196,11 +3196,11 @@ class BadGeometry(unittest.TestCase):
             '(number of rows or number of columns changed)'
         assert jim.np()[0, 0] == np.median([nodata + 1, min, max]), \
             'Error in geometry.reducePlane() ' \
-            '(rule="median" did not return median value for all the planes)'
+            '(rule="quantile", q=0.5 did not return median value for all the planes)'
         assert jim.np(1)[0, 0] == \
                int(np.median([3 * max, 2 * max, nodata + 1])), \
             'Error in geometry.reducePlane(ref_band) ' \
-            '(for rule="median", the used indices of values are not ' \
+            '(for rule="quantile", q=0.5, the used indices of values are not ' \
             'the ones from the ref_band)'
         assert jim.np(0)[3, 3] == int(np.median([nodata + 1, max])), \
             'Error in geometry.reducePlane(nodata) ' \
@@ -3208,30 +3208,30 @@ class BadGeometry(unittest.TestCase):
         assert jim.np(1)[3, 3] == int(np.median([nodata, max])), \
             'Error in geometry.reducePlane(nodata, ref_band) ' \
             '(not ignoring the values with indices of nodata from the ' \
-            'ref_band for other bands for rule="median")'
+            'ref_band for other bands for rule="quantile", q=0.5)'
         assert jim.np(1)[4, 4] == nodata, \
             'Error in geometry.reducePlane(nodata, ref_band) ' \
             '(ignoring also the nodata values in other bands than ref_band ' \
-            'for rule="median")'
+            'for rule="quantile", q=0.5)'
         assert jim.np(0)[2, 2] == nodata, \
             'Error in geometry.reducePlane(nodata) ' \
             '(the returned object not containing nodata on a place where ' \
-            'nodata was in all planes for rule="median")'
+            'nodata was in all planes for rule="quantile", q=0.5)'
         assert jim.np(1)[2, 2] == nodata, \
             'Error in geometry.reducePlane(nodata, ref_band) ' \
             '(the returned object not containing nodata in all bands on a ' \
             'place where nodata was in all planes in the ref_band for ' \
-            'rule="median")'
+            'rule="quantile", q=0.5)'
         assert stats_reduced['max'][0] <= stats['max'][0], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the maximum value of returned object is ' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is ' \
             'not <= the maximum of the original object)'
         assert stats_reduced['min'][0] >= stats['min'][0], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the mean value of returned object is not >=' \
+            '(for rule="quantile", q=0.5, the mean value of returned object is not >=' \
             ' the mean of the original object)'
 
-        # Test with rule == 'median' and nodata specified
+        # Test with rule == 'quantile' and nodata specified
         jim = pj.Jim(nrow=nr_of_row, ncol=nr_of_col, nplane=3,
                      nband=2, otype='Byte', uniform=[min, max])
         jim[2, 0, 0] = max
@@ -3254,8 +3254,8 @@ class BadGeometry(unittest.TestCase):
         jim.np(1)[2, 0, 0] = nodata
         stats = jim.stats.getStats()
 
-        reduced = pj.geometry.reducePlane(jim, nodata=nodata, rule='median')
-        jim.geometry.reducePlane(nodata=nodata, rule='median')
+        reduced = pj.geometry.reducePlane(jim, nodata=nodata, rule='quantile', q=0.5)
+        jim.geometry.reducePlane(nodata=nodata, rule='quantile', q=0.5)
 
         stats_reduced = jim.stats.getStats()
 
@@ -3274,38 +3274,38 @@ class BadGeometry(unittest.TestCase):
             '(number of rows or number of columns changed)'
         assert jim.np()[0, 0] == int(np.median([max, max, min])), \
             'Error in geometry.reducePlane() ' \
-            '(rule="mean" did not return median value for all the planes)'
+            '(rule="quantile", q=0.5 did not return median value for all the planes)'
         assert jim.np(1)[0, 0] == int(np.median([3 * max, 2 * max])), \
             'Error in geometry.reducePlane(ref_band) ' \
-            '(for rule="median", the used indices of max values are not ' \
+            '(for rule="quantile", q=0.5, the used indices of max values are not ' \
             'the ones from the ref_band)'
         assert jim.np(0)[3, 3] == int(np.median([nodata + 1, nodata + 2])), \
             'Error in geometry.reducePlane(nodata) ' \
-            '(not ignoring the nodata values for rule="median")'
+            '(not ignoring the nodata values for rule="quantile", q=0.5)'
         assert jim.np(1)[3, 3] == nodata + 1, \
             'Error in geometry.reducePlane(nodata) ' \
             '(not ignoring the nodata values for other bands than band 0 ' \
-            'for rule="median")'
+            'for rule="quantile", q=0.5)'
         assert jim.np(1)[4, 4] == nodata, \
             'Error in geometry.reducePlane(nodata) ' \
             '(ignoring also the nodata values in other bands than ref_band ' \
-            'for rule="median")'
+            'for rule="quantile", q=0.5)'
         assert jim.np(0)[2, 2] == nodata, \
             'Error in geometry.reducePlane(nodata) ' \
             '(the returned object not containing nodata on a place where ' \
-            'nodata was in all planes for rule="median")'
+            'nodata was in all planes for rule="quantile", q=0.5)'
         assert jim.np(1)[2, 2] == nodata + 1, \
             'Error in geometry.reducePlane(nodata) ' \
             '(the returned object not containing nodata in all bands on a ' \
             'place where nodata was in all planes in the ref_band for ' \
-            'rule="median")'
+            'rule="quantile", q=0.5)'
         assert stats_reduced['max'][0] <= stats['max'][0], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the maximum value of returned object is not' \
+            '(for rule="quantile", q=0.5, the maximum value of returned object is not' \
             ' <= the maximum of the original object)'
         assert stats_reduced['min'][0] >= stats['min'][0], \
             'Error in geometry.reducePlane() ' \
-            '(for rule="median", the min value of returned object is not >= ' \
+            '(for rule="quantile", q=0.5, the min value of returned object is not >= ' \
             'the mean of the original object)'
 
         # Test call with a callback rule
