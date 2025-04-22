@@ -1,0 +1,176 @@
+#This dockerfile will create a docker image with a user and python environment
+#with pyjeo installed
+#user and group settings can be set from host by setting --build-arg, e.g.,
+#docker build --build-arg user=$(id -u -n) \
+#             --build-arg group=$(id -g -n) \
+#             --build-arg uid=$(id -u) \
+#             --build-arg gid=$(id -g) \
+#             --build-arg http_proxy=${http_proxy} \
+#             --build-arg https_proxy=${https_proxy} \
+#             -t deb12_pyjeo_public -f Dockerfile_deb13_pyjeo_public .
+
+FROM debian:trixie as pyjeo-base
+
+LABEL project="pyjeo" \
+      author="Pieter Kempeneers" \
+      image_name="deb13_pyjeo_base" \
+      version="1.1.12" \
+      released="2025-04-22" \
+      software_versions="Debian:13 Python:3.13 gdal:3.10.2 miallib:1.1.7 jiplib:1.1.6 pyjeo:1.1.12"\
+      description="multi-stage build for pyjeo"
+
+#
+# Environment variables for proxy, user, paths
+#
+
+#optional: add proxy settings here
+ARG http_proxy=${http_proxy}
+ARG https_proxy=${https_proxy}
+ENV http_proxy=${http_proxy}
+ENV https_proxy=${https_proxy}
+#
+ARG user=${user}
+ARG group=${group}
+ARG uid=${uid}
+ARG gid=${gid}
+ENV user=${user}
+ENV group=${group}
+ENV uid=${uid}
+ENV gid=${gid}
+
+ARG INSTALL_HOME=/home/${user}
+ARG VIRTUAL_ENV=/home/${user}/venv
+ENV INSTALL_HOME=${INSTALL_HOME}
+ENV VIRTUAL_ENV=${VIRTUAL_ENV}
+
+#
+# Create user
+#
+
+RUN groupadd -g ${gid} ${group} \
+    && useradd -u ${uid} -g ${group} -s /bin/bash -m ${user}
+
+#
+#Install dependences from the Debian repository
+#
+
+RUN apt-get update \
+  && apt-get upgrade -y \
+  && DEBIAN_FRONTEND=noninteractive  apt-get install -y  --no-install-recommends \
+    apt-utils \
+    python3 \
+    python3-numpy \
+    python3-wheel \
+    python3-pip \
+    sqlite3 \
+    zlib1g \
+    python3-virtualenv \
+    python3-dev \
+    libjsoncpp-dev \
+    libgdal-dev \
+    zlib1g-dev \
+    libopenblas-dev \
+    libgeotiff-dev \
+    libgsl0-dev \
+    libfann-dev \
+    libfftw3-dev \
+    libshp-dev \
+    uthash-dev \
+    libboost-serialization-dev \
+    libboost-filesystem-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+FROM pyjeo-base AS pyjeo-build
+
+#
+#Install dependences from the Debian repository
+#
+
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive  apt-get install -y  --no-install-recommends \
+    build-essential \
+    cmake \
+    pkg-config \
+    make \
+    python3-setuptools \
+    swig \
+    libtool \
+    curl \
+    git \
+    gzip \
+    tar \
+    unzip \
+  && rm -rf /var/lib/apt/lists/*
+
+USER ${uid}:${gid}
+
+#
+# Compile and build miallib dependency library
+#
+
+RUN curl -L --output $INSTALL_HOME/miallib.tar.gz https://github.com/ec-jrc/jeolib-miallib/archive/refs/tags/v1.1.7.tar.gz --verbose
+#RUN curl -L --output $INSTALL_HOME/miallib.tar.gz https://github.com/ec-jrc/jeolib-miallib/archive/refs/heads/master.tar.gz --verbose
+
+RUN set -xe \
+    && cd $INSTALL_HOME \
+    && mkdir ${INSTALL_HOME}/miallib \
+    && tar xzvf miallib.tar.gz \
+    && cd $INSTALL_HOME/jeolib-miallib* \
+    && mkdir build \
+    && cd build \
+    && cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_HOME}/miallib .. \
+    && cmake --build . \
+    && cmake --install . \
+    && cd $INSTALL_HOME \
+    && rm miallib.tar.gz \
+    && rm -rf $INSTALL_HOME/jeolib-miallib*
+
+#
+# Compile and build jiplib dependency library
+#
+
+RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/tags/v1.1.6.tar.gz --verbose
+#RUN curl -L --output $INSTALL_HOME/jiplib.tar.gz https://github.com/ec-jrc/jeolib-jiplib/archive/refs/heads/master.tar.gz --verbose
+
+RUN set -xe \
+    && cd $INSTALL_HOME \
+    && tar xzvf jiplib.tar.gz \
+    && cd $INSTALL_HOME/jeolib-jiplib* \
+    && mkdir build \
+    && cd build \
+    && cmake -DCMAKE_PREFIX_PATH=${INSTALL_HOME}/miallib .. \
+    && cmake --build . \
+    && cp jiplib-*.whl $INSTALL_HOME \
+    && cd $INSTALL_HOME \
+    && rm -rf ${INSTALL_HOME}/miallib \
+    && rm jiplib.tar.gz \
+    && rm -rf $INSTALL_HOME/jeolib-jiplib*
+
+RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/tags/v1.1.12.tar.gz --verbose
+#RUN curl -L --output $INSTALL_HOME/pyjeo.tar.gz https://github.com/ec-jrc/jeolib-pyjeo/archive/refs/heads/master.tar.gz --verbose
+
+RUN cd $INSTALL_HOME \
+    && tar xzvf pyjeo.tar.gz \
+    && cd jeolib-pyjeo* \
+    && pip3 wheel . \
+    && cp pyjeo-*.whl $INSTALL_HOME \
+    && cd $INSTALL_HOME \
+    && rm -rf jeolib-pyjeo* \
+    && rm pyjeo.tar.gz
+
+FROM pyjeo-base AS pyjeo
+
+USER ${uid}:${gid}
+
+COPY --from=pyjeo-build ${INSTALL_HOME} ${INSTALL_HOME}
+
+#
+# Install python libraries in virtual environment as user
+#
+RUN mkdir ${VIRTUAL_ENV} \
+    && virtualenv ${VIRTUAL_ENV}/pyjeo \
+    && . ${VIRTUAL_ENV}/pyjeo/bin/activate \
+    && pip install ${INSTALL_HOME}/jiplib-*.whl \
+    && pip install ${INSTALL_HOME}/pyjeo-*.whl
+
+ENV PATH="$VIRTUAL_ENV/pyjeo/bin:$PATH"

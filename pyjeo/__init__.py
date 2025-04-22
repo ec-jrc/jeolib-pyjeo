@@ -3,7 +3,7 @@
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu
 #
-# Copyright (C) 2018-2024 European Union (Joint Research Centre)
+# Copyright (C) 2018-2025 European Union (Joint Research Centre)
 #
 # This file is part of pyjeo.
 #
@@ -27,7 +27,7 @@ import random as _random
 import string as _string
 
 
-__version__ = '1.1.11'
+__version__ = '1.1.12'
 
 
 def _check_graph(graph, allowed_values):
