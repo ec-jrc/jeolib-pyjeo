@@ -282,7 +282,7 @@ Indexing: get and set Jim items
 get Jim items
 -------------
 
-   .. method:: Jim[item]
+   .. method:: __getitem__(item)
 
       Get subset of the raster dataset. Item can be of type:
 
@@ -363,7 +363,7 @@ get Jim items
 Set Jim items
 -------------
 
-   .. method:: Jim[item]=
+   .. method:: __setitem__(item, value)
 
         Set items of the raster dataset. Item can be of type:
 

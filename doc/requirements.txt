@@ -1,3 +1,5 @@
-sphinx_rtd_theme
+sphinx>=6.0
+sphinx-rtd-theme>=1.2.0
+sphinxcontrib-jquery
 sphinxcontrib-bibtex
 sphinx_copybutton
