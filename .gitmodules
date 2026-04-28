@@ -1,0 +1,8 @@
+[submodule "external/miallib"]
+	path = external/miallib
+	url = https://github.com/ec-jrc/jeolib-miallib.git
+	branch = feature/build-system-redesign
+[submodule "external/jiplib"]
+	path = external/jiplib
+	url = https://github.com/ec-jrc/jeolib-jiplib.git
+	branch = feature/build-system-redesign

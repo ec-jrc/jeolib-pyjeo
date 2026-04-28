@@ -17,9 +17,22 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with pyjeo.  If not, see <https://www.gnu.org/licenses/>.
+
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = [
+    "scikit-build-core>=0.5",
+    "setuptools",
+    "numpy", 
+    "swig"
+]
+build-backend = "scikit_build_core.build"
+#[build-system]
+#requires = ["scikit-build-core>=0.5", "swig"]
+#build-backend = "scikit_build_core.build"
+
+#[build-system]
+#requires = ["setuptools"]
+#build-backend = "setuptools.build_meta"
 
 [metadata]
 name = 'pyjeo'
@@ -42,7 +55,7 @@ authors = [
 ]
 requires-python = ">=3.8"
 license = {text = "GPLv3"}
-dependencies = ['numpy', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
+dependencies = ['numpy<2', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
 
 [project.urls]
 documentation = 'https://readthedocs.org/projects/pyjeo'
