@@ -34,6 +34,12 @@ build-backend = "scikit_build_core.build"
 #requires = ["setuptools"]
 #build-backend = "setuptools.build_meta"
 
+[tool.scikit-build]
+# Only put flags here that apply to EVERY build (like the ABI flag)
+cmake.args = [
+    "-DCMAKE_BUILD_TYPE=Release"
+]
+
 [metadata]
 name = 'pyjeo'
 version = '1.1.12'
@@ -56,6 +62,7 @@ authors = [
 requires-python = ">=3.8"
 license = {text = "GPLv3"}
 dependencies = ['numpy<2', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
+#dependencies = ['numpy', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
 
 [project.urls]
 documentation = 'https://readthedocs.org/projects/pyjeo'

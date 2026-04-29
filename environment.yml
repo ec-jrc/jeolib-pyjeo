@@ -1,0 +1,39 @@
+name: pyjeo-dev
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Python Core
+  - python=3.11
+  - pip
+  - numpy
+
+  # Build Tools (Replaces build-essential, cmake, swig)
+  - cmake
+  - swig
+  - ninja
+  - cxx-compiler
+  - pkg-config
+  - scikit-build-core
+
+  # Math & Science (Replaces libgsl, libfftw3, libopenblas, libfann)
+  - gsl
+  - fftw
+  - libopenblas
+  - fann2
+
+  # Geospatial (Replaces libgdal, libgeotiff, libproj, libshp)
+  - gdal
+  - geotiff
+  - proj
+  - shapelib
+
+  # Data & Utilities (Replaces libjsoncpp, libssl, uthash, boost)
+  - jsoncpp
+  - openssl
+  - boost-cpp
+  #- uthash (not available, but should only be a header file? 
+
+  # Optional but recommended for development
+  - git
+  - pybind11
