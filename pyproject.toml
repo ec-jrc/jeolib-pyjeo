@@ -1,7 +1,7 @@
 # Author(s): Pieter.Kempeneers@ec.europa.eu,
 #            Ondrej Pesek,
 #            Pierre.Soille@ec.europa.eu
-# Copyright (C) 2018-2025 European Union (Joint Research Centre)
+# Copyright (C) 2018-2026 European Union (Joint Research Centre)
 #
 # This file is part of pyjeo.
 #
@@ -42,7 +42,7 @@ cmake.args = [
 
 [metadata]
 name = 'pyjeo'
-version = '1.1.12'
+version = '1.2.0'
 
 [tool.setuptools.packages]
 
@@ -52,7 +52,7 @@ find = {}  # Scan the project directory with the default parameters
 
 [project]
 name = 'pyjeo'
-version = '1.1.12'
+version = '1.2.0'
 description = 'pyjeo is a library for image processing for geospatial data implemented in JRC Ispra.'
 authors = [
         { name = "Pieter Kempeneers", email = "Pieter.Kempeneers@ec.europa.eu"},
@@ -61,8 +61,7 @@ authors = [
 ]
 requires-python = ">=3.8"
 license = {text = "GPLv3"}
-dependencies = ['numpy<2', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
-#dependencies = ['numpy', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
+dependencies = ['numpy', 'rasterio', 'pandas', 'shapely', 'xarray', 'rioxarray', 'netCDF4', 'pyproj']
 
 [project.urls]
 documentation = 'https://readthedocs.org/projects/pyjeo'

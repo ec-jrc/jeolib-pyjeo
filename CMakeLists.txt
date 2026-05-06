@@ -18,8 +18,10 @@ else()
 endif()
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
+
+message(STATUS "Looking for miallib")
 # 2. Logic to find or build miallib
-find_package(miallib QUIET)
+find_package(miallib 1.2.0 QUIET)
 if(miallib_FOUND)
     message(STATUS "Found system miallib")
 else()
@@ -27,9 +29,12 @@ else()
     add_subdirectory(external/miallib)
 endif()
 
+message(STATUS "Looking for jiplib")
 # 3. Logic to find or build jiplib
-find_package(jiplib QUIET)
+find_package(jiplib 1.2.0 QUIET)
 if(jiplib_FOUND)
+    message(STATUS "jiplib config found at: ${jiplib_CONFIG}")
+    message(STATUS "jiplib directory variable: ${jiplib_DIR}")
     message(STATUS "Found system jiplib")
 else()
     message(STATUS "jiplib not found, building from source")
