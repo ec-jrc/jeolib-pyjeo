@@ -25,6 +25,7 @@ Please refer to pyjeo as: Kempeneers, P.; Pesek, O.; De Marchi, D.; Soille, P. p
 ### From source
 Make sure to install the dependencies [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
 and [miallib](https://github.com/ec-jrc/jeolib-miallib), please check the corresponding section in [jiplib](https://github.com/ec-jrc/jeolib-jiplib).
+scikit-build-core
 
 Once the dependencies miallib and jiplib are installed, clone the
 [pyjeo](https://github.com/ec-jrc/jeolib-pyjeo) repository.
@@ -33,16 +34,18 @@ Once the dependencies miallib and jiplib are installed, clone the
 git clone https://github.com/ec-jrc/jeolib-pyjeo.git
 ```
 
-Enter the created directory and build a wheel using pip:
+Enter the created directory and install pyjeo (in your virtual python environment):
 
 ```
-pip wheel .
+pip install scikit-build-core
+pip install -v --no-build-isolation -e .
 ```
 
-Install pyjeo (in your virtual python environment):
-
+### pyjeo in conda (first install miniconda)
 ```
-pip install pyjeo-*.whl
+conda env create -f environment.yml
+conda activate pyjeo-dev
+pip install --no-build-isolation -e .
 ```
 
 ### pyjeo in Docker

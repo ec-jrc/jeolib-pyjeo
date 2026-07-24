@@ -18,10 +18,26 @@ else()
 endif()
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
+find_package(Git REQUIRED)
+
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/miallib/CMakeLists.txt")
+    message(STATUS "Submodule miallib missing. Retrieving miallib from git repository...")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote -- external/miallib
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endif()
+
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/jiplib/CMakeLists.txt")
+    message(STATUS "Submodule jiplib missing. Retrieving jiplib from git repository...")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote -- external/jiplib
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endif()
 
 message(STATUS "Looking for miallib")
-# 2. Logic to find or build miallib
-find_package(miallib 1.2.0 QUIET)
+find_package(miallib 1.2.0 QUIET NO_DEFAULT_PATH)
 if(miallib_FOUND)
     message(STATUS "Found system miallib")
 else()
@@ -30,18 +46,14 @@ else()
 endif()
 
 message(STATUS "Looking for jiplib")
-# 3. Logic to find or build jiplib
-find_package(jiplib 1.2.0 QUIET)
+find_package(jiplib 1.2.0 QUIET NO_DEFAULT_PATH)
 if(jiplib_FOUND)
-    message(STATUS "jiplib config found at: ${jiplib_CONFIG}")
-    message(STATUS "jiplib directory variable: ${jiplib_DIR}")
     message(STATUS "Found system jiplib")
 else()
     message(STATUS "jiplib not found, building from source")
     add_subdirectory(external/jiplib)
 endif()
 
-# 1. Find the actual library file path
 #find_library(JSONCPP_LIB_PATH NAMES jsoncpp PATHS ${JSONCPP_LIBRARY_DIRS})
 
 # 4. Define the Python Extension (SWIG)
