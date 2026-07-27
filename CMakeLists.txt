@@ -42,9 +42,9 @@ endif()
 
 message(STATUS "Looking for miallib")
 if(STANDALONE_BUILD)
-    find_package(miallib 1.2.0 REQUIRED) # Debian
+    find_package(miallib 1.2.1 REQUIRED) # Debian
 else()
-    find_package(miallib 1.2.0 QUIET NO_DEFAULT_PATH)
+    find_package(miallib 1.2.1 QUIET NO_DEFAULT_PATH)
 endif()
 
 if(NOT miallib_FOUND)
@@ -56,9 +56,9 @@ endif()
 
 message(STATUS "Looking for jiplib")
 if(STANDALONE_BUILD)
-    find_package(jiplib 1.2.0 REQUIRED) # Debian
+    find_package(jiplib 1.2.1 REQUIRED) # Debian
 else()
-    find_package(jiplib 1.2.0 QUIET NO_DEFAULT_PATH)
+    find_package(jiplib 1.2.1 QUIET NO_DEFAULT_PATH)
 endif()
 if(NOT jiplib_FOUND)
     message(STATUS "jiplib not found, building from source")
