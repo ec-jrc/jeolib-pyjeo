@@ -42,7 +42,7 @@ cmake.args = [
 
 [metadata]
 name = 'pyjeo'
-version = '1.2.0'
+version = '1.2.1'
 
 [tool.setuptools.packages]
 
@@ -52,7 +52,7 @@ find = {}  # Scan the project directory with the default parameters
 
 [project]
 name = 'pyjeo'
-version = '1.2.0'
+version = '1.2.1'
 description = 'pyjeo is a library for image processing for geospatial data implemented in JRC Ispra.'
 authors = [
         { name = "Pieter Kempeneers", email = "Pieter.Kempeneers@ec.europa.eu"},
