@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
+
+option(STANDALONE_BUILD "Build for system package manager" OFF)
+set(STANDALONE_BUILD ${STANDALONE_BUILD} CACHE BOOL "Pass standalone build flag" FORCE)
+
 # Set CMP0167 to NEW to use the modern FindBoost behavior
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
@@ -37,21 +41,30 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/jiplib/CMakeLists.txt")
 endif()
 
 message(STATUS "Looking for miallib")
-find_package(miallib 1.2.0 QUIET NO_DEFAULT_PATH)
-if(miallib_FOUND)
-    message(STATUS "Found system miallib")
+if(STANDALONE_BUILD)
+    find_package(miallib 1.2.0 REQUIRED) # Debian
 else()
+    find_package(miallib 1.2.0 QUIET NO_DEFAULT_PATH)
+endif()
+
+if(NOT miallib_FOUND)
     message(STATUS "miallib not found, building from source")
     add_subdirectory(external/miallib)
+else()
+    message(STATUS "Found system miallib")
 endif()
 
 message(STATUS "Looking for jiplib")
-find_package(jiplib 1.2.0 QUIET NO_DEFAULT_PATH)
-if(jiplib_FOUND)
-    message(STATUS "Found system jiplib")
+if(STANDALONE_BUILD)
+    find_package(jiplib 1.2.0 REQUIRED) # Debian
 else()
+    find_package(jiplib 1.2.0 QUIET NO_DEFAULT_PATH)
+endif()
+if(NOT jiplib_FOUND)
     message(STATUS "jiplib not found, building from source")
     add_subdirectory(external/jiplib)
+else()
+    message(STATUS "Found system jiplib")
 endif()
 
 #find_library(JSONCPP_LIB_PATH NAMES jsoncpp PATHS ${JSONCPP_LIBRARY_DIRS})
