@@ -23,23 +23,25 @@ Please refer to pyjeo as: Kempeneers, P.; Pesek, O.; De Marchi, D.; Soille, P. p
 ## Install
 
 ### From source
-Make sure to install the dependencies [jiplib](https://github.com/ec-jrc/jeolib-jiplib)
-and [miallib](https://github.com/ec-jrc/jeolib-miallib), please check the corresponding section in [jiplib](https://github.com/ec-jrc/jeolib-jiplib).
-scikit-build-core
+Create and enter a virtual Python environment. Then install the build tools (`scikit-build-core`)::
 
-Once the dependencies miallib and jiplib are installed, clone the
-[pyjeo](https://github.com/ec-jrc/jeolib-pyjeo) repository.
+```
+pip install scikit-build-core
+```
+
+Download the latest version of the source code::
 
 ```
 git clone https://github.com/ec-jrc/jeolib-pyjeo.git
 ```
 
-Enter the created directory and install pyjeo (in your virtual python environment):
+Enter the directory where the source code was downloaded, build and install pyjeo::
 
 ```
-pip install scikit-build-core
 pip install -v --no-build-isolation -e .
 ```
+
+This will also get and build the submodules https://github.com/ec-jrc/jeolib-miallib and jiplib https://github.com/ec-jrc/jeolib-jiplib.
 
 ### pyjeo in conda (first install miniconda)
 ```
