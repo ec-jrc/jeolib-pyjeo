@@ -29,7 +29,9 @@ build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
 cmake.args = [
-    "-DCMAKE_BUILD_TYPE=Release"
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_FIND_PACKAGE_PREFER_CONFIG=OFF",
+    "-DCMAKE_POLICY_DEFAULT_CMP0167=OLD"
 ]
 
 [tool.cibuildwheel]
