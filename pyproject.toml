@@ -33,14 +33,31 @@ cmake.args = [
 ]
 
 [tool.cibuildwheel]
-# all platforms
 build = "cp310-* cp311-* cp312-* cp313-*"
 skip = "*-musllinux_* *i686"
 
-# LINUX
+# LINUX (AlmaLinux 8 / RedHat basis)
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux_2_28"
-before-all = "apt-get update && apt-get install -y build-essential cmake libgsl-dev libfann-dev libgeotiff-dev libfftw3-dev libproj-dev libjsoncpp-dev libgdal-dev libssl-dev swig uthash-dev libopenblas-dev libshp-dev libboost-filesystem-dev libboost-serialization-dev"
+# 1. Activeer EPEL repository (nodig voor gdal, gsl, fann, etc.)
+# 2. Installeer alle RedHat equivalenten van jouw library lijst via dnf
+before-all = """
+dnf install -y epel-release && \
+dnf install -y make cmake gcc-c++ \
+gsl-devel \
+fann-devel \
+libgeotiff-devel \
+fftw-devel \
+proj-devel \
+jsoncpp-devel \
+gdal-devel \
+openssl-devel \
+swig \
+uthash-devel \
+openblas-devel \
+shapelib-devel \
+boost-devel
+"""
 
 # MACOS
 [tool.cibuildwheel.macos]
