@@ -33,17 +33,18 @@ cmake.args = [
 ]
 
 [tool.cibuildwheel]
-# Bouw voor moderne Python versies
+# all platforms
 build = "cp310-* cp311-* cp312-* cp313-*"
 skip = "*-musllinux_* *i686"
 
-# LINUX: Cibuildwheel uses standard manylinux Docker containers.
-# install C++ dependencies needed for miallib/jiplib.
+# LINUX
+[tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux_2_28"
-before-all-linux = "apt-get update && apt-get install -y build-essential cmake libgsl-dev libfann-dev libgeotiff-dev libfftw3-dev libproj-dev libjsoncpp-dev libgdal-dev libssl-dev swig uthash-dev libopenblas-dev libshp-dev libboost-filesystem-dev libboost-serialization-dev"
+before-all = "apt-get update && apt-get install -y build-essential cmake libgsl-dev libfann-dev libgeotiff-dev libfftw3-dev libproj-dev libjsoncpp-dev libgdal-dev libssl-dev swig uthash-dev libopenblas-dev libshp-dev libboost-filesystem-dev libboost-serialization-dev"
 
-# MACOS: Install dependencies via Homebrew
-before-all-macos = "brew install cmake gsl fann libgeotiff fftw proj jsoncpp gdal openssl swig openblas shapelib boost"
+# MACOS
+[tool.cibuildwheel.macos]
+before-all = "brew install cmake gsl fann libgeotiff fftw proj jsoncpp gdal openssl swig openblas shapelib boost"
 
 [metadata]
 name = 'pyjeo'
