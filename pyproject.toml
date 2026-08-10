@@ -21,24 +21,29 @@
 [build-system]
 requires = [
     "scikit-build-core>=0.5",
-    "setuptools",
-    "numpy", 
-    "swig"
+#    "setuptools",
+#    "swig",
+    "numpy"
 ]
 build-backend = "scikit_build_core.build"
-#[build-system]
-#requires = ["scikit-build-core>=0.5", "swig"]
-#build-backend = "scikit_build_core.build"
-
-#[build-system]
-#requires = ["setuptools"]
-#build-backend = "setuptools.build_meta"
 
 [tool.scikit-build]
-# Only put flags here that apply to EVERY build (like the ABI flag)
 cmake.args = [
     "-DCMAKE_BUILD_TYPE=Release"
 ]
+
+[tool.cibuildwheel]
+# Bouw voor moderne Python versies
+build = "cp310-* cp311-* cp312-* cp313-*"
+skip = "*-musllinux_* *i686"
+
+# LINUX: Cibuildwheel uses standard manylinux Docker containers.
+# install C++ dependencies needed for miallib/jiplib.
+manylinux-x86_64-image = "manylinux_2_28"
+before-all-linux = "apt-get update && apt-get install -y build-essential cmake libgsl-dev libfann-dev libgeotiff-dev libfftw3-dev libproj-dev libjsoncpp-dev libgdal-dev libssl-dev swig uthash-dev libopenblas-dev libshp-dev libboost-filesystem-dev libboost-serialization-dev"
+
+# MACOS: Install dependencies via Homebrew
+before-all-macos = "brew install cmake gsl fann libgeotiff fftw proj jsoncpp gdal openssl swig openblas shapelib boost"
 
 [metadata]
 name = 'pyjeo'
@@ -47,8 +52,6 @@ version = '1.2.1'
 [tool.setuptools.packages]
 
 find = {}  # Scan the project directory with the default parameters
-# include = ["modules/*.py"]
-# exclude = ["doc", "tests"]
 
 [project]
 name = 'pyjeo'

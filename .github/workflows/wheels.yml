@@ -1,0 +1,38 @@
+name: Build Cross-Platform Wheels
+
+on:
+  push:
+    branches: [ main, master, feature/cross-platform-wheels ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [published]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # We testen eerst Linux en macOS op deze branch
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true  # Cruciaal voor miallib en jiplib
+          fetch-depth: 0    # Zorgt dat scikit-build-core git versies goed kan lezen
+
+      - name: Set up QEMU (Voor eventuele ARM64 Linux builds later)
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cibuildwheel-wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
