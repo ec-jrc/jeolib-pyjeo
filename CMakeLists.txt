@@ -5,8 +5,7 @@ set(STANDALONE_BUILD ${STANDALONE_BUILD} CACHE BOOL "Pass standalone build flag"
 
 # Set CMP0167 to NEW to use the modern FindBoost behavior
 if(POLICY CMP0167)
-    cmake_policy(SET CMP0167 OLD)
-  #cmake_policy(SET CMP0167 NEW)
+  cmake_policy(SET CMP0167 NEW)
 endif()
 project(pyjeo LANGUAGES CXX)
 
