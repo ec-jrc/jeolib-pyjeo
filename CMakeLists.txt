@@ -32,6 +32,11 @@ set(BOOST_ROOT "/usr" CACHE PATH "Set Boost root" FORCE)
 set(BOOST_INCLUDEDIR "/usr/include" CACHE PATH "Set Boost include" FORCE)
 set(BOOST_LIBRARYDIR "/usr/lib64" CACHE PATH "Set Boost libs" FORCE)
 
+set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python executable" FORCE)
+set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python include dirs" FORCE)
+set(Python_NumPy_INCLUDE_DIRS "${Python_NumPy_INCLUDE_DIRS}" CACHE PATH "NumPy include" FORCE)
+set(Python_Development_Module_FOUND TRUE CACHE BOOL "Force Python dev module found" FORCE)
+
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/miallib/CMakeLists.txt")
     message(STATUS "Submodule miallib missing. Retrieving miallib from git repository...")
     execute_process(
