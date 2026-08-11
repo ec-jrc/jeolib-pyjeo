@@ -9,6 +9,40 @@ if(POLICY CMP0167)
 endif()
 project(pyjeo LANGUAGES CXX)
 
+# --- ZET DIT BOVENAAN IN pyjeo/CMakeLists.txt ---
+
+# Voeg onze handgemaakte configuratiemap toe aan het CMake zoekpad.
+# Wanneer jiplib zoekt naar BoostConfig.cmake, vindt hij direct ons gegenereerde bestand!
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.boost_config")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.boost_config")
+
+
+
+# Vertel CMake dat ALLE mogelijke Python-componenten al gevonden zijn.
+# Dit voorkomt dat submappen de foutieve zoekopdracht naar .so-bestanden starten.
+set(Python_FOUND TRUE CACHE BOOL "Force Python found" FORCE)
+set(Python_Interpreter_FOUND TRUE CACHE BOOL "Force Interpreter found" FORCE)
+set(Python_Development_FOUND TRUE CACHE BOOL "Force Development found" FORCE)
+set(Python_Development.Module_FOUND TRUE CACHE BOOL "Force Dev Module found" FORCE)
+set(Python_Development.Embed_FOUND TRUE CACHE BOOL "Force Dev Embed found" FORCE)
+
+# Doe exact hetzelfde voor de "Python3" variant (voor het geval een submodule Python3 aanroept)
+set(Python3_FOUND TRUE CACHE BOOL "Force Python3 found" FORCE)
+set(Python3_Interpreter_FOUND TRUE CACHE BOOL "Force Python3 Interpreter found" FORCE)
+set(Python3_Development_FOUND TRUE CACHE BOOL "Force Python3 Development found" FORCE)
+set(Python3_Development.Module_FOUND TRUE CACHE BOOL "Force Python3 Dev Module found" FORCE)
+set(Python3_Development.Embed_FOUND TRUE CACHE BOOL "Force Python3 Dev Embed found" FORCE)
+
+# Koppel de actieve paden die scikit-build-core aanlevert aan de cache
+set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python path" FORCE)
+set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python headers" FORCE)
+set(Python3_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python3 path" FORCE)
+set(Python3_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python3 headers" FORCE)
+
+# Zorg dat de libraries leeg blijven (extensiemodules linken niet tegen libpython)
+set(Python_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
+set(Python3_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
+
 # --- ZET DIT BOVENAAN IN pyjeo/CMakeLists.txt (direct onder de Python cache-overrides) ---
 
 # Vertel CMake dat Boost en de benodigde componenten al handmatig zijn gevonden.
@@ -43,32 +77,6 @@ if(NOT TARGET Boost::serialization)
         INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
     )
 endif()
-
-# Vertel CMake dat ALLE mogelijke Python-componenten al gevonden zijn.
-# Dit voorkomt dat submappen de foutieve zoekopdracht naar .so-bestanden starten.
-set(Python_FOUND TRUE CACHE BOOL "Force Python found" FORCE)
-set(Python_Interpreter_FOUND TRUE CACHE BOOL "Force Interpreter found" FORCE)
-set(Python_Development_FOUND TRUE CACHE BOOL "Force Development found" FORCE)
-set(Python_Development.Module_FOUND TRUE CACHE BOOL "Force Dev Module found" FORCE)
-set(Python_Development.Embed_FOUND TRUE CACHE BOOL "Force Dev Embed found" FORCE)
-
-# Doe exact hetzelfde voor de "Python3" variant (voor het geval een submodule Python3 aanroept)
-set(Python3_FOUND TRUE CACHE BOOL "Force Python3 found" FORCE)
-set(Python3_Interpreter_FOUND TRUE CACHE BOOL "Force Python3 Interpreter found" FORCE)
-set(Python3_Development_FOUND TRUE CACHE BOOL "Force Python3 Development found" FORCE)
-set(Python3_Development.Module_FOUND TRUE CACHE BOOL "Force Python3 Dev Module found" FORCE)
-set(Python3_Development.Embed_FOUND TRUE CACHE BOOL "Force Python3 Dev Embed found" FORCE)
-
-# Koppel de actieve paden die scikit-build-core aanlevert aan de cache
-set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python path" FORCE)
-set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python headers" FORCE)
-set(Python3_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python3 path" FORCE)
-set(Python3_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python3 headers" FORCE)
-
-# Zorg dat de libraries leeg blijven (extensiemodules linken niet tegen libpython)
-set(Python_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
-set(Python3_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
-
 # Must be at the start of the file
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

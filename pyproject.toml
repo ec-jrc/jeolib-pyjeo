@@ -30,39 +30,36 @@ build-backend = "scikit_build_core.build"
 [tool.scikit-build]
 cmake.args = [
     "-DCMAKE_BUILD_TYPE=Release",
-    # Wijs modern CMake direct naar de Boost systeemmappen van AlmaLinux
-    "-DBOOST_ROOT=/usr",
-    "-DBoost_NO_BOOST_CMAKE=ON"
+    # Zorg dat we een redirect-map opzetten waar CMake verplicht in kijkt voor Config bestanden
+    "-DCMAKE_FIND_PACKAGE_REDIRECTS_DIR=${CMAKE_BINARY_DIR}/cmake_redirects"
 ]
 
 [tool.cibuildwheel]
+# Dit MOET blijven staan voor de juiste versiefilters:
 build = "cp310-* cp311-* cp312-* cp313-*"
 skip = "*-musllinux_* *i686"
 
-# LINUX (AlmaLinux 8 / RedHat basis)
+# LINUX SPECIFIEK
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux_2_28"
-# 1. Activeer EPEL repository (nodig voor gdal, gsl, fann, etc.)
-# 2. Installeer alle RedHat equivalenten van jouw library lijst via dnf
 before-all = """
 dnf install -y epel-release && \
-dnf install -y make cmake gcc-c++ \
-gsl-devel \
-fann-devel \
-libgeotiff-devel \
-fftw-devel \
-proj-devel \
-jsoncpp-devel \
-gdal-devel \
-openssl-devel \
-swig \
-uthash-devel \
-openblas-devel \
-shapelib-devel \
-boost-devel
+dnf install -y make cmake gcc-c++ gsl-devel fann-devel libgeotiff-devel fftw-devel proj-devel jsoncpp-devel gdal-devel openssl-devel swig uthash-devel openblas-devel shapelib-devel boost-devel && \
+mkdir -p .boost_config && \
+echo 'set(Boost_FOUND TRUE)' > .boost_config/BoostConfig.cmake && \
+echo 'set(Boost_INCLUDE_DIRS "/usr/include")' >> .boost_config/BoostConfig.cmake && \
+echo 'set(Boost_LIBRARIES "/usr/lib64/libboost_filesystem.so;/usr/lib64/libboost_serialization.so")' >> .boost_config/BoostConfig.cmake && \
+echo 'if(NOT TARGET Boost::filesystem)' >> .boost_config/BoostConfig.cmake && \
+echo '  add_library(Boost::filesystem SHARED IMPORTED GLOBAL)' >> .boost_config/BoostConfig.cmake && \
+echo '  set_target_properties(Boost::filesystem PROPERTIES IMPORTED_LOCATION "/usr/lib64/libboost_filesystem.so" INTERFACE_INCLUDE_DIRECTORIES "/usr/include")' >> .boost_config/BoostConfig.cmake && \
+echo 'endif()' >> .boost_config/BoostConfig.cmake && \
+echo 'if(NOT TARGET Boost::serialization)' >> .boost_config/BoostConfig.cmake && \
+echo '  add_library(Boost::serialization SHARED IMPORTED GLOBAL)' >> .boost_config/BoostConfig.cmake && \
+echo '  set_target_properties(Boost::serialization PROPERTIES IMPORTED_LOCATION "/usr/lib64/libboost_serialization.so" INTERFACE_INCLUDE_DIRECTORIES "/usr/include")' >> .boost_config/BoostConfig.cmake && \
+echo 'endif()' >> .boost_config/BoostConfig.cmake
 """
 
-# MACOS
+# MACOS SPECIFIEK
 [tool.cibuildwheel.macos]
 before-all = "brew install cmake gsl fann libgeotiff fftw proj jsoncpp gdal openssl swig openblas shapelib boost"
 
