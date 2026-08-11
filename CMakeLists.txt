@@ -9,6 +9,28 @@ if(POLICY CMP0167)
 endif()
 project(pyjeo LANGUAGES CXX)
 
+# --- ZET DIT HELEMAAL BOVENAAN IN pyjeo/CMakeLists.txt (direct onder project) ---
+
+# Sla de automatische detectie van CMake over en dwing de resultaten af.
+# Dit voorkomt dat SWIG of subdirectories de 'Development.Embed' fout triggeren.
+set(Python_FOUND TRUE CACHE BOOL "Force Python found" FORCE)
+set(Python_Development.Module_FOUND TRUE CACHE BOOL "Force Python Dev Module found" FORCE)
+set(Python_Interpreter_FOUND TRUE CACHE BOOL "Force Python Interpreter found" FORCE)
+
+# Haal de runtime-locaties op die scikit-build-core automatisch injecteert
+set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python executable" FORCE)
+set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python include dirs" FORCE)
+
+# SWIG-specifieke overrides om te voorkomen dat SWIG de fout herhaalt
+set(PYTHON_INCLUDE_PATH "${Python_INCLUDE_DIRS}" CACHE PATH "SWIG Python include" FORCE)
+set(PYTHON_INCLUDE_DIR "${Python_INCLUDE_DIRS}" CACHE PATH "SWIG Python include dir" FORCE)
+
+# NumPy specifiek doorgeven voor jiplib
+set(Python_NumPy_INCLUDE_DIRS "${Python_NumPy_INCLUDE_DIRS}" CACHE PATH "NumPy include" FORCE)
+
+# Vertel CMake dat er GEEN binaire link-library nodig is op Linux (voorkomt missing Python_LIBRARIES)
+set(Python_LIBRARIES "" CACHE STRING "Empty library for extension modules" FORCE)
+
 # Must be at the start of the file
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
