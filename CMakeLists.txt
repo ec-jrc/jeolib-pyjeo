@@ -11,25 +11,30 @@ project(pyjeo LANGUAGES CXX)
 
 # --- ZET DIT HELEMAAL BOVENAAN IN pyjeo/CMakeLists.txt (direct onder project) ---
 
-# Sla de automatische detectie van CMake over en dwing de resultaten af.
-# Dit voorkomt dat SWIG of subdirectories de 'Development.Embed' fout triggeren.
+# Vertel CMake dat ALLE mogelijke Python-componenten al gevonden zijn.
+# Dit voorkomt dat submappen de foutieve zoekopdracht naar .so-bestanden starten.
 set(Python_FOUND TRUE CACHE BOOL "Force Python found" FORCE)
-set(Python_Development.Module_FOUND TRUE CACHE BOOL "Force Python Dev Module found" FORCE)
-set(Python_Interpreter_FOUND TRUE CACHE BOOL "Force Python Interpreter found" FORCE)
+set(Python_Interpreter_FOUND TRUE CACHE BOOL "Force Interpreter found" FORCE)
+set(Python_Development_FOUND TRUE CACHE BOOL "Force Development found" FORCE)
+set(Python_Development.Module_FOUND TRUE CACHE BOOL "Force Dev Module found" FORCE)
+set(Python_Development.Embed_FOUND TRUE CACHE BOOL "Force Dev Embed found" FORCE)
 
-# Haal de runtime-locaties op die scikit-build-core automatisch injecteert
-set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python executable" FORCE)
-set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python include dirs" FORCE)
+# Doe exact hetzelfde voor de "Python3" variant (voor het geval een submodule Python3 aanroept)
+set(Python3_FOUND TRUE CACHE BOOL "Force Python3 found" FORCE)
+set(Python3_Interpreter_FOUND TRUE CACHE BOOL "Force Python3 Interpreter found" FORCE)
+set(Python3_Development_FOUND TRUE CACHE BOOL "Force Python3 Development found" FORCE)
+set(Python3_Development.Module_FOUND TRUE CACHE BOOL "Force Python3 Dev Module found" FORCE)
+set(Python3_Development.Embed_FOUND TRUE CACHE BOOL "Force Python3 Dev Embed found" FORCE)
 
-# SWIG-specifieke overrides om te voorkomen dat SWIG de fout herhaalt
-set(PYTHON_INCLUDE_PATH "${Python_INCLUDE_DIRS}" CACHE PATH "SWIG Python include" FORCE)
-set(PYTHON_INCLUDE_DIR "${Python_INCLUDE_DIRS}" CACHE PATH "SWIG Python include dir" FORCE)
+# Koppel de actieve paden die scikit-build-core aanlevert aan de cache
+set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python path" FORCE)
+set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python headers" FORCE)
+set(Python3_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python3 path" FORCE)
+set(Python3_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python3 headers" FORCE)
 
-# NumPy specifiek doorgeven voor jiplib
-set(Python_NumPy_INCLUDE_DIRS "${Python_NumPy_INCLUDE_DIRS}" CACHE PATH "NumPy include" FORCE)
-
-# Vertel CMake dat er GEEN binaire link-library nodig is op Linux (voorkomt missing Python_LIBRARIES)
-set(Python_LIBRARIES "" CACHE STRING "Empty library for extension modules" FORCE)
+# Zorg dat de libraries leeg blijven (extensiemodules linken niet tegen libpython)
+set(Python_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
+set(Python3_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
 
 # Must be at the start of the file
 set(CMAKE_CXX_STANDARD 17)
