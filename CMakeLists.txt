@@ -9,7 +9,40 @@ if(POLICY CMP0167)
 endif()
 project(pyjeo LANGUAGES CXX)
 
-# --- ZET DIT HELEMAAL BOVENAAN IN pyjeo/CMakeLists.txt (direct onder project) ---
+# --- ZET DIT BOVENAAN IN pyjeo/CMakeLists.txt (direct onder de Python cache-overrides) ---
+
+# Vertel CMake dat Boost en de benodigde componenten al handmatig zijn gevonden.
+# Dit omzeilt de find_package(Boost) breuk in jiplib volledig onder modern CMake!
+set(Boost_FOUND TRUE CACHE BOOL "Force Boost found" FORCE)
+set(Boost_FILESYSTEM_FOUND TRUE CACHE BOOL "Force Boost filesystem found" FORCE)
+set(Boost_SERIALIZATION_FOUND TRUE CACHE BOOL "Force Boost serialization found" FORCE)
+
+# Koppel de exacte systeempaden van de AlmaLinux container aan de CMake targets
+set(Boost_INCLUDE_DIRS "/usr/include" CACHE PATH "Boost include dirs" FORCE)
+
+# Wijs modern CMake direct naar de fysieke .so bestanden van de dnf installatie
+set(Boost_FILESYSTEM_LIBRARY "/usr/lib64/libboost_filesystem.so" CACHE FILEPATH "Boost filesystem lib" FORCE)
+set(Boost_SERIALIZATION_LIBRARY "/usr/lib64/libboost_serialization.so" CACHE FILEPATH "Boost serialization lib" FORCE)
+
+# Vul de gecombineerde library lijst voor oudere CMake macro's
+set(Boost_LIBRARIES "/usr/lib64/libboost_filesystem.so;/usr/lib64/libboost_serialization.so" CACHE STRING "Boost libs" FORCE)
+
+# Maak de officiële moderne CMake targets handmatig aan (aangezien find_package is omzeild)
+if(NOT TARGET Boost::filesystem)
+    add_library(Boost::filesystem SHARED IMPORTED GLOBAL)
+    set_target_properties(Boost::filesystem PROPERTIES
+        IMPORTED_LOCATION "/usr/lib64/libboost_filesystem.so"
+        INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
+    )
+endif()
+
+if(NOT TARGET Boost::serialization)
+    add_library(Boost::serialization SHARED IMPORTED GLOBAL)
+    set_target_properties(Boost::serialization PROPERTIES
+        IMPORTED_LOCATION "/usr/lib64/libboost_serialization.so"
+        INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
+    )
+endif()
 
 # Vertel CMake dat ALLE mogelijke Python-componenten al gevonden zijn.
 # Dit voorkomt dat submappen de foutieve zoekopdracht naar .so-bestanden starten.
