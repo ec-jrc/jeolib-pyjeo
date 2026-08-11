@@ -51,10 +51,13 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 find_package(Git REQUIRED)
 
-set(CMAKE_DISABLE_FIND_PACKAGE_Boost ON)
+# VERWIJDER: set(CMAKE_DISABLE_FIND_PACKAGE_Boost ON) <- Deze regel moet weg!
+
+# GEBRUIK DIT: Vertel modern CMake om de Config Mode voor Boost over te slaan.
+# Dit dwingt alle submappen (inclusief jiplib) om in Module Mode te zoeken.
 set(Boost_NO_BOOST_CMAKE ON CACHE BOOL "Disable Boost Config mode" FORCE)
 
-# Voeg dit toe zodat CMake de libraries direct op de juiste plek zoekt:
+# Geef de exacte locaties van AlmaLinux mee aan de cache
 set(BOOST_ROOT "/usr" CACHE PATH "Set Boost root" FORCE)
 set(BOOST_INCLUDEDIR "/usr/include" CACHE PATH "Set Boost include" FORCE)
 set(BOOST_LIBRARYDIR "/usr/lib64" CACHE PATH "Set Boost libs" FORCE)
