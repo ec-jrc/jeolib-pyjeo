@@ -24,6 +24,14 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 find_package(Git REQUIRED)
 
+set(CMAKE_DISABLE_FIND_PACKAGE_Boost ON)
+set(Boost_NO_BOOST_CMAKE ON CACHE BOOL "Disable Boost Config mode" FORCE)
+
+# Voeg dit toe zodat CMake de libraries direct op de juiste plek zoekt:
+set(BOOST_ROOT "/usr" CACHE PATH "Set Boost root" FORCE)
+set(BOOST_INCLUDEDIR "/usr/include" CACHE PATH "Set Boost include" FORCE)
+set(BOOST_LIBRARYDIR "/usr/lib64" CACHE PATH "Set Boost libs" FORCE)
+
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/miallib/CMakeLists.txt")
     message(STATUS "Submodule miallib missing. Retrieving miallib from git repository...")
     execute_process(
@@ -53,9 +61,6 @@ if(NOT miallib_FOUND)
 else()
     message(STATUS "Found system miallib")
 endif()
-
-set(Boost_NO_BOOST_CMAKE ON CACHE BOOL "Disable Boost Config mode globally" FORCE)
-set(BOOST_ROOT "/usr" CACHE PATH "Set Boost root directory globally" FORCE)
 
 message(STATUS "Looking for jiplib")
 if(STANDALONE_BUILD)
