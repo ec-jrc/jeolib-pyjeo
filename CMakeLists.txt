@@ -54,6 +54,9 @@ else()
     message(STATUS "Found system miallib")
 endif()
 
+set(Boost_NO_BOOST_CMAKE ON CACHE BOOL "Disable Boost Config mode globally" FORCE)
+set(BOOST_ROOT "/usr" CACHE PATH "Set Boost root directory globally" FORCE)
+
 message(STATUS "Looking for jiplib")
 if(STANDALONE_BUILD)
     find_package(jiplib 1.2.1 REQUIRED) # Debian
