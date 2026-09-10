@@ -114,12 +114,13 @@ To test a specific module (e.g.,classify), run::
 Documentation
 -------------
 
-Dependencies:
+Dependencies (via pip install):
 
-- python3-sphinx
-- python3-sphinxcontrib.bibtex
-- latexmk (for pdf output)
-- sphinx_rtd_theme (via pip install)
+- sphinx
+- sphinxcontrib.bibtex
+- latexmk
+- sphinx_rtd_theme
+- sphinx_copybutton
 
 To build the documentation::
 

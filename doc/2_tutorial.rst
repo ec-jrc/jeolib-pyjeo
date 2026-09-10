@@ -944,6 +944,267 @@ Map the classes [0-4] to the original class values::
 .. figure:: figures/sml.png
    :width: 100 %
 
+
+.. _Tutorial_pestirisk:
+
+Tutorial on mapping the urban–agricultural interface with MSPA: a buffer-based workflow for pesticide exposure risk assessment
+******************************************************************************************************************************
+
+
+Overview
+========
+ 
+In this tutorial, we will read as input land-use raster maps 
+characterising urban and agricultural land. We then calculate, for a given
+NUTS (Nomenclature of Territorial Units for Statistics) region, the 
+per-class pixel counts of agricultural land within the neighbourhood of
+urban land. We identify the edges of urban land and compute buffers around
+them according to user-defined distances (in m). 
+As output, we will write an "enriched" land-use raster map that combines 
+the different input land-use maps, and a text file with the per-class pixel
+counts for each of the user-defined distances.
+ 
+
+The python script is available for download :download:`here <code/pestirisk.py>`.
+
+Input
+=====
+ 
+Input land-use raster maps
+--------------------------
+ 
+* crop type map (CTY), e.g., :download:`crop_type.tif <data/crop_type.tif>`
+* grassland map (GRA), e.g., :download:`grass.tif <data/grass.tif>`
+* herbaceous map (HER), e.g., :download:`herbaceous.tif <data/herbaceous.tif>`
+* urban land map (URBAN), e.g., :download:`urban.tif <data/urban.tif>`
+ 
+Input vector
+------------
+ 
+* Nomenclature of Territorial Units for Statistics (NUTS)
+
+  :download:`nuts.shp <data/nuts.shp>`
+  :download:`nuts.dbf <data/nuts.dbf>`
+  :download:`nuts.prj <data/nuts.prj>`
+  :download:`nuts.shx <data/nuts.shx>`
+ 
+Output
+======
+ 
+Raster output
+-------------
+ 
+* Crop type map enriched with grassland, herbaceous, and urban areas for
+  the region covering the selected NUTS region.
+* A buffered enriched cropmap with grassland, herbaceous, and urban areas
+  for the region covering the selected NUTS region. Pixels beyond the
+  largest requested buffer distance from urban areas are masked as 0 (no
+  data).
+ 
+Class values of the "enriched" crop type map:
+ 
+* ``0``: no valid pixel found in CTY, GRA, nor HER
+* ``1``: grass based on GRA
+* ``2``: temporary grassland based on HER
+* ``3``: residential area
+* ``4``: residential area border contributing to buffer zone
+* ``5`` and above: see values from CTY
+ 
+ASCII output (CSV format)
+-------------------------
+ 
+* A two-column CSV file is output for each distance (in meters) from
+  urban areas, with a pixel count for each class.
+* A two-column CSV file is output with a pixel count for each class in
+  the entire NUTS region, regardless of the distance to urban areas.
+ 
+Processing steps
+================
+ 
+#. Re-project and align all input raster maps to the same reference
+   coordinate system, i.e., ETRS89-extended / LAEA Europe (EPSG:3035),
+   using the CTY map as a reference for alignment. Before comparing
+   projections, each map's WKT is normalized by auto-identifying its EPSG
+   code, so that equivalent projections expressed with different WKT
+   strings are correctly recognised as identical, avoiding unnecessary
+   re-projection.
+ 
+#. Merge the agricultural land-use maps CTY, GRA, and HER to obtain an
+   enriched crop type map as follows:
+ 
+   .. code-block:: text
+ 
+      IF CTY value >= 65535 THEN
+          Set to 0 (No Data)
+ 
+      ELSE IF CTY value >= 1000 THEN
+          Keep CTY value
+ 
+      ELSE IF Grassland THEN
+          Set to Grassland (value = 1)
+ 
+      ELSE IF Herbaceous land THEN
+          Set to Herbaceous land (value = 2)
+ 
+#. Identify residential (urban) pixels and their boundary pixels using
+   `Morphological Spatial Pattern Analysis (MSPA)
+   <https://forest.jrc.ec.europa.eu/en/activities/lpa/mspa/>`_, and code
+   them into the enriched crop type map as values ``3`` and ``4``
+   respectively.
+ 
+#. Create a buffer area for each of the user-defined distances (10, 50,
+   100 and 150 m by default) around the urban land map.
+ 
+#. Analyse the intersected areas between each buffer area and the
+   enriched crop type map for a given NUTS region, by counting the pixels
+   within each class. The buffered raster map is written to disk only for
+   the largest requested distance.
+ 
+Usage
+=====
+ 
+.. code-block:: console
+ 
+   $ python pestirisk.py --help
+   usage: pestirisk.py [-h] -outputdir OUTPUTDIR [-tmpdir TMPDIR] [-dx DX]
+                        [-dy DY] -nutsid NUTSID
+                        [-distance DISTANCE [DISTANCE ...]] [-cty CTY]
+                        [-gra GRA] [-her HER] [-nuts NUTS] [-urban URBAN]
+                        [--verbose]
+ 
+Command-line options
+--------------------
+ 
+``-outputdir``, ``--outputdir`` (required)
+    Output path.
+ 
+``-nutsid``, ``--nutsid`` (required)
+    NUTS region to load, e.g. ``BE335``.
+ 
+``-tmpdir``, ``--tmpdir``
+    Temporary directory. Default: ``/scratch/bda``.
+ 
+``-dx``, ``--dx``
+    Spatial resolution in x. Default: ``10``.
+ 
+``-dy``, ``--dy``
+    Spatial resolution in y. Default: ``10``.
+ 
+``-distance``, ``--distance``
+    One or more buffer distances (in m) to process, e.g.
+    ``-distance 10 50 100 150``. Default: ``10 50 100 150``.
+ 
+``-cty``, ``--cty``
+    Copernicus HRL crop type map. Default: ``data/crop_type.tif``.
+ 
+``-gra``, ``--gra``
+    Copernicus HRL grassland map. Default: ``data/grass.tif``.
+ 
+``-her``, ``--her``
+    Copernicus HRL herbaceous map. Default: ``data/herbaceous.tif``.
+ 
+``-nuts``, ``--nuts``
+    NUTS vector. Default: ``data/nuts.shp``.
+ 
+``-urban``, ``--urban``
+    Urban map. Default: ``data/urban.tif``.
+ 
+``--verbose``
+    Enable verbose logging for debugging.
+ 
+Only ``-outputdir`` and ``-nutsid`` are required; every other input falls
+back to the ``data/`` defaults above, which match the bundled test data.
+ 
+Example using test data, processing NUTS region BE251
+-----------------------------------------------------
+ 
+.. code-block:: bash
+ 
+   python pestirisk.py -nutsid BE251 -outputdir data -tmpdir /tmp/
+ 
+Or, passing the input maps explicitly:
+ 
+.. code-block:: bash
+ 
+   python pestirisk.py -nutsid BE251 -outputdir data -tmpdir /tmp/ \
+       -urban data/urban.tif -gra data/grass.tif -her data/herbaceous.tif \
+       -cty data/crop_type.tif -nuts data/nuts.shp
+ 
+Expected outcome
+----------------
+ 
+Raster output
+~~~~~~~~~~~~~
+ 
+* ``cropmap_BE251.tif``: crop type map enriched with grassland,
+  herbaceous, and urban areas for the region covering NUTS 251.
+* ``cropmap_buffered_BE251.tif``: crop type map enriched with grassland,
+  herbaceous, and urban areas for the region covering NUTS 251, masked
+  for pixels beyond a distance of 150 m from urban areas.
+ 
+Class values of the "enriched" crop type map:
+ 
+* ``0``: no valid pixel found in CTY, GRA, nor HER
+* ``1``: grass based on GRA
+* ``2``: temporary grassland based on HER
+* ``3``: residential area
+* ``4``: residential area border contributing to buffer zone
+* ``5`` and above: see values from CTY
+ 
+.. figure:: figures/cropmap_buffered_BE251.png
+   :alt: Enriched cropmap for NUTS 251, within a 150 m buffer of urban areas
+ 
+   Enriched cropmap for NUTS 251, within a 150 m buffer of urban areas.
+ 
+.. figure:: figures/cropmap_buffered_BE251_detail_legend.png
+   :alt: Detail with legend of the enriched cropmap for NUTS 251
+ 
+   Detail with legend of the enriched cropmap for NUTS 251, within a
+   150 m buffer of urban areas.
+ 
+ASCII output (CSV format)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+A two-column CSV file is output for each distance (in meters) from urban
+areas, with a pixel count for each class:
+ 
+* :download:`BE251_10.csv <data/BE251_10.csv>`
+* :download:`BE251_10.csv <data/BE251_10.csv>`
+* :download:`BE251_50.csv <data/BE251_50.csv>`
+* :download:`BE251_100.csv <data/BE251_100.csv>`
+* :download:`BE251_150.csv <data/BE251_150.csv>`
+ 
+An additional two-column CSV file is output with a pixel count for each
+class in the entire NUTS region, regardless of the distance to urban
+areas:
+ 
+* :download:`BE251.csv <data/BE251.csv>`
+ 
+Expected run time
+-----------------
+ 
+The expected run time on a "normal" desktop computer depends on the size
+of the NUTS region and is in the order of minutes (4 minutes for BE251).
+ 
+Upscaling the processing at EU level
+====================================
+ 
+In order to reproduce the results for all NUTS regions, input raster
+maps should be downloaded that cover all NUTS regions. These maps can be
+downloaded from the `Copernicus Land Monitoring Service
+<https://land.copernicus.eu/en>`_:
+ 
+* `crop types
+  <https://land.copernicus.eu/en/products/high-resolution-layer-croplands/crop-types-2017-present-raster-10-m-europe-yearly#download>`_
+* `grassland
+  <https://land.copernicus.eu/en/products/high-resolution-layer-grasslands/grassland-2017-present-raster-10-m-europe-yearly#download>`_
+* `herbaceous
+  <https://land.copernicus.eu/en/products/high-resolution-layer-grasslands/herbaceous-cover-2017-present-raster-10-m-europe-yearly#download>`_
+* `urban areas <https://human-settlement.emergency.copernicus.eu/>`_
+ 
+A vector file with NUTS regions can be downloaded `here
+<https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics>`_.
+ 
 .. _Tutorial_jeobatch:
 
 ***************************************************
