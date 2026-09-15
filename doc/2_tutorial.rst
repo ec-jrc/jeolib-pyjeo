@@ -947,10 +947,11 @@ Map the classes [0-4] to the original class values::
 
 .. _Tutorial_pestirisk:
 
+******************************************************************************************************************************
 Tutorial on mapping the urban–agricultural interface with MSPA: a buffer-based workflow for pesticide exposure risk assessment
 ******************************************************************************************************************************
 
-
+========
 Overview
 ========
  
@@ -967,6 +968,7 @@ counts for each of the user-defined distances.
 
 The python script is available for download :download:`here <code/pestirisk.py>`.
 
+=====
 Input
 =====
  
@@ -988,6 +990,7 @@ Input vector
   :download:`nuts.prj <data/nuts.prj>`
   :download:`nuts.shx <data/nuts.shx>`
  
+======
 Output
 ======
  
@@ -1018,6 +1021,7 @@ ASCII output (CSV format)
 * A two-column CSV file is output with a pixel count for each class in
   the entire NUTS region, regardless of the distance to urban areas.
  
+================
 Processing steps
 ================
  
@@ -1060,6 +1064,7 @@ Processing steps
    within each class. The buffered raster map is written to disk only for
    the largest requested distance.
  
+=====
 Usage
 =====
  
@@ -1186,6 +1191,7 @@ Expected run time
 The expected run time on a "normal" desktop computer depends on the size
 of the NUTS region and is in the order of minutes (4 minutes for BE251).
  
+====================================
 Upscaling the processing at EU level
 ====================================
  
