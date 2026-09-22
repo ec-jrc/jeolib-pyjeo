@@ -19,3 +19,8 @@ doc/_build
 
 ### virtualenv environment
 env
+### Editor ###
+.vscode/
+
+### Python wheels ###
+*.whl
