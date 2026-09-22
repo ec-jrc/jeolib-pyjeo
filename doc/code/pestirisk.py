@@ -50,7 +50,7 @@ CLASS_HERBACEOUS = 2
 CLASS_RESIDENTIAL = 3
 CLASS_RESIDENTIAL_BORDER = 4
 
-DEFAULT_DISTANCES_PX = (10, 50, 100, 150)
+DEFAULT_DISTANCES = (10, 50, 100, 150)
 
 
 class CoverageError(RuntimeError):
@@ -76,7 +76,7 @@ class Config:
 
     @classmethod
     def from_args(cls, args: argparse.Namespace) -> "Config":
-        distances = sorted(args.distance) if args.distance else list(DEFAULT_DISTANCES_PX)
+        distances = sorted(args.distance) if args.distance else list(DEFAULT_DISTANCES)
         return cls(
             outputdir=Path(args.outputdir),
             tmpdir=Path(args.tmpdir),
@@ -117,7 +117,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "-distance", "--distance", dest="distance", required=False, type=int,
-        nargs="+", help="provide a list of (pixel) distances to process",
+        nargs="+", help="provide a list of (meter) distances to process",
     )
     parser.add_argument(
         "-cty", "--cty", dest="cty", required=False, type=str,

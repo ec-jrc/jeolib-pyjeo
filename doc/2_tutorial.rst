@@ -1174,7 +1174,6 @@ A two-column CSV file is output for each distance (in meters) from urban
 areas, with a pixel count for each class:
  
 * :download:`BE251_10.csv <data/BE251_10.csv>`
-* :download:`BE251_10.csv <data/BE251_10.csv>`
 * :download:`BE251_50.csv <data/BE251_50.csv>`
 * :download:`BE251_100.csv <data/BE251_100.csv>`
 * :download:`BE251_150.csv <data/BE251_150.csv>`
