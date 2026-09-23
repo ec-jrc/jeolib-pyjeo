@@ -9,72 +9,84 @@ if(POLICY CMP0167)
 endif()
 project(pyjeo LANGUAGES CXX)
 
-# --- ZET DIT BOVENAAN IN pyjeo/CMakeLists.txt ---
-
-# Voeg onze handgemaakte configuratiemap toe aan het CMake zoekpad.
-# Wanneer jiplib zoekt naar BoostConfig.cmake, vindt hij direct ons gegenereerde bestand!
+# Add our hand-made configuration directory to the CMake search path.
+# When jiplib looks for BoostConfig.cmake, it finds our generated file directly.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.boost_config")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.boost_config")
 
 
 
-# Vertel CMake dat ALLE mogelijke Python-componenten al gevonden zijn.
-# Dit voorkomt dat submappen de foutieve zoekopdracht naar .so-bestanden starten.
+# Tell CMake that ALL possible Python components have already been found.
+# This prevents subdirectories from starting the faulty search for .so files.
 set(Python_FOUND TRUE CACHE BOOL "Force Python found" FORCE)
 set(Python_Interpreter_FOUND TRUE CACHE BOOL "Force Interpreter found" FORCE)
 set(Python_Development_FOUND TRUE CACHE BOOL "Force Development found" FORCE)
 set(Python_Development.Module_FOUND TRUE CACHE BOOL "Force Dev Module found" FORCE)
 set(Python_Development.Embed_FOUND TRUE CACHE BOOL "Force Dev Embed found" FORCE)
 
-# Doe exact hetzelfde voor de "Python3" variant (voor het geval een submodule Python3 aanroept)
+# Do exactly the same for the "Python3" variant (in case a submodule calls Python3)
 set(Python3_FOUND TRUE CACHE BOOL "Force Python3 found" FORCE)
 set(Python3_Interpreter_FOUND TRUE CACHE BOOL "Force Python3 Interpreter found" FORCE)
 set(Python3_Development_FOUND TRUE CACHE BOOL "Force Python3 Development found" FORCE)
 set(Python3_Development.Module_FOUND TRUE CACHE BOOL "Force Python3 Dev Module found" FORCE)
 set(Python3_Development.Embed_FOUND TRUE CACHE BOOL "Force Python3 Dev Embed found" FORCE)
 
-# Koppel de actieve paden die scikit-build-core aanlevert aan de cache
+# Bind the active paths supplied by scikit-build-core to the cache
 set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python path" FORCE)
 set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python headers" FORCE)
 set(Python3_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python3 path" FORCE)
 set(Python3_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python3 headers" FORCE)
 
-# Zorg dat de libraries leeg blijven (extensiemodules linken niet tegen libpython)
+# Keep the libraries empty (extension modules do not link against libpython)
 set(Python_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
 set(Python3_LIBRARIES "" CACHE STRING "Empty lib" FORCE)
 
-# --- ZET DIT BOVENAAN IN pyjeo/CMakeLists.txt (direct onder de Python cache-overrides) ---
+# Tell CMake that Boost and the required components have already been found
+# manually. This fully bypasses the broken find_package(Boost) in jiplib under
+# modern CMake.
 
-# Vertel CMake dat Boost en de benodigde componenten al handmatig zijn gevonden.
-# Dit omzeilt de find_package(Boost) breuk in jiplib volledig onder modern CMake!
+# Resolve the physical Boost install location. When building inside a conda
+# environment (CONDA_PREFIX set) use that prefix; otherwise fall back to the
+# AlmaLinux/manylinux system paths (/usr, /usr/lib64) used by the CI wheels.
+if(DEFINED ENV{CONDA_PREFIX} AND EXISTS "$ENV{CONDA_PREFIX}/lib/libboost_filesystem.so")
+    set(_BOOST_PREFIX "$ENV{CONDA_PREFIX}")
+    set(_BOOST_INCLUDE_DIR "$ENV{CONDA_PREFIX}/include")
+    set(_BOOST_LIBDIR "$ENV{CONDA_PREFIX}/lib")
+else()
+    set(_BOOST_PREFIX "/usr")
+    set(_BOOST_INCLUDE_DIR "/usr/include")
+    set(_BOOST_LIBDIR "/usr/lib64")
+endif()
+message(STATUS "Using Boost prefix: ${_BOOST_PREFIX}")
+
 set(Boost_FOUND TRUE CACHE BOOL "Force Boost found" FORCE)
 set(Boost_FILESYSTEM_FOUND TRUE CACHE BOOL "Force Boost filesystem found" FORCE)
 set(Boost_SERIALIZATION_FOUND TRUE CACHE BOOL "Force Boost serialization found" FORCE)
 
-# Koppel de exacte systeempaden van de AlmaLinux container aan de CMake targets
-set(Boost_INCLUDE_DIRS "/usr/include" CACHE PATH "Boost include dirs" FORCE)
+# Bind the exact system paths to the CMake targets
+set(Boost_INCLUDE_DIRS "${_BOOST_INCLUDE_DIR}" CACHE PATH "Boost include dirs" FORCE)
 
-# Wijs modern CMake direct naar de fysieke .so bestanden van de dnf installatie
-set(Boost_FILESYSTEM_LIBRARY "/usr/lib64/libboost_filesystem.so" CACHE FILEPATH "Boost filesystem lib" FORCE)
-set(Boost_SERIALIZATION_LIBRARY "/usr/lib64/libboost_serialization.so" CACHE FILEPATH "Boost serialization lib" FORCE)
+# Point modern CMake directly at the physical .so files
+set(Boost_FILESYSTEM_LIBRARY "${_BOOST_LIBDIR}/libboost_filesystem.so" CACHE FILEPATH "Boost filesystem lib" FORCE)
+set(Boost_SERIALIZATION_LIBRARY "${_BOOST_LIBDIR}/libboost_serialization.so" CACHE FILEPATH "Boost serialization lib" FORCE)
 
-# Vul de gecombineerde library lijst voor oudere CMake macro's
-set(Boost_LIBRARIES "/usr/lib64/libboost_filesystem.so;/usr/lib64/libboost_serialization.so" CACHE STRING "Boost libs" FORCE)
+# Fill the combined library list for older CMake macros
+set(Boost_LIBRARIES "${_BOOST_LIBDIR}/libboost_filesystem.so;${_BOOST_LIBDIR}/libboost_serialization.so" CACHE STRING "Boost libs" FORCE)
 
-# Maak de officiële moderne CMake targets handmatig aan (aangezien find_package is omzeild)
+# Create the official modern CMake targets manually (since find_package is bypassed)
 if(NOT TARGET Boost::filesystem)
     add_library(Boost::filesystem SHARED IMPORTED GLOBAL)
     set_target_properties(Boost::filesystem PROPERTIES
-        IMPORTED_LOCATION "/usr/lib64/libboost_filesystem.so"
-        INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
+        IMPORTED_LOCATION "${_BOOST_LIBDIR}/libboost_filesystem.so"
+        INTERFACE_INCLUDE_DIRECTORIES "${_BOOST_INCLUDE_DIR}"
     )
 endif()
 
 if(NOT TARGET Boost::serialization)
     add_library(Boost::serialization SHARED IMPORTED GLOBAL)
     set_target_properties(Boost::serialization PROPERTIES
-        IMPORTED_LOCATION "/usr/lib64/libboost_serialization.so"
-        INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
+        IMPORTED_LOCATION "${_BOOST_LIBDIR}/libboost_serialization.so"
+        INTERFACE_INCLUDE_DIRECTORIES "${_BOOST_INCLUDE_DIR}"
     )
 endif()
 # Must be at the start of the file
@@ -92,16 +104,15 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 find_package(Git REQUIRED)
 
-# VERWIJDER: set(CMAKE_DISABLE_FIND_PACKAGE_Boost ON) <- Deze regel moet weg!
-
-# GEBRUIK DIT: Vertel modern CMake om de Config Mode voor Boost over te slaan.
-# Dit dwingt alle submappen (inclusief jiplib) om in Module Mode te zoeken.
+# Tell modern CMake to skip Config Mode for Boost.
+# This forces all subdirectories (including jiplib) to search in Module Mode.
 set(Boost_NO_BOOST_CMAKE ON CACHE BOOL "Disable Boost Config mode" FORCE)
 
-# Geef de exacte locaties van AlmaLinux mee aan de cache
-set(BOOST_ROOT "/usr" CACHE PATH "Set Boost root" FORCE)
-set(BOOST_INCLUDEDIR "/usr/include" CACHE PATH "Set Boost include" FORCE)
-set(BOOST_LIBRARYDIR "/usr/lib64" CACHE PATH "Set Boost libs" FORCE)
+# Pass the exact locations to the cache (conda prefix if available,
+# otherwise AlmaLinux/manylinux system paths)
+set(BOOST_ROOT "${_BOOST_PREFIX}" CACHE PATH "Set Boost root" FORCE)
+set(BOOST_INCLUDEDIR "${_BOOST_INCLUDE_DIR}" CACHE PATH "Set Boost include" FORCE)
+set(BOOST_LIBRARYDIR "${_BOOST_LIBDIR}" CACHE PATH "Set Boost libs" FORCE)
 
 set(Python_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python executable" FORCE)
 set(Python_INCLUDE_DIRS "${Python_INCLUDE_DIRS}" CACHE PATH "Python include dirs" FORCE)
