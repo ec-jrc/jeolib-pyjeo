@@ -1,0 +1,66 @@
+name: Test (conda)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test suite on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        # Linux only for now (Windows is out of scope).
+        os: [ubuntu-latest]
+
+    # Login shell is required so `conda activate` works in every run step.
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive   # jiplib and miallib are needed to build
+          fetch-depth: 0          # let scikit-build-core read git versions
+
+      - name: Set up conda environment from environment.yml
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: environment.yml
+          activate-environment: pyjeo-dev
+          miniforge-version: latest
+          auto-activate-base: false
+          conda-remove-defaults: true
+
+      - name: Show environment info
+        run: |
+          conda info
+          conda list
+          python --version
+          gdal-config --version
+
+      - name: Build and install pyjeo (editable)
+        run: |
+          export CMAKE_PREFIX_PATH="$CONDA_PREFIX"
+          # Prefer the compiler exported by the conda cxx-compiler package's
+          # activation. Fall back to the cross-prefixed binary if it is not
+          # set for some reason.
+          export CC="${CC:-x86_64-conda-linux-gnu-gcc}"
+          export CXX="${CXX:-x86_64-conda-linux-gnu-g++}"
+          echo "Using CC=$CC CXX=$CXX"
+          # No build isolation: the C++ build uses the conda toolchain and
+          # libraries. Runtime deps declared in pyproject.toml (rasterio,
+          # xarray, rioxarray, netCDF4, pyproj, shapely, ...) are resolved
+          # from PyPI here since environment.yml does not provide them.
+          pip install -v --no-build-isolation -e .
+
+      - name: Show pyjeo version
+        run: python -c "import pyjeo as pj; print('pyjeo', pj.__version__)"
+
+      - name: Run test suite
+        run: python -m unittest tests -v

@@ -1,12 +1,11 @@
 name: Build Cross-Platform Wheels
 
+# NOTE: Cross-platform wheel building is a work in progress and currently
+# fails in the cibuildwheel manylinux container. Automatic triggers are
+# disabled for now so it does not fail on every push; run it manually from
+# the Actions tab (workflow_dispatch) when working on wheel support.
 on:
-  push:
-    branches: [ main, master, feature/cross-platform-wheels ]
-  pull_request:
-    branches: [ main, master ]
-  release:
-    types: [published]
+  workflow_dispatch:
 
 jobs:
   build_wheels:
