@@ -65,7 +65,7 @@ before-all = "brew install cmake gsl fann libgeotiff fftw proj jsoncpp gdal open
 
 [metadata]
 name = 'pyjeo'
-version = '1.2.1'
+version = '1.2.2'
 
 [tool.setuptools.packages]
 
@@ -73,7 +73,7 @@ find = {}  # Scan the project directory with the default parameters
 
 [project]
 name = 'pyjeo'
-version = '1.2.1'
+version = '1.2.2'
 description = 'pyjeo is a library for image processing for geospatial data implemented in JRC Ispra.'
 authors = [
         { name = "Pieter Kempeneers", email = "Pieter.Kempeneers@ec.europa.eu"},
