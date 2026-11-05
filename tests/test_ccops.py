@@ -308,6 +308,84 @@ class BadCCOps(unittest.TestCase):
             '(mean value for graph=8 not smaller than for graph=4)'
 
     @staticmethod
+    def test_distance_mspa_regression():
+        """Regression test for the squared Euclidean distance and MSPA.
+
+        These two paths both rely on the miallib sqedt() function. In
+        miallib 2.0.0 sqedt() gained an out_type argument and MSPA
+        (segmentBinaryPatterns) gained a sqedt_type argument; a mismatch
+        between the C declarations used by jiplib and the actual miallib
+        signatures silently produced wrong distances and crashed MSPA.
+
+        Unlike the loose bounds checks in test_distances(), this test
+        asserts an exact, known distance value and exercises MSPA on a
+        synthetic image so that such a regression is caught.
+        """
+        # --- distance2dEuclideanSquared on a known geometry ---------------
+        # distance2dEuclideanSquared returns, for every foreground (nonzero)
+        # pixel, the squared Euclidean distance to the nearest background
+        # (zero) pixel. Columns 0..7 are background (0) and columns 8..15 are
+        # foreground (1). A foreground pixel in column c (c >= 8) has its
+        # nearest background pixel in column 7, so its squared distance is
+        # (c - 7)**2. The largest value is in the last column (15):
+        # (15 - 7)**2 = 8**2 = 64. Background pixels have distance 0.
+        ncol = nrow = 16
+        split = 8
+        jim = pj.Jim(ncol=ncol, nrow=nrow, otype='Byte')
+        jim.pixops.setData(1)
+        jim[0:nrow, 0:split] = 0
+
+        # function form and method form must agree
+        distances = pj.ccops.distance2dEuclideanSquared(jim)
+        jim.ccops.distance2dEuclideanSquared()
+        assert jim.properties.isEqual(distances), \
+            'Inconsistency in ccops.distance2dEuclideanSquared() ' \
+            '(method returns different result than function)'
+
+        arr = jim.np()
+        assert int(arr.min()) == 0, \
+            'Error in ccops.distance2dEuclideanSquared() ' \
+            '(minimum squared distance not 0)'
+        assert int(arr.max()) == split * split, \
+            'Error in ccops.distance2dEuclideanSquared() ' \
+            '(maximum squared distance not {} as expected for a {}-pixel ' \
+            'foreground strip)'.format(split * split, split)
+        # background pixels (column 0) have distance 0
+        assert int(arr[0, 0]) == 0, \
+            'Error in ccops.distance2dEuclideanSquared() ' \
+            '(background pixel at [0, 0] not equal to 0)'
+        # farthest foreground pixel (row 0, last column) has distance 8**2
+        assert int(arr[0, ncol - 1]) == split * split, \
+            'Error in ccops.distance2dEuclideanSquared() ' \
+            '(squared distance at [0, {}] not equal to {})'.format(
+                ncol - 1, split * split)
+        # whole last column is at distance 8 from the background edge
+        assert all(int(v) == split * split for v in arr[:, ncol - 1]), \
+            'Error in ccops.distance2dEuclideanSquared() ' \
+            '(last column not uniformly {})'.format(split * split)
+
+        # --- MSPA (segmentBinaryPatterns) must run without crashing -------
+        # A solid foreground block on a background. MSPA calls sqedt()
+        # internally; this guards against the sqedt_type regression that
+        # produced an "invalid out_type" error and a segmentation fault.
+        mspa_in = pj.Jim(ncol=32, nrow=32, otype='Byte')
+        mspa_in.pixops.setData(0)
+        mspa_in[8:24, 8:24] = 1
+        # foreground = 2, background = 1 (as documented for MSPA)
+        mspa = pj.ccops.segmentBinaryPatterns(
+            mspa_in + 1, 8, size=1, transition=1, internal=1)
+
+        classes = set(int(v) for v in np.unique(mspa.np()))
+        # The result must contain at least background (0) and core pixels
+        # (17 = internal core) for this solid block.
+        assert len(classes) > 1, \
+            'Error in ccops.segmentBinaryPatterns() ' \
+            '(MSPA returned a single class, result looks degenerate)'
+        assert 17 in classes, \
+            'Error in ccops.segmentBinaryPatterns() ' \
+            '(expected internal core pixels (value 17) for a solid block)'
+
+    @staticmethod
     def test_labelling():
         """Test the labelling functions and methods."""
         jim1 = pj.Jim(tiles[0])
