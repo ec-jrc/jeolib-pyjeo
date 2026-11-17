@@ -1,8 +1,8 @@
 [submodule "external/miallib"]
 	path = external/miallib
-	url = https://github.com/ec-jrc/jeolib-miallib.git
+	url = ../jeolib-miallib.git
 	branch = master
 [submodule "external/jiplib"]
 	path = external/jiplib
-	url = https://github.com/ec-jrc/jeolib-jiplib.git
+	url = ../jeolib-jiplib.git
 	branch = master
